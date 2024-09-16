@@ -7,7 +7,7 @@ const compat = new FlatCompat();
 /** @type {import("eslint").Linter.Config[]} */
 const config = [
   ...fixupConfigRules(
-    compat.extends("next/core-web-vitals", "next/typescript")
+    compat.extends("next/core-web-vitals", "next/typescript"),
   ),
   prettier,
   { ignores: [".next", "coverage"] },
