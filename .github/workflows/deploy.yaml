@@ -1,1 +1,63 @@
-test
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-frontend:
+        description: 'Deploy frontend'
+        required: false
+        default: 'false'
+        type: boolean
+      deploy-backend:
+        description: 'Deploy backend'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  deploy-frontend:
+    if: ${{ github.event.inputs.deploy-frontend == 'true' }}
+    runs-on: ubuntu-latest
+    container:
+      image: z1yoon/k8s-base:v0.0.1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update kubeconfig
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.K8S_CLUSTER }}
+
+      - name: Deploy frontend server
+        run: |
+          cd k8s/base
+          kustomize edit set image nuage/frontend=${{ secrets.ECR_REGISTRY }}/frontend:$(git rev-parse --short HEAD)
+          cd ../overlays/${{ secrets.K8S_OVERLAY }}
+          kustomize build . | kubectl apply -n ${{ secrets.K8S_NAMESPACE }} -f -
+          kubectl -n ${{ secrets.K8S_NAMESPACE }} rollout status deployment frontend-deployment --timeout=20m
+
+      - name: Deploy frontend client assets to S3
+        run: |
+          cd client
+          aws s3 cp --recursive . s3://$NUAGE_S3/frontend/$GITHUB_REF_NAME --exclude "*" --include "*.js" --content-type "application/javascript" --content-encoding "br" --cache-control "max-age=31536000"
+          # Additional aws s3 cp commands for other file types as in your original script
+
+  deploy-backend:
+    if: ${{ github.event.inputs.deploy-backend == 'true' }}
+    runs-on: ubuntu-latest
+    container:
+      image: z1yoon/k8s-base:v0.0.1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Update kubeconfig
+        run: aws eks --region ${{ secrets.AWS_REGION }} update-kubeconfig --name ${{ secrets.K8S_CLUSTER }}
+
+      - name: Deploy backend server
+        run: |
+          cd k8s/base
+          kustomize edit set image nuage/backend=${{ secrets.ECR_REGISTRY }}/backend:$(git rev-parse --short HEAD)
+          cd ../overlays/${{ secrets.K8S_OVERLAY }}
+          kustomize build . | kubectl apply -n ${{ secrets.K8S_NAMESPACE }} -f -
+          kubectl -n ${{ secrets.K8S_NAMESPACE }} rollout status deployment backend-deployment --timeout=20m
+

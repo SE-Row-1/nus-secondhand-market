@@ -1,0 +1,54 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  version: "1.29"
+  name: nus-eks
+  region: ap-southeast-1
+  tags:
+    Environment: production
+    Created: EKS
+vpc:
+  clusterEndpoints:
+    publicAccess: false
+    privateAccess: true
+  subnets:
+    public:
+      ap-southeast-1a: { id: subnet-}
+      ap-southeast-1b: { id: subnet-}
+    private:
+      ap-southeast-1a: { id: subnet-}
+      ap-southeast-1b: { id: subnet-}
+  securityGroup: sg-
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+managedNodeGroups:
+  - name: nus-eks-workers-28
+    minSize: 0
+    maxSize: 2
+    desiredCapacity: 2
+    volumeSize: 20
+    instanceTypes:
+    - t3a.small
+    - t3a.medium
+    - t3a.large
+    spot: true
+    privateNetworking: true
+    ssh:
+      allow: true
+      publicKeyName: nus
+    labels: {role: worker}
+    tags:
+      Environment: production
+      Created: EKS
+    iam:
+      attachPolicyARNs: [
+        "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
+        "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+        "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
+      ]
+      withAddonPolicies:
+        autoScaler: true
+        albIngress: true
+        cloudWatch: true
+        externalDNS: true

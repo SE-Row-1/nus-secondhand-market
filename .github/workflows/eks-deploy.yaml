@@ -1,0 +1,95 @@
+name: EKS Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: 'Trigger deployment'
+        required: true
+        default: 'false'
+        type: boolean
+      delete:
+        description: 'Trigger deletion of the cluster'
+        required: true
+        default: 'false'
+        type: boolean
+
+jobs:
+  create_cluster:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.deploy == 'true' && github.event.inputs.delete == 'false' }}
+    container:
+      image: z1yoon/k8s-base:v0.0.1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create EKS cluster
+        run: |
+          eksctl create cluster -f .github/workflows/eksctl-cluster.yaml
+
+      - name: Create Node Group
+        run: |
+          eksctl create nodegroup -f .github/workflows/eksctl-cluster.yaml
+
+  deploy_alb_controller:
+    runs-on: ubuntu-latest
+    needs: create_cluster
+    if: ${{ github.event.inputs.deploy == 'true' && github.event.inputs.delete == 'false' }}
+    container:
+      image: z1yoon/k8s-base:v0.0.1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Associate IAM OIDC provider
+        run: |
+          eksctl utils associate-iam-oidc-provider --region ${{ secrets.AWS_REGION }} --cluster ${{ secrets.EKS_CLUSTER_NAME }} --approve
+
+      - name: Create IAM Policy for ALB Controller
+        run: |
+          curl -o alb-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.3.1/docs/install/iam_policy.json
+          aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://alb-policy.json
+
+      - name: Create IAM Service Account for ALB Controller
+        run: |
+          eksctl create iamserviceaccount \
+            --cluster ${{ secrets.EKS_CLUSTER_NAME }} \
+            --namespace kube-system \
+            --name aws-load-balancer-controller \
+            --attach-policy-arn arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:policy/AWSLoadBalancerControllerIAMPolicy \
+            --override-existing-serviceaccounts \
+            --approve
+
+      - name: Install AWS Load Balancer Controller
+        run: |
+          helm repo add eks https://aws.github.io/eks-charts
+          helm repo update
+          helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+            --set clusterName=${{ secrets.EKS_CLUSTER_NAME }} \
+            --set serviceAccount.create=false \
+            --set region=${{ secrets.AWS_REGION }} \
+            --set vpcId=$(aws eks describe-cluster --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }} --query "cluster.resourcesVpcConfig.vpcId" --output text) \
+            --namespace kube-system \
+            --set serviceAccount.name=aws-load-balancer-controller
+
+      - name: Deploy Example Application with ALB Ingress
+        run: |
+          kubectl apply -f alb-ingress.yaml
+
+  delete_cluster:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.delete == 'true' }}
+    container:
+      image: z1yoon/k8s-base:v0.0.1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Delete Node Group
+        run: |
+          eksctl delete nodegroup -f .github/workflows/eksctl-cluster.yaml
+
+      - name: Delete EKS cluster
+        run: |
+          eksctl delete cluster -f .github/workflows/eksctl-cluster.yaml
