@@ -43,7 +43,7 @@ export function UserCard({ user }: Props) {
   }
 
   return (
-    <div className="relative self-stretch flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card">
+    <div className="relative self-stretch flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card hover:bg-secondary transition-colors">
       <Avatar className="size-8 lg:size-10">
         <AvatarImage
           src="https://avatars.githubusercontent.com/u/78269445?v=4"
@@ -57,7 +57,7 @@ export function UserCard({ user }: Props) {
           mrcaidev@gmail.com
         </p>
       </div>
-      <Link href="#">
+      <Link href="#" className="absolute inset-0">
         <span className="sr-only">Visit profile</span>
       </Link>
     </div>

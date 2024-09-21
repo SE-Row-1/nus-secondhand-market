@@ -11,7 +11,7 @@ export function Sidebar() {
       </div>
       <Nav />
       <ThemeToggle />
-      <UserCard user={null} />
+      <UserCard user={{}} />
     </aside>
   );
 }
