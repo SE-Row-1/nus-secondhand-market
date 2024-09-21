@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen grid place-items-center">
+    <div className="min-h-screen grid place-items-center">
       <Button asChild>
         <Link
           href="https://github.com/SE-Row-1/nus-secondhand-market"
@@ -14,6 +14,6 @@ export default function Home() {
           Source code
         </Link>
       </Button>
-    </main>
+    </div>
   );
 }
