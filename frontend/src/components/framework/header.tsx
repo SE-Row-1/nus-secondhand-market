@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import { Logo } from "./logo";
 import { Nav } from "./nav";
 import { ThemeToggle } from "./theme-toggle";
+import { UserCard } from "./user-card";
 
 export function Header() {
   return (
@@ -19,6 +20,7 @@ export function Header() {
           <Logo />
           <Nav />
           <ThemeToggle />
+          <UserCard user={{}} />
         </SheetContent>
       </Sheet>
       <Logo />
