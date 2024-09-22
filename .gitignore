@@ -1,4 +1,5 @@
 # shared
+terraform/.terraform
 .idea/
 .vscode/
 logs/

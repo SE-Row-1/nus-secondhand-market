@@ -1,13 +1,17 @@
-name: Deploy Infrastructure
+name: Destroy Infrastructure
 
 on:
-  push:
-    branches:
-      - setup-infra2
   workflow_dispatch:
+    inputs:
+      destroy:
+        description: 'Input to trigger the destroy process'
+        required: true
+        default: 'false'
+        type: boolean
 
 jobs:
-  deploy:
+  destroy:
+    if: ${{ github.event.inputs.destroy == 'true' }}  # Only runs if input 'destroy' is true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -25,10 +29,8 @@ jobs:
         with:
           terraform_wrapper: false
 
-      - name: Terraform Init and Apply
+      - name: Terraform Init and Destroy
         run: |
           cd terraform/
           terraform init
-          terraform validate
-          terraform plan
-          terraform apply -auto-approve
+          terraform destroy -auto-approve
