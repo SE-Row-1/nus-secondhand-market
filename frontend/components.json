@@ -11,6 +11,7 @@
   "tsx": true,
   "aliases": {
     "components": "@/components",
-    "utils": "@/components/ui/utils"
+    "utils": "@/components/ui/utils",
+    "hooks": "@/hooks"
   }
 }
