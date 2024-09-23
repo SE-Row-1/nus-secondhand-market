@@ -1,6 +1,9 @@
 name: Destroy Infrastructure
 
 on:
+  push:
+    branches:
+      - setup-infra2
   workflow_dispatch:
     inputs:
       destroy:
