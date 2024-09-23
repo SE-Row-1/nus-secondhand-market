@@ -15,9 +15,10 @@ module "ec2" {
 module "rds" {
   source = "./modules/rds"
   vpc_security_group_id = module.vpc.security_group_id
+  subnet_ids = module.vpc.subnet_ids[1]
 
 }
 
-module "s3" {
-  source = "./modules/s3"
-}
+# module "s3" {
+#   source = "./modules/s3"
+# }

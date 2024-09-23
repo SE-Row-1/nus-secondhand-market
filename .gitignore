@@ -1,4 +1,5 @@
 # shared
+terraform.tfstate*
 terraform/.terraform
 .idea/
 .vscode/

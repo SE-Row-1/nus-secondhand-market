@@ -1,7 +1,7 @@
 variable "db_name" {
   description = "RDS database name"
   type        = string
-  default     = "nus-secondhand-market"
+  default     = "secondhandmarket"
 }
 
 variable "db_password" {
@@ -14,13 +14,13 @@ variable "db_password" {
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
-  default     = "db.t3.micro"
+  default     = "db.t4g.micro"
 }
 
 variable "db_username" {
   description = "RDS database username"
   type        = string
-  default     = "admin"
+  default     = "nusadmin"
 }
 
 variable "vpc_security_group_name" {
@@ -34,3 +34,7 @@ variable "vpc_security_group_id" {
   type        = string
 }
 
+variable "subnet_ids" {
+  description = "The subnet ID for the EC2 instance"
+  type        = list(string)
+}
