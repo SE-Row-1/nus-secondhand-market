@@ -1,13 +1,15 @@
 package edu.nus.market.controller;
 
 import edu.nus.market.dao.AccountDao;
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.*;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/auth")
 public class AccountController {
 
     @Resource
@@ -29,10 +31,9 @@ public class AccountController {
     }
 
 
-    @PostMapping("/login")
-    public Account login(@RequestBody Account account){
-        //accountService.login();
-        return accountDao.getAccountById(1);
+    @PostMapping("/me")
+    public Response login(@RequestBody LoginReq req){
+        return  new Response(ResponseCode.OK,req);
     }
 
     @PostMapping("/account")
