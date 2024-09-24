@@ -1,4 +1,4 @@
-package com.example.apps.pojo;
+package edu.nus.market.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

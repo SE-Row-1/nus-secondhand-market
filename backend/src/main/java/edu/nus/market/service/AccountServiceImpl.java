@@ -1,7 +1,7 @@
-package com.example.apps.service;
+package edu.nus.market.service;
 
-import com.example.apps.dao.AccountDao;
-import com.example.apps.pojo.Account;
+import edu.nus.market.dao.AccountDao;
+import edu.nus.market.pojo.Account;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

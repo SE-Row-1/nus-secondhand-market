@@ -1,6 +1,6 @@
-package com.example.apps.service;
+package edu.nus.market.service;
 
-import com.example.apps.pojo.Account;
+import edu.nus.market.pojo.Account;
 
 public interface AccountService {
     Account getMyAccount(int id);

@@ -1,8 +1,8 @@
-package com.example.apps.controller;
+package edu.nus.market.controller;
 
-import com.example.apps.dao.AccountDao;
-import com.example.apps.pojo.Account;
-import com.example.apps.service.AccountService;
+import edu.nus.market.dao.AccountDao;
+import edu.nus.market.pojo.Account;
+import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
