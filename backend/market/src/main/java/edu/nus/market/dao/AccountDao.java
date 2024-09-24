@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Repository
 public interface AccountDao {
-    @Select("SELECT * FROM account")
+    @Select("SELECT uid,uname FROM account where id = #{id}")
     Account getAccountById(int id);
+
+    @
+    int addNewAccount(Account account);
 }

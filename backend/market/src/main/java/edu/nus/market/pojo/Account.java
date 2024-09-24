@@ -9,5 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Account {
     int uid;
-    String uname;
+    String email;
+    String nickname;
+    String avatarUrl;
+    int departmentId;
+    String phone;
+    String preferredCurrency;
+    String createdAt;
+    String deletedAt;
 }
