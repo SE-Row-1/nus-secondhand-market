@@ -28,3 +28,8 @@ resource "aws_instance" "nus-secondhand-market" {
     Name = "nus-secondhand-market-ec2"
   }
 }
+
+
+output "public_ip" {
+  value = aws_instance.nus-secondhand-market.public_ip
+}
