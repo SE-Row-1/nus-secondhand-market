@@ -29,8 +29,10 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public ResponseEntity<Object> registerService(Register register){
+
+
         if(accountDao.getAccountByEmail(register.getEmail()) != null)
-            ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg("This email is already registered."));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg("This email is already registered."));
 
         else {
             SecureRandom random = new SecureRandom();
@@ -39,9 +41,11 @@ public class AccountServiceImpl implements AccountService{
             random.nextBytes(salt);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String passwordHash = passwordEncoder.encode(register.getPassword() + Base64.getEncoder().encodeToString(salt));
-            register.setPassword(passwordHash);
-            return ResponseEntity.status(HttpStatus.OK).body(register);
+            Account account = new Account(register);
+            account.setPasswordHash(passwordHash);
+            account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
+            accountDao.addNewAccount(account);
+        return ResponseEntity.status(HttpStatus.OK).body(account);
         }
-        return ResponseEntity.status(HttpStatus.OK).body(register);
-    };
+    }
 }

@@ -5,6 +5,11 @@ spring:
     name: market
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${postgres_url}
-    username: ${postgres_username}
-    password: ${postgres_password}
+    url: jdbc:postgresql://mrcaidev-3157.j77.aws-ap-southeast-1.cockroachlabs.cloud:26257/nshm?sslmode=verify-full
+    username: se-row-1
+    password: XlLOamPV43SkvjuNJUJY4A
+
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 public class Register {
     String email;
     String nickname;
-    String avatar_url;
-    int depart_id;
+    String avatarUrl;
+    int departmentId;
     String password;
     String phone;
-    String preferred_currency;
+    String preferredCurrency;
 }

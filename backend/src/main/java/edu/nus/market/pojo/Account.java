@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
-    int uid;
+    int id;
     String email;
     String nickname;
     String passwordHash;
@@ -19,4 +19,13 @@ public class Account {
     String preferredCurrency;
     String createdAt;
     String deletedAt;
+
+    public Account(Register register){
+        this.email = register.getEmail();
+        this.nickname = register.getNickname();
+        this.avatarUrl = register.getAvatarUrl();
+        this.departmentId = register.getDepartmentId();
+        this.phone = register.getPhone();
+        this.preferredCurrency = register.getPreferredCurrency();
+    }
 }
