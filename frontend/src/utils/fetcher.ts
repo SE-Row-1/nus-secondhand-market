@@ -1,8 +1,7 @@
-export async function fetcher(url: string, config?: RequestInit) {
+export async function fetcher<T>(url: string, config?: RequestInit) {
   const input = new URL(url, process.env["NEXT_PUBLIC_API_BASE_URL"]);
 
   const init = {
-    body: JSON.stringify(config?.body),
     headers: {
       ...config?.headers,
       "Content-Type": "application/json",
@@ -22,5 +21,5 @@ export async function fetcher(url: string, config?: RequestInit) {
     throw new Error(json.error);
   }
 
-  return json;
+  return json as T;
 }

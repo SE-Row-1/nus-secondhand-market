@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import type { Account } from "@/types";
+import { fetcher } from "@/utils/fetcher";
 import { UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent } from "react";
+import useSWR from "swr";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -27,6 +30,8 @@ const formSchema = v.object({
 });
 
 export function RegisterForm() {
+  const { mutate } = useSWR<Account>("/auth/me", fetcher);
+
   const { toast } = useToast();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -42,6 +47,7 @@ export function RegisterForm() {
         title: "Registration failed",
         description: issues[0].message,
       });
+
       return;
     }
 
@@ -57,7 +63,16 @@ export function RegisterForm() {
       return;
     }
 
-    console.log({ email, password });
+    const { access_token, ...user } = await fetcher<
+      Account & { access_token: string }
+    >("/auth/me", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+
+    mutate(user);
+
+    localStorage.setItem("access_token", access_token);
   };
 
   return (
