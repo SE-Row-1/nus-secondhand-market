@@ -7,10 +7,10 @@ export default function RegisterPage() {
       <div className="min-w-80">
         <h1 className="mb-6 font-bold text-3xl text-center">Register</h1>
         <RegisterForm />
-        <p className="mt-4 text-center text-sm">
-          Don&apos;t have an account?&nbsp;
-          <Link href="#" className="underline">
-            Sign up
+        <p className="mt-4 text-sm text-center">
+          Already have an account?&nbsp;
+          <Link href="/login" className="underline">
+            Log in
           </Link>
         </p>
       </div>
