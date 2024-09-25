@@ -35,14 +35,35 @@ jobs:
           docker push z1yoon/nus-secondhand-market-frontend:latest
           docker push z1yoon/nus-secondhand-market-backend:latest
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: ap-southeast-1
   deploy:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Download EC2 Public IP Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ec2-public-ip
+
+      - name: Read EC2 Public IP
+        id: read_ip
+        run: |
+          PUBLIC_IP=$(cat ec2_public_ip.txt)
+          echo "Public IP: $PUBLIC_IP"
+          echo "::set-output name=ec2_public_ip::$PUBLIC_IP"
+
       - name: SSH into EC2 and deploy
         uses: appleboy/scp-action@v0.1.0
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ steps.read_ip.outputs.ec2_public_ip }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "./docker-compose.yml"
@@ -50,8 +71,9 @@ jobs:
 
       - name: SSH into EC2 to run Docker Compose
         run: |
-            ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ubuntu/nus-secondhand-market
-            echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
-            docker-compose up -d
-            EOF
+          ssh -i ${{ secrets.EC2_SSH_KEY }} -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ steps.read_ip.outputs.ec2_public_ip }} << 'EOF'
+          cd /home/ubuntu/nus-secondhand-market
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          docker-compose up -d
+          EOF
+

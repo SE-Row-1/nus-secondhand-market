@@ -32,3 +32,16 @@ jobs:
           terraform validate
           terraform plan
           terraform apply -auto-approve
+
+      - name: Get EC2 Public IP and Save Artifact
+        run: |
+          cd terraform/
+          PUBLIC_IP=$(terraform output -raw public_ip)
+          echo "EC2 Public IP: $PUBLIC_IP"
+          echo $PUBLIC_IP > ec2_public_ip.txt
+
+      - name: Upload EC2 Public IP as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ec2-public-ip
+          path: ec2_public_ip.txt
