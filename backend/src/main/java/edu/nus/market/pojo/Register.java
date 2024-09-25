@@ -7,16 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Account {
-    int uid;
+public class Register {
     String email;
     String nickname;
-    String passwordHash;
-    String passwordSalt;
-    String avatarUrl;
-    int departmentId;
+    String avatar_url;
+    int depart_id;
+    String password;
     String phone;
-    String preferredCurrency;
-    String createdAt;
-    String deletedAt;
+    String preferred_currency;
 }

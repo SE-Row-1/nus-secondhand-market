@@ -10,12 +10,12 @@ public class Response {
 
     int code;
     String errorMessage;
-    Object t;
+    Object attached;
 
-    public Response(ResponseCode code, Object t){
+    public Response(ResponseCode code, Object attached){
         this.code = code.code;
         this.errorMessage = code.msg;
-        this.t = t;
+        this.attached = attached;
     }
 
 }
