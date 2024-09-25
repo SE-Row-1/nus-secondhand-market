@@ -3,13 +3,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePostRequest } from "@/hooks/use-request";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
-import { fetcher } from "@/utils/fetcher";
 import { UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent } from "react";
-import useSWR from "swr";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -30,7 +29,10 @@ const formSchema = v.object({
 });
 
 export function RegisterForm() {
-  const { mutate } = useSWR<Account>("/auth/me", fetcher);
+  const { trigger } = usePostRequest<
+    { email: string; password: string },
+    Account & { access_token: string }
+  >("/auth/me");
 
   const { toast } = useToast();
 
@@ -63,14 +65,9 @@ export function RegisterForm() {
       return;
     }
 
-    const { access_token, ...user } = await fetcher<
-      Account & { access_token: string }
-    >("/auth/me", {
-      method: "POST",
-      body: JSON.stringify({ email, password }),
-    });
+    const { access_token, ...account } = await trigger({ email, password });
 
-    mutate(user);
+    console.log(account);
 
     localStorage.setItem("access_token", access_token);
   };

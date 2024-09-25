@@ -1,10 +1,9 @@
 "use client";
 
+import { useGetRequest } from "@/hooks/use-request";
 import type { Account } from "@/types";
-import { fetcher } from "@/utils/fetcher";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
-import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
@@ -16,7 +15,7 @@ import {
 } from "../ui/card";
 
 export function UserCard() {
-  const { data: account } = useSWR<Account>("/auth/me", fetcher);
+  const { data: account } = useGetRequest<Account>("/auth/me");
 
   if (!account) {
     return (
