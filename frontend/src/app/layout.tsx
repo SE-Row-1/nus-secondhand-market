@@ -25,7 +25,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <head>
         <ThemeInitializer />
       </head>
-      <body>
+      <body className="bg-background font-sans text-foreground antialiased">
         <div className="hidden md:block">
           <Sidebar />
         </div>
