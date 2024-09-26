@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
   cookies().set({
     name: "access_token",
-    value: process.env["TEST_USER_JWT"] ?? "",
+    value: process.env["MOCK_JWT"] ?? "",
     path: "/",
     domain: "localhost",
     maxAge: 60 * 60 * 24 * 7,
