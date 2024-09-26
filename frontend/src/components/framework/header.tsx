@@ -20,7 +20,7 @@ export function Header() {
           <Logo />
           <Nav />
           <ThemeToggle />
-          <UserCard user={null} />
+          <UserCard />
         </SheetContent>
       </Sheet>
       <Logo />

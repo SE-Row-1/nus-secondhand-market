@@ -1,0 +1,2 @@
+cd frontend
+pnpm commitlint --edit $1
