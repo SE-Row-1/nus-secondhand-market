@@ -16,6 +16,7 @@ import io.jsonwebtoken.JwtBuilder;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -32,9 +33,22 @@ public class AccountServiceImpl implements AccountService{
         return accountDao.getAccountById(id);
     }
 
+
+
     @Override
-    public Response loginService(LoginReq req){
-        return new Response(ResponseCode.OK, null);
+    public ResponseEntity loginService(LoginReq loginReq){
+        Account account = accountDao.getAccountByEmail(loginReq.getEmail());
+        if(account == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg("This account does not exist."));
+        else{
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            if (passwordEncoder.matches(loginReq.getPassword() + account.getPasswordSalt(), account.getPasswordHash())){
+                return ResponseEntity.status(HttpStatus.OK).body(account);
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg("Wrong password. Please try again."));
+            }
+        }
     }
 
     @Override
@@ -64,7 +78,7 @@ public class AccountServiceImpl implements AccountService{
                 .maxAge(7 * 24 * 60 * 60)         // 1 week
                 .sameSite("Strict")
                 .build();
-        return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(account);
+        return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(account);
         }
     }
 }

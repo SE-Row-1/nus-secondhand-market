@@ -40,8 +40,8 @@ public class AccountController {
 
 
     @PostMapping("/token")
-    public Response login(@RequestBody() LoginReq req){
-        return accountService.loginService(req);
+    public ResponseEntity<Object> login(@RequestBody() LoginReq loginReq){
+        return accountService.loginService(loginReq);
     }
 
     @PostMapping("/me")
