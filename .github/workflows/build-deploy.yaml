@@ -78,6 +78,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "./docker-compose.yml"
           target: "/home/ubuntu/nus-secondhand-market"
+          debug: true
 
       - name: SSH into EC2 to run Docker Compose
         run: |
