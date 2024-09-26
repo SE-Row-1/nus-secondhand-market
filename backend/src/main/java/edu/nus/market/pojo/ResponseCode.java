@@ -4,8 +4,6 @@ public enum ResponseCode {
 
 
     OK(0,"success"),
-
-
     EROOR(3000,"ERROR"),
     EMAIL_REGISTERED(3001, "This email is already registered");
 
