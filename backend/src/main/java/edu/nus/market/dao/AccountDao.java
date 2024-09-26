@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountDao {
-    @Select("SELECT id,nickname FROM account WHERE id = #{id}")
+    @Select("SELECT email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency " +
+        "FROM account WHERE id = #{id}")
     Account getAccountById(int id);
 
-    @Select("SELECT email FROM account WHERE email = #{email}")
+    @Select("SELECT email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency " +
+        "FROM account WHERE email = #{email}")
     Account getAccountByEmail(String email);
 
     @Insert("INSERT INTO account (email, nickname, avatar_url, department_Id, password_hash, password_salt, phone, preferred_currency) VALUES  " +

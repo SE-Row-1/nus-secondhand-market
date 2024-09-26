@@ -3,10 +3,7 @@ package edu.nus.market;
 import edu.nus.market.controller.AccountController;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.dao.DepartmentDao;
-import edu.nus.market.pojo.Account;
-import edu.nus.market.pojo.Department;
-import edu.nus.market.pojo.ErrorMsg;
-import edu.nus.market.pojo.Register;
+import edu.nus.market.pojo.*;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.assertj.core.api.Assertions;
@@ -41,6 +38,16 @@ class MarketApplicationTests {
 	}
 
     @Test
+    void registerSuccessTest(){
+        Register register = new Register();
+        register.setEmail("e1351847@u.nus.edu");
+        register.setPassword("12345678");
+        register.setDepartmentId(1);
+
+        assert (accountController.register(register).getStatusCode().equals(HttpStatusCode.valueOf(201)));
+    }
+
+    @Test
     void registerAccountConflictTest(){
         Register register = new Register();
         register.setEmail("e1351826@u.nus.edu");
@@ -51,12 +58,29 @@ class MarketApplicationTests {
     }
 
     @Test
-    void registerSuccessTest(){
-        Register register = new Register();
-        register.setEmail("e1351828@u.nus.edu");
-        register.setPassword("12345678");
-        register.setDepartmentId(1);
+    void loginSuccessTest(){
+        LoginReq loginReq = new LoginReq();
+        loginReq.setEmail("e1351826@u.nus.edu");
+        loginReq.setPassword("12345678");
 
-        assert (accountController.register(register).getStatusCode().equals(HttpStatusCode.valueOf(200)));
+        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(200)));
+    }
+
+    @Test
+    void loginWrongPasswordTest(){
+        LoginReq loginReq = new LoginReq();
+        loginReq.setEmail("e1351826@u.nus.edu");
+        loginReq.setPassword("0");
+
+        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(401)));
+    }
+
+    @Test
+    void loginAccountNotFoundTest(){
+        LoginReq loginReq = new LoginReq();
+        loginReq.setEmail("e1351856@u.nus.edu");
+        loginReq.setPassword("12345678");
+
+        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(404)));
     }
 }
