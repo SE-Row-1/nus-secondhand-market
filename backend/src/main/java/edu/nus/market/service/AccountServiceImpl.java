@@ -91,7 +91,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public ResponseEntity<Object> deleteAccountService(DelAccReq req) {
-        if(accountDao.getAccountByEmail(req.getEmail()).getId() == 0)
+        System.out.println(accountDao.getAccountByEmail(req.getEmail()));
+        if(accountDao.getAccountByEmail(req.getEmail()) == null)
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg("This account does not exist."));
         accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
