@@ -76,7 +76,7 @@ jobs:
           host: ${{ steps.read_ip.outputs.ec2_public_ip }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./docker-compose.yml"
+          source: "docker-compose.yaml"
           target: "/home/ubuntu"
 
       - name: SSH into EC2 to run Docker Compose
@@ -86,5 +86,5 @@ jobs:
           echo "postgres_username=${{ secrets.POSTGRES_USERNAME }}" >> .env
           echo "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" >> .env
           cat .env
-         #docker-compose up -d
+          docker-compose up -d
           EOF
