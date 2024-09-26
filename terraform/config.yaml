@@ -4,3 +4,6 @@ account-blocklist:
   - "999999999999"
 accounts:
   "985539788320": {}
+s3:
+  exclude:
+    tag: 'cloud-nuke'
