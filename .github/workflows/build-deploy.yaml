@@ -81,7 +81,8 @@ jobs:
 
       - name: SSH into EC2 to run Docker Compose
         run: |
-         ssh -i ${{ secrets.EC2_SSH_KEY }} -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ steps.read_ip.outputs.ec2_public_ip }} << 'EOF'
+          echo "${{ secrets.EC2_SSH_KEY }}" > private_key && chmod 600 private_key
+          ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ steps.read_ip.outputs.ec2_public_ip }} << 'EOF'
           echo "postgres_url=${{ secrets.POSTGRES_URL }}" >> .env
           echo "postgres_username=${{ secrets.POSTGRES_USERNAME }}" >> .env
           echo "postgres_password=${{ secrets.POSTGRES_PASSWORD }}" >> .env
