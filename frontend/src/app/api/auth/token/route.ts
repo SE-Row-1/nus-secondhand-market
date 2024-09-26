@@ -33,3 +33,9 @@ export async function POST() {
 
   return NextResponse.json({ ...mockAccount }, { status: 201 });
 }
+
+export async function DELETE() {
+  cookies().delete("access_token");
+
+  return new NextResponse(null, { status: 204 });
+}
