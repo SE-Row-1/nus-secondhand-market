@@ -41,7 +41,7 @@ export function RegisterForm() {
     FormEvent<HTMLFormElement>
   >(
     "/auth/me",
-    async (endpoint, { arg: event }) => {
+    async (_, { arg: event }) => {
       event.preventDefault();
 
       const formData = Object.fromEntries(new FormData(event.currentTarget));
@@ -52,9 +52,11 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await requests.post<Account>(endpoint, { email, password });
+      return await requests.post<Account>("/auth/me", { email, password });
     },
     {
+      revalidate: false,
+      populateCache: true,
       onSuccess: (account) => {
         toast({
           title: "Registration successful",
