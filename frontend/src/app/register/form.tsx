@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { usePostRequest } from "@/hooks/use-request";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
-import { UserRoundPlusIcon } from "lucide-react";
+import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent } from "react";
 import * as v from "valibot";
@@ -29,7 +29,7 @@ const formSchema = v.object({
 });
 
 export function RegisterForm() {
-  const { trigger } = usePostRequest<
+  const { trigger, isMutating } = usePostRequest<
     { email: string; password: string },
     Account & { access_token: string }
   >("/auth/me");
@@ -109,8 +109,12 @@ export function RegisterForm() {
           id="confirmation"
         />
       </div>
-      <Button type="submit" className="w-full">
-        <UserRoundPlusIcon className="size-4 mr-2" />
+      <Button type="submit" disabled={isMutating} className="w-full">
+        {isMutating ? (
+          <Loader2Icon className="size-4 mr-2 animate-spin" />
+        ) : (
+          <UserRoundPlusIcon className="size-4 mr-2" />
+        )}
         Register
       </Button>
     </form>
