@@ -1,6 +1,8 @@
 package edu.nus.market.service;
 
 import edu.nus.market.Security.JwtTokenProvider;
+import edu.nus.market.Security.PasswordHasher;
+import edu.nus.market.Security.SaltGenerator;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
 import io.jsonwebtoken.Jwts;
@@ -9,6 +11,7 @@ import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import io.jsonwebtoken.JwtBuilder;
@@ -26,6 +29,12 @@ public class AccountServiceImpl implements AccountService{
 
     @Resource
     JwtTokenProvider jwtTokenProvider;
+
+    @Resource
+    SaltGenerator saltGenerator;
+
+    @Resource
+    PasswordHasher passwordHasher;
 
     @Override
     public Account getMyAccount(int id) {
@@ -45,12 +54,9 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg("This email is already registered."));
 
         else {
-            SecureRandom random = new SecureRandom();
-            byte[] salt = new byte[16];
-            // depending on the length we wish
-            random.nextBytes(salt);
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            String passwordHash = passwordEncoder.encode(register.getPassword() + Base64.getEncoder().encodeToString(salt));
+            byte[] salt = saltGenerator.generateSalt();
+
+            String passwordHash = passwordHasher.hashPassword(register,salt);
 
             Account account = new Account(register);
             account.setPasswordHash(passwordHash);
