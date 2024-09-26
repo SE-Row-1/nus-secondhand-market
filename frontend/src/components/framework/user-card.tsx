@@ -2,7 +2,7 @@
 
 import type { Account } from "@/types";
 import { requests } from "@/utils/requests";
-import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
+import { LifeBuoyIcon, LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
 import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -14,6 +14,15 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { LogOutButton } from "./log-out-button";
 
 export function UserCard() {
   const { data: account } = useSWR("/auth/me", requests.get<Account>, {
@@ -47,6 +56,8 @@ export function UserCard() {
     );
   }
 
+  const nickname = account.nickname ?? account.email.replace(/@.+$/, "");
+
   return (
     <div className="relative self-stretch flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card hover:bg-secondary transition-colors">
       <Avatar className="size-8 lg:size-10">
@@ -56,16 +67,27 @@ export function UserCard() {
         </AvatarFallback>
       </Avatar>
       <div className="grow">
-        <p className="font-medium text-sm lg:text-base">
-          {account.nickname ?? account.email.replace("@u.nus.edu", "")}
-        </p>
+        <p className="font-medium text-sm lg:text-base">{nickname}</p>
         <p className="max-w-32 lg:max-w-40 text-xs lg:text-sm text-muted-foreground overflow-hidden whitespace-nowrap text-ellipsis">
           {account.email}
         </p>
       </div>
-      <Link href={"/user/" + account.id} className="absolute inset-0">
-        <span className="sr-only">Visit profile</span>
-      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="absolute inset-0">
+          <span className="sr-only">Open user menu</span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/support">
+              <LifeBuoyIcon className="size-4 mr-2" />
+              Support
+            </Link>
+          </DropdownMenuItem>
+          <LogOutButton />
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
