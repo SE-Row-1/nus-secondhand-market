@@ -11,14 +11,15 @@ public class Account {
     int id;
     String email;
     String nickname;
-    String passwordHash;
-    String passwordSalt;
     String avatarUrl;
     int departmentId;
     String phone;
     String preferredCurrency;
+
     String createdAt;
     String deletedAt;
+    String passwordHash;
+    String passwordSalt;
 
     public Account(Register register){
         this.email = register.getEmail();

@@ -51,6 +51,7 @@ public class AccountServiceImpl implements AccountService{
             random.nextBytes(salt);
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String passwordHash = passwordEncoder.encode(register.getPassword() + Base64.getEncoder().encodeToString(salt));
+
             Account account = new Account(register);
             account.setPasswordHash(passwordHash);
             account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
