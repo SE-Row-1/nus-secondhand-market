@@ -58,10 +58,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download EC2 Public IP Artifact
-        uses: actions/download-artifact@v4
+        uses: dawidd6/action-download-artifact@v6
         with:
-          name: ec2-public-ip
-          path: terraform
+          workflow_search: true
+          path: terraform/
 
       - name: Read EC2 Public IP
         id: read_ip
