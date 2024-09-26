@@ -1,9 +1,10 @@
 "use client";
 
-import { useGetRequest } from "@/hooks/use-request";
 import type { Account } from "@/types";
+import { requests } from "@/utils/requests";
 import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
+import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import {
@@ -15,7 +16,7 @@ import {
 } from "../ui/card";
 
 export function UserCard() {
-  const { data: account } = useGetRequest<Account>("/auth/me");
+  const { data: account } = useSWR("/auth/me", requests.get<Account>);
 
   if (!account) {
     return (

@@ -3,12 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePostRequest } from "@/hooks/use-request";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
+import { requests } from "@/utils/requests";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent } from "react";
+import useSWRMutation from "swr/mutation";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -31,18 +32,27 @@ const formSchema = v.object({
 export function RegisterForm() {
   const { toast } = useToast();
 
-  const { trigger, isMutating } = usePostRequest<
-    { email: string; password: string },
-    Account
-  >("/auth/me", {
-    onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: error.message,
-      });
+  const { trigger, isMutating } = useSWRMutation<
+    Account,
+    Error,
+    string,
+    { email: string; password: string }
+  >(
+    "/auth/me",
+    async (endpoint, { arg }) => {
+      return await requests.post<Account>(endpoint, arg);
     },
-  });
+    {
+      throwOnError: false,
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Registration failed",
+          description: error.message,
+        });
+      },
+    },
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
