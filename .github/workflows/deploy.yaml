@@ -39,15 +39,18 @@ jobs:
           terraform plan
           terraform apply -auto-approve
 
-      - name: Get EC2 Public IP and Save Artifact
+      - name: Get Terraform Outputs and Save Artifact
         run: |
           cd terraform/
           PUBLIC_IP=$(terraform output -raw public_ip)
-          echo "EC2 Public IP: $PUBLIC_IP"
+          RDS_ENDPOINT=$(terraform output -raw db_instance_endpoint)
+          RDS_PASSWORD=$(terraform output -raw db_instance_password)
           echo $PUBLIC_IP > ec2_public_ip.txt
+          echo $RDS_ENDPOINT > rds_endpoint.txt
+          echo $RDS_PASSWORD > rds_password.txt
 
-      - name: Upload EC2 Public IP as Artifact
+      - name: Upload Outputs as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ec2-public-ip
-          path: terraform/ec2_public_ip.txt
+          name: terraform-outputs
+          path: terraform/*.txt

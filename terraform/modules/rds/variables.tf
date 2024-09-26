@@ -4,13 +4,6 @@ variable "db_name" {
   default     = "secondhandmarket"
 }
 
-variable "db_password" {
-  description = "RDS database password"
-  type        = string
-  default     = "password"
-  sensitive   = "true"
-}
-
 variable "db_instance_class" {
   description = "RDS instance class"
   type        = string
