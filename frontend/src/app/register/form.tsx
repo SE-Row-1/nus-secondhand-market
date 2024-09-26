@@ -29,12 +29,20 @@ const formSchema = v.object({
 });
 
 export function RegisterForm() {
+  const { toast } = useToast();
+
   const { trigger, isMutating } = usePostRequest<
     { email: string; password: string },
-    Account & { access_token: string }
-  >("/auth/me");
-
-  const { toast } = useToast();
+    Account
+  >("/auth/me", {
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: error.message,
+      });
+    },
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -65,11 +73,9 @@ export function RegisterForm() {
       return;
     }
 
-    const { access_token, ...account } = await trigger({ email, password });
+    const account = await trigger({ email, password });
 
     console.log(account);
-
-    localStorage.setItem("access_token", access_token);
   };
 
   return (

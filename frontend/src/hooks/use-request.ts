@@ -1,14 +1,12 @@
-import useSWR from "swr";
-import useSWRMutation from "swr/mutation";
+import useSWR, { type SWRConfiguration } from "swr";
+import useSWRMutation, { type SWRMutationConfiguration } from "swr/mutation";
 
 type Endpoint = `/${string}`;
 
 async function fetcher<T>(endpoint: Endpoint, config?: RequestInit) {
-  const url = new URL(endpoint, process.env["NEXT_PUBLIC_API_BASE_URL"]);
+  const url = process.env["NEXT_PUBLIC_API_BASE_URL"] + endpoint;
 
-  const withAccessTokenConfig = attachAccessToken(config);
-
-  const response = await fetch(url, withAccessTokenConfig);
+  const response = await fetch(url, config);
 
   if (response.status === 204) {
     return undefined as never;
@@ -23,102 +21,117 @@ async function fetcher<T>(endpoint: Endpoint, config?: RequestInit) {
   return json as T;
 }
 
-function attachAccessToken(config?: RequestInit) {
-  const accessToken = localStorage.getItem("access_token");
-
-  if (accessToken) {
-    return {
-      ...config,
-      headers: {
-        ...config?.headers,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-  }
-
-  return config;
-}
-
 export function useGetRequest<ResponseBody = unknown>(
   endpoint: Endpoint,
-  config?: RequestInit,
+  swrConfig?: SWRConfiguration<ResponseBody>,
+  fetcherConfig?: RequestInit,
 ) {
-  return useSWR(endpoint, async (endpoint) => {
-    return await fetcher<ResponseBody>(endpoint, {
-      ...config,
-      method: "GET",
-    });
-  });
+  return useSWR(
+    endpoint,
+    async (endpoint) => {
+      return await fetcher<ResponseBody>(endpoint, {
+        ...fetcherConfig,
+        method: "GET",
+      });
+    },
+    {
+      ...swrConfig,
+      throwOnError: false,
+    },
+  );
 }
 
 export function usePostRequest<RequestBody = unknown, ResponseBody = unknown>(
   endpoint: Endpoint,
-  config?: RequestInit,
+  swrConfig?: SWRMutationConfiguration<ResponseBody, Error, Endpoint>,
+  fetcherConfig?: RequestInit,
 ) {
   return useSWRMutation(
     endpoint,
     async (endpoint, { arg }: { arg: RequestBody }) => {
       return await fetcher<ResponseBody>(endpoint, {
-        ...config,
+        ...fetcherConfig,
         method: "POST",
         headers: {
-          ...config?.headers,
+          ...fetcherConfig?.headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(arg),
       });
+    },
+    {
+      ...swrConfig,
+      throwOnError: false,
     },
   );
 }
 
 export function usePutRequest<RequestBody = unknown, ResponseBody = unknown>(
   endpoint: Endpoint,
-  config?: RequestInit,
+  swrConfig?: SWRMutationConfiguration<ResponseBody, Error, Endpoint>,
+  fetcherConfig?: RequestInit,
 ) {
   return useSWRMutation(
     endpoint,
     async (endpoint, { arg }: { arg: RequestBody }) => {
       return await fetcher<ResponseBody>(endpoint, {
-        ...config,
+        ...fetcherConfig,
         method: "PUT",
         headers: {
-          ...config?.headers,
+          ...fetcherConfig?.headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(arg),
       });
+    },
+    {
+      ...swrConfig,
+      throwOnError: false,
     },
   );
 }
 
 export function usePatchRequest<RequestBody = unknown, ResponseBody = unknown>(
   endpoint: Endpoint,
-  config?: RequestInit,
+  swrConfig?: SWRMutationConfiguration<ResponseBody, Error, Endpoint>,
+  fetcherConfig?: RequestInit,
 ) {
   return useSWRMutation(
     endpoint,
     async (endpoint, { arg }: { arg: RequestBody }) => {
       return await fetcher<ResponseBody>(endpoint, {
-        ...config,
+        ...fetcherConfig,
         method: "PATCH",
         headers: {
-          ...config?.headers,
+          ...fetcherConfig?.headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(arg),
       });
+    },
+    {
+      ...swrConfig,
+      throwOnError: false,
     },
   );
 }
 
 export function useDeleteRequest<ResponseBody = unknown>(
   endpoint: Endpoint,
-  config?: RequestInit,
+  swrConfig?: SWRMutationConfiguration<ResponseBody, Error, Endpoint>,
+  fetcherConfig?: RequestInit,
 ) {
-  return useSWRMutation(endpoint, async (endpoint) => {
-    return await fetcher<ResponseBody>(endpoint, {
-      ...config,
-      method: "DELETE",
-    });
-  });
+  return useSWRMutation(
+    endpoint,
+    async (endpoint) => {
+      return await fetcher<ResponseBody>(endpoint, {
+        ...fetcherConfig,
+        method: "DELETE",
+      });
+    },
+    {
+      ...swrConfig,
+      throwOnError: false,
+    },
+  );
 }
