@@ -8,6 +8,7 @@ import type { Account } from "@/types";
 import { requests } from "@/utils/requests";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import useSWRMutation from "swr/mutation";
 import * as v from "valibot";
@@ -30,19 +31,38 @@ const formSchema = v.object({
 });
 
 export function RegisterForm() {
+  const router = useRouter();
+
   const { toast } = useToast();
 
   const { trigger, isMutating } = useSWRMutation<
     Account,
     Error,
     string,
-    { email: string; password: string }
+    FormEvent<HTMLFormElement>
   >(
     "/auth/me",
-    async (endpoint, { arg }) => {
-      return await requests.post<Account>(endpoint, arg);
+    async (endpoint, { arg: event }) => {
+      event.preventDefault();
+
+      const formData = Object.fromEntries(new FormData(event.currentTarget));
+
+      const { email, password, confirmation } = v.parse(formSchema, formData);
+
+      if (password !== confirmation) {
+        throw new Error("Passwords do not match. Please double check.");
+      }
+
+      return await requests.post<Account>(endpoint, { email, password });
     },
     {
+      onSuccess: (account) => {
+        toast({
+          title: "Registration successful",
+          description: `Welcome on board, ${account.email}!`,
+        });
+        router.push("/");
+      },
       throwOnError: false,
       onError: (error) => {
         toast({
@@ -54,42 +74,8 @@ export function RegisterForm() {
     },
   );
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = Object.fromEntries(new FormData(event.currentTarget));
-
-    const { success, output, issues } = v.safeParse(formSchema, formData);
-
-    if (!success) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: issues[0].message,
-      });
-
-      return;
-    }
-
-    const { email, password, confirmation } = output;
-
-    if (password !== confirmation) {
-      toast({
-        variant: "destructive",
-        title: "Registration failed",
-        description: "Passwords do not match. Please double check.",
-      });
-
-      return;
-    }
-
-    const account = await trigger({ email, password });
-
-    console.log(account);
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4">
+    <form onSubmit={trigger} className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
