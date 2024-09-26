@@ -74,5 +74,13 @@ public class AccountServiceImpl implements AccountService{
         return ResponseEntity.status(HttpStatus.OK).header("Set-Cookie", cookie.toString()).body(account);
         }
     }
+
+    @Override
+    public ResponseEntity<Object> deleteAccountService(DelAccReq req) {
+        if(accountDao.getAccountByEmail(req.getEmail()).getId() == 0)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg("This account does not exist."));
+        accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }
 

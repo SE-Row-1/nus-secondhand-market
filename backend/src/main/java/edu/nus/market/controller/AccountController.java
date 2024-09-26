@@ -48,4 +48,14 @@ public class AccountController {
     public ResponseEntity<Object> register(@RequestBody Register register){
         return accountService.registerService(register);
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Object> deleteAccount(@RequestBody DelAccReq req){
+        return accountService.deleteAccountService(req);
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<Object> updateAccount(){
+        return null;
+    }
 }
