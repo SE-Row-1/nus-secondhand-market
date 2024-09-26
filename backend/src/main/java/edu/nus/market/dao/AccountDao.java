@@ -16,8 +16,9 @@ public interface AccountDao {
     Account getAccountByEmail(String email);
 
     @Insert("INSERT INTO account (email, nickname, avatar_url, department_Id, password_hash, password_salt, phone, preferred_currency) VALUES  " +
-        "(#{email}, #{nickname}, #{avatarUrl}, #{departmentId}, #{passwordHash}, #{passwordSalt}, #{phone}, #{preferredCurrency})")
-    void addNewAccount(Account account);
+        "(#{email}, #{nickname}, #{avatarUrl}, #{departmentId}, #{passwordHash}, #{passwordSalt}, #{phone}, #{preferredCurrency}) " +
+        "RETURNING id")
+    int addNewAccount(Account account);
 
     @Select("SELECT * FROM account WHERE id = #{id}")
     Account findById(Long id);
