@@ -22,3 +22,7 @@ module "rds" {
 module "s3" {
   source = "./modules/s3"
 }
+
+output "public_ip" {
+  value = module.ec2.public_ip
+}

@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: market
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${postgres_url}
+    username: ${postgres_username}
+    password: ${postgres_password}
