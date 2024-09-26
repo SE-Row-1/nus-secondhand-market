@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
 import { requests } from "@/utils/requests";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import useSWRMutation from "swr/mutation";
@@ -87,12 +86,7 @@ export function RegisterForm() {
         />
       </div>
       <div className="grid gap-2">
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password">Password</Label>
-          <Link href="#" className="text-sm underline">
-            Forgot your password?
-          </Link>
-        </div>
+        <Label htmlFor="password">Password</Label>
         <Input
           type="password"
           name="password"
