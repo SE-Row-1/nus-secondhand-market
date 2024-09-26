@@ -36,17 +36,19 @@ export function LoginForm() {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "/auth/token",
-    async (endpoint, { arg: event }) => {
+    "/auth/me",
+    async (_, { arg: event }) => {
       event.preventDefault();
 
       const formData = Object.fromEntries(new FormData(event.currentTarget));
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await requests.post<Account>(endpoint, { email, password });
+      return await requests.post<Account>("/auth/token", { email, password });
     },
     {
+      revalidate: false,
+      populateCache: true,
       onSuccess: (account) => {
         toast({
           title: "Login successful",
