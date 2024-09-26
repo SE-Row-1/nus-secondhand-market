@@ -5,9 +5,15 @@ on:
     branches:
       - setup-infra2
   workflow_dispatch:
+    inputs:
+      infra-deploy:
+        required: true
+        default: 'false'
+        type: boolean
 
 jobs:
   deploy:
+    if: ${{ github.event.inputs.infra-deploy == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -39,9 +45,6 @@ jobs:
           PUBLIC_IP=$(terraform output -raw public_ip)
           echo "EC2 Public IP: $PUBLIC_IP"
           echo $PUBLIC_IP > ec2_public_ip.txt
-          pwd
-          ls
-
 
       - name: Upload EC2 Public IP as Artifact
         uses: actions/upload-artifact@v4
