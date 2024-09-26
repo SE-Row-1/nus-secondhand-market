@@ -16,7 +16,9 @@ import {
 } from "../ui/card";
 
 export function UserCard() {
-  const { data: account } = useSWR("/auth/me", requests.get<Account>);
+  const { data: account } = useSWR("/auth/me", requests.get<Account>, {
+    shouldRetryOnError: false,
+  });
 
   if (!account) {
     return (

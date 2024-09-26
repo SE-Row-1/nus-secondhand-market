@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
 import { requests } from "@/utils/requests";
-import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
+import { Loader2Icon, LogInIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import useSWRMutation from "swr/mutation";
@@ -22,14 +23,9 @@ const formSchema = v.object({
     v.minLength(8, "Password should be at least 8 characters long."),
     v.maxLength(20, "Password should be at most 20 characters long."),
   ),
-  confirmation: v.pipe(
-    v.string("Password should be a text string."),
-    v.minLength(8, "Password should be at least 8 characters long."),
-    v.maxLength(20, "Password should be at most 20 characters long."),
-  ),
 });
 
-export function RegisterForm() {
+export function LoginForm() {
   const router = useRouter();
 
   const { toast } = useToast();
@@ -46,21 +42,17 @@ export function RegisterForm() {
 
       const formData = Object.fromEntries(new FormData(event.currentTarget));
 
-      const { email, password, confirmation } = v.parse(formSchema, formData);
+      const { email, password } = v.parse(formSchema, formData);
 
-      if (password !== confirmation) {
-        throw new Error("Passwords do not match. Please double check.");
-      }
-
-      return await requests.post<Account>("/auth/me", { email, password });
+      return await requests.post<Account>("/auth/token", { email, password });
     },
     {
       revalidate: false,
       populateCache: true,
       onSuccess: (account) => {
         toast({
-          title: "Registration successful",
-          description: `Welcome on board, ${account.email}!`,
+          title: "Login successful",
+          description: `Welcome back, ${account.nickname ?? account.email}!`,
         });
         router.push("/");
       },
@@ -68,7 +60,7 @@ export function RegisterForm() {
       onError: (error) => {
         toast({
           variant: "destructive",
-          title: "Registration failed",
+          title: "Login failed",
           description: error.message,
         });
       },
@@ -88,32 +80,21 @@ export function RegisterForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          type="password"
-          name="password"
-          required
-          placeholder="8-20 characters"
-          id="password"
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="confirmation">Confirm password</Label>
-        <Input
-          type="password"
-          name="confirmation"
-          required
-          placeholder="Type your password again"
-          id="confirmation"
-        />
+        <div className="flex justify-between items-center">
+          <Label htmlFor="password">Password</Label>
+          <Link href="#" className="text-sm underline">
+            Forgot your password?
+          </Link>
+        </div>
+        <Input type="password" name="password" required id="password" />
       </div>
       <Button type="submit" disabled={isMutating} className="w-full">
         {isMutating ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
-          <UserRoundPlusIcon className="size-4 mr-2" />
+          <LogInIcon className="size-4 mr-2" />
         )}
-        Register
+        Log in
       </Button>
     </form>
   );
