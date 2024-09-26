@@ -2,18 +2,11 @@
 
 import type { Account } from "@/types";
 import { requests } from "@/utils/requests";
-import { LifeBuoyIcon, LogInIcon, UserRoundPlusIcon } from "lucide-react";
+import { LifeBuoyIcon } from "lucide-react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import useSWR from "swr";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,36 +17,17 @@ import {
 } from "../ui/dropdown-menu";
 import { LogOutButton } from "./log-out-button";
 
-export function UserCard() {
+type Props = {
+  fallback: ReactNode;
+};
+
+export function UserCard({ fallback }: Props) {
   const { data: account } = useSWR("/auth/me", requests.get<Account>, {
     shouldRetryOnError: false,
   });
 
   if (!account) {
-    return (
-      <Card className="self-stretch md:mt-4">
-        <CardHeader>
-          <CardTitle>Join us now</CardTitle>
-          <CardDescription>
-            Find your counterparty, and communicate efficiently.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <Button variant="secondary" size="sm" className="w-full" asChild>
-            <Link href="/login">
-              <LogInIcon className="size-4 mr-2" />
-              Login
-            </Link>
-          </Button>
-          <Button size="sm" className="w-full" asChild>
-            <Link href="/register">
-              <UserRoundPlusIcon className="size-4 mr-2" />
-              Register
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-    );
+    return fallback;
   }
 
   const nickname = account.nickname ?? account.email.replace(/@.+$/, "");
