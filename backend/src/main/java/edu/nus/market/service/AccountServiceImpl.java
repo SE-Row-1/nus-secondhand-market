@@ -48,14 +48,14 @@ public class AccountServiceImpl implements AccountService{
     public ResponseEntity loginService(LoginReq loginReq){
         Account account = accountDao.getAccountByEmail(loginReq.getEmail());
         if(account == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg("This account does not exist."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         else{
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             if (passwordEncoder.matches(loginReq.getPassword() + account.getPasswordSalt(), account.getPasswordHash())){
                 return ResponseEntity.status(HttpStatus.OK).body(account);
             }
             else{
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg("Wrong password. Please try again."));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
             }
         }
     }
@@ -65,7 +65,7 @@ public class AccountServiceImpl implements AccountService{
 
 
         if(accountDao.getAccountByEmail(register.getEmail()) != null)
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg("This email is already registered."));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
 
         else {
             byte[] salt = saltGenerator.generateSalt();
@@ -94,7 +94,7 @@ public class AccountServiceImpl implements AccountService{
         System.out.println(accountDao.getAccountByEmail(req.getEmail()));
         if(accountDao.getAccountByEmail(req.getEmail()) == null)
 
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg("This account does not exist."));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
