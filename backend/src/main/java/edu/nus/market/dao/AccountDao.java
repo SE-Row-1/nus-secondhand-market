@@ -5,6 +5,7 @@ import edu.nus.market.pojo.Register;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 
@@ -31,4 +32,8 @@ public interface AccountDao {
 
     @Delete("DELETE FROM account WHERE id = #{id}")
     void deleteAccount(int id);
+
+    @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id}" +
+        "RETURNING id")
+    int updatePassword(int id, String passwordHash, String passwordSalt);
 }

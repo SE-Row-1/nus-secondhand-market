@@ -34,6 +34,15 @@ public class AccountController {
         return null;
     }
 
+    @PatchMapping("/token")
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ResetPasswordReq resetPasswordReq, BindingResult bindingResult){
+        //forget password and reset
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        return accountService.resetPasswordService(resetPasswordReq);
+    }
+
 
     @GetMapping("/me")
     public Account getMyProfile(){

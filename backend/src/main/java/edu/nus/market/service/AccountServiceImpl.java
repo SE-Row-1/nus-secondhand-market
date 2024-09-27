@@ -43,7 +43,12 @@ public class AccountServiceImpl implements AccountService{
     }
 
 
-
+    /**
+     *
+     * @param loginReq
+     * @return ResponseEntity
+     * @author jyf
+     */
     @Override
     public ResponseEntity loginService(LoginReq loginReq){
         Account account = accountDao.getAccountByEmail(loginReq.getEmail());
@@ -60,18 +65,21 @@ public class AccountServiceImpl implements AccountService{
         }
     }
 
+    /**
+     *
+     * @param register
+     * @return ResponseEntity
+     * @author jyf
+     */
     @Override
     public ResponseEntity<Object> registerService(Register register){
-
-
-        if(accountDao.getAccountByEmail(register.getEmail()) != null)
+        if(accountDao.getAccountByEmail(register.getEmail()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
-
+        }
         else {
             byte[] salt = saltGenerator.generateSalt();
-
-            String passwordHash = passwordHasher.hashPassword(register,salt);
-
+            String passwordHash = passwordHasher.hashPassword(register.getPassword(),salt);
+            // generate salt and hash the password
             Account account = new Account(register);
             account.setPasswordHash(passwordHash);
             account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
@@ -85,6 +93,7 @@ public class AccountServiceImpl implements AccountService{
                 .maxAge(7 * 24 * 60 * 60)         // 1 week
                 .sameSite("Strict")
                 .build();
+            // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(account);
         }
     }
@@ -97,6 +106,30 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    /**
+     *
+     * @param resetPasswordReq
+     * @return ResponseEntity
+     * @author jyf
+     */
+    @Override
+    public ResponseEntity<Object> resetPasswordService(ResetPasswordReq resetPasswordReq){
+        Account account = accountDao.getAccountByEmail(resetPasswordReq.getEmail());
+        if(account == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+        }
+        else{
+            // TODO: use email to do verification
+
+            byte[] salt = saltGenerator.generateSalt();
+            String passwordHash = passwordHasher.hashPassword(resetPasswordReq.getNewPassword(),salt);
+            // generate salt and hash the password
+            int accountId = accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
+            return ResponseEntity.status(HttpStatus.OK).body("");
+        }
+
     }
 }
 

@@ -9,10 +9,10 @@ import java.util.Base64;
 @Component
 public class PasswordHasher {
 
-    public String hashPassword(Register register, byte[] salt){
+    public String hashPassword(String password, byte[] salt){
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String passwordHash = passwordEncoder.encode(register.getPassword() + Base64.getEncoder().encodeToString(salt));
+        String passwordHash = passwordEncoder.encode(password + Base64.getEncoder().encodeToString(salt));
 
         return passwordHash;
     }
