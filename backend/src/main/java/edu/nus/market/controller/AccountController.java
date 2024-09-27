@@ -6,12 +6,14 @@ import edu.nus.market.service.AccountService;
 import edu.nus.market.service.AccountServiceImpl;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.validation.Valid;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,12 +42,18 @@ public class AccountController {
 
 
     @PostMapping("/token")
-    public ResponseEntity<Object> login(@RequestBody() LoginReq loginReq){
+    public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
         return accountService.loginService(loginReq);
     }
 
     @PostMapping("/me")
-    public ResponseEntity<Object> register(@RequestBody Register register){
+    public ResponseEntity<Object> register(@Valid @RequestBody Register register, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
         return accountService.registerService(register);
     }
 

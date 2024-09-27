@@ -44,7 +44,7 @@ class MarketApplicationTests {
         register.setPassword("12345678");
         register.setDepartmentId(1);
 
-        assert (accountController.register(register).getStatusCode().equals(HttpStatusCode.valueOf(201)));
+        assert (accountService.registerService(register).getStatusCode().equals(HttpStatusCode.valueOf(201)));
     }
 
     @Test
@@ -53,7 +53,7 @@ class MarketApplicationTests {
         register.setEmail("e1351826@u.nus.edu");
         register.setPassword("12345678");
         register.setDepartmentId(1);
-        assert (accountController.register(register).equals(ResponseEntity.status(HttpStatus.CONFLICT).
+        assert (accountService.registerService(register).equals(ResponseEntity.status(HttpStatus.CONFLICT).
             body(new ErrorMsg("This email is already registered."))));
     }
 
@@ -63,7 +63,7 @@ class MarketApplicationTests {
         loginReq.setEmail("e1351826@u.nus.edu");
         loginReq.setPassword("12345678");
 
-        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(200)));
+        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(200)));
     }
 
     @Test
@@ -72,7 +72,7 @@ class MarketApplicationTests {
         loginReq.setEmail("e1351826@u.nus.edu");
         loginReq.setPassword("0");
 
-        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(401)));
+        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(401)));
     }
 
     @Test
@@ -81,6 +81,6 @@ class MarketApplicationTests {
         loginReq.setEmail("e1351856@u.nus.edu");
         loginReq.setPassword("12345678");
 
-        assert (accountController.login(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(404)));
+        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(404)));
     }
 }
