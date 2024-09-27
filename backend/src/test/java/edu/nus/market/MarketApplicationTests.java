@@ -1,5 +1,6 @@
 package edu.nus.market;
 
+import edu.nus.market.Security.JwtTokenProvider;
 import edu.nus.market.controller.AccountController;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.dao.DepartmentDao;
@@ -82,5 +83,12 @@ class MarketApplicationTests {
         loginReq.setPassword("12345678");
 
         assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(404)));
+    }
+
+    @Test
+    void testTokenEncoderandDecoder(){
+        String userid = "15";
+        String token = JwtTokenProvider.generateAccessToken(userid);
+        assert (userid.equals(JwtTokenProvider.decodeAccessToken(token)));
     }
 }

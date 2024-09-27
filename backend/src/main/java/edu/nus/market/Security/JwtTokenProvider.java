@@ -1,20 +1,22 @@
 package edu.nus.market.Security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.security.SignatureException;
 import java.util.Base64;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
-    private final String secretKey = generateSecretKey(); // 加密密钥
-    private final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
+    private static final String secretKey = generateSecretKey(); // 加密密钥
+    private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
-    public String generateAccessToken(String userid){
+    public static String generateAccessToken(String userid){
         return Jwts.builder()
             .setSubject(userid)
             .setIssuedAt(new Date())//登录时间
@@ -32,7 +34,21 @@ public class JwtTokenProvider {
         }
     }
 
-    public String generateSecretKey(){
+    public static String decodeAccessToken(String token) {
+        try {
+            // decode JWT
+            Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+
+            return claims.getSubject();
+        } catch (Exception e) {
+            throw new RuntimeException("Token decoding failed", e);
+        }
+    }
+
+    public static String generateSecretKey(){
         byte[] randomBytes = new byte[32];
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomBytes);
