@@ -2,52 +2,31 @@
 
 db.createCollection("items");
 
-const departments = [
-  { id: 1, acronym: "SOC", name: "School of Computing" },
-  { id: 2, acronym: "AS", name: "Faculty of Arts and Social Sciences" },
-  { id: 3, acronym: "ISS", name: "Institute of Systems Science" },
-];
-
 const accounts = [
   {
     id: 1,
-    email: "john.doe@u.nus.edu",
-    phone: "+65 8123 4567",
     nickname: "Johnny",
     avatar_url: "https://avatars.githubusercontent.com/u/78269445?v=4",
-    department: departments[0],
   },
   {
     id: 2,
-    email: "jane.smith@u.nus.edu",
-    phone: "+65 8124 5678",
     nickname: "JaneS",
     avatar_url: "https://avatars.githubusercontent.com/u/69978374?v=4",
-    department: departments[1],
   },
   {
     id: 3,
-    email: "alex.lee@u.nus.edu",
-    phone: "+65 8125 6789",
     nickname: "AlexL",
     avatar_url: "https://avatars.githubusercontent.com/u/13389461?v=4",
-    department: departments[2],
   },
   {
     id: 4,
-    email: "michael.brown@u.nus.edu",
-    phone: "+65 8126 7890",
     nickname: "MikeB",
     avatar_url: "https://avatars.githubusercontent.com/u/60336739?v=4",
-    department: departments[0],
   },
   {
     id: 5,
-    email: "emily.jones@u.nus.edu",
-    phone: "+65 8127 8901",
     nickname: "EmJ",
     avatar_url: "https://avatars.githubusercontent.com/u/83934144?v=4",
-    department: departments[1],
   },
 ];
 
@@ -151,7 +130,7 @@ const items = [
     deleted_at: null,
   },
   {
-    id: 11,
+    id: "f15af22d-a1ea-4b47-9b14-bf1f59bc63aa",
     type: "pack",
     seller: accounts[2],
     name: "Give back to the community",
