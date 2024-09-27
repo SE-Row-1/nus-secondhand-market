@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 public interface AccountService {
     Account getMyAccount(int id);
 
-    ResponseEntity<Object> resetPasswordService(ResetPasswordReq resetPasswordReq);
+    ResponseEntity<Object> forgotPasswordService(ForgotPasswordReq forgotPasswordReq);
 
     ResponseEntity<Object> loginService(LoginReq req);
 

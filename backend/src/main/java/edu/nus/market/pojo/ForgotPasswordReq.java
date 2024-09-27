@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResetPasswordReq {
+public class ForgotPasswordReq {
     @Email
     String email;
 

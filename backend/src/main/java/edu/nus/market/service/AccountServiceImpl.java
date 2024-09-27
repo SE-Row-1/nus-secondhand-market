@@ -5,22 +5,14 @@ import edu.nus.market.Security.PasswordHasher;
 import edu.nus.market.Security.SaltGenerator;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import io.jsonwebtoken.JwtBuilder;
 
-import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
-import java.util.stream.DoubleStream;
 
 @Service
 public class AccountServiceImpl implements AccountService{
@@ -137,13 +129,13 @@ public class AccountServiceImpl implements AccountService{
 
     /**
      *
-     * @param resetPasswordReq
+     * @param forgotPasswordReq
      * @return ResponseEntity
      * @author jyf
      */
     @Override
-    public ResponseEntity<Object> resetPasswordService(ResetPasswordReq resetPasswordReq){
-        Account account = accountDao.getAccountByEmail(resetPasswordReq.getEmail());
+    public ResponseEntity<Object> forgotPasswordService(ForgotPasswordReq forgotPasswordReq){
+        Account account = accountDao.getAccountByEmail(forgotPasswordReq.getEmail());
         if(account == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
@@ -151,7 +143,7 @@ public class AccountServiceImpl implements AccountService{
             // TODO: use email to do verification
 
             byte[] salt = saltGenerator.generateSalt();
-            String passwordHash = passwordHasher.hashPassword(resetPasswordReq.getNewPassword(),salt);
+            String passwordHash = passwordHasher.hashPassword(forgotPasswordReq.getNewPassword(),salt);
             // generate salt and hash the password
             int accountId = accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
             return ResponseEntity.status(HttpStatus.OK).body("");
