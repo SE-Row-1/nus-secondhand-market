@@ -13,4 +13,6 @@ public interface AccountService {
     ResponseEntity<Object> registerService(Register register);
 
     ResponseEntity<Object> deleteAccountService(DelAccReq req);
+
+    ResponseEntity<Object> updatePasswordService(UpdPswReq req);
 }

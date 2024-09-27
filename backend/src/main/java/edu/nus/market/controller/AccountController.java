@@ -71,8 +71,9 @@ public class AccountController {
         return accountService.deleteAccountService(req);
     }
 
-    @PatchMapping("/me")
-    public ResponseEntity<Object> updateAccount(){
-        return null;
+    @PatchMapping("/me/psw")
+    public ResponseEntity<Object> updateAccountPsw(@RequestBody UpdPswReq req){
+        System.out.println(req);
+        return accountService.updatePasswordService(req);
     }
 }

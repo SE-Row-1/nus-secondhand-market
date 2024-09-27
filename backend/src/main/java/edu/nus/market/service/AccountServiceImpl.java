@@ -108,6 +108,33 @@ public class AccountServiceImpl implements AccountService{
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
+    @Override
+    public ResponseEntity<Object> updatePasswordService(UpdPswReq req) {// Update Password
+        Account account = accountDao.getAccountByEmail(req.getEmail());// Get Account
+        //Check if account exists
+        if(account == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+        else{
+            //check if old password matches
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            System.out.println(req.getEmail());
+            System.out.println(req);
+            if (passwordEncoder.matches(req.getOldPassword() + account.getPasswordSalt(), account.getPasswordHash())){
+                //update password
+                //generate new salt & hash
+                System.out.println("Validation Pass");
+                byte[] salt = saltGenerator.generateSalt();
+                String passwordHash = passwordHasher.hashPassword(req.getNewPassword(), salt);
+                //update account
+                accountDao.updatePassword(account.getId(), passwordHash,Base64.getEncoder().encodeToString(salt));
+                return ResponseEntity.status(HttpStatus.OK).body(account);
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
+            }
+        }
+    }
+
     /**
      *
      * @param resetPasswordReq
