@@ -1,7 +1,8 @@
+import { itemsRouter } from "@/items/router";
+import { compress } from "bun-compression";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { getConnInfo } from "hono/bun";
-import { compress } from "hono/compress";
 import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
@@ -25,6 +26,8 @@ app.use(
 
 app.use(secureHeaders());
 
-app.get("/", (context) => context.body(null));
+app.get("/healthz", (context) => context.body(null));
+
+app.route("/", itemsRouter);
 
 export default app;
