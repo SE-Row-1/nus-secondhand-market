@@ -92,10 +92,11 @@ public class AccountServiceImpl implements AccountService{
 
     @Override
     public ResponseEntity<Object> deleteAccountService(DelAccReq req) {
-        System.out.println(accountDao.getAccountByEmail(req.getEmail()));
+        //Check if account exists
         if(accountDao.getAccountByEmail(req.getEmail()) == null)
-
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+
+        //delete account
         accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
@@ -106,25 +107,19 @@ public class AccountServiceImpl implements AccountService{
         //Check if account exists
         if(account == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
-        else{
-            //check if old password matches
-            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-            System.out.println(req.getEmail());
-            System.out.println(req);
-            if (passwordEncoder.matches(req.getOldPassword() + account.getPasswordSalt(), account.getPasswordHash())){
-                //update password
-                //generate new salt & hash
-                System.out.println("Validation Pass");
-                byte[] salt = saltGenerator.generateSalt();
-                String passwordHash = passwordHasher.hashPassword(req.getNewPassword(), salt);
-                //update account
-                accountDao.updatePassword(account.getId(), passwordHash,Base64.getEncoder().encodeToString(salt));
-                return ResponseEntity.status(HttpStatus.OK).body(account);
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
-            }
-        }
+
+        //check if old password matches
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (!passwordEncoder.matches(req.getOldPassword() + account.getPasswordSalt(), account.getPasswordHash()))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
+
+        //generate new salt & hash
+        byte[] salt = saltGenerator.generateSalt();
+        String passwordHash = passwordHasher.hashPassword(req.getNewPassword(), salt);
+        //update account
+        accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
+        return ResponseEntity.status(HttpStatus.OK).body(account);
+
     }
 
     /**

@@ -20,11 +20,6 @@ public class AccountController {
     @Resource
     AccountService accountService;
 
-    @PutMapping("/me")
-    public Account updatePassword(){
-        //update
-        return null;
-    }
 
     @PatchMapping("/token")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
@@ -59,13 +54,24 @@ public class AccountController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Object> deleteAccount(@RequestBody DelAccReq req){
+    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
         return accountService.deleteAccountService(req);
     }
 
+    @PutMapping("/me")
+    public Account updateAccount(){
+        //update
+        return null;
+    }
+
     @PatchMapping("/me/psw")
-    public ResponseEntity<Object> updateAccountPsw(@RequestBody UpdPswReq req){
-        System.out.println(req);
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
         return accountService.updatePasswordService(req);
     }
 }
