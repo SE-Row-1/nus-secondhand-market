@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Docker images
         run: |
-          docker build -t z1yoon/nus-secondhand-market-frontend:latest ./frontend
+          docker build -t z1yoon/nus-secondhand-market-frontend:latest -f frontend/Dockerfile .
           docker build -t z1yoon/nus-secondhand-market-backend:latest ./backend
 
       - name: Log in to Docker Hub
