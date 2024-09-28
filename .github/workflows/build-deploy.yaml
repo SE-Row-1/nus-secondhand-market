@@ -54,6 +54,7 @@ jobs:
           aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
           aws-region: ap-southeast-1
   deploy:
+    if: ${{ github.event.inputs.deploy == 'true' }}
     runs-on: ubuntu-latest
    #needs: build
     steps:
