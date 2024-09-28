@@ -1,6 +1,6 @@
-package edu.nus.market.dao.account;
+package edu.nus.market.dao;
 
-import edu.nus.market.pojo.account.Account;
+import edu.nus.market.pojo.Account;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;

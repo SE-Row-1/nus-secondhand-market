@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.account;
+package edu.nus.market.pojo;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,11 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdPswReq {
+public class ForgotPasswordReq {
     @Email
     String email;
-    @NotBlank
-    String oldPassword;
+
     @NotBlank
     String newPassword;
 }

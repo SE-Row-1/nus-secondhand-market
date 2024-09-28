@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.account;
+package edu.nus.market.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,13 +1,13 @@
 package edu.nus.market;
 
-import edu.nus.market.pojo.account.LoginReq;
-import edu.nus.market.pojo.account.Register;
+import edu.nus.market.pojo.LoginReq;
+import edu.nus.market.pojo.Register;
 import edu.nus.market.security.JwtTokenProvider;
-import edu.nus.market.controller.account.AccountController;
-import edu.nus.market.dao.account.AccountDao;
+import edu.nus.market.controller.AccountController;
+import edu.nus.market.dao.AccountDao;
 import edu.nus.market.dao.DepartmentDao;
 import edu.nus.market.pojo.*;
-import edu.nus.market.service.account.AccountService;
+import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,9 +1,8 @@
-package edu.nus.market.controller.account;
+package edu.nus.market.controller;
 
-import edu.nus.market.dao.account.AccountDao;
+import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
-import edu.nus.market.pojo.account.*;
-import edu.nus.market.service.account.AccountService;
+import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

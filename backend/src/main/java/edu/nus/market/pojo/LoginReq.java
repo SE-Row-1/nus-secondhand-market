@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.account;
+package edu.nus.market.pojo;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
