@@ -1,0 +1,56 @@
+# Files changed in the current commit.
+# For example, "frontend/src/app/page.tsx".
+changed_files=$(git diff --cached --name-only)
+
+# Target directories to run pre-commit hooks in.
+# For example, "frontend".
+# A directory is qualified as a target, if it meets the following conditions:
+# 1. It contains at least one changed file.
+# 2. It contains a ".git-hooks/pre-commit" file.
+declare -A target_dirs
+
+# Find all such target directories, by traversing up from every changed file,
+# until the nearest ".git-hooks/pre-commit" file is found.
+for file in $changed_files; do
+  dir=$(dirname "$file")
+  while [[ "$dir" != "." && "$dir" != "/" ]]; do
+    if [[ -f "$dir/.git-hooks/pre-commit" ]]; then
+      target_dirs["$dir"]=true
+      break
+    fi
+    dir=$(dirname "$dir")
+  done
+done
+
+target_dirs_total=${#target_dirs[@]}
+
+# If no target directory is found, skip the hook.
+if [[ $target_dirs_total -eq 0 ]]; then
+  echo "[pre-commit] No hook is triggered."
+  echo ""
+  exit 0
+fi
+
+# Otherwise, run the pre-commit commands in every target directory.
+echo "[pre-commit] $target_dirs_total hook(s) to trigger."
+echo ""
+
+for dir in "${!target_dirs[@]}"; do
+  echo "[pre-commit $dir] Start."
+
+  (cd "$dir" && bash .git-hooks/pre-commit)
+
+  # Failure of any hook will abort the current commit.
+  if [[ $? -ne 0 ]]; then
+    echo "[pre-commit $dir] Fail with exit code $?."
+    exit $?
+  fi
+
+  echo "[pre-commit $dir] Pass."
+done
+
+# Success.
+echo ""
+echo "[pre-commit] All hooks pass."
+echo ""
+exit 0
