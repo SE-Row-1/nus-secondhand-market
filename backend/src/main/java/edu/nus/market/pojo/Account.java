@@ -3,13 +3,14 @@ package edu.nus.market.pojo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
-
     int id;
 
     String email;
@@ -47,4 +48,5 @@ public class Account {
         this.phone = register.getPhone();
         this.preferredCurrency = register.getPreferredCurrency();
     }
+
 }

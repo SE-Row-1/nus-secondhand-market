@@ -1,5 +1,4 @@
 package edu.nus.market.service;
-
 import edu.nus.market.security.JwtTokenProvider;
 import edu.nus.market.security.PasswordHasher;
 import edu.nus.market.security.SaltGenerator;
@@ -33,7 +32,6 @@ public class AccountServiceImpl implements AccountService{
     public Account getMyAccount(int id) {
         return accountDao.getAccountById(id);
     }
-
 
     /**
      *
@@ -146,4 +144,3 @@ public class AccountServiceImpl implements AccountService{
 
     }
 }
-

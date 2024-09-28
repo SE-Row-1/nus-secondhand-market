@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 
+
 import edu.nus.market.pojo.*;
 import org.springframework.http.ResponseEntity;
 
@@ -15,4 +16,5 @@ public interface AccountService {
     ResponseEntity<Object> deleteAccountService(DelAccReq req);
 
     ResponseEntity<Object> updatePasswordService(UpdPswReq req);
+
 }

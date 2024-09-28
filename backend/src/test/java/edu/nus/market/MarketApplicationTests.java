@@ -15,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
+
 @SpringBootTest
 class MarketApplicationTests {
+
 
     @Resource
     AccountDao accountDao;
@@ -90,4 +92,5 @@ class MarketApplicationTests {
         String token = JwtTokenProvider.generateAccessToken(userid);
         assert (userid.equals(JwtTokenProvider.decodeAccessToken(token)));
     }
+
 }

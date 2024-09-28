@@ -1,4 +1,3 @@
-# shared
 .idea/
 .vscode/
 logs/
@@ -6,15 +5,3 @@ temp/
 *.log
 .DS_Store
 *.pem
-
-# backend
-
-# frontend
-.next/
-coverage/
-node_modules/
-.env*
-!.env.example
-next-env.d.ts
-*.tsbuildinfo
-*.tgz

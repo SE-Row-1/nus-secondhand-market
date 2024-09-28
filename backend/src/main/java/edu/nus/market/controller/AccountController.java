@@ -1,6 +1,7 @@
 package edu.nus.market.controller;
 
 import edu.nus.market.dao.AccountDao;
+
 import edu.nus.market.pojo.*;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+
 public class AccountController {
 
     @Resource
@@ -32,9 +34,11 @@ public class AccountController {
 
 
     @GetMapping("/me")
+
     public Account getMyProfile(){
         return accountService.getMyAccount(1);
     }
+
 
 
     @PostMapping("/token")
@@ -74,4 +78,5 @@ public class AccountController {
         }
         return accountService.updatePasswordService(req);
     }
+
 }

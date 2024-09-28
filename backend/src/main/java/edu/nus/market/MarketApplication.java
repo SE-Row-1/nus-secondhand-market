@@ -5,7 +5,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+
 @MapperScan(basePackages = "edu.nus.market.dao")
+
 public class MarketApplication {
 
 	public static void main(String[] args) {
