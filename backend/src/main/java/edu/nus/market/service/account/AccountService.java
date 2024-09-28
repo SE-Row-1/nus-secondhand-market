@@ -1,6 +1,6 @@
-package edu.nus.market.service;
+package edu.nus.market.service.account;
 
-import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.account.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AccountService {

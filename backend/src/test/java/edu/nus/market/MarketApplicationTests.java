@@ -1,20 +1,19 @@
 package edu.nus.market;
 
-import edu.nus.market.Security.JwtTokenProvider;
-import edu.nus.market.controller.AccountController;
-import edu.nus.market.dao.AccountDao;
+import edu.nus.market.pojo.account.LoginReq;
+import edu.nus.market.pojo.account.Register;
+import edu.nus.market.security.JwtTokenProvider;
+import edu.nus.market.controller.account.AccountController;
+import edu.nus.market.dao.account.AccountDao;
 import edu.nus.market.dao.DepartmentDao;
 import edu.nus.market.pojo.*;
-import edu.nus.market.service.AccountService;
+import edu.nus.market.service.account.AccountService;
 import jakarta.annotation.Resource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-
-import java.sql.SQLOutput;
 
 @SpringBootTest
 class MarketApplicationTests {

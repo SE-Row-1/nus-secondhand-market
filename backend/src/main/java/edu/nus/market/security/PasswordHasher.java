@@ -1,6 +1,5 @@
-package edu.nus.market.Security;
+package edu.nus.market.security;
 
-import edu.nus.market.pojo.Register;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

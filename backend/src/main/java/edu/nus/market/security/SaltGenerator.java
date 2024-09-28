@@ -1,4 +1,4 @@
-package edu.nus.market.Security;
+package edu.nus.market.security;
 
 import org.springframework.stereotype.Component;
 

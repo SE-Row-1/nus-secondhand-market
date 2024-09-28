@@ -1,13 +1,11 @@
-package edu.nus.market.Security;
+package edu.nus.market.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
-import java.security.SignatureException;
 import java.util.Base64;
 import java.util.Date;
 

@@ -1,9 +1,10 @@
-package edu.nus.market.service;
+package edu.nus.market.service.account;
 
-import edu.nus.market.Security.JwtTokenProvider;
-import edu.nus.market.Security.PasswordHasher;
-import edu.nus.market.Security.SaltGenerator;
-import edu.nus.market.dao.AccountDao;
+import edu.nus.market.pojo.account.*;
+import edu.nus.market.security.JwtTokenProvider;
+import edu.nus.market.security.PasswordHasher;
+import edu.nus.market.security.SaltGenerator;
+import edu.nus.market.dao.account.AccountDao;
 import edu.nus.market.pojo.*;
 import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
