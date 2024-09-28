@@ -1,4 +1,5 @@
 import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
@@ -24,7 +25,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <head>
         <ThemeInitializer />
       </head>
-      <body>
+      <body className="bg-background font-sans text-foreground antialiased">
         <div className="hidden md:block">
           <Sidebar />
         </div>
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <Header />
         </div>
         <main className="md:pl-56 lg:pl-72">{children}</main>
+        <Toaster />
       </body>
     </html>
   );

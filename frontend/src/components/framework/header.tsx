@@ -1,6 +1,7 @@
 import { MenuIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import { JoinNowCard } from "./join-now-card";
 import { Logo } from "./logo";
 import { Nav } from "./nav";
 import { ThemeToggle } from "./theme-toggle";
@@ -20,7 +21,7 @@ export function Header() {
           <Logo />
           <Nav />
           <ThemeToggle />
-          <UserCard user={null} />
+          <UserCard fallback={<JoinNowCard />} />
         </SheetContent>
       </Sheet>
       <Logo />
