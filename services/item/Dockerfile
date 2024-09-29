@@ -20,6 +20,4 @@ WORKDIR /app
 
 COPY --from=build /app/dist/index.js .
 
-EXPOSE ${PORT}
-
 CMD ["bun", "index.js"]
