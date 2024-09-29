@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "start": "bun run src/index.ts"
+    "build": "bun build src/index.ts --outdir=dist --target=bun --minify",
+    "start": "bun dist/index.js"
   },
   "dependencies": {
     "bun-compression": "^0.0.4",
