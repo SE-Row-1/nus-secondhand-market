@@ -36,11 +36,9 @@ export function DeleteAccountCard() {
           caution.
         </CardDescription>
       </CardHeader>
-      <form>
-        <CardFooter className="border-t px-6 py-4">
-          <DeleteAccountDialog />
-        </CardFooter>
-      </form>
+      <CardFooter className="border-t px-6 py-4">
+        <DeleteAccountDialog />
+      </CardFooter>
     </Card>
   );
 }
