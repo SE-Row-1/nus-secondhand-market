@@ -67,6 +67,7 @@ jobs:
         with:
           workflow: deploy.yaml
           workflow_search: false
+          path: terraform/terraform-outputs
 
       - name: Read
         id: read_info
