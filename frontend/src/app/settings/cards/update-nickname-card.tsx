@@ -32,7 +32,7 @@ export function UpdateNicknameCard() {
           />
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button>
+          <Button type="submit">
             <SaveIcon className="size-4 mr-2" />
             Save
           </Button>
