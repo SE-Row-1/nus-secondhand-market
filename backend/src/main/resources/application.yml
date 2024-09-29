@@ -6,7 +6,7 @@ spring:
 
   datasource:
     driverClassName: org.postgresql.Driver
-    url: ${POSTGRES_URL}
+    url: jdbc:postgresql://${POSTGRES_URL}/nshm
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
 
