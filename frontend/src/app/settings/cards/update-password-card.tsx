@@ -40,7 +40,7 @@ export function UpdatePasswordCard() {
             name="confirm_password"
             required
             placeholder="Confirm new password"
-            id="new-password"
+            id="confirm-password"
           />
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
