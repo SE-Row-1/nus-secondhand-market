@@ -65,8 +65,8 @@ jobs:
       - name: Download Outputs Artifact
         uses: dawidd6/action-download-artifact@v6
         with:
-          workflow_search: true
-          path: terraform/
+          workflow: deploy.yaml
+          workflow_search: false
 
       - name: Read
         id: read_info
