@@ -1,13 +1,27 @@
 import { itemsController } from "@/items/controller";
-import { rateLimit } from "@/middleware/rate-limit";
 import { compress } from "bun-compression";
 import { Hono } from "hono";
+import { rateLimiter } from "hono-rate-limiter";
+import { getConnInfo } from "hono/bun";
+import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 
 const app = new Hono();
 
-app.use(compress(), logger(), rateLimit(), secureHeaders());
+app.use(
+  compress(),
+  logger(),
+  rateLimiter({
+    windowMs: 1000 * 60,
+    limit: 100,
+    keyGenerator: (context) =>
+      getConnInfo(context).remote.address ??
+      getCookie(context, "access_token") ??
+      "anonymous",
+  }),
+  secureHeaders(),
+);
 
 app.get("/healthz", (context) => context.body(null));
 
