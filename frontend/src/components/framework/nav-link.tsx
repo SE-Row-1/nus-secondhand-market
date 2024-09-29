@@ -12,7 +12,7 @@ type Props = PropsWithChildren<{
 export function NavLink({ children, href }: Props) {
   const pathname = usePathname();
 
-  const isActive = pathname.startsWith(href);
+  const isActive = href === "/" ? pathname === href : pathname.startsWith(href);
 
   return (
     <Link
