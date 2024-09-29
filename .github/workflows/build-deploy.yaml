@@ -70,7 +70,7 @@ jobs:
           path: terraform
 
       - name: Read
-        id: read_info
+        id: read_ip
         run: |
           ls -lart terraform/terraform-outputs
           PUBLIC_IP=$(cat terraform/terraform-outputs/ec2_public_ip.txt)
