@@ -1,0 +1,28 @@
+name: nshm-services-item-test
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - MONGO_DB_URI=mongodb://mongo:27017
+      - MONGO_DB_NAME=nshm
+    volumes:
+      - .:/app
+    depends_on:
+      - mongo
+    networks:
+      - bridge
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=nshm
+    volumes:
+      - ./database/dev:/docker-entrypoint-initdb.d
+    networks:
+      - bridge
+
+networks:
+  bridge:
