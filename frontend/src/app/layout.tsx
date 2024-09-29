@@ -32,7 +32,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <div className="md:hidden">
           <Header />
         </div>
-        <main className="md:pl-56 lg:pl-72">{children}</main>
+        <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">{children}</main>
         <Toaster />
       </body>
     </html>
