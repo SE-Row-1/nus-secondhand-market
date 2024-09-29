@@ -1,5 +1,7 @@
 import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
 import { Toaster } from "@/components/ui/toaster";
+import type { Account } from "@/types";
+import { ServerRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
@@ -19,7 +21,9 @@ export const metadata: Metadata = {
     "Built by NUS students and for NUS students. Buy and sell second-hand items on the platform, find your counterparty, and communicate efficiently.",
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+export default async function RootLayout({ children }: PropsWithChildren) {
+  const me = await new ServerRequester().get<Account>("/auth/me");
+
   return (
     <html lang="en" className={fontSans.variable} suppressHydrationWarning>
       <head>
@@ -27,10 +31,10 @@ export default function RootLayout({ children }: PropsWithChildren) {
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
         <div className="hidden md:block">
-          <Sidebar />
+          <Sidebar me={me} />
         </div>
         <div className="md:hidden">
-          <Header />
+          <Header me={me} />
         </div>
         <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">{children}</main>
         <Toaster />

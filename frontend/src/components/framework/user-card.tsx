@@ -18,14 +18,16 @@ import {
 import { LogOutButton } from "./log-out-button";
 
 type Props = {
+  initialAccount: Account;
   fallback: ReactNode;
 };
 
-export function UserCard({ fallback }: Props) {
+export function UserCard({ initialAccount, fallback }: Props) {
   const { data: account } = useSWR(
     "/auth/me",
     new ClientRequester().get<Account>,
     {
+      fallbackData: initialAccount,
       shouldRetryOnError: false,
     },
   );
