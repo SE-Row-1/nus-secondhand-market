@@ -14,5 +14,20 @@ services:
     ports:
       - "8081:8081"
     restart: always
-    env_file:
-      - .env
+    environment:
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/nshm
+      - POSTGRES_USERNAME=se-row-1
+      - POSTGRES_PASSWORD=lP4mh-lNnGgMe-C08E2SbQ
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=se-row-1
+      - POSTGRES_PASSWORD=lP4mh-lNnGgMe-C08E2SbQ
+      - POSTGRES_DB=nshm
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
