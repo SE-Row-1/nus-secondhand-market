@@ -1,7 +1,7 @@
 "use client";
 
 import type { Account } from "@/types";
-import { requests } from "@/utils/requests";
+import { ClientRequester } from "@/utils/requester/client";
 import { LifeBuoyIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -22,9 +22,13 @@ type Props = {
 };
 
 export function UserCard({ fallback }: Props) {
-  const { data: account } = useSWR("/auth/me", requests.get<Account>, {
-    shouldRetryOnError: false,
-  });
+  const { data: account } = useSWR(
+    "/auth/me",
+    new ClientRequester().get<Account>,
+    {
+      shouldRetryOnError: false,
+    },
+  );
 
   if (!account) {
     return fallback;

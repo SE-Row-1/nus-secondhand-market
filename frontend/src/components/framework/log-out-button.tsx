@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { requests } from "@/utils/requests";
+import { ClientRequester } from "@/utils/requester/client";
 import { Loader2Icon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import useSWRMutation from "swr/mutation";
@@ -18,7 +18,7 @@ export function LogOutButton() {
   >(
     "/auth/me",
     async () => {
-      return await requests.delete("/auth/token");
+      return await new ClientRequester().delete("/auth/token");
     },
     {
       revalidate: false,
