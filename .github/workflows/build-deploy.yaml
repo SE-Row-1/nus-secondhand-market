@@ -72,10 +72,9 @@ jobs:
       - name: Read
         id: read_info
         run: |
-          ls -arlt terraform
-          echo "test"
           ls -lart terraform/terraform-outputs
           PUBLIC_IP=$(cat terraform/terraform-outputs/ec2_public_ip.txt)
+          echo $PUBLIC_IP
           echo "::set-output name=ec2_public_ip::$PUBLIC_IP"
 
       - name: SSH into EC2 and deploy
