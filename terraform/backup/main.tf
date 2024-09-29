@@ -12,10 +12,26 @@ module "ec2" {
   vpc_security_group_id = module.vpc.security_group_id
 }
 
+module "rds" {
+  source = "./modules/rds"
+  vpc_security_group_id = module.vpc.security_group_id
+  subnet_ids = module.vpc.subnet_ids[1]
+
+}
+
 module "s3" {
   source = "./modules/s3"
 }
 
 output "public_ip" {
   value = module.ec2.public_ip
+}
+
+output "db_instance_endpoint" {
+  value = module.rds.db_instance_endpoint
+}
+
+output "db_instance_password" {
+  value = module.rds.db_instance_password
+  sensitive = true
 }
