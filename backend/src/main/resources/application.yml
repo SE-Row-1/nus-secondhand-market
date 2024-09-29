@@ -3,14 +3,12 @@ server:
 spring:
   application:
     name: market
+
   datasource:
     driverClassName: org.postgresql.Driver
-
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
-
-
 
   jackson:
     property-naming-strategy: SNAKE_CASE

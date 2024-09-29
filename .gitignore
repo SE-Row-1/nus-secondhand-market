@@ -7,3 +7,4 @@ temp/
 *.pem
 terraform.tfstate*
 terraform/.terraform
+.env
