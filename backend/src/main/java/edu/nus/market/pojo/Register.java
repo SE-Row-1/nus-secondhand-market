@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Register {
-    @Email
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     String email;
 
     String nickname;

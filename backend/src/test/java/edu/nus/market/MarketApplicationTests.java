@@ -2,7 +2,7 @@ package edu.nus.market;
 
 import edu.nus.market.pojo.LoginReq;
 import edu.nus.market.pojo.Register;
-import edu.nus.market.security.JwtTokenProvider;
+import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.controller.AccountController;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.dao.DepartmentDao;
@@ -89,8 +89,9 @@ class MarketApplicationTests {
     @Test
     void testTokenEncoderandDecoder(){
         String userid = "15";
-        String token = JwtTokenProvider.generateAccessToken(userid);
-        assert (userid.equals(JwtTokenProvider.decodeAccessToken(token)));
+      
+        String token = JwtTokenManager.generateAccessToken(userid);
+        assert (userid.equals(JwtTokenManager.decodeAccessToken(token)));
     }
 
 }
