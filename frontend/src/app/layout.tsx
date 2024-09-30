@@ -36,7 +36,9 @@ export default async function RootLayout({ children }: PropsWithChildren) {
         <div className="md:hidden">
           <Header me={me} />
         </div>
-        <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">{children}</main>
+        <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">
+          <div className="px-6 md:px-12 lg:px-24 py-4 md:py-8">{children}</div>
+        </main>
         <Toaster />
       </body>
     </html>
