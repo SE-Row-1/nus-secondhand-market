@@ -87,4 +87,9 @@ public class AccountController {
         return accountService.updatePasswordService(req);
     }
 
+    @GetMapping("/health")
+    public String checkHealth(){
+        return "ok";
+    }
+
 }
