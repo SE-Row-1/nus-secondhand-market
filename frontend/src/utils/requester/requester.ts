@@ -9,9 +9,9 @@ export abstract class Requester {
 
   protected abstract createFetcher(): Fetcher;
 
-  public async get<T>(endpoint: string, config: RequestInit = {}) {
+  public async get<T>(endpoint: string, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...config,
+      ...init,
       method: "GET",
     });
   }
@@ -19,14 +19,14 @@ export abstract class Requester {
   public async post<T>(
     endpoint: string,
     body: unknown = {},
-    config: RequestInit = {},
+    init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...config,
+      ...init,
       method: "POST",
       body: JSON.stringify(body),
       headers: {
-        ...config.headers,
+        ...init.headers,
         "Content-Type": "application/json",
       },
     });
@@ -35,14 +35,14 @@ export abstract class Requester {
   public async put<T>(
     endpoint: string,
     body: unknown = {},
-    config: RequestInit = {},
+    init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...config,
+      ...init,
       method: "PUT",
       body: JSON.stringify(body),
       headers: {
-        ...config.headers,
+        ...init.headers,
         "Content-Type": "application/json",
       },
     });
@@ -51,22 +51,22 @@ export abstract class Requester {
   public async patch<T>(
     endpoint: string,
     body: unknown = {},
-    config: RequestInit = {},
+    init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...config,
+      ...init,
       method: "PATCH",
       body: JSON.stringify(body),
       headers: {
-        ...config.headers,
+        ...init.headers,
         "Content-Type": "application/json",
       },
     });
   }
 
-  public async delete<T>(endpoint: string, config: RequestInit = {}) {
+  public async delete<T>(endpoint: string, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...config,
+      ...init,
       method: "DELETE",
     });
   }

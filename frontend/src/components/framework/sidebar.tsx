@@ -6,7 +6,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { UserCard } from "./user-card";
 
 type Props = {
-  me: Account | null;
+  me: Account | undefined;
 };
 
 export function Sidebar({ me }: Props) {
