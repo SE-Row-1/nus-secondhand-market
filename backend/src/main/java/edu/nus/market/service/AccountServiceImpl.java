@@ -1,5 +1,5 @@
 package edu.nus.market.service;
-import edu.nus.market.security.JwtTokenProvider;
+import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.PasswordHasher;
 import edu.nus.market.security.SaltGenerator;
 import edu.nus.market.dao.AccountDao;
@@ -20,7 +20,7 @@ public class AccountServiceImpl implements AccountService{
     AccountDao accountDao;
 
     @Resource
-    JwtTokenProvider jwtTokenProvider;
+    JwtTokenManager jwtTokenManager;
 
     @Resource
     SaltGenerator saltGenerator;
@@ -75,7 +75,7 @@ public class AccountServiceImpl implements AccountService{
             account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
             int accountId = accountDao.addNewAccount(account);
 
-            String accessToken = jwtTokenProvider.generateAccessToken(String.valueOf(accountId));
+            String accessToken = jwtTokenManager.generateAccessToken(String.valueOf(accountId));
             ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)
                 .secure(true)
