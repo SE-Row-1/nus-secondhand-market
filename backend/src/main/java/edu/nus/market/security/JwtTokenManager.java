@@ -52,6 +52,11 @@ public class JwtTokenManager {
         }
     }
 
+    public static String decodeCookie(String cookie) {
+        String token = cookie.split("; ")[0].split("=")[1];
+        return decodeAccessToken(token);
+    }
+
     public static String generateSecretKey(){
         byte[] randomBytes = new byte[32];
         SecureRandom secureRandom = new SecureRandom();

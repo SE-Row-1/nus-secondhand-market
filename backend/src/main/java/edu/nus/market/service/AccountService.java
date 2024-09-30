@@ -17,4 +17,6 @@ public interface AccountService {
 
     ResponseEntity<Object> updatePasswordService(UpdPswReq req);
 
+    ResponseEntity<Object> updateProfileService(UpdateProfileReq req, int id);
+
 }
