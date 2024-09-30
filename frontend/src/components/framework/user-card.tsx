@@ -25,7 +25,9 @@ type Props = {
 export function UserCard({ initialAccount, fallback }: Props) {
   const { data: account } = useSWR(
     "/auth/me",
-    new ClientRequester().get<Account>,
+    async () => {
+      return await new ClientRequester().get<Account>("/auth/me");
+    },
     {
       fallbackData: initialAccount as Account,
       shouldRetryOnError: false,
