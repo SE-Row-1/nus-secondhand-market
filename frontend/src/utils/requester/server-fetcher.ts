@@ -14,13 +14,13 @@ export class ServerFetcher implements Fetcher {
     });
 
     if (response.status === 204) {
-      return undefined as never;
+      return null as never;
     }
 
     const json = await response.json();
 
     if (!response.ok) {
-      throw new Error(json.error);
+      return null as never;
     }
 
     return json as T;

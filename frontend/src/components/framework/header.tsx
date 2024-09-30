@@ -9,7 +9,7 @@ import { ThemeToggle } from "./theme-toggle";
 import { UserCard } from "./user-card";
 
 type Props = {
-  me: Account;
+  me: Account | null;
 };
 
 export function Header({ me }: Props) {

@@ -18,7 +18,7 @@ import {
 import { LogOutButton } from "./log-out-button";
 
 type Props = {
-  initialAccount: Account;
+  initialAccount: Account | null;
   fallback: ReactNode;
 };
 
@@ -27,7 +27,7 @@ export function UserCard({ initialAccount, fallback }: Props) {
     "/auth/me",
     new ClientRequester().get<Account>,
     {
-      fallbackData: initialAccount,
+      fallbackData: (initialAccount ?? undefined) as Account,
       shouldRetryOnError: false,
     },
   );
