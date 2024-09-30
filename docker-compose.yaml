@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   frontend:
-   #build:
-   #  context: frontend
-   #  dockerfile: Dockerfile
-   #  args:
-   #    NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     image: z1yoon/nus-secondhand-market-frontend:latest
     ports:
       - "80:3000"
@@ -14,6 +14,9 @@ services:
     user: root
 
   backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
     image: z1yoon/nus-secondhand-market-backend:latest
     ports:
       - "8081:8081"
