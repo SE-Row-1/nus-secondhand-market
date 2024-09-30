@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Date;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenManager {
     private static final String secretKey = generateSecretKey(); // 加密密钥
     private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
@@ -23,13 +23,19 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    public boolean validateToken(String token) {
+    public static boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+    public static boolean validateCookie(String Cookie) {
+        // extract the access token from the cookie and validate it using validateToken method
+        String token = Cookie.split("; ")[0].split("=")[1];
+
+        return validateToken(token);
     }
 
     public static String decodeAccessToken(String token) {

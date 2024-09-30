@@ -3,6 +3,7 @@ package edu.nus.market.controller;
 import edu.nus.market.dao.AccountDao;
 
 import edu.nus.market.pojo.*;
+import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
@@ -58,9 +59,13 @@ public class AccountController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult){
+    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        //System.out.println(JwtTokenManager.decodeAccessToken(token));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         return accountService.deleteAccountService(req);
     }
@@ -72,9 +77,12 @@ public class AccountController {
     }
 
     @PatchMapping("/me/psw")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult){
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Authorization") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         return accountService.updatePasswordService(req);
     }
