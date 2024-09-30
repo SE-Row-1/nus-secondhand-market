@@ -1,5 +1,7 @@
 async function fetcher<T>(endpoint: string, config?: RequestInit) {
   const url = process.env["NEXT_PUBLIC_API_BASE_URL"] + endpoint;
+  console.log("url: ", url);
+  console.log("api_base_url: ", process.env["NEXT_PUBLIC_API_BASE_URL"]);
 
   const response = await fetch(url, config);
 

@@ -4,7 +4,7 @@ FROM node:lts-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl
 
 RUN corepack enable pnpm
 
