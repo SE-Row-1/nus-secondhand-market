@@ -19,7 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckIcon, TrashIcon, XIcon } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ClientRequester } from "@/utils/requester/client";
+import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import type { MouseEvent } from "react";
+import useSWRMutation from "swr/mutation";
 
 export function DeleteAccountCard() {
   return (
@@ -72,12 +77,58 @@ function DeleteAccountDialog() {
             <XIcon className="size-4 mr-2" />
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction>
-            <CheckIcon className="size-4 mr-2" />
-            Continue
-          </AlertDialogAction>
+          <DeleteAccountButton />
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+  );
+}
+
+function DeleteAccountButton() {
+  const router = useRouter();
+
+  const { toast } = useToast();
+
+  const { trigger, isMutating } = useSWRMutation<
+    undefined,
+    Error,
+    string,
+    MouseEvent<HTMLButtonElement>
+  >(
+    "/auth/me",
+    async () => {
+      await new ClientRequester().delete("auth/me");
+    },
+    {
+      revalidate: false,
+      populateCache: () => undefined,
+      onSuccess: () => {
+        toast({
+          title: "Account deactivated",
+          description:
+            "We are sorry to see you go. 🥲 Remember you can contact our support team to find your account back in the next 30 days!",
+        });
+        router.push("/");
+      },
+      throwOnError: false,
+      onError: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Failed to delete account",
+          description: error.message,
+        });
+      },
+    },
+  );
+
+  return (
+    <AlertDialogAction disabled={isMutating} onClick={trigger}>
+      {isMutating ? (
+        <Loader2Icon className="size-4 mr-2 animate-spin" />
+      ) : (
+        <CheckIcon className="size-4 mr-2" />
+      )}
+      Continue
+    </AlertDialogAction>
   );
 }
