@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
+  const me = await new ServerRequester().get<Account | undefined>("auth/me");
 
   return (
     <html lang="en" className={fontSans.variable} suppressHydrationWarning>

@@ -18,7 +18,7 @@ export function LogOutButton() {
   >(
     "/auth/me",
     async () => {
-      return await new ClientRequester().delete("/auth/token");
+      return await new ClientRequester().delete("auth/token");
     },
     {
       revalidate: false,

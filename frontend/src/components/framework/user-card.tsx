@@ -26,7 +26,7 @@ export function UserCard({ initialAccount, fallback }: Props) {
   const { data: account } = useSWR(
     "/auth/me",
     async () => {
-      return await new ClientRequester().get<Account>("/auth/me");
+      return await new ClientRequester().get<Account>("auth/me");
     },
     {
       fallbackData: initialAccount as Account,

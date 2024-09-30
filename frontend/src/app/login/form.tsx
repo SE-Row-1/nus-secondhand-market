@@ -44,7 +44,7 @@ export function LoginForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().post<Account>("/auth/token", {
+      return await new ClientRequester().post<Account>("auth/token", {
         email,
         password,
       });

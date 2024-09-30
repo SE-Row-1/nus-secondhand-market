@@ -52,7 +52,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await new ClientRequester().post<Account>("/auth/me", {
+      return await new ClientRequester().post<Account>("auth/me", {
         email,
         password,
       });
