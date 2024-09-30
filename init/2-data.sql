@@ -5,6 +5,8 @@ INSERT INTO department (acronym, name) VALUES
 ('DBS', 'Department of Business'),
 ('ECE', 'Electrical and Computer Engineering');
 
+-- INSERT INTO department (id, acronym, name) VALUES (0,'FAKE','School of Row 1')
+
 -- Insert initial accounts
 INSERT INTO account (email, password_hash, password_salt, nickname, avatar_url, department_id, phone, preferred_currency)
 VALUES

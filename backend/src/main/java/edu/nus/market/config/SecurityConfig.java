@@ -35,7 +35,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*"); // 允许的域名
+        configuration.addAllowedOrigin("http://localhost"); // 允许的域名"http://13.212.58.250", "http://localhost"
+        configuration.addAllowedOrigin("http://13.212.58.250");
         configuration.addAllowedMethod("GET"); // 允许的 HTTP 方法
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PUT");
