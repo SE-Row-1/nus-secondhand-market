@@ -6,10 +6,11 @@ services:
       context: frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_BASE_URL: http://backend:8081/api
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
     ports:
       - "80:3000"
     restart: always
+    user: root
 
   backend:
     image: z1yoon/nus-secondhand-market-backend:latest
@@ -25,6 +26,7 @@ services:
 
   postgres:
     image: postgres:latest
+    user: root
     ports:
       - "5432:5432"
     environment:
