@@ -18,10 +18,13 @@ const mockAccount: Account = {
   deleted_at: null,
 };
 
+const mockJwt =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzI3MjY1NTY3fQ.dsSDeoQ1Nwxi4tNWyyhM8KFiKaVxnpemMkNkLe7_Y60";
+
 export async function POST() {
   cookies().set({
     name: "access_token",
-    value: process.env["MOCK_JWT"] ?? "",
+    value: mockJwt,
     path: "/",
     domain: "localhost",
     maxAge: 60 * 60 * 24 * 7,
