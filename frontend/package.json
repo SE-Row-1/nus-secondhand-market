@@ -7,8 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc && eslint . --cache --cache-location node_modules/.cache/eslint/.eslint-cache",
-    "prepare": "cd .. && husky frontend/.husky"
+    "lint": "tsc && eslint . --cache --cache-location node_modules/.cache/eslint/.eslint-cache"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.0",
@@ -29,9 +28,6 @@
     "valibot": "^0.42.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.5.0",
-    "@commitlint/config-conventional": "^19.5.0",
-    "@commitlint/types": "^19.5.0",
     "@eslint/compat": "^1.1.1",
     "@eslint/eslintrc": "^3.1.0",
     "@types/eslint-config-prettier": "^6.11.3",
@@ -42,7 +38,6 @@
     "eslint": "^9.11.1",
     "eslint-config-next": "14.2.13",
     "eslint-config-prettier": "^9.1.0",
-    "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "shadcn": "^2.0.8",

@@ -89,6 +89,7 @@ class MarketApplicationTests {
     @Test
     void testTokenEncoderandDecoder(){
         String userid = "15";
+      
         String token = JwtTokenManager.generateAccessToken(userid);
         assert (userid.equals(JwtTokenManager.decodeAccessToken(token)));
     }

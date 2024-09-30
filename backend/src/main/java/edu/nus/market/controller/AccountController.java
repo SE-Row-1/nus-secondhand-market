@@ -91,5 +91,4 @@ public class AccountController {
     public String checkHealth(){
         return "ok";
     }
-
 }
