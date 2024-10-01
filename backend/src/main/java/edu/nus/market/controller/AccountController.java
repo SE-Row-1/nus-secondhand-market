@@ -23,16 +23,6 @@ public class AccountController {
     @Resource
     AccountService accountService;
 
-
-    @PatchMapping("/token")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
-        //forget password and reset
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.forgotPasswordService(forgotPasswordReq);
-    }
-
     @PostMapping("/token")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -87,7 +77,7 @@ public class AccountController {
         return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token));
     }
 
-    @PatchMapping("/me/psw")
+    @PatchMapping("/me/password")
     public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
@@ -96,6 +86,16 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token));
+    }
+
+
+    @PatchMapping("/me/reset-password")
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
+        //forget password and reset
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        return accountService.forgotPasswordService(forgotPasswordReq);
     }
 
     @GetMapping("/health")
