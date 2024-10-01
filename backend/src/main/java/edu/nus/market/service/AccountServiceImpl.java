@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService{
             account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
             int accountId = accountDao.addNewAccount(account);
 
-            String accessToken = jwtTokenManager.generateAccessToken(String.valueOf(accountId));
+            String accessToken = jwtTokenManager.generateAccessToken((accountId));
             ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)
                 .secure(true)
