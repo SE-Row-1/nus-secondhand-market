@@ -32,6 +32,7 @@ export function LogOutButton() {
           description: "Hope to see you again soon! 👋",
         });
         router.push("/login");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {
