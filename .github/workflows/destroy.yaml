@@ -3,7 +3,7 @@ name: Destroy Infrastructure
 on:
   push:
     branches:
-      - main
+      - setup-infra3
   workflow_dispatch:
     inputs:
       destroy:

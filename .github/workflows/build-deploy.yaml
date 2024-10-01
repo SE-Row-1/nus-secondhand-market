@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - main
+      - setup-infra3
   workflow_dispatch:
     inputs:
       build:

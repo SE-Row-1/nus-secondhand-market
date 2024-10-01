@@ -3,7 +3,7 @@ name: Provisioning Infrastructure
 on:
   push:
     branches:
-      - main
+      - setup-infra3
   workflow_dispatch:
     inputs:
       provision:
@@ -12,7 +12,7 @@ on:
         type: boolean
 
 jobs:
-  deploy:
+  provision:
     if: ${{ github.event.inputs.provision == 'true' }}
     runs-on: ubuntu-latest
     steps:
