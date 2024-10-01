@@ -78,7 +78,7 @@ public class AccountController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.updateProfileService(req, Integer.parseInt(JwtTokenManager.decodeCookie(token)));
+        return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token));
     }
 
     @PatchMapping("/me/psw")
