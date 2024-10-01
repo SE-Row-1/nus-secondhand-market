@@ -30,6 +30,12 @@ public class AccountServiceImpl implements AccountService{
     @Resource
     PasswordHasher passwordHasher;
 
+    /**
+     *
+     * @param id
+     * @return ResponseEntity
+     * @author jyf
+     */
     @Override
     public ResponseEntity<Object> getMyAccount(int id) {
         Account account = accountDao.getAccountById(id);
@@ -37,6 +43,24 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         RspAccount rspAccount = new RspAccount(account);
         return ResponseEntity.status(HttpStatus.OK).body(rspAccount);
+    }
+
+    /**
+     *
+     * @param
+     * @return ResponseEntity
+     * @author jyf
+     */
+    @Override
+    public ResponseEntity<Object> logoutService(String token){
+        ResponseCookie cookie = ResponseCookie.from("access_token", null)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(0)         // delete immediately
+            .sameSite("Strict")
+            .build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }
 
     /**
@@ -146,6 +170,7 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMsg("Failed to update profile"));
         }
     }
+
     /**
      *
      * @param forgotPasswordReq

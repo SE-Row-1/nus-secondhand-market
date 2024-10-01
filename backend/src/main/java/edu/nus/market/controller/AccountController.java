@@ -23,15 +23,6 @@ public class AccountController {
     @Resource
     AccountService accountService;
 
-    @GetMapping("/me")
-    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Set-Cookie", required = false) String token){
-        if (token == null || token.isEmpty())
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
-        }
-        return accountService.getMyAccount(JwtTokenManager.decodeCookie(token));
-    }
 
     @PatchMapping("/token")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
@@ -48,6 +39,21 @@ public class AccountController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
         return accountService.loginService(loginReq);
+    }
+
+    @DeleteMapping("/token")
+    public ResponseEntity<Object> logout(@RequestHeader(value = "Set-Cookie") String token){
+        return accountService.logoutService(token);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Set-Cookie", required = false) String token){
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        return accountService.getMyAccount(JwtTokenManager.decodeCookie(token));
     }
 
     @PostMapping("/me")
@@ -96,4 +102,5 @@ public class AccountController {
     public String checkHealth(){
         return "ok";
     }
+
 }

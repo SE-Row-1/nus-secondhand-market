@@ -19,4 +19,5 @@ public interface AccountService {
 
     ResponseEntity<Object> updateProfileService(UpdateProfileReq req, int id);
 
+    ResponseEntity<Object> logoutService(String token);
 }
