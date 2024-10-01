@@ -67,11 +67,11 @@ public class AccountController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.deleteAccountService(req);
+        return accountService.deleteAccountService(req, JwtTokenManager.decodeCookie(token));
     }
 
     @PatchMapping("/me/profile")
-    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
@@ -82,14 +82,14 @@ public class AccountController {
     }
 
     @PatchMapping("/me/psw")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Authorization") String token){
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.updatePasswordService(req);
+        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token));
     }
 
     @GetMapping("/health")

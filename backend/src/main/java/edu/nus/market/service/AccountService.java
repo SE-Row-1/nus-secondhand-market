@@ -13,9 +13,9 @@ public interface AccountService {
 
     ResponseEntity<Object> registerService(Register register);
 
-    ResponseEntity<Object> deleteAccountService(DelAccReq req);
+    ResponseEntity<Object> deleteAccountService(DelAccReq req, int id);
 
-    ResponseEntity<Object> updatePasswordService(UpdPswReq req);
+    ResponseEntity<Object> updatePasswordService(UpdPswReq req, int id);
 
     ResponseEntity<Object> updateProfileService(UpdateProfileReq req, int id);
 

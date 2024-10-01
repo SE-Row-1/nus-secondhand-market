@@ -1,4 +1,5 @@
 package edu.nus.market.service;
+import edu.nus.market.pojo.rspEntity.RspAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.PasswordHasher;
 import edu.nus.market.security.SaltGenerator;
@@ -48,7 +49,16 @@ public class AccountServiceImpl implements AccountService{
         else{
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             if (passwordEncoder.matches(loginReq.getPassword() + account.getPasswordSalt(), account.getPasswordHash())){
-                return ResponseEntity.status(HttpStatus.OK).body(account);
+                String accessToken = jwtTokenManager.generateAccessToken((account.getId()));
+                ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(7 * 24 * 60 * 60)         // 1 week
+                    .sameSite("Strict")
+                    .build();
+                // generate the JWTaccesstoken and send it to the frontend
+                return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new RspAccount(account));
             }
             else{
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
@@ -85,24 +95,24 @@ public class AccountServiceImpl implements AccountService{
                 .sameSite("Strict")
                 .build();
             // generate the JWTaccesstoken and send it to the frontend
-        return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(account);
+        return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new RspAccount(account));
         }
     }
 
     @Override
-    public ResponseEntity<Object> deleteAccountService(DelAccReq req) {
+    public ResponseEntity<Object> deleteAccountService(DelAccReq req, int id) {
         //Check if account exists
-        if(accountDao.getAccountByEmail(req.getEmail()) == null)
+        if(accountDao.getAccountById(id) == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
 
         //delete account
-        accountDao.deleteAccount(accountDao.getAccountByEmail(req.getEmail()).getId());
+        accountDao.deleteAccount(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
-    public ResponseEntity<Object> updatePasswordService(UpdPswReq req) {// Update Password
-        Account account = accountDao.getAccountByEmail(req.getEmail());// Get Account
+    public ResponseEntity<Object> updatePasswordService(UpdPswReq req, int id) {// Update Password
+        Account account = accountDao.getAccountById(id);// Get Account
         //Check if account exists
         if(account == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
@@ -117,7 +127,7 @@ public class AccountServiceImpl implements AccountService{
         String passwordHash = passwordHasher.hashPassword(req.getNewPassword(), salt);
         //update account
         accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
-        return ResponseEntity.status(HttpStatus.OK).body(account);
+        return ResponseEntity.status(HttpStatus.OK).body(new RspAccount(account));
 
     }
     public ResponseEntity<Object> updateProfileService( UpdateProfileReq req, int id) {

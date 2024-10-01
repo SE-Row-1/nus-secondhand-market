@@ -10,15 +10,15 @@ spring:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
 
+#  datasource:
+#    driverClassName: org.postgresql.Driver
+#    url: jdbc:postgresql://mrcaidev-3157.j77.aws-ap-southeast-1.cockroachlabs.cloud:26257/nshm?sslmode=verify-full
+#    username: se-row-1
+#    password: XlLOamPV43SkvjuNJUJY4A
+
   jackson:
     property-naming-strategy: SNAKE_CASE
 
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-
-currencyLayer:
-  api:
-    url: "http://apilayer.net/api/live"
-    access-key: ${CURRENCY_API_ACCESS_KEY}
-    format: "1"
