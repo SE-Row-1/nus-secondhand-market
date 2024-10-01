@@ -3,14 +3,12 @@ server:
 spring:
   application:
     name: market
+
   datasource:
     driverClassName: org.postgresql.Driver
-
-    url: ${postgres_url}
-    username: ${postgres_username}
-    password: ${postgres_password}
-
-
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
 
   jackson:
     property-naming-strategy: SNAKE_CASE
@@ -22,6 +20,5 @@ mybatis:
 currencyLayer:
   api:
     url: "http://apilayer.net/api/live"
-    access-key: "9b354492600878f1b709bd865e72ce95"
+    access-key: ${CURRENCY_API_ACCESS_KEY}
     format: "1"
-    

@@ -1,0 +1,97 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - setup-infra2
+  workflow_dispatch:
+    inputs:
+      build:
+        required: true
+        default: 'false'
+        type: boolean
+      deploy:
+        required: true
+        default: 'false'
+        type: boolean
+   #  - main
+   #paths:
+   #  - 'frontend/**'
+   #  - 'backend/**'
+
+jobs:
+  build:
+    if: ${{ github.event.inputs.build == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: z1yoon/nus-secondhand-market-frontend:latest
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: z1yoon/nus-secondhand-market-backend:latest
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+          aws-secret-access-key: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+          aws-region: ap-southeast-1
+  deploy:
+    if: ${{ github.event.inputs.deploy == 'true' }}
+    runs-on: ubuntu-latest
+   #needs: build
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Download Outputs Artifact
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow_search: true
+          path: terraform/
+
+      - name: Read
+        id: read_info
+        run: |
+          PUBLIC_IP=$(cat terraform/terraform-outputs/ec2_public_ip.txt)
+          RDS_ENDPOINT=$(cat terraform/terraform-outputs/rds_endpoint.txt)
+          RDS_PASSWORD=$(cat terraform/terraform-outputs/rds_password.txt)
+          echo "::set-output name=ec2_public_ip::$PUBLIC_IP"
+          echo "::set-output name=rds_endpoint::$RDS_ENDPOINT"
+
+      - name: SSH into EC2 and deploy
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ steps.read_ip.outputs.ec2_public_ip }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yaml"
+          target: "/home/ubuntu"
+
+      - name: SSH into EC2 to run Docker Compose
+        run: |
+          echo "${{ secrets.EC2_SSH_KEY }}" > private_key && chmod 600 private_key
+          ssh -i private_key -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ steps.read_ip.outputs.ec2_public_ip }} << 'EOF'
+          echo "POSTGRES_USERNAME=${{ secrets.POSTGRES_USERNAME }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ steps.read_info.outputs.rds_password }}" >> .env
+          echo "POSTGRES_URL=${{ steps.read_info.outputs.rds_endpoint }}" >> .env
+          docker compose up -d
+          EOF
