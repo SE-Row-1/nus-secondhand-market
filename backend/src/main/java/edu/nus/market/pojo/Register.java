@@ -13,18 +13,18 @@ import lombok.NoArgsConstructor;
 public class Register {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     String email;
-
-    String nickname;
-
-    String avatarUrl;
-
-    int departmentId;
+//
+//    String nickname;
+//
+//    String avatarUrl;
+//
+//    int departmentId;
 
     @NotBlank
     String password;
 
-    @Pattern(regexp = "^[0-9]+$")
-    String phone;
-
-    String preferredCurrency;
+//    @Pattern(regexp = "^[0-9]+$")
+//    String phone;
+//
+//    String preferredCurrency;
 }

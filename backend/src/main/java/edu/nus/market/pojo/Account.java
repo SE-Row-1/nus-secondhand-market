@@ -42,11 +42,11 @@ public class Account {
 
     public Account(Register register){
         this.email = register.getEmail();
-        this.nickname = register.getNickname();
-        this.avatarUrl = register.getAvatarUrl();
-        this.departmentId = register.getDepartmentId();
-        this.phone = register.getPhone();
-        this.preferredCurrency = register.getPreferredCurrency();
+        this.nickname = null;
+        this.avatarUrl = null;
+        this.departmentId = 0;
+        this.phone = null;
+        this.preferredCurrency = null;
     }
 
 }
