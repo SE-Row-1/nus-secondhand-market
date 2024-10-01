@@ -1,0 +1,22 @@
+#!/bin/sh
+
+DOCKER_COMPOSE_FILE=docker-compose.dev.yaml
+
+if [ ! -f .env ]; then
+  cat <<EOF > .env
+POSTGRES_URL=jdbc:postgresql://postgres:5432/nshm
+POSTGRES_USERNAME=se-row-1
+POSTGRES_PASSWORD=lP4mh-lNnGgMe-C08E2SbQ
+POSTGRES_DB=nshm
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8081
+EOF
+  echo ".env file created successfully"
+  cat .env
+fi
+
+if [ "$(docker ps -q -f name=backend)" ] || [ "$(docker ps -q -f name=frontend)" ]; then
+  echo "Stopping running containers..."
+  docker compose -f $DOCKER_COMPOSE_FILE down
+fi
+
+docker compose -f $DOCKER_COMPOSE_FILE up --build -d
