@@ -14,9 +14,9 @@ public class JwtTokenManager {
     private static final String secretKey = generateSecretKey(); // 加密密钥
     private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
-    public static String generateAccessToken(String userid){
+    public static String generateAccessToken(int userid){
         return Jwts.builder()
-            .setSubject(userid)
+            .setSubject(String.valueOf(userid))
             .setIssuedAt(new Date())//登录时间
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .setExpiration(new Date(new Date().getTime() + expirationTime))
@@ -31,6 +31,7 @@ public class JwtTokenManager {
             return false;
         }
     }
+
     public static boolean validateCookie(String Cookie) {
         // extract the access token from the cookie and validate it using validateToken method
         String token = Cookie.split("; ")[0].split("=")[1];
@@ -38,7 +39,7 @@ public class JwtTokenManager {
         return validateToken(token);
     }
 
-    public static String decodeAccessToken(String token) {
+    public static int decodeAccessToken(String token) {
         try {
             // decode JWT
             Claims claims = Jwts.parser()
@@ -46,13 +47,13 @@ public class JwtTokenManager {
                 .parseClaimsJws(token)
                 .getBody();
 
-            return claims.getSubject();
+            return Integer.parseInt(claims.getSubject());
         } catch (Exception e) {
             throw new RuntimeException("Token decoding failed", e);
         }
     }
 
-    public static String decodeCookie(String cookie) {
+    public static int decodeCookie(String cookie) {
         String token = cookie.split("; ")[0].split("=")[1];
         return decodeAccessToken(token);
     }
