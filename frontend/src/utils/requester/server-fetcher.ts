@@ -3,7 +3,7 @@ import type { Fetcher } from "./fetcher";
 
 export class ServerFetcher implements Fetcher {
   public async fetch<T>(endpoint: string, init: RequestInit = {}) {
-    const url = new URL(endpoint, process.env["API_BASE_URL"]);
+    const url = new URL(endpoint, process.env["NEXT_PUBLIC_API_BASE_URL"]);
 
     const response = await fetch(url, {
       ...init,
