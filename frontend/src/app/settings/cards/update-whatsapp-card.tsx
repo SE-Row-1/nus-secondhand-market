@@ -54,7 +54,6 @@ export function UpdateWhatsappCard({
       event.preventDefault();
 
       const formData = Object.fromEntries(new FormData(event.currentTarget));
-      console.log(formData);
 
       const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
 
