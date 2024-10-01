@@ -5,7 +5,5 @@ temp/
 *.log
 .DS_Store
 *.pem
-terraform.tfstate*
-terraform/.terraform
 .env
 nshm.passphrase
