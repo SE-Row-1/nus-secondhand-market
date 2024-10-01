@@ -8,3 +8,4 @@ temp/
 terraform.tfstate*
 terraform/.terraform
 .env
+nshm.passphrase
