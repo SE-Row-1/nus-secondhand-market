@@ -21,7 +21,7 @@ public class LoginServiceTest {
     @Test
     void loginSuccessTest(){
         LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e1351826@u.nus.edu");
+        loginReq.setEmail("e1351827@u.nus.edu");
         loginReq.setPassword("12345678");
 
         assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.CREATED.value())));
@@ -30,7 +30,7 @@ public class LoginServiceTest {
     @Test
     void loginWrongPasswordTest(){
         LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e1351826@u.nus.edu");
+        loginReq.setEmail("e1351827@u.nus.edu");
         loginReq.setPassword("0");
 
         assert (accountService.loginService(loginReq).equals(ResponseEntity.status(HttpStatus.UNAUTHORIZED).
@@ -40,7 +40,7 @@ public class LoginServiceTest {
     @Test
     void loginAccountNotFoundTest(){
         LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e0351856@u.nus.edu");
+        loginReq.setEmail("e0351857@u.nus.edu");
         loginReq.setPassword("12345678");
 
         assert (accountService.loginService(loginReq).equals(ResponseEntity.status(HttpStatus.NOT_FOUND).

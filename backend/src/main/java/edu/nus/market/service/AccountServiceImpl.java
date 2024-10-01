@@ -162,7 +162,8 @@ public class AccountServiceImpl implements AccountService{
     public ResponseEntity<Object> updateProfileService( UpdateProfileReq req, int id) {
         // Business logic to update nickname, avatar, phone in the database
         // Use repository or DAO to interact with the database.
-        int updateProfileResult = accountDao.updateProfile(req.getNickname(), req.getAvatar(), req.getPhone(), req.getCurrency(), id);
+        int updateProfileResult = accountDao.updateProfile(req.getNickname(), req.getAvatar(), req.getPhoneCode(), req.getPhoneNumber()
+            , req.getCurrency(), id);
 
         if (updateProfileResult > 0) {
             return ResponseEntity.status(HttpStatus.OK).body(req);

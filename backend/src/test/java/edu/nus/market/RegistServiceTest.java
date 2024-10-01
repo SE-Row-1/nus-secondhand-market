@@ -19,7 +19,7 @@ public class RegistServiceTest {
     @Test
     void registerSuccessTest(){
         Register register = new Register();
-        register.setEmail("e1351889@u.nus.edu");
+        register.setEmail("e1351899@u.nus.edu");
         register.setPassword("12345678");
         assert (accountService.registerService(register).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.CREATED.value())));
         // we can't hard code the information inside

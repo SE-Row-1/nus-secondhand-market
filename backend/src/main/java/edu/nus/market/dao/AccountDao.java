@@ -30,8 +30,8 @@ public interface AccountDao {
         "RETURNING id")
     int updatePassword(int id, String passwordHash, String passwordSalt);
 
-    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone = #{phone}, preferred_currency = #{currency} WHERE id = #{id}" +
+    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone_code = #{phoneCode}, phone_number = #{phoneNumber}, preferred_currency = #{currency} WHERE id = #{id}" +
         "RETURNING id")
-    int updateProfile(String nickname, String avatar, String phone, String currency, int id);
+    int updateProfile(String nickname, String avatar, String phoneCode, String phone_number, String currency, int id);
 }
 
