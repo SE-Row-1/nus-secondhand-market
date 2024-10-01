@@ -70,10 +70,15 @@ public class AccountController {
         return accountService.deleteAccountService(req);
     }
 
-    @PutMapping("/me")
-    public Account updateAccount(){
-        //update
-        return null;
+    @PatchMapping("/me/profile")
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Authorization") String token){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        return accountService.updateProfileService(req, Integer.parseInt(JwtTokenManager.decodeCookie(token)));
     }
 
     @PatchMapping("/me/psw")
