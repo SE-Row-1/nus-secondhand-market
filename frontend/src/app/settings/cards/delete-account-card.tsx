@@ -97,11 +97,11 @@ function DeleteAccountButton() {
   >(
     "auth/me",
     async () => {
-      await new ClientRequester().delete("auth/me");
+      return await new ClientRequester().delete<undefined>("auth/me");
     },
     {
+      populateCache: true,
       revalidate: false,
-      populateCache: () => undefined,
       onSuccess: () => {
         toast({
           title: "Account deactivated",
