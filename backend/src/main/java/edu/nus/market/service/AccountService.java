@@ -5,7 +5,7 @@ import edu.nus.market.pojo.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AccountService {
-    Account getMyAccount(int id);
+    ResponseEntity<Object> getMyAccount(int id);
 
     ResponseEntity<Object> forgotPasswordService(ForgotPasswordReq forgotPasswordReq);
 

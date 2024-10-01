@@ -39,7 +39,26 @@ class MarketApplicationTests {
 
 	}
 
+    //test my updatePasswordService in AccountServiceImpl
+    @Test
+    void updatePasswordSuccessTest(){
+        //if account does not exist, register an account
+        if(accountDao.getAccountByEmail("e1351826@u.nus.edu") == null){
+            Register register = new Register();
+            register.setEmail("e1351826@u.nus.edu");
+            register.setPassword("12345678");
+            accountService.registerService(register);
+        }
+        UpdPswReq req = new UpdPswReq("e1351826@u.nus.edu", "12345678", "87654321");
+        assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(200)));
+        //test password wrong
+        req = new UpdPswReq("e1351826@u.nus.edu", "12345678", "87654321");
+        assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(401)));
+        //delete the test account
+        accountService.deleteAccountService(new DelAccReq("e1351826@u.nus.edu", "87654321"), accountDao.getAccountByEmail("e1351826@u.nus.edu").getId());
+        assert (accountDao.getAccountByEmail("e1351826@u.nus.edu") == null);
 
+    }
 
 
     @Test

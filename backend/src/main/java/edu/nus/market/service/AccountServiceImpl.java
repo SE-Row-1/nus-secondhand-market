@@ -31,8 +31,12 @@ public class AccountServiceImpl implements AccountService{
     PasswordHasher passwordHasher;
 
     @Override
-    public Account getMyAccount(int id) {
-        return accountDao.getAccountById(id);
+    public ResponseEntity<Object> getMyAccount(int id) {
+        Account account = accountDao.getAccountById(id);
+        if (account == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+        RspAccount rspAccount = new RspAccount(account);
+        return ResponseEntity.status(HttpStatus.OK).body(rspAccount);
     }
 
     /**
@@ -130,6 +134,7 @@ public class AccountServiceImpl implements AccountService{
         return ResponseEntity.status(HttpStatus.OK).body(new RspAccount(account));
 
     }
+
     public ResponseEntity<Object> updateProfileService( UpdateProfileReq req, int id) {
         // Business logic to update nickname, avatar, phone in the database
         // Use repository or DAO to interact with the database.

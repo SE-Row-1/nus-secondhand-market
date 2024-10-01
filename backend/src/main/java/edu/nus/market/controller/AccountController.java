@@ -23,6 +23,15 @@ public class AccountController {
     @Resource
     AccountService accountService;
 
+    @GetMapping("/me")
+    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Set-Cookie", required = false) String token){
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        return accountService.getMyAccount(JwtTokenManager.decodeCookie(token));
+    }
 
     @PatchMapping("/token")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
@@ -32,15 +41,6 @@ public class AccountController {
         }
         return accountService.forgotPasswordService(forgotPasswordReq);
     }
-
-
-    @GetMapping("/me")
-
-    public Account getMyProfile(){
-        return accountService.getMyAccount(1);
-    }
-
-
 
     @PostMapping("/token")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
