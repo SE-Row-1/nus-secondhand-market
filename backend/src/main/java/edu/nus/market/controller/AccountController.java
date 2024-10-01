@@ -42,12 +42,12 @@ public class AccountController {
     }
 
     @DeleteMapping("/token")
-    public ResponseEntity<Object> logout(@RequestHeader(value = "Set-Cookie") String token){
+    public ResponseEntity<Object> logout(@RequestHeader(value = "Cookie") String token){
         return accountService.logoutService(token);
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Set-Cookie", required = false) String token){
+    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         if (!JwtTokenManager.validateCookie(token)) {
@@ -65,7 +65,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
+    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
@@ -77,7 +77,7 @@ public class AccountController {
     }
 
     @PatchMapping("/me/profile")
-    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
@@ -88,7 +88,7 @@ public class AccountController {
     }
 
     @PatchMapping("/me/psw")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Set-Cookie") String token){
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }

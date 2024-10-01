@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService{
             .maxAge(0)         // delete immediately
             .sameSite("Strict")
             .build();
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Cookie", cookie.toString()).build();
     }
 
     /**
@@ -86,7 +86,7 @@ public class AccountServiceImpl implements AccountService{
                     .sameSite("Strict")
                     .build();
                 // generate the JWTaccesstoken and send it to the frontend
-                return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new RspAccount(account));
+                return ResponseEntity.status(HttpStatus.CREATED).header("Cookie", cookie.toString()).body(new RspAccount(account));
             }
             else{
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
@@ -123,7 +123,7 @@ public class AccountServiceImpl implements AccountService{
                 .sameSite("Strict")
                 .build();
             // generate the JWTaccesstoken and send it to the frontend
-        return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new RspAccount(account));
+        return ResponseEntity.status(HttpStatus.CREATED).header("Cookie", cookie.toString()).body(new RspAccount(account));
         }
     }
 
