@@ -24,7 +24,7 @@ type Props = {
 
 export function MeCardClient({ initialMe, fallback }: Props) {
   const { data: me } = useSWR(
-    "/auth/me",
+    "auth/me",
     async () => {
       return await new ClientRequester().get<Account>("auth/me");
     },

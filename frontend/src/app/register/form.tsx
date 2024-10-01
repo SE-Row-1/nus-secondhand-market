@@ -40,7 +40,7 @@ export function RegisterForm() {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "/auth/me",
+    "auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 

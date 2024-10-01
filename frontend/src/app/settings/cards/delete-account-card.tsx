@@ -95,7 +95,7 @@ function DeleteAccountButton() {
     string,
     MouseEvent<HTMLButtonElement>
   >(
-    "/auth/me",
+    "auth/me",
     async () => {
       await new ClientRequester().delete("auth/me");
     },
