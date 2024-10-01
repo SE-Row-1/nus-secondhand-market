@@ -6,7 +6,7 @@ if [[ ! -f .env ]] && [[ -f env.gpg ]]; then
   if [[ -z $(cat nshm.passphrase) ]]; then
     aws s3 cp s3://nus-backend-terraform/nshm.passphrase .
   fi
-  gpg --batch --yes --decrypt --passphrase=$(cat nshm.passphrase) --output .env .env.gpg
+  gpg --batch --yes --decrypt --passphrase-file=nshm.passphrase --output .env .env.gpg
   echo ".env file created successfully"
 fi
 
