@@ -78,7 +78,7 @@ export function UpdateEmailCard({ initialEmail }: Props) {
             type="email"
             name="email"
             required
-            defaultValue={initialEmail ?? ""}
+            defaultValue={initialEmail}
             placeholder="e1234567@u.nus.edu"
             id="email"
           />
