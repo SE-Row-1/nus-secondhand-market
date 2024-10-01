@@ -2,10 +2,7 @@ package edu.nus.market.dao;
 
 import edu.nus.market.pojo.Account;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
 
 import org.springframework.stereotype.Repository;
@@ -38,4 +35,9 @@ public interface AccountDao {
     @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id}" +
         "RETURNING id")
     int updatePassword(int id, String passwordHash, String passwordSalt);
+
+    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone = #{phone}, preferred_currency = #{currency} WHERE id = #{id}" +
+        "RETURNING id")
+    int updateProfile(String nickname, String avatar, String phone, String currency, int id);
 }
+
