@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen grid place-items-center">
+    <div className="min-h-[calc(100vh-64px)] grid place-items-center">
       <Button asChild>
         <Link
           href="https://github.com/SE-Row-1/nus-secondhand-market"
