@@ -1,6 +1,5 @@
 import type { Account } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
-import { UpdateAvatarCard } from "../cards/update-avatar-card";
 import { UpdateNicknameCard } from "../cards/update-nickname-card";
 
 export default async function DisplaySettingsPage() {
@@ -8,7 +7,6 @@ export default async function DisplaySettingsPage() {
 
   return (
     <div className="grid gap-6">
-      <UpdateAvatarCard />
       <UpdateNicknameCard initialNickname={me.nickname} />
     </div>
   );
