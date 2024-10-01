@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AccountDao {
-    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency, " +
+    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
         "created_at, deleted_at FROM account WHERE id = #{id}")
     Account getAccountById(int id);
 
-    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency, " +
+    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
         "created_at, deleted_at FROM account WHERE email = #{email}")
     Account getAccountByEmail(String email);
 

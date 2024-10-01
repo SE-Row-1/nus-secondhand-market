@@ -13,13 +13,23 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class RspAccount {
     int id;
+
     String email;
+
     String nickname;
+
     String avatarUrl;
+
     int departmentId;
-    String phone;
+
+    String phoneCode;
+
+    String phoneNumber;
+
     String preferredCurrency;
+
     String createdAt;
+
     String deletedAt;
 
 
@@ -30,7 +40,8 @@ public class RspAccount {
         this.nickname = account.getNickname();
         this.avatarUrl = account.getAvatarUrl();
         this.departmentId = account.getDepartmentId();
-        this.phone = account.getPhone();
+        this.phoneCode = account.getPhoneCode();
+        this.phoneNumber = account.getPhoneNumber();
         this.preferredCurrency = account.getPreferredCurrency();
         this.createdAt = account.getCreatedAt();
         this.deletedAt = account.getDeletedAt();

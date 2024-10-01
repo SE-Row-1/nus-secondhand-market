@@ -29,7 +29,11 @@ public class Account {
     @Column(name = "department_id")
     int departmentId;
 
-    String phone;
+    @Column(name = "phone_code")
+    String phoneCode;
+
+    @Column(name = "phone_number")
+    String phoneNumber;
 
     @Column(name = "preferred_currency")
     String preferredCurrency;
@@ -45,7 +49,8 @@ public class Account {
         this.nickname = null;
         this.avatarUrl = null;
         this.departmentId = 0;
-        this.phone = null;
+        this.phoneCode = null;
+        this.phoneNumber = null;
         this.preferredCurrency = null;
     }
 
