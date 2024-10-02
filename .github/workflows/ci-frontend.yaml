@@ -39,10 +39,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Lint
-        run: |
-          pnpm tsc
-          pnpm eslint .
+      - name: Lint with TSC
+        run: pnpm tsc
+
+      - name: Lint with ESLint
+        run: pnpm eslint .
 
   format:
     runs-on: ubuntu-latest
