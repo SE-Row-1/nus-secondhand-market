@@ -2,7 +2,7 @@
 
 DOCKER_COMPOSE_FILE=docker-compose.dev.yaml
 
-if [[ ! -f .env ]] && [[ -f env.gpg ]]; then
+if [[ ! -f .env ]] && [[ -f .env.gpg ]]; then
   if [[ -z $(cat nshm.passphrase) ]]; then
     aws s3 cp s3://nus-backend-terraform/nshm.passphrase .
   fi
