@@ -20,7 +20,10 @@ public interface AccountDao {
         "(#{email}, #{passwordHash}, #{passwordSalt}) RETURNING id")
     int registerNewAccount(Account account);
 
-    @Delete("DELETE FROM account WHERE id = #{id}")
+    @Delete("UPDATE FROM account WHERE id = #{id}")
+    void hardDeleteAccount(int id);
+
+    @Update("UPDATE account SET deleted_at = now() WHERE id = #{id}")
     void deleteAccount(int id);
 
     @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id} AND deleted_at IS NULL" +
