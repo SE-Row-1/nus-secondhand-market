@@ -1,0 +1,20 @@
+conventional_commits_regex="^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-zA-Z0-9_-]+\))?: .+"
+
+commit_message=$(cat "$1")
+
+if [[ "$commit_message" =~ $conventional_commits_regex ]]; then
+  echo "[commit-msg] Pass."
+  echo ""
+  exit 0
+fi
+
+echo "[commit-msg] Error: Commit message does not follow Conventional Commits style."
+echo "[commit-msg]"
+echo "[commit-msg] Examples of valid commit messages:"
+echo "[commit-msg]   feat(auth): add OAuth2 login"
+echo "[commit-msg]   fix(profile): resolve avatar display issue"
+echo "[commit-msg]   docs(README): update contributing section"
+echo "[commit-msg]"
+echo "[commit-msg] Please follow the format: <type>(<scope>): <description>"
+echo "[commit-msg] Allowed types: build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test"
+exit 1

@@ -1,0 +1,24 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: market
+
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+currencyLayer:
+  api:
+    url: "http://apilayer.net/api/live"
+    access-key: ${CURRENCY_API_ACCESS_KEY}
+    format: "1"

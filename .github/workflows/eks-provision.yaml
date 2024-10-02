@@ -3,13 +3,13 @@ name: EKS Deployment
 on:
   workflow_dispatch:
     inputs:
-      deploy:
-        description: 'Trigger deployment'
+      provision:
+        description: 'Provisioning infrastructure'
         required: true
         default: 'false'
         type: boolean
-      delete:
-        description: 'Trigger deletion of the cluster'
+      destroy:
+        description: 'Destroying of the cluster'
         required: true
         default: 'false'
         type: boolean
@@ -17,7 +17,7 @@ on:
 jobs:
   create_cluster:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.deploy == 'true' && github.event.inputs.delete == 'false' }}
+    if: ${{ github.event.inputs.provision == 'true' }}
     container:
       image: z1yoon/k8s-base:v0.0.1
     steps:
@@ -35,7 +35,7 @@ jobs:
   deploy_alb_controller:
     runs-on: ubuntu-latest
     needs: create_cluster
-    if: ${{ github.event.inputs.deploy == 'true' && github.event.inputs.delete == 'false' }}
+    if: ${{ github.event.inputs.provision == 'true' }}
     container:
       image: z1yoon/k8s-base:v0.0.1
     steps:
@@ -93,3 +93,6 @@ jobs:
       - name: Delete EKS cluster
         run: |
           eksctl delete cluster -f .github/workflows/eksctl-cluster.yaml
+
+      - name: Delete Loadbalancer
+        run: |

@@ -1,0 +1,9 @@
+.idea/
+.vscode/
+logs/
+temp/
+*.log
+.DS_Store
+*.pem
+.env
+nshm.passphrase
