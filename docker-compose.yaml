@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     image: z1yoon/nus-secondhand-market-frontend:latest
