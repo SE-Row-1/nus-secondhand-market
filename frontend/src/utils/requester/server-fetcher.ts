@@ -9,9 +9,10 @@ export class ServerFetcher implements Fetcher {
       ...init,
       headers: {
         ...init.headers,
+        credentials: "include",
         Cookie: cookies().toString(),
       },
-    });
+    } as RequestInit);
 
     if (response.status === 204) {
       return undefined as never;
