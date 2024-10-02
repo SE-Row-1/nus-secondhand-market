@@ -109,6 +109,7 @@ function DeleteAccountButton() {
             "We are sorry to see you go. 🥲 Remember you can contact our support team to find your account back in the next 30 days!",
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {
