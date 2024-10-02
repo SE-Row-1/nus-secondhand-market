@@ -18,7 +18,7 @@ public interface AccountDao {
 
     @Insert("INSERT INTO account (email, password_hash, password_salt) VALUES " +
         "(#{email}, #{passwordHash}, #{passwordSalt}) RETURNING id")
-    int registNewAccount(Account account);
+    int registerNewAccount(Account account);
 
     @Delete("DELETE FROM account WHERE id = #{id}")
     void deleteAccount(int id);

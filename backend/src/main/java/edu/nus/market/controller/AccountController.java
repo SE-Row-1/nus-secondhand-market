@@ -33,7 +33,7 @@ public class AccountController {
 
     @DeleteMapping("/token")
     public ResponseEntity<Object> logout(@RequestHeader(value = "Cookie") String token){
-        return accountService.logoutService(token);
+        return accountService.logoutService();
     }
 
     @GetMapping("/me")
@@ -43,15 +43,15 @@ public class AccountController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.getMyAccount(JwtTokenManager.decodeCookie(token));
+        return accountService.getAccountService(JwtTokenManager.decodeCookie(token));
     }
 
     @PostMapping("/me")
-    public ResponseEntity<Object> register(@Valid @RequestBody Register register, BindingResult bindingResult){
+    public ResponseEntity<Object> register(@Valid @RequestBody RegisterReq registerReq, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.registerService(register);
+        return accountService.registerService(registerReq);
     }
 
     @DeleteMapping("/me")
@@ -66,7 +66,7 @@ public class AccountController {
         return accountService.deleteAccountService(req, JwtTokenManager.decodeCookie(token));
     }
 
-    @PatchMapping("/me/profile")
+    @PatchMapping("/me")
     public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
@@ -77,7 +77,7 @@ public class AccountController {
         return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token));
     }
 
-    @PatchMapping("/me/password")
+    @PutMapping("/me/password")
     public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
@@ -89,7 +89,7 @@ public class AccountController {
     }
 
 
-    @PatchMapping("/me/reset-password")
+    @PatchMapping("/reset-password")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
         //forget password and reset
         if (bindingResult.hasErrors()) {
@@ -98,7 +98,7 @@ public class AccountController {
         return accountService.forgotPasswordService(forgotPasswordReq);
     }
 
-    @GetMapping("/health")
+    @GetMapping("/healthz")
     public String checkHealth(){
         return "ok";
     }

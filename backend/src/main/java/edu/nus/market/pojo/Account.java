@@ -11,10 +11,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
+    @Column(name = "id")
     int id;
 
+    @Column(name = "email")
     String email;
 
+    @Column(name = "nickname")
     String nickname;
 
     @Column(name = "password_hash")
@@ -44,8 +47,8 @@ public class Account {
     @Column(name = "deleted_at")
     String deletedAt;
 
-    public Account(Register register){
-        this.email = register.getEmail();
+    public Account(RegisterReq registerReq){
+        this.email = registerReq.getEmail();
         this.nickname = null;
         this.avatarUrl = null;
         this.departmentId = 0;

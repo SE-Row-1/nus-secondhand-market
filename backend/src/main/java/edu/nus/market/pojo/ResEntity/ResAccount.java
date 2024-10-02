@@ -1,17 +1,15 @@
-package edu.nus.market.pojo.rspEntity;
+package edu.nus.market.pojo.ResEntity;
 
 import edu.nus.market.pojo.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
-
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RspAccount {
+public class ResAccount {
     int id;
 
     String email;
@@ -34,7 +32,7 @@ public class RspAccount {
 
 
     // all args constructor, input an account object, and convert to this rspAccount object
-    public RspAccount(Account account) {
+    public ResAccount(Account account) {
         this.id = account.getId();
         this.email = account.getEmail();
         this.nickname = account.getNickname();

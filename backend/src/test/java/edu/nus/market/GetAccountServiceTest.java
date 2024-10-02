@@ -19,12 +19,12 @@ public class GetAccountServiceTest{
     @Test
     void getAccountSuccessTest(){
 
-        assert (accountService.getMyAccount(60).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.OK.value())));
+        assert (accountService.getAccountService(60).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.OK.value())));
     }
 
     @Test
     void getAccountNotFoundTest(){
-        assert (accountService.getMyAccount(0).equals(ResponseEntity.status(HttpStatus.NOT_FOUND).
+        assert (accountService.getAccountService(0).equals(ResponseEntity.status(HttpStatus.NOT_FOUND).
             body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg))));
     }
 }
