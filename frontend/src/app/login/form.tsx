@@ -36,7 +36,7 @@ export function LoginForm() {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "auth/me",
+    "/auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -44,7 +44,7 @@ export function LoginForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().post<Account>("auth/token", {
+      return await new ClientRequester().post<Account>("/auth/token", {
         email,
         password,
       });
@@ -58,6 +58,7 @@ export function LoginForm() {
           description: `Welcome back, ${account.nickname ?? account.email}!`,
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {

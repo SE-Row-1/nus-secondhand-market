@@ -19,9 +19,9 @@ export function LogOutButton() {
     string,
     MouseEvent<HTMLButtonElement>
   >(
-    "auth/me",
+    "/auth/me",
     async () => {
-      return await new ClientRequester().delete<undefined>("auth/token");
+      return await new ClientRequester().delete<undefined>("/auth/token");
     },
     {
       populateCache: true,

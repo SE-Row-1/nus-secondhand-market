@@ -49,7 +49,7 @@ export function UpdateWhatsappCard({
     string,
     FormEvent<HTMLFormElement>
   >(
-    "auth/me",
+    "/auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -57,7 +57,7 @@ export function UpdateWhatsappCard({
 
       const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().patch<Account>("auth/me", {
+      return await new ClientRequester().patch<Account>("/auth/me", {
         phone_code: phoneCode,
         phone_number: phoneNumber,
       });

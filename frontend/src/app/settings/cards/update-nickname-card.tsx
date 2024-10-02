@@ -39,7 +39,7 @@ export function UpdateNicknameCard({ initialNickname }: Props) {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "auth/me",
+    "/auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -47,7 +47,7 @@ export function UpdateNicknameCard({ initialNickname }: Props) {
 
       const { nickname } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().patch<Account>("auth/me", {
+      return await new ClientRequester().patch<Account>("/auth/me", {
         nickname,
       });
     },
