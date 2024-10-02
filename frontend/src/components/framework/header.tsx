@@ -1,11 +1,10 @@
 import { MenuIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { JoinNowCard } from "./join-now-card";
 import { Logo } from "./logo";
+import { MeCard } from "./me-card";
 import { Nav } from "./nav";
 import { ThemeToggle } from "./theme-toggle";
-import { UserCard } from "./user-card";
 
 export function Header() {
   return (
@@ -21,7 +20,7 @@ export function Header() {
           <Logo />
           <Nav />
           <ThemeToggle />
-          <UserCard fallback={<JoinNowCard />} />
+          <MeCard />
         </SheetContent>
       </Sheet>
       <Logo />
