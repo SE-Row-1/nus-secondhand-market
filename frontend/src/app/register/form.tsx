@@ -66,6 +66,7 @@ export function RegisterForm() {
           description: `Welcome on board, ${account.email}!`,
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {
