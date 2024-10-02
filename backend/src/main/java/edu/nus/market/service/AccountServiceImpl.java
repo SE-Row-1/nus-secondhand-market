@@ -76,7 +76,7 @@ public class AccountServiceImpl implements AccountService{
             String accessToken = jwtTokenManager.generateAccessToken(account.getId());
             ResponseCookie cookie = cookieManager.generateCookie(accessToken);
             // generate the JWTaccesstoken and send it to the frontend
-            return ResponseEntity.status(HttpStatus.CREATED).header("Cookie", cookie.toString()).body(new ResAccount(account));
+            return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.WRONG_PASSWORD.ErrorMsg));
     }
@@ -103,7 +103,7 @@ public class AccountServiceImpl implements AccountService{
         String accessToken = jwtTokenManager.generateAccessToken((accountId));
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
         // generate the JWTaccesstoken and send it to the frontend
-        return ResponseEntity.status(HttpStatus.CREATED).header("Cookie", cookie.toString()).body(new ResAccount(account));
+        return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
     }
 
     @Override
