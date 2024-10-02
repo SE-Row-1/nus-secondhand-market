@@ -57,7 +57,7 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public ResponseEntity<Object> logoutService(){
         ResponseCookie cookie = cookieManager.deleteCookie();
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Cookie", cookie.toString()).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }
 
     /**
