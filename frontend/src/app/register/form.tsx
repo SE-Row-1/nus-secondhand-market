@@ -40,7 +40,7 @@ export function RegisterForm() {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "auth/me",
+    "/auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -52,7 +52,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await new ClientRequester().post<Account>("auth/me", {
+      return await new ClientRequester().post<Account>("/auth/me", {
         email,
         password,
       });

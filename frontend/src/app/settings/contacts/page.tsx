@@ -3,7 +3,7 @@ import { ServerRequester } from "@/utils/requester/server";
 import { UpdateWhatsappCard } from "../cards/update-whatsapp-card";
 
 export default async function ContactsSettingsPage() {
-  const me = await new ServerRequester().get<Account | undefined>("auth/me");
+  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
 
   return (
     <div className="grid gap-6">
