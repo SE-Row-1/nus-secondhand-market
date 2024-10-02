@@ -1,8 +1,8 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  version: "1.29"
-  name: nus-eks
+  version: "1.30"
+  name: nus-secondhand-market-eks
   region: ap-southeast-1
   tags:
     Environment: production
@@ -23,15 +23,14 @@ cloudWatch:
   clusterLogging:
     enableTypes: ["*"]
 managedNodeGroups:
-  - name: nus-eks-workers-28
+  - name: nshm-eks-workers-30
     minSize: 0
     maxSize: 2
     desiredCapacity: 2
     volumeSize: 20
     instanceTypes:
-    - t3a.small
-    - t3a.medium
-    - t3a.large
+    - t2.micro
+    - t3.micro
     spot: true
     privateNetworking: true
     ssh:
