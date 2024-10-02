@@ -26,7 +26,7 @@ export function Nav() {
         <PackageIcon className="size-4" />
         My belongings
       </NavLink>
-      <NavLink href="#">
+      <NavLink href="/settings">
         <SettingsIcon className="size-4" />
         Settings
       </NavLink>

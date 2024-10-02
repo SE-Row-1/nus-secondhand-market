@@ -11,10 +11,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
+    @Column(name = "id")
     int id;
 
+    @Column(name = "email")
     String email;
 
+    @Column(name = "nickname")
     String nickname;
 
     @Column(name = "password_hash")
@@ -29,7 +32,11 @@ public class Account {
     @Column(name = "department_id")
     int departmentId;
 
-    String phone;
+    @Column(name = "phone_code")
+    String phoneCode;
+
+    @Column(name = "phone_number")
+    String phoneNumber;
 
     @Column(name = "preferred_currency")
     String preferredCurrency;
@@ -40,13 +47,14 @@ public class Account {
     @Column(name = "deleted_at")
     String deletedAt;
 
-    public Account(Register register){
-        this.email = register.getEmail();
-        this.nickname = register.getNickname();
-        this.avatarUrl = register.getAvatarUrl();
-        this.departmentId = register.getDepartmentId();
-        this.phone = register.getPhone();
-        this.preferredCurrency = register.getPreferredCurrency();
+    public Account(RegisterReq registerReq){
+        this.email = registerReq.getEmail();
+        this.nickname = null;
+        this.avatarUrl = null;
+        this.departmentId = 0;
+        this.phoneCode = null;
+        this.phoneNumber = null;
+        this.preferredCurrency = null;
     }
 
 }
