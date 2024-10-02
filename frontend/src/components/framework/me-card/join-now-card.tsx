@@ -1,13 +1,13 @@
-import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../ui/card";
+} from "@/components/ui/card";
+import { LogInIcon, UserRoundPlusIcon } from "lucide-react";
+import Link from "next/link";
 
 export function JoinNowCard() {
   return (

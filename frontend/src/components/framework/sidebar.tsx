@@ -1,8 +1,7 @@
-import { JoinNowCard } from "./join-now-card";
 import { Logo } from "./logo";
+import { MeCard } from "./me-card";
 import { Nav } from "./nav";
 import { ThemeToggle } from "./theme-toggle";
-import { UserCard } from "./user-card";
 
 export function Sidebar() {
   return (
@@ -12,7 +11,7 @@ export function Sidebar() {
       </div>
       <Nav />
       <ThemeToggle />
-      <UserCard fallback={<JoinNowCard />} />
+      <MeCard />
     </aside>
   );
 }
