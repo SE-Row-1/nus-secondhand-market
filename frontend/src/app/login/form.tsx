@@ -58,6 +58,7 @@ export function LoginForm() {
           description: `Welcome back, ${account.nickname ?? account.email}!`,
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {
