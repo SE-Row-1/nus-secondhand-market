@@ -38,7 +38,7 @@ export function UpdateEmailCard({ initialEmail }: Props) {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "auth/me",
+    "/auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -46,7 +46,7 @@ export function UpdateEmailCard({ initialEmail }: Props) {
 
       const { email } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().patch<Account>("auth/me", {
+      return await new ClientRequester().patch<Account>("/auth/me", {
         email,
       });
     },
