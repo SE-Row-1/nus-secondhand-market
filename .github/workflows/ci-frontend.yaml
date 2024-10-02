@@ -16,6 +16,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,11 +34,9 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install
 
       - name: Lint
-        working-directory: frontend
         run: |
           pnpm tsc
           pnpm eslint .
@@ -42,6 +44,10 @@ jobs:
   format:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -56,16 +62,18 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install
 
       - name: Format
-        working-directory: frontend
         run: pnpm prettier . --check
 
   build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -80,9 +88,7 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install
 
       - name: Build
-        working-directory: frontend
         run: pnpm run build
