@@ -32,19 +32,27 @@ public class AccountController {
         return accountService.registerService(registerReq);
     }
     @DeleteMapping("/me")
-    public ResponseEntity<Object> deleteAccount(@Valid @RequestBody DelAccReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
+    public ResponseEntity<Object> deleteAccount(@RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
-        //System.out.println(JwtTokenManager.decodeAccessToken(token));
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.deleteAccountService(req, JwtTokenManager.decodeCookie(token));
+        return accountService.deleteAccountService(JwtTokenManager.decodeCookie(token));
     }
+
+    // Get Account Info
+    @GetMapping("/me")
+    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Cookie", required = false) String token){
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        return accountService.getAccountService(JwtTokenManager.decodeCookie(token));
+    }
+
 
     // Login and Logout
     @PostMapping("/token")
@@ -69,21 +77,10 @@ public class AccountController {
         return accountService.forgotPasswordService(forgotPasswordReq);
     }
 
-    // Get Account Info
-    @GetMapping("/me")
-    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Cookie", required = false) String token){
-        if (token == null || token.isEmpty())
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
-        }
-        return accountService.getAccountService(JwtTokenManager.decodeCookie(token));
-    }
-
 
     //Updating Account
     @PutMapping("/me/password")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
@@ -98,7 +95,7 @@ public class AccountController {
 
 
     @PatchMapping("/me")
-    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader("Cookie") String token){
+    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }

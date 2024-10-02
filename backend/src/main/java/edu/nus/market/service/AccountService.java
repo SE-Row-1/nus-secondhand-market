@@ -13,7 +13,7 @@ public interface AccountService {
 
     ResponseEntity<Object> registerService(RegisterReq registerReq);
 
-    ResponseEntity<Object> deleteAccountService(DelAccReq req, int id);
+    ResponseEntity<Object> deleteAccountService( int id);
 
     ResponseEntity<Object> updatePasswordService(UpdPswReq req, int id);
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CookieManager {
+
     public static ResponseCookie generateCookie(String accessToken){
         ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
             .httpOnly(true)
@@ -15,7 +16,6 @@ public class CookieManager {
             .build();
         return cookie;
     }
-
     public static ResponseCookie deleteCookie(){
         ResponseCookie cookie = ResponseCookie.from("access_token", null)
             .httpOnly(true)

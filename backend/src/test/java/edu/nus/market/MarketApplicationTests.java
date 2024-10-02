@@ -46,13 +46,13 @@ class MarketApplicationTests {
             registerReq.setPassword("12345678");
             accountService.registerService(registerReq);
         }
-        UpdPswReq req = new UpdPswReq("e1351826@u.nus.edu", "12345678", "87654321");
+        UpdPswReq req = new UpdPswReq("12345678", "87654321");
         assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(200)));
         //test password wrong
-        req = new UpdPswReq("e1351826@u.nus.edu", "12345678", "87654321");
+        req = new UpdPswReq("12345678", "87654321");
         assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(401)));
         //delete the test account
-        accountService.deleteAccountService(new DelAccReq("e1351826@u.nus.edu", "87654321"), accountDao.getAccountByEmail("e1351826@u.nus.edu").getId());
+        accountService.deleteAccountService(accountDao.getAccountByEmail("e1351826@u.nus.edu").getId());
         assert (accountDao.getAccountByEmail("e1351826@u.nus.edu") == null);
 
     }

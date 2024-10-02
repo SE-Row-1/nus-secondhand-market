@@ -107,7 +107,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public ResponseEntity<Object> deleteAccountService(DelAccReq req, int id) {
+    public ResponseEntity<Object> deleteAccountService( int id) {
         //Check if account exists
         if(accountDao.getAccountById(id) == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));

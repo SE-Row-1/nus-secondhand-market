@@ -26,7 +26,7 @@ public interface AccountDao {
     @Update("UPDATE account SET deleted_at = now() WHERE id = #{id}")
     void deleteAccount(int id);
 
-    @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id} AND deleted_at IS NULL" +
+    @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id} AND deleted_at IS NULL " +
         "RETURNING id")
     int updatePassword(int id, String passwordHash, String passwordSalt);
 
