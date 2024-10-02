@@ -14,7 +14,10 @@ public class UpdateProfileReq {
     private String avatar;
 
     @Pattern(regexp = "^[0-9]+$")
-    private String phone;
+    private String phoneCode;
+
+    @Pattern(regexp = "^[0-9]+$")
+    private String phoneNumber;
 
     private String currency;
 }

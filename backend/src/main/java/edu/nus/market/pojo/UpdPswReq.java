@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdPswReq {
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
-    String email;
     @NotBlank
     String oldPassword;
     @NotBlank

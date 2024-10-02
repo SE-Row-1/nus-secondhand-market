@@ -5,7 +5,8 @@ public enum ErrorMsgEnum {
     REGISTERED_EMAIL("This email is already registered."),
     WRONG_PASSWORD("Wrong password. Please try again."),
     ACCOUNT_NOT_FOUND("This account does not exist."),
-    UNAUTHORIZED_ACCESS("Token validation failed.")
+    UNAUTHORIZED_ACCESS("Token validation failed."),
+    NOT_LOGGED_IN("Please log in first.")
 
     ;
     public String ErrorMsg;

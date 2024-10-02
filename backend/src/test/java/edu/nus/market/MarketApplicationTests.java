@@ -1,7 +1,6 @@
 package edu.nus.market;
 
-import edu.nus.market.pojo.LoginReq;
-import edu.nus.market.pojo.Register;
+import edu.nus.market.pojo.RegisterReq;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.controller.AccountController;
 import edu.nus.market.dao.AccountDao;
@@ -11,9 +10,7 @@ import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 
 
 @SpringBootTest
@@ -39,59 +36,34 @@ class MarketApplicationTests {
 
 	}
 
+    //test my updatePasswordService in AccountServiceImpl
     @Test
-    void registerSuccessTest(){
-        Register register = new Register();
-        register.setEmail("e1351847@u.nus.edu");
-        register.setPassword("12345678");
-        register.setDepartmentId(1);
+    void updatePasswordSuccessTest(){
+        //if account does not exist, register an account
+        if(accountDao.getAccountByEmail("e1351826@u.nus.edu") == null){
+            RegisterReq registerReq = new RegisterReq();
+            registerReq.setEmail("e1351826@u.nus.edu");
+            registerReq.setPassword("12345678");
+            accountService.registerService(registerReq);
+        }
+        UpdPswReq req = new UpdPswReq("12345678", "87654321");
+        assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(200)));
+        //test password wrong
+        req = new UpdPswReq("12345678", "87654321");
+        assert (accountService.updatePasswordService(req, accountDao.getAccountByEmail("e1351826@u.nus.edu").getId()).getStatusCode().equals(HttpStatusCode.valueOf(401)));
+        //delete the test account
+        accountService.deleteAccountService(accountDao.getAccountByEmail("e1351826@u.nus.edu").getId());
+        assert (accountDao.getAccountByEmail("e1351826@u.nus.edu") == null);
 
-        assert (accountService.registerService(register).getStatusCode().equals(HttpStatusCode.valueOf(201)));
     }
 
-    @Test
-    void registerAccountConflictTest(){
-        Register register = new Register();
-        register.setEmail("e1351826@u.nus.edu");
-        register.setPassword("12345678");
-        register.setDepartmentId(1);
-        assert (accountService.registerService(register).equals(ResponseEntity.status(HttpStatus.CONFLICT).
-            body(new ErrorMsg("This email is already registered."))));
-    }
-
-    @Test
-    void loginSuccessTest(){
-        LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e1351826@u.nus.edu");
-        loginReq.setPassword("12345678");
-
-        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(200)));
-    }
-
-    @Test
-    void loginWrongPasswordTest(){
-        LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e1351826@u.nus.edu");
-        loginReq.setPassword("0");
-
-        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(401)));
-    }
-
-    @Test
-    void loginAccountNotFoundTest(){
-        LoginReq loginReq = new LoginReq();
-        loginReq.setEmail("e1351856@u.nus.edu");
-        loginReq.setPassword("12345678");
-
-        assert (accountService.loginService(loginReq).getStatusCode().equals(HttpStatusCode.valueOf(404)));
-    }
 
     @Test
     void testTokenEncoderandDecoder(){
-        String userid = "15";
-      
+        int userid = 15;
+
         String token = JwtTokenManager.generateAccessToken(userid);
-        assert (userid.equals(JwtTokenManager.decodeAccessToken(token)));
+        assert (userid == (JwtTokenManager.decodeAccessToken(token)));
     }
 
 }

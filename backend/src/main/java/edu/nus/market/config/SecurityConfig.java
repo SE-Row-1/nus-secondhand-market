@@ -5,15 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 
 @Configuration
@@ -32,7 +24,7 @@ public class SecurityConfig {
             // .addFilter(new CorsFilter(corsConfigurationSource())); // 手动添加 CORS 过滤器
         return http.build();
     }
-//    @Bean
+    //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {
 //        CorsConfiguration configuration = new CorsConfiguration();
 //        configuration.addAllowedOrigin("http://localhost"); // 允许的域名"http://13.212.58.250", "http://localhost"
@@ -51,7 +43,6 @@ public class SecurityConfig {
 //        source.registerCorsConfiguration("/**", configuration); // 应用到所有路径
 //        return source;
 //    }
-
 }
 
 
