@@ -31,8 +31,11 @@ create table account (
   -- Department or school of the user.
   department_id int default null references department(id) on delete set null,
 
+  -- User's WhatsApp phone country code.
+  phone_code text default null,
+
   -- User's WhatsApp phone number.
-  phone text default null,
+  phone_number text default null,
 
   -- User's preferred display currency, in the form of ISO 4217, e.g. CNY, SGD.
   preferred_currency text default null,
