@@ -10,7 +10,7 @@ if [[ ! -f .env ]] && [[ -f .env.gpg ]]; then
   echo ".env file created successfully"
 fi
 
-if [ "$(docker ps -q -f name=backend)" ] || [ "$(docker ps -q -f name=frontend)" ]; then
+if [ "$(docker ps -q -f name=backend)" ] || [ "$(docker ps -q -f name=web)" ]; then
   echo "Stopping running containers..."
   docker compose -f $DOCKER_COMPOSE_FILE down
 fi

@@ -1,9 +1,9 @@
 # Files changed in the current commit.
-# For example, "frontend/src/app/page.tsx".
+# For example, "services/web/src/app/page.tsx".
 changed_files=$(git diff --cached --name-only)
 
 # Target directories to run pre-commit hooks in.
-# For example, "frontend".
+# For example, "services/web".
 # A directory is qualified as a target, if it meets the following conditions:
 # 1. It contains at least one changed file.
 # 2. It contains a ".git-hooks/pre-commit" file.

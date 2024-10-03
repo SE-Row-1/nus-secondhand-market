@@ -1,16 +1,16 @@
-name: CI for frontend
+name: CI for web service
 
 on:
   push:
     branches:
       - main
     paths:
-      - frontend/**
+      - services/web/**
   pull_request:
     branches:
       - main
     paths:
-      - frontend/**
+      - services/web/**
 
 jobs:
   lint:
@@ -18,7 +18,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: services/web
 
     steps:
       - name: Check out repository
@@ -27,14 +27,14 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          package_json_file: frontend/package.json
+          package_json_file: services/web/package.json
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: services/web/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
@@ -50,7 +50,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: services/web
 
     steps:
       - name: Check out repository
@@ -59,19 +59,19 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          package_json_file: frontend/package.json
+          package_json_file: services/web/package.json
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: services/web/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Format
+      - name: Check format
         run: pnpm prettier . --check
 
   build:
@@ -79,7 +79,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: frontend
+        working-directory: services/web
 
     steps:
       - name: Check out repository
@@ -88,14 +88,14 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v4
         with:
-          package_json_file: frontend/package.json
+          package_json_file: services/web/package.json
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: pnpm
-          cache-dependency-path: frontend/pnpm-lock.yaml
+          cache-dependency-path: services/web/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install
