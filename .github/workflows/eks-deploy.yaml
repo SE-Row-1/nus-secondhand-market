@@ -4,9 +4,16 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      provisioning:
+        required: true
+        default: 'false'
+        type: boolean
 
 jobs:
   deploy:
+    if: ${{ github.event.inputs.provisioning == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -26,4 +33,4 @@ jobs:
     - name: Deploy to EKS using Kustomize
       run: |
         aws eks --region ap-southeast-1 update-kubeconfig --name nshm-eks
-        kubectl apply -k overlays/prod
+        kubectl apply -k k8s
