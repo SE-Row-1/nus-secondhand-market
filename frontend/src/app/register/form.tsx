@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
-import { requests } from "@/utils/requests";
+import { ClientRequester } from "@/utils/requester/client";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
@@ -40,7 +40,7 @@ export function RegisterForm() {
     string,
     FormEvent<HTMLFormElement>
   >(
-    "/auth/me",
+    "auth/me",
     async (_, { arg: event }) => {
       event.preventDefault();
 
@@ -52,7 +52,10 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await requests.post<Account>("/auth/me", { email, password });
+      return await new ClientRequester().post<Account>("auth/me", {
+        email,
+        password,
+      });
     },
     {
       revalidate: false,
