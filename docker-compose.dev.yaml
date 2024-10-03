@@ -2,15 +2,16 @@ services:
   web:
     build:
       context: services/web
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL}
+      dockerfile: Dockerfile.dev
     ports:
-      - "80:3000"
-    restart: always
+      - 3000:3000
     environment:
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
       - API_BASE_URL=${API_BASE_URL}
-    user: root
+    volumes:
+      - ./services/web:/app
+      - /app/node_modules
+    restart: always
 
   backend:
     build:
