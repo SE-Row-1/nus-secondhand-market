@@ -17,6 +17,3 @@ spring:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
-
-custom:
-  ec2-public-ip: ${EC2_PUBLIC_IP}

@@ -17,7 +17,6 @@ services:
       - POSTGRES_URL=${POSTGRES_URL}
       - POSTGRES_USERNAME=${POSTGRES_USERNAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - EC2_PUBLIC_IP=${EC2_PUBLIC_IP}
     depends_on:
       - postgres
 
