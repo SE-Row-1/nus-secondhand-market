@@ -155,9 +155,9 @@ public class AccountServiceImpl implements AccountService{
 
         if (updateProfileResult > 0) {
             return ResponseEntity.status(HttpStatus.OK).body(req);
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMsg("Failed to update p rofile"));
         }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMsg(ErrorMsgEnum.FAILED_UPDATE.ErrorMsg));
+
     }
 
     /**
