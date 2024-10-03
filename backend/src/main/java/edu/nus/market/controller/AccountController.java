@@ -109,8 +109,6 @@ public class AccountController {
     }
 
 
-
-
     @GetMapping("/healthz")
     public String checkHealth(){
         return "ok";

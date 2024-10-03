@@ -1,6 +1,7 @@
 package edu.nus.market.dao;
 
 import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.UpdateProfileReq;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -30,8 +31,15 @@ public interface AccountDao {
         "RETURNING id")
     int updatePassword(int id, String passwordHash, String passwordSalt);
 
-    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone_code = #{phoneCode}, phone_number = #{phoneNumber}, preferred_currency = #{currency} WHERE id = #{id} AND deleted_at IS NULL" +
-        "RETURNING id")
-    int updateProfile(String nickname, String avatar, String phoneCode, String phone_number, String currency, int id);
+    @Update("UPDATE account SET " +
+        "email = COALESCE(#{updateProfileReq.email}, email), " +
+        "nickname = COALESCE(#{updateProfileReq.nickname}, nickname), " +
+        "avatar_url = COALESCE(#{updateProfileReq.avatarUrl}, avatar_url), " +
+        "phone_code = COALESCE(#{updateProfileReq.phoneCode}, phone_code), " +
+        "phone_number = COALESCE(#{updateProfileReq.phoneNumber}, phone_number), " +
+        "preferred_currency = COALESCE(#{updateProfileReq.preferredCurrency}, preferred_currency), " +
+        "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
+        "WHERE id = #{id} ")
+    int updateProfile(UpdateProfileReq updateProfileReq, int id);
 }
 
