@@ -37,7 +37,7 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
           context: ./services/web
           push: true
-          tags: z1yoon/nus-secondhand-market-web-service:latest
+          tags: z1yoon/nus-secondhand-market-web:latest
 
       - name: Build and push backend
         uses: docker/build-push-action@v6
