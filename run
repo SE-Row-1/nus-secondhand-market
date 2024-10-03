@@ -1,5 +1,3 @@
-#!/bin/sh
-
 DOCKER_COMPOSE_FILE=docker-compose.dev.yaml
 
 if [[ ! -f .env ]] && [[ -f .env.gpg ]]; then
