@@ -4,7 +4,7 @@ import { JoinNowCard } from "./join-now-card";
 import { MeCardClient } from "./me-card-client";
 
 export async function MeCardServer() {
-  const me = await new ServerRequester().get<Account | undefined>("auth/me");
+  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
 
   return <MeCardClient initialMe={me} fallback={<JoinNowCard />} />;
 }

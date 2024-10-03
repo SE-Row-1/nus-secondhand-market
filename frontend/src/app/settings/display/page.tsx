@@ -3,7 +3,7 @@ import { ServerRequester } from "@/utils/requester/server";
 import { UpdateNicknameCard } from "../cards/update-nickname-card";
 
 export default async function DisplaySettingsPage() {
-  const me = await new ServerRequester().get<Account | undefined>("auth/me");
+  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
 
   return (
     <div className="grid gap-6">

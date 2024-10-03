@@ -95,9 +95,9 @@ function DeleteAccountButton() {
     string,
     MouseEvent<HTMLButtonElement>
   >(
-    "auth/me",
+    "/auth/me",
     async () => {
-      return await new ClientRequester().delete<undefined>("auth/me");
+      return await new ClientRequester().delete<undefined>("/auth/me");
     },
     {
       populateCache: true,
@@ -109,6 +109,7 @@ function DeleteAccountButton() {
             "We are sorry to see you go. 🥲 Remember you can contact our support team to find your account back in the next 30 days!",
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {
