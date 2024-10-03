@@ -19,8 +19,8 @@ public interface AccountDao {
 
     @Insert("INSERT INTO account (email, password_hash, password_salt) VALUES " +
         "(#{email}, #{passwordHash}, #{passwordSalt}) " +
-        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId" +
-        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency" +
+        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId " +
+        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency " +
         "created_at AS createdAt, deleted_at AS deletedAt")
     @Results({
         @Result(property = "id", column = "id"),
@@ -55,8 +55,8 @@ public interface AccountDao {
         "preferred_currency = COALESCE(#{updateProfileReq.preferredCurrency}, preferred_currency), " +
         "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
         "WHERE id = #{id} " +
-        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId" +
-        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency" +
+        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId " +
+        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency " +
         "created_at AS createdAt, deleted_at AS deletedAt")
     @Results({
         @Result(property = "id", column = "id"),
