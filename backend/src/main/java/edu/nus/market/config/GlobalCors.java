@@ -17,10 +17,9 @@ public class GlobalCors implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://13.212.58.250", "http://localhost") // 允许所有域
+            .allowedOrigins("http://52.77.248.143", "http://localhost") // 允许所有域
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH")
             .allowedHeaders("*")
             .allowCredentials(true);
     }
 }
-
