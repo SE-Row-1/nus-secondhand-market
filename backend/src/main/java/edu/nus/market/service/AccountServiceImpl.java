@@ -111,10 +111,10 @@ public class AccountServiceImpl implements AccountService{
         //Check if account exists
         if(accountDao.getAccountById(id) == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
-
         //delete account
         accountDao.deleteAccount(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        ResponseCookie cookie = cookieManager.deleteCookie();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }
 
     @Override
