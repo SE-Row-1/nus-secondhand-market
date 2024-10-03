@@ -1,4 +1,4 @@
-package edu.nus.market.service.exchangeRate;
+package edu.nus.market.service;
 
 import edu.nus.market.pojo.exchangeRate.ExchangeResponse;
 import edu.nus.market.pojo.exchangeRate.UpdExgRatReq;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ExchangeRateServiceImpl implements ExchangeRateService{
+public class ExchangeRateServiceImpl implements edu.nus.market.service.exchangeRate.ExchangeRateService {
 
     //extract parameters from application.yml
     @Value("${currencyLayer.api.url}")

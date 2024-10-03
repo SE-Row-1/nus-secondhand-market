@@ -41,8 +41,6 @@ public interface AccountDao {
         "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
         "WHERE id = #{id} ")
     int updateProfile(UpdateProfileReq updateProfileReq, int id);
-    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone_code = #{phoneCode}, phone_number = #{phoneNumber}, preferred_currency = #{currency} WHERE id = #{id} AND deleted_at IS NULL " +
-        "RETURNING id")
-    int updateProfile(String nickname, String avatar, String phoneCode, String phoneNumber, String currency, int id);
+
 }
 
