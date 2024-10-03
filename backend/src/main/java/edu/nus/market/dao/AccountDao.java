@@ -18,8 +18,23 @@ public interface AccountDao {
     Account getAccountByEmail(String email);
 
     @Insert("INSERT INTO account (email, password_hash, password_salt) VALUES " +
-        "(#{email}, #{passwordHash}, #{passwordSalt}) RETURNING id")
-    int registerNewAccount(Account account);
+        "(#{email}, #{passwordHash}, #{passwordSalt}) " +
+        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId" +
+        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency" +
+        "created_at AS createdAt, deleted_at AS deletedAt")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "nickname", column = "nickname"),
+        @Result(property = "avatarUrl", column = "avatarUrl"),
+        @Result(property = "departmentId", column = "department_id"),
+        @Result(property = "phoneCode", column = "phone_code"),
+        @Result(property = "phoneNumber", column = "phone_number"),
+        @Result(property = "preferredCurrency", column = "preferred_currency"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "deletedAt", column = "deleted_at")
+    })
+    Account registerNewAccount(Account account);
 
     @Delete("UPDATE FROM account WHERE id = #{id}")
     void hardDeleteAccount(int id);
@@ -39,8 +54,22 @@ public interface AccountDao {
         "phone_number = COALESCE(#{updateProfileReq.phoneNumber}, phone_number), " +
         "preferred_currency = COALESCE(#{updateProfileReq.preferredCurrency}, preferred_currency), " +
         "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
-        "WHERE id = #{id} ")
-    int updateProfile(UpdateProfileReq updateProfileReq, int id);
-
+        "WHERE id = #{id} " +
+        "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId" +
+        "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency" +
+        "created_at AS createdAt, deleted_at AS deletedAt")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "email", column = "email"),
+        @Result(property = "nickname", column = "nickname"),
+        @Result(property = "avatarUrl", column = "avatarUrl"),
+        @Result(property = "departmentId", column = "department_id"),
+        @Result(property = "phoneCode", column = "phone_code"),
+        @Result(property = "phoneNumber", column = "phone_number"),
+        @Result(property = "preferredCurrency", column = "preferred_currency"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "deletedAt", column = "deleted_at")
+    })
+    Account updateProfile(UpdateProfileReq updateProfileReq, int id);
 }
 

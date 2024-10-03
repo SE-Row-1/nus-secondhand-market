@@ -98,9 +98,9 @@ public class AccountServiceImpl implements AccountService{
         Account account = new Account(registerReq);
         account.setPasswordHash(passwordHash);
         account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
-        int accountId = accountDao.registerNewAccount(account);
+        account = accountDao.registerNewAccount(account);
 
-        String accessToken = jwtTokenManager.generateAccessToken((accountId));
+        String accessToken = jwtTokenManager.generateAccessToken(account.getId());
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
         // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
@@ -139,7 +139,7 @@ public class AccountServiceImpl implements AccountService{
     }
 
     @Override
-    public ResponseEntity<Object> updateProfileService(UpdateProfileReq req, int id) {
+    public ResponseEntity<Object> updateProfileService(UpdateProfileReq updateProfileReq, int id) {
         // Business logic to update nickname, avatar, phone in the database
         // Use repository or DAO to interact with the database.
         Account account = accountDao.getAccountById(id);
@@ -147,16 +147,13 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
-        if (req.getEmail() != null && accountDao.getAccountByEmail(req.getEmail()) != null){
+        if (updateProfileReq.getEmail() != null && accountDao.getAccountByEmail(updateProfileReq.getEmail()) != null){
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
         }
 
-        int updateProfileResult = accountDao.updateProfile(req, id);
+        account = accountDao.updateProfile(updateProfileReq, id);
 
-        if (updateProfileResult > 0) {
-            return ResponseEntity.status(HttpStatus.OK).body(req);
-        }
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorMsg(ErrorMsgEnum.FAILED_UPDATE.ErrorMsg));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResAccount(account));
 
     }
 
