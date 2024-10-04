@@ -1,7 +1,5 @@
 .next/
 coverage/
 node_modules/
-.env*
-!.env.example
 next-env.d.ts
 *.tsbuildinfo
