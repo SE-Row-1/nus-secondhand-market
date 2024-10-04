@@ -10,7 +10,7 @@ export type Account = PartialAccount & {
     id: number;
     acronym: string;
     name: string;
-  };
+  } | null;
   phone_code: string | null;
   phone_number: string | null;
   created_at: Date;
@@ -28,7 +28,7 @@ export type SingleItem = {
   type: "single";
   seller: PartialAccount;
   name: string;
-  description: string | null;
+  description: string;
   price: number;
   photo_urls: string[];
   status: ItemStatus;
@@ -41,7 +41,7 @@ export type ItemPack = {
   type: "pack";
   seller: PartialAccount;
   name: string;
-  description: string | null;
+  description: string;
   discount: number;
   status: ItemStatus;
   children: (SingleItem | ItemPack)[];

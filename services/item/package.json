@@ -11,7 +11,8 @@
     "bun-compression": "^0.0.4",
     "hono": "^4.6.3",
     "hono-rate-limiter": "^0.4.0",
-    "mongodb": "^6.9.0"
+    "mongodb": "^6.9.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",

@@ -17,15 +17,15 @@ app.use(
   rateLimiter({
     windowMs: 1000 * 60,
     limit: 100,
-    keyGenerator: (context) =>
-      getConnInfo(context).remote.address ??
-      getCookie(context, "access_token") ??
+    keyGenerator: (c) =>
+      getConnInfo(c).remote.address ??
+      getCookie(c, "access_token") ??
       "anonymous",
   }),
   secureHeaders(),
 );
 
-app.get("/healthz", (context) => context.body(null));
+app.get("/healthz", (c) => c.body(null));
 
 app.route("/", itemsController);
 

@@ -4,5 +4,6 @@ declare module "bun" {
     PORT?: number;
     MONGO_DB_URI: string;
     MONGO_DB_NAME: string;
+    JWT_SECRET: string;
   }
 }
