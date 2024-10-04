@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 
@@ -11,6 +12,7 @@ const app = new Hono();
 
 app.use(
   compress(),
+  cors({ origin: "*", credentials: true }),
   logger(),
   rateLimiter({
     windowMs: 1000 * 60,
