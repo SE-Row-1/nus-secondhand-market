@@ -11,7 +11,8 @@ export type Account = PartialAccount & {
     acronym: string;
     name: string;
   };
-  phone: string | null;
+  phone_code: string | null;
+  phone_number: string | null;
   created_at: Date;
   deleted_at: Date | null;
 };
