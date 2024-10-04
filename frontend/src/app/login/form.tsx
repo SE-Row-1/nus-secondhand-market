@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
-import { requests } from "@/utils/requests";
+import { ClientRequester } from "@/utils/requester/client";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -44,7 +44,10 @@ export function LoginForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await requests.post<Account>("/auth/token", { email, password });
+      return await new ClientRequester().post<Account>("/auth/token", {
+        email,
+        password,
+      });
     },
     {
       revalidate: false,
@@ -55,6 +58,7 @@ export function LoginForm() {
           description: `Welcome back, ${account.nickname ?? account.email}!`,
         });
         router.push("/");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {

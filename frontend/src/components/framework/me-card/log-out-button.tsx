@@ -1,9 +1,12 @@
+"use client";
+
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { requests } from "@/utils/requests";
+import { ClientRequester } from "@/utils/requester/client";
 import { Loader2Icon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { MouseEvent } from "react";
 import useSWRMutation from "swr/mutation";
-import { DropdownMenuItem } from "../ui/dropdown-menu";
 
 export function LogOutButton() {
   const router = useRouter();
@@ -11,24 +14,25 @@ export function LogOutButton() {
   const { toast } = useToast();
 
   const { trigger, isMutating } = useSWRMutation<
-    unknown,
+    undefined,
     Error,
     string,
-    unknown
+    MouseEvent<HTMLButtonElement>
   >(
     "/auth/me",
     async () => {
-      return await requests.delete("/auth/token");
+      return await new ClientRequester().delete<undefined>("/auth/token");
     },
     {
+      populateCache: true,
       revalidate: false,
-      populateCache: () => undefined,
       onSuccess: () => {
         toast({
           title: "Logged out successfully",
           description: "Hope to see you again soon! 👋",
         });
         router.push("/login");
+        router.refresh();
       },
       throwOnError: false,
       onError: (error) => {

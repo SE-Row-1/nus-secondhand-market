@@ -1,41 +1,37 @@
 package edu.nus.market.dao;
 
 import edu.nus.market.pojo.Account;
-
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-import org.apache.ibatis.annotations.Select;
-
 import org.springframework.stereotype.Repository;
 
 
 @Repository
 public interface AccountDao {
-    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency, " +
-        "created_at, deleted_at FROM account WHERE id = #{id}")
+    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
+        "created_at, deleted_at FROM account WHERE id = #{id} AND deleted_at IS NULL")
     Account getAccountById(int id);
 
-    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone, preferred_currency, " +
-        "created_at, deleted_at FROM account WHERE email = #{email}")
+    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
+        "created_at, deleted_at FROM account WHERE email = #{email} AND deleted_at IS NULL")
     Account getAccountByEmail(String email);
 
-    @Insert("INSERT INTO account (email, nickname, avatar_url, department_Id, password_hash, password_salt, phone, preferred_currency) VALUES  " +
-        "(#{email}, #{nickname}, #{avatarUrl}, #{departmentId}, #{passwordHash}, #{passwordSalt}, #{phone}, #{preferredCurrency}) " +
-        "RETURNING id")
-    int addNewAccount(Account account);
+    @Insert("INSERT INTO account (email, password_hash, password_salt) VALUES " +
+        "(#{email}, #{passwordHash}, #{passwordSalt}) RETURNING id")
+    int registerNewAccount(Account account);
 
-    @Select("SELECT * FROM account WHERE id = #{id}")
-    Account findById(Long id);
+    @Delete("UPDATE FROM account WHERE id = #{id}")
+    void hardDeleteAccount(int id);
 
-    @Insert("INSERT INTO account (username, password) VALUES (#{username}, #{password})")
-    void insertAccount(Account account);
-
-    @Delete("DELETE FROM account WHERE id = #{id}")
+    @Update("UPDATE account SET deleted_at = now() WHERE id = #{id}")
     void deleteAccount(int id);
 
-    @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id}" +
+    @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id} AND deleted_at IS NULL " +
         "RETURNING id")
     int updatePassword(int id, String passwordHash, String passwordSalt);
+
+    @Update("UPDATE account SET nickname = #{nickname}, avatar_url = #{avatar}, phone_code = #{phoneCode}, phone_number = #{phoneNumber}, preferred_currency = #{currency} WHERE id = #{id} AND deleted_at IS NULL " +
+        "RETURNING id")
+    int updateProfile(String nickname, String avatar, String phoneCode, String phoneNumber, String currency, int id);
 }
+

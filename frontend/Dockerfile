@@ -4,7 +4,7 @@ FROM node:lts-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat curl
 
 RUN corepack enable pnpm
 
@@ -13,6 +13,9 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
+
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 
 RUN pnpm run build
 
@@ -25,9 +28,7 @@ WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-COPY --from=build --chown=nextjs:nodejs /app/public public
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone .
-COPY --from=build --chown=nextjs:nodejs /app/.next/static .next/static
 
 USER nextjs
 
