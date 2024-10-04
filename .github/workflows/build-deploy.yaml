@@ -83,5 +83,6 @@ jobs:
             echo "POSTGRES_URL=${{ secrets.POSTGRES_URL }}" >> .env
             echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
             echo "API_BASE_URL=${{ secrets.API_BASE_URL }}" >> .env
+            echo "EC2_PUBLIC_IP=${{ secrets.EC2_PUBLIC_IP }}" >> .env
             docker compose up -d
           EOF
