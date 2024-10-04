@@ -4,7 +4,7 @@ FROM node:lts-alpine AS build
 
 WORKDIR /app
 
-RUN apk add --no-cache libc6-compat curl
+RUN apk add --no-cache libc6-compat
 
 RUN corepack enable pnpm
 
@@ -25,12 +25,7 @@ FROM node:lts-alpine AS production
 
 WORKDIR /app
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=build --chown=nextjs:nodejs /app/.next/standalone .
-
-USER nextjs
+COPY --from=build /app/.next/standalone .
 
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
