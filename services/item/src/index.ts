@@ -54,7 +54,7 @@ app.use(
 );
 
 // Health check endpoint.
-app.get("/healthz", (c) => c.body(null));
+app.get("/healthz", (c) => c.text("ok"));
 
 // API for items.
 app.route("/", itemsController);
