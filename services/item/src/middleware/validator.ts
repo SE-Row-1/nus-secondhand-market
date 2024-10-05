@@ -6,9 +6,8 @@ import type { z, ZodError, ZodSchema } from "zod";
 /**
  * Validate the data format of a particular part of an incoming request.
  *
- * @param target The target part to validate.
+ * @param target The target part to be validated.
  * @param schema A Zod schema that specifies the expected data format.
- * @returns The middleware to validate the request.
  */
 export function validator<
   Target extends keyof ValidationTargets,

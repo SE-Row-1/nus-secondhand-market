@@ -15,7 +15,6 @@ import { verify } from "hono/jwt";
  * will be set to `undefined`.
  *
  * @param strict Whether the user must log in to pass the auth check.
- * @returns The middleware to be used in `app.use`, `app.post`, etc.
  */
 export function auth<Strict extends boolean>(strict: Strict) {
   return createMiddleware<{

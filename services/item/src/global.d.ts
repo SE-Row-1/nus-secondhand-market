@@ -1,9 +1,28 @@
 declare module "bun" {
-  // See `.env.example` for details on environment variables.
   interface Env {
+    /**
+     * The port number that the server listens on.
+     * Optional. Default to 3000.
+     */
     PORT?: number;
+
+    /**
+     * The URI of the MongoDB database.
+     * Format: mongodb://<username>:<password>@<host>:<port>
+     * Required.
+     */
     MONGO_DB_URI: string;
+
+    /**
+     * The name of the MongoDB database.
+     * Required.
+     */
     MONGO_DB_NAME: string;
+
+    /**
+     * The secret key for JWT decoding.
+     * Required.
+     */
     JWT_SECRET: string;
   }
 }

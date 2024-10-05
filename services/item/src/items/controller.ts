@@ -4,6 +4,9 @@ import { Hono } from "hono";
 import { z } from "zod";
 import { itemsService } from "./service";
 
+/**
+ * Controller layer for items.
+ */
 export const itemsController = new Hono();
 
 itemsController.get(

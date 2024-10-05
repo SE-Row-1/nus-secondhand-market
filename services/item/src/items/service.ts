@@ -1,6 +1,9 @@
 import { type Account } from "@/types";
 import { itemsRepository } from "./repository";
 
+/**
+ * Service layer for items.
+ */
 export const itemsService = {
   getAllItems,
   createItem,

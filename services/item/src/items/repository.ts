@@ -1,6 +1,9 @@
 import { ItemStatus, type Item, type SingleItem } from "@/types";
 import { itemsCollection } from "@/utils/db";
 
+/**
+ * Data access layer for items.
+ */
 export const itemsRepository = {
   findAll,
   count,
