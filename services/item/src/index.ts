@@ -21,9 +21,11 @@ app.use(
   // once Bun has implemented `CompressionStream`. See oven-sh/bun#1723.
   compress(),
 
-  // Enable CORS for all origins.
-  // TODO: Narrow the origin to our own domain for better security.
-  cors({ origin: "*", credentials: true }),
+  // Enable CORS for local development and testing.
+  cors({
+    origin: (origin) => (Bun.env.NODE_ENV === "production" ? null : origin),
+    credentials: Bun.env.NODE_ENV === "production" ? false : true,
+  }),
 
   // Log every incoming request and their corresponding response.
   // TODO: Write logs to a file for better monitoring.

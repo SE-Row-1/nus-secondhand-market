@@ -6,7 +6,8 @@ export class ClientFetcher implements Fetcher {
 
     const response = await fetch(url, {
       ...init,
-      credentials: "include",
+      credentials:
+        process.env.NODE_ENV === "production" ? "same-origin" : "include",
     });
 
     if (response.status === 204) {

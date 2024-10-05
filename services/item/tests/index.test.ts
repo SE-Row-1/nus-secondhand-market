@@ -39,9 +39,15 @@ describe("Compression", () => {
 
 describe("CORS", () => {
   it("sets the correct CORS headers", async () => {
-    const res = await request("/healthz");
+    const res = await request("/healthz", {
+      headers: {
+        Origin: "http://localhost:3000",
+      },
+    });
 
-    expect(res.headers.get("Access-Control-Allow-Origin")).toEqual("*");
+    expect(res.headers.get("Access-Control-Allow-Origin")).toEqual(
+      "http://localhost:3000",
+    );
     expect(res.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
   });
 });
