@@ -1,3 +1,5 @@
+export type Endpoint = `/${string}`;
+
 export interface Fetcher {
-  fetch: <T>(endpoint: string, init?: RequestInit) => Promise<T>;
+  fetch: <T>(endpoint: Endpoint, init?: RequestInit) => Promise<T>;
 }

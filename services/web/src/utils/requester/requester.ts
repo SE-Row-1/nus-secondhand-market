@@ -1,4 +1,4 @@
-import type { Fetcher } from "./fetcher";
+import type { Endpoint, Fetcher } from "./fetcher";
 
 export abstract class Requester {
   private fetcher: Fetcher;
@@ -9,7 +9,7 @@ export abstract class Requester {
 
   protected abstract createFetcher(): Fetcher;
 
-  public async get<T>(endpoint: string, init: RequestInit = {}) {
+  public async get<T>(endpoint: Endpoint, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
       ...init,
       method: "GET",
@@ -17,7 +17,7 @@ export abstract class Requester {
   }
 
   public async post<T>(
-    endpoint: string,
+    endpoint: Endpoint,
     body: unknown = {},
     init: RequestInit = {},
   ) {
@@ -33,7 +33,7 @@ export abstract class Requester {
   }
 
   public async put<T>(
-    endpoint: string,
+    endpoint: Endpoint,
     body: unknown = {},
     init: RequestInit = {},
   ) {
@@ -49,7 +49,7 @@ export abstract class Requester {
   }
 
   public async patch<T>(
-    endpoint: string,
+    endpoint: Endpoint,
     body: unknown = {},
     init: RequestInit = {},
   ) {
@@ -64,7 +64,7 @@ export abstract class Requester {
     });
   }
 
-  public async delete<T>(endpoint: string, init: RequestInit = {}) {
+  public async delete<T>(endpoint: Endpoint, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
       ...init,
       method: "DELETE",

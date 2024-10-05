@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
-import type { Fetcher } from "./fetcher";
+import type { Endpoint, Fetcher } from "./fetcher";
 
 export class ServerFetcher implements Fetcher {
-  public async fetch<T>(endpoint: string, init: RequestInit = {}) {
+  public async fetch<T>(endpoint: Endpoint, init: RequestInit = {}) {
     const url = process.env["API_BASE_URL"] + endpoint;
 
     const response = await fetch(url, {
