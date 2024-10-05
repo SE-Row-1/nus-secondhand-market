@@ -1,4 +1,4 @@
-import { SingleItemPreviewCard } from "@/components/item";
+import { ItemPreviewCardList } from "@/components/item/item-preview-card-list";
 import type { SingleItem } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const { items } = await new ServerRequester().get<{
+  const { items, count } = await new ServerRequester().get<{
     items: SingleItem[];
     count: number;
   }>("/items");
@@ -21,11 +21,7 @@ export default async function Home() {
           We found something you might be interested in!
         </p>
       </div>
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-        {items.map((item) => (
-          <SingleItemPreviewCard key={item.id} item={item} />
-        ))}
-      </ul>
+      <ItemPreviewCardList initialItems={items} initialCount={count} />
     </div>
   );
 }

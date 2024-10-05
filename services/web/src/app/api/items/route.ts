@@ -169,5 +169,5 @@ const mockItems = [
 ] as const;
 
 export async function GET() {
-  return NextResponse.json({ items: mockItems, count: 9 }, { status: 200 });
+  return NextResponse.json({ items: mockItems, count: 8 }, { status: 200 });
 }
