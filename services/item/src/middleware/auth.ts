@@ -24,7 +24,7 @@ export function auth<Strict extends boolean>(strict: Strict) {
     const accessToken = getCookie(c, "access_token");
 
     if (accessToken === undefined && strict) {
-      return c.json({ error: "Please log in first." }, 401);
+      throw new HTTPException(401, { message: "Please log in first." });
     }
 
     if (accessToken === undefined) {

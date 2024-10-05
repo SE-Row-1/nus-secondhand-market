@@ -1,30 +1,31 @@
 import type { ValidationTargets } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { validator as honoValidator } from "hono/validator";
 import type { z, ZodError, ZodSchema } from "zod";
 
 /**
- * Validate a particular part of an incoming request.
+ * Validate the data format of a particular part of an incoming request.
  *
- * @param target Which part of the request to validate.
- * @param schema A Zod schema against which the target will be validated.
+ * @param target The target part to validate.
+ * @param schema A Zod schema that specifies the expected data format.
  * @returns The middleware to validate the request.
  */
 export function validator<
   Target extends keyof ValidationTargets,
   Schema extends ZodSchema,
 >(target: Target, schema: Schema) {
-  return honoValidator(target, async (value, c) => {
+  return honoValidator(target, async (value) => {
     const { success, data, error } = await schema.safeParseAsync(value);
 
     if (!success) {
-      return c.json({ error: buildErrorMessage(error) }, 400);
+      throw new HTTPException(400, { message: formatError(error) });
     }
 
     return data as z.infer<Schema>;
   });
 }
 
-function buildErrorMessage(error: ZodError) {
+function formatError(error: ZodError) {
   const { path, message } = error.issues[0]!;
   return `[${path.join(".")}] ${message}`;
 }
