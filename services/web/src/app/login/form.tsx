@@ -50,8 +50,8 @@ export function LoginForm() {
       });
     },
     {
-      revalidate: false,
       populateCache: true,
+      revalidate: false,
       onSuccess: (account) => {
         toast({
           title: "Login successful",
