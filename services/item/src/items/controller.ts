@@ -16,9 +16,7 @@ itemsController.get(
     "query",
     z.object({
       limit: z.coerce.number().int().positive().default(20),
-      skip: z.coerce.number().int().nonnegative().default(0),
-      sort_key: z.enum(["created_at"]).default("created_at"),
-      sort_order: z.enum(["asc", "desc"]).default("desc"),
+      cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce
         .number()

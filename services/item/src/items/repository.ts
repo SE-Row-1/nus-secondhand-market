@@ -1,5 +1,6 @@
-import { ItemStatus, type Item, type SingleItem } from "@/types";
+import { ItemStatus, type SingleItem } from "@/types";
 import { itemsCollection } from "@/utils/db";
+import { ObjectId } from "mongodb";
 
 /**
  * Data access layer for items.
@@ -12,23 +13,24 @@ export const itemsRepository = {
 
 type FindAllDto = {
   limit: number;
-  skip: number;
-  sort_key: "created_at";
-  sort_order: "asc" | "desc";
+  cursor?: string | undefined;
   type?: "single" | "pack" | undefined;
   status: ItemStatus;
 };
 
 async function findAll(dto: FindAllDto) {
   return await itemsCollection
-    .find({
-      ...(dto.type ? { type: dto.type } : {}),
-      status: dto.status,
-    })
-    .sort({ [dto.sort_key]: dto.sort_order })
-    .project<Item>({ _id: 0 })
-    .limit(dto.limit)
-    .skip(dto.skip)
+    .find(
+      {
+        ...(dto.type ? { type: dto.type } : {}),
+        status: dto.status,
+        ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
+      },
+      {
+        sort: { _id: -1 },
+        limit: dto.limit,
+      },
+    )
     .toArray();
 }
 

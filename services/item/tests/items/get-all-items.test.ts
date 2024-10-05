@@ -5,6 +5,7 @@ import { request } from "../utils";
 type ExpectedResponse = {
   items: Item[];
   count: number;
+  nextCursor: string | null;
 };
 
 describe("Default behavior", () => {
@@ -53,96 +54,25 @@ describe("Given limit", () => {
   });
 });
 
-describe("Given skip", () => {
-  it("skips the given amount of items", async () => {
-    const res = await request("/?skip=1");
-    const body = (await res.json()) as ExpectedResponse;
+describe("Given cursor", () => {
+  it("skips every item before the given cursor", async () => {
+    const res1 = await request("/?limit=1");
+    const body1 = (await res1.json()) as ExpectedResponse;
+    const nextCursor = body1.nextCursor;
 
-    expect(res.status).toEqual(200);
+    expect(res1.status).toEqual(200);
+    expect(body1.items).toBeArrayOfSize(1);
+    expect(nextCursor).toBeString();
 
-    const nonSkippedRes = await request("/");
-    const nonSkippedBody = (await nonSkippedRes.json()) as ExpectedResponse;
+    const res2 = await request(`/?limit=1&cursor=${nextCursor}`);
+    const body2 = (await res2.json()) as ExpectedResponse;
 
-    expect(body.items[0]).toEqual(nonSkippedBody.items[1]!);
-    expect(body.count).toEqual(nonSkippedBody.count);
-  });
+    expect(res2.status).toEqual(200);
+    expect(body2.items).toBeArrayOfSize(1);
 
-  it("returns 400 when skip is not a number", async () => {
-    const res = await request("/?skip=foo");
-    const body = await res.json();
-
-    expect(res.status).toEqual(400);
-    expect(body).toMatchObject({ error: expect.any(String) });
-  });
-
-  it("returns 400 when skip is not an integer", async () => {
-    const res = await request("/?skip=1.5");
-    const body = await res.json();
-
-    expect(res.status).toEqual(400);
-    expect(body).toMatchObject({ error: expect.any(String) });
-  });
-
-  it("returns 400 when skip is negative", async () => {
-    const res = await request("/?skip=-1");
-    const body = await res.json();
-
-    expect(res.status).toEqual(400);
-    expect(body).toMatchObject({ error: expect.any(String) });
-  });
-});
-
-describe("Given sort_key", () => {
-  it("sorts items by the given sort_key", async () => {
-    const res = await request("/?sort_key=created_at");
-    const body = (await res.json()) as ExpectedResponse;
-
-    expect(res.status).toEqual(200);
-
-    let lastCreatedAt = new Date().getTime();
-    for (const item of body.items) {
-      expect(item.created_at).toBeString();
-
-      const createdAt = new Date(item.created_at).getTime();
-      expect(createdAt).toBeLessThanOrEqual(lastCreatedAt);
-
-      lastCreatedAt = createdAt;
-    }
-  });
-
-  it("returns 400 when sort_key is invalid", async () => {
-    const res = await request("/?sort_key=foo");
-    const body = await res.json();
-
-    expect(res.status).toEqual(400);
-    expect(body).toMatchObject({ error: expect.any(String) });
-  });
-});
-
-describe("Given sort_order", () => {
-  it("sorts items in the given sort_order", async () => {
-    const res = await request("/?sort_order=asc");
-    const body = (await res.json()) as ExpectedResponse;
-
-    expect(res.status).toEqual(200);
-
-    let lastCreatedAt = 0;
-    for (const item of body.items) {
-      expect(item.created_at).toBeString();
-
-      const createdAt = new Date(item.created_at).getTime();
-      expect(createdAt).toBeGreaterThanOrEqual(lastCreatedAt);
-
-      lastCreatedAt = createdAt;
-    }
-  });
-
-  it("returns 400 when sort_order is invalid", async () => {
-    const res = await request("/?sort_order=foo");
-    const body = await res.json();
-
-    expect(res.status).toEqual(400);
-    expect(body).toMatchObject({ error: expect.any(String) });
+    expect(new Date(body2.items[0]!.created_at).getTime()).toBeLessThan(
+      new Date(body1.items[0]!.created_at).getTime(),
+    );
   });
 });
 

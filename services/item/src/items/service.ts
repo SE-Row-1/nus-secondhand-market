@@ -11,9 +11,7 @@ export const itemsService = {
 
 type GetAllItemsDto = {
   limit: number;
-  skip: number;
-  sort_key: "created_at";
-  sort_order: "asc" | "desc";
+  cursor?: string | undefined;
   type?: "single" | "pack" | undefined;
   status: ItemStatus;
 };
@@ -24,7 +22,15 @@ async function getAllItems(dto: GetAllItemsDto) {
     itemsRepository.count(dto),
   ]);
 
-  return { items, count };
+  const nextCursor = items.length === 0 ? null : items[items.length - 1]!._id;
+
+  const idStrippedItems = items.map((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _id, ...rest } = item;
+    return { ...rest };
+  });
+
+  return { items: idStrippedItems, count, nextCursor };
 }
 
 type CreateItemDto = {
