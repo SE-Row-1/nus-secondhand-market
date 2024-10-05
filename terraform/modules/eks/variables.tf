@@ -12,3 +12,12 @@ variable "security_group_id" {
   description = "The security group ID for the EKS cluster"
   type        = string
 }
+
+variable "vpc_id" {
+  type      = string
+}
+
+variable "region" {
+  type      = string
+  default   = "ap-southeast-1"
+}

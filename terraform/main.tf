@@ -12,6 +12,7 @@ module "s3" {
 
 module "ec2" {
   source = "./modules/ec2"
+  vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
   security_group_id = module.vpc.security_group_id
   cluster_name = module.eks.cluster_name
@@ -28,6 +29,7 @@ module "eks" {
   private_subnet_ids = module.vpc.private_subnet_ids
   public_subnet_ids = module.vpc.public_subnet_ids
   security_group_id = module.vpc.security_group_id
+  vpc_id            = module.vpc.vpc_id
 }
 
 module "alb" {

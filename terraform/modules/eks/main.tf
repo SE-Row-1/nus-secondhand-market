@@ -1,13 +1,48 @@
+resource "aws_vpc_endpoint" "eks" {
+  vpc_id              = var.vpc_id
+  service_name        = "com.amazonaws.${var.region}.eks"
+  vpc_endpoint_type   = "Interface"
+
+  subnet_ids          = var.private_subnet_ids
+  security_group_ids  = [aws_security_group.eks_sg.id]
+
+  tags = {
+    Name = "eks-endpoint"
+  }
+}
+
+resource "aws_security_group" "eks_sg" {
+  vpc_id = var.vpc_id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "eks-sg"
+  }
+}
+
 resource "aws_eks_cluster" "nshm_cluster" {
   name     = "nshm-eks"
   version  = "1.30"
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
-    subnet_ids = concat(var.public_subnet_ids, var.private_subnet_ids)
+    subnet_ids             = concat(var.public_subnet_ids, var.private_subnet_ids)
     endpoint_private_access = true
     endpoint_public_access  = false
-    security_group_ids = [var.security_group_id]
+    security_group_ids      = [aws_security_group.eks_sg.id]
   }
 
   enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
@@ -111,3 +146,8 @@ output "cluster_endpoint" {
 output "cluster_name" {
   value = aws_eks_cluster.nshm_cluster.name
 }
+
+output "eks_vpc_endpoint_id" {
+  value = aws_vpc_endpoint.eks.id
+}
+
