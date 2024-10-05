@@ -40,9 +40,11 @@ app.use(
   // he/she will be treated as an anonymous user,
   // and share one rate limit quota with all other anonymous users.
   // This is a risky move, but normally our program will not reach this far.
+  //
+  // In testing environment, the rate limit is lifted to 10000 req/min.
   rateLimiter({
     windowMs: 1000 * 60,
-    limit: 100,
+    limit: Bun.env.NODE_ENV === "test" ? 10000 : 100,
     keyGenerator: (c) =>
       getConnInfo(c).remote.address ??
       getCookie(c, "access_token") ??

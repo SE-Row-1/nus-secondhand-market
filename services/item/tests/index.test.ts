@@ -50,9 +50,9 @@ describe("Rate limit", () => {
   it("sets the correct rate limit headers", async () => {
     const res = await request("/healthz");
 
-    expect(res.headers.get("RateLimit-Policy")).toEqual("100;w=60");
-    expect(res.headers.get("RateLimit-Limit")).toEqual("100");
-    expect(Number(res.headers.get("RateLimit-Remaining"))).toBeWithin(0, 100);
+    expect(res.headers.get("RateLimit-Policy")).toEqual("10000;w=60");
+    expect(res.headers.get("RateLimit-Limit")).toEqual("10000");
+    expect(Number(res.headers.get("RateLimit-Remaining"))).toBeWithin(0, 10000);
     expect(Number(res.headers.get("RateLimit-Reset"))).toBeWithin(0, 61);
   });
 });
