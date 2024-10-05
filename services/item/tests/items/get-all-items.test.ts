@@ -1,0 +1,211 @@
+import { ItemStatus, type Item } from "@/types";
+import { describe, expect, it } from "bun:test";
+import { request } from "../utils";
+
+type ExpectedResponse = {
+  items: Item[];
+  count: number;
+};
+
+describe("Default behavior", () => {
+  it("returns a list of items", async () => {
+    const res = await request("/");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+    expect(body.items).toBeArray();
+    expect(body.count).toBeNumber();
+  });
+});
+
+describe("Given limit", () => {
+  it("returns only the given amount of items", async () => {
+    const res = await request("/?limit=1");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+    expect(body.items).toBeArrayOfSize(1);
+    expect(body.count).toBeGreaterThan(1);
+  });
+
+  it("returns 400 when limit is not a number", async () => {
+    const res = await request("/?limit=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when limit is not an integer", async () => {
+    const res = await request("/?limit=1.5");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when limit is not positive", async () => {
+    const res = await request("/?limit=0");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Given skip", () => {
+  it("skips the given amount of items", async () => {
+    const res = await request("/?skip=1");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    const nonSkippedRes = await request("/");
+    const nonSkippedBody = (await nonSkippedRes.json()) as ExpectedResponse;
+
+    expect(body.items[0]).toEqual(nonSkippedBody.items[1]!);
+    expect(body.count).toEqual(nonSkippedBody.count);
+  });
+
+  it("returns 400 when skip is not a number", async () => {
+    const res = await request("/?skip=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when skip is not an integer", async () => {
+    const res = await request("/?skip=1.5");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when skip is negative", async () => {
+    const res = await request("/?skip=-1");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Given sort_key", () => {
+  it("sorts items by the given sort_key", async () => {
+    const res = await request("/?sort_key=created_at");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    let lastCreatedAt = new Date().getTime();
+    for (const item of body.items) {
+      expect(item.created_at).toBeString();
+
+      const createdAt = new Date(item.created_at).getTime();
+      expect(createdAt).toBeLessThanOrEqual(lastCreatedAt);
+
+      lastCreatedAt = createdAt;
+    }
+  });
+
+  it("returns 400 when sort_key is invalid", async () => {
+    const res = await request("/?sort_key=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Given sort_order", () => {
+  it("sorts items in the given sort_order", async () => {
+    const res = await request("/?sort_order=asc");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    let lastCreatedAt = 0;
+    for (const item of body.items) {
+      expect(item.created_at).toBeString();
+
+      const createdAt = new Date(item.created_at).getTime();
+      expect(createdAt).toBeGreaterThanOrEqual(lastCreatedAt);
+
+      lastCreatedAt = createdAt;
+    }
+  });
+
+  it("returns 400 when sort_order is invalid", async () => {
+    const res = await request("/?sort_order=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Given type", () => {
+  it("filters out single items when type is single", async () => {
+    const res = await request("/?type=single");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    for (const item of body.items) {
+      expect(item.type).toEqual("single");
+    }
+  });
+
+  it("filters out item packs when type is pack", async () => {
+    const res = await request("/?type=pack");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    for (const item of body.items) {
+      expect(item.type).toEqual("pack");
+    }
+  });
+
+  it("returns 400 when type is invalid", async () => {
+    const res = await request("/?type=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Given status", () => {
+  it("returns FOR_SALE items when status is not given", async () => {
+    const res = await request("/");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    for (const item of body.items) {
+      expect(item.status).toEqual(ItemStatus.FOR_SALE);
+    }
+  });
+
+  it("filters out items of the given status", async () => {
+    const res = await request("/?status=1");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    for (const item of body.items) {
+      expect(item.status).toEqual(ItemStatus.DEALT);
+    }
+  });
+
+  it("returns 400 when status is invalid", async () => {
+    const res = await request("/?status=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});

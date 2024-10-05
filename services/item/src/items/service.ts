@@ -1,4 +1,4 @@
-import { type Account } from "@/types";
+import { ItemStatus, type Account } from "@/types";
 import { itemsRepository } from "./repository";
 
 /**
@@ -12,15 +12,19 @@ export const itemsService = {
 type GetAllItemsDto = {
   limit: number;
   skip: number;
+  sort_key: "created_at";
+  sort_order: "asc" | "desc";
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
-  const [items, total] = await Promise.all([
+  const [items, count] = await Promise.all([
     itemsRepository.findAll(dto),
-    itemsRepository.count(),
+    itemsRepository.count(dto),
   ]);
 
-  return [items, total] as const;
+  return { items, count };
 }
 
 type CreateItemDto = {

@@ -13,19 +13,35 @@ export const itemsRepository = {
 type FindAllDto = {
   limit: number;
   skip: number;
+  sort_key: "created_at";
+  sort_order: "asc" | "desc";
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
 };
 
 async function findAll(dto: FindAllDto) {
   return await itemsCollection
-    .find()
+    .find({
+      ...(dto.type ? { type: dto.type } : {}),
+      status: dto.status,
+    })
+    .sort({ [dto.sort_key]: dto.sort_order })
     .project<Item>({ _id: 0 })
     .limit(dto.limit)
     .skip(dto.skip)
     .toArray();
 }
 
-async function count() {
-  return await itemsCollection.estimatedDocumentCount();
+type CountDto = {
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
+};
+
+async function count(dto: CountDto) {
+  return await itemsCollection.countDocuments({
+    ...(dto.type ? { type: dto.type } : {}),
+    status: dto.status,
+  });
 }
 
 type InsertOneDto = {
@@ -46,7 +62,7 @@ async function insertOne(dto: InsertOneDto) {
     id: crypto.randomUUID(),
     type: "single",
     status: ItemStatus.FOR_SALE,
-    created_at: new Date(),
+    created_at: new Date().toISOString(),
     deleted_at: null,
   });
 
