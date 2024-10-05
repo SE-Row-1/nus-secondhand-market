@@ -60,7 +60,7 @@ export function MeCardClient({ initialMe, fallback }: Props) {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/support">
+            <Link href="#">
               <LifeBuoyIcon className="size-4 mr-2" />
               Support
             </Link>
