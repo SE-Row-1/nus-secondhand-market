@@ -1,0 +1,6 @@
+*
+!/src
+!/tests
+!bun.lockb
+!package.json
+!tsconfig.json
