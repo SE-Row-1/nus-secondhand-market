@@ -58,8 +58,8 @@ export function RegisterForm() {
       });
     },
     {
-      revalidate: false,
       populateCache: true,
+      revalidate: false,
       onSuccess: (account) => {
         toast({
           title: "Registration successful",

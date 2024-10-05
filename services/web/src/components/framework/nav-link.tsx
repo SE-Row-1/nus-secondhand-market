@@ -1,12 +1,13 @@
 "use client";
 
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";
 import { cn } from "../ui/utils";
 
 type Props = PropsWithChildren<{
-  href: string;
+  href: Route;
 }>;
 
 export function NavLink({ children, href }: Props) {
