@@ -7,6 +7,7 @@ import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
+import { globalErrorHandler } from "./middleware/global-error-handler";
 
 const app = new Hono();
 
@@ -28,5 +29,7 @@ app.use(
 app.get("/healthz", (c) => c.body(null));
 
 app.route("/", itemsController);
+
+app.onError(globalErrorHandler);
 
 export default app;
