@@ -88,7 +88,9 @@ export function PublishItem() {
         </DialogHeader>
         <form onSubmit={mutate} className="grid gap-4 mt-1">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label showRequiredMarker htmlFor="name">
+              Name
+            </Label>
             <Input
               type="text"
               name="name"
@@ -98,7 +100,9 @@ export function PublishItem() {
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label showRequiredMarker htmlFor="description">
+              Description
+            </Label>
             <Textarea
               name="description"
               required
@@ -108,7 +112,9 @@ export function PublishItem() {
           </div>
           <div className="flex items-center gap-2">
             <div className="grow grid gap-2">
-              <Label htmlFor="price">Price</Label>
+              <Label showRequiredMarker htmlFor="price">
+                Price
+              </Label>
               <Input
                 type="number"
                 name="price"
