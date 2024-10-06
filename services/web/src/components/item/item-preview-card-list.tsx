@@ -31,11 +31,11 @@ export function ItemPreviewCardList({ initialData }: Props) {
         nextCursor: string;
       }>(`/items?${searchParams.toString()}`);
     },
-    initialPageParam: initialData.nextCursor,
+    initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
     initialData: {
       pages: [initialData],
-      pageParams: [initialData.nextCursor],
+      pageParams: [undefined, initialData.nextCursor],
     },
   });
 
