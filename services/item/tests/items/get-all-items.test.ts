@@ -144,3 +144,40 @@ describe("Given status", () => {
     expect(body).toMatchObject({ error: expect.any(String) });
   });
 });
+
+describe("Given seller_id", () => {
+  it("filters out items from the given seller", async () => {
+    const res = await request("/?seller_id=1");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+
+    for (const item of body.items) {
+      expect(item.seller.id).toEqual(1);
+    }
+  });
+
+  it("returns 400 when seller_id is not a number", async () => {
+    const res = await request("/?seller_id=foo");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when seller_id is not an integer", async () => {
+    const res = await request("/?seller_id=1.5");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when seller_id is not positive", async () => {
+    const res = await request("/?seller_id=0");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
