@@ -15,7 +15,7 @@ itemsController.get(
   validator(
     "query",
     z.object({
-      limit: z.coerce.number().int().positive().default(20),
+      limit: z.coerce.number().int().positive().default(8),
       cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce
