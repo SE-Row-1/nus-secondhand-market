@@ -17,7 +17,7 @@ declare module "bun" {
      * Format: mongodb://<username>:<password>@<host>:<port>
      * Required.
      */
-    MONGO_DB_URI: string;
+    MONGO_URI: string;
 
     /**
      * The name of the MongoDB database.
