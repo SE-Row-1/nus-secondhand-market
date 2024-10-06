@@ -19,19 +19,19 @@ export function SingleItemPreviewCard({ item }: Props) {
       <Badge className={cn("absolute top-4 left-4 uppercase", statusColor)}>
         {statusText}
       </Badge>
-      {item.photo_urls[0] ? (
-        <Image
-          src={item.photo_urls[0]}
-          alt="A photo of this second-hand item"
-          width={200}
-          height={200}
-          className="w-full aspect-square"
-        />
-      ) : (
-        <div className="grid place-items-center w-full aspect-square bg-muted">
-          <ShoppingBagIcon className="size-2/5 text-muted-foreground" />
-        </div>
-      )}
+      <div className="relative aspect-square">
+        {item.photo_urls[0] ? (
+          <Image
+            src={item.photo_urls[0]}
+            alt="A photo of this second-hand item"
+            fill
+          />
+        ) : (
+          <div className="grid place-items-center h-full bg-muted">
+            <ShoppingBagIcon className="size-2/5 text-muted-foreground" />
+          </div>
+        )}
+      </div>
       <div className="grow flex flex-col gap-2 px-5 py-4">
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <p className="font-semibold text-lg line-clamp-1">{item.name}</p>
