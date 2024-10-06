@@ -11,12 +11,14 @@ type Props = {
   item: SingleItem;
 };
 
-export function SingleItemPreviewCard({ item }: Props) {
+export function SingleItemCard({ item }: Props) {
   const { color: statusColor, text: statusText } = translateStatus(item.status);
 
   return (
     <Card className="group relative flex flex-col hover:bg-muted/30 transition-colors overflow-hidden">
-      <Badge className={cn("absolute top-4 left-4 uppercase", statusColor)}>
+      <Badge
+        className={cn("absolute top-4 left-4 uppercase z-10", statusColor)}
+      >
         {statusText}
       </Badge>
       <div className="relative aspect-square">
@@ -24,7 +26,9 @@ export function SingleItemPreviewCard({ item }: Props) {
           <Image
             src={item.photo_urls[0]}
             alt="A photo of this second-hand item"
-            fill
+            width={200}
+            height={200}
+            className="w-full"
           />
         ) : (
           <div className="grid place-items-center h-full bg-muted">

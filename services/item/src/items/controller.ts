@@ -18,10 +18,8 @@ itemsController.get(
       limit: z.coerce.number().int().positive().default(8),
       cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
-      status: z.coerce
-        .number()
-        .pipe(z.nativeEnum(ItemStatus))
-        .default(ItemStatus.FOR_SALE),
+      status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
+      seller_id: z.coerce.number().int().positive().optional(),
     }),
   ),
   async (c) => {
