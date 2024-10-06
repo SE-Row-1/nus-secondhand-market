@@ -87,11 +87,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Start containers
+        run: docker compose -f container-compose.test.yaml up -d
+
       - name: Test with coverage
-        run: |
-          pip3 install podman-compose
-          podman --version
-          podman compose --version
-          podman compose -f container-compose.test.yaml up -d --build
-          podman container ls -a
-          podman exec nshm-item-test_api_1 bun test --coverage
+        run: docker exec nshm-item-test-api-1 bun test --coverage
