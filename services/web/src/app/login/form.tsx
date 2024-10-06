@@ -8,10 +8,15 @@ import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import * as v from "valibot";
+
+export const metadata: Metadata = {
+  title: "Log in",
+};
 
 const formSchema = v.object({
   email: v.pipe(
