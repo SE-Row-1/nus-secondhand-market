@@ -1,0 +1,40 @@
+name: CodeQL for Java
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/account/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/account/**
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          build-mode: none
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:java-kotlin"
