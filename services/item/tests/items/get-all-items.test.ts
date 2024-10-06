@@ -117,17 +117,6 @@ describe("Given type", () => {
 });
 
 describe("Given status", () => {
-  it("returns FOR_SALE items when status is not given", async () => {
-    const res = await request("/");
-    const body = (await res.json()) as ExpectedResponse;
-
-    expect(res.status).toEqual(200);
-
-    for (const item of body.items) {
-      expect(item.status).toEqual(ItemStatus.FOR_SALE);
-    }
-  });
-
   it("filters out items of the given status", async () => {
     const res = await request("/?status=1");
     const body = (await res.json()) as ExpectedResponse;

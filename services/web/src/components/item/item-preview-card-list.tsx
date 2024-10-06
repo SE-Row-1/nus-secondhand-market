@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { SingleItem } from "@/types";
+import { ItemStatus, type SingleItem } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
@@ -21,6 +21,7 @@ export function ItemPreviewCardList({ initialData }: Props) {
     queryFn: ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams();
       searchParams.set("limit", "8");
+      searchParams.set("status", String(ItemStatus.FOR_SALE));
       if (cursor) {
         searchParams.set("cursor", cursor);
       }
