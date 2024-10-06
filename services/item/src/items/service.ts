@@ -1,4 +1,5 @@
 import { ItemStatus, type Account } from "@/types";
+import { photoManager } from "@/utils/photo-manager";
 import { ObjectId } from "mongodb";
 import { itemsRepository } from "./repository";
 
@@ -47,12 +48,17 @@ type CreateItemDto = {
   name: string;
   description: string;
   price: number;
-  photo_urls: string[];
+  photos: File[];
 };
 
 async function createItem(dto: CreateItemDto, user: Account) {
+  const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
+
   const item = await itemsRepository.insertOne({
-    ...dto,
+    name: dto.name,
+    description: dto.description,
+    price: dto.price,
+    photo_urls: photoUrls,
     seller: {
       id: user.id,
       nickname: user.nickname,

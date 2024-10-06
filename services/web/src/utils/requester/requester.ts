@@ -32,6 +32,22 @@ export abstract class Requester {
     });
   }
 
+  public async postForm<T>(
+    endpoint: Endpoint,
+    body: FormData,
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      ...init,
+      method: "POST",
+      body,
+      headers: {
+        ...init.headers,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  }
+
   public async put<T>(
     endpoint: Endpoint,
     body: unknown = {},

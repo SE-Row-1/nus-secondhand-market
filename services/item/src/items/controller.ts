@@ -29,21 +29,35 @@ itemsController.get(
   },
 );
 
+const fileSchema = z.custom<File>((data) => {
+  return (
+    data instanceof File &&
+    ["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
+      data.type,
+    ) &&
+    data.size <= 5 * 1024 * 1024
+  );
+});
+
 itemsController.post(
   "/",
   auth(true),
   validator(
-    "json",
+    "form",
     z.object({
       name: z.string().min(1).max(50),
       description: z.string().min(1).max(500),
       price: z.coerce.number().positive(),
-      photo_urls: z.array(z.string().url()).max(5),
+      photos: z
+        .array(fileSchema)
+        .max(5)
+        .or(fileSchema.transform((file) => [file]))
+        .default([]),
     }),
   ),
   async (c) => {
-    const dto = c.req.valid("json");
-    const item = await itemsService.createItem(dto, c.var.user);
-    return c.json(item, 201);
+    const form = c.req.valid("form");
+    const result = await itemsService.createItem(form, c.var.user);
+    return c.json(result, 201);
   },
 );

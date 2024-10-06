@@ -1,6 +1,6 @@
 import { ItemStatus, type Item, type SingleItem } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import type { Filter, FindOptions } from "mongodb";
+import { UUID, type Filter, type FindOptions } from "mongodb";
 
 /**
  * Data access layer for items.
@@ -34,7 +34,7 @@ type InsertOneDto = {
 async function insertOne(dto: InsertOneDto) {
   const { insertedId } = await itemsCollection.insertOne({
     ...dto,
-    id: crypto.randomUUID(),
+    id: new UUID().toString(),
     type: "single",
     status: ItemStatus.FOR_SALE,
     created_at: new Date().toISOString(),
