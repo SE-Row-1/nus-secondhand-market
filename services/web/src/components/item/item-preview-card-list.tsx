@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function ItemPreviewCardList({ initialData }: Props) {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams();
@@ -57,6 +57,11 @@ export function ItemPreviewCardList({ initialData }: Props) {
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
           - That&apos;s all we got for now! -
+        </p>
+      )}
+      {isFetching && (
+        <p className="my-8 text-sm text-muted-foreground text-center">
+          Loading more items...
         </p>
       )}
     </>
