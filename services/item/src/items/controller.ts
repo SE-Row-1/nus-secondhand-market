@@ -42,8 +42,8 @@ itemsController.post(
     }),
   ),
   async (c) => {
-    const dto = c.req.valid("json");
-    const item = await itemsService.createItem(dto, c.var.user);
-    return c.json(item, 201);
+    const body = c.req.valid("json");
+    const result = await itemsService.createItem(body, c.var.user);
+    return c.json(result, 201);
   },
 );
