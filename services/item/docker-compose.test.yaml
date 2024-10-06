@@ -6,7 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
-      - MONGO_URI=mongodb://mongo:27017
+      - JWT_SECRET=nshm-item-service
+      - MONGO_DB_URI=mongodb://mongo:27017
       - MONGO_DB_NAME=nshm
     depends_on:
       - mongo
