@@ -90,8 +90,7 @@ jobs:
       - name: Set up Podman Compose
         run: pip3 install --user podman-compose
 
-      - name: Start testing containers
-        run: podman-compose -f container-compose.test.yaml up -d
-
-      - name: Run tests
-        run: podman exec nshm-item-test_api_1 bun test --coverage
+      - name: Test with coverage
+        run: |
+          podman-compose -f container-compose.test.yaml up -d
+          podman exec nshm-item-test_api_1 bun test --coverage
