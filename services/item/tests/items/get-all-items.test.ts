@@ -74,6 +74,14 @@ describe("Given cursor", () => {
       new Date(body1.items[0]!.created_at).getTime(),
     );
   });
+
+  it("returns null cursor when coming to the end", async () => {
+    const res = await request("/?limit=100");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+    expect(body.nextCursor).toBeNull();
+  });
 });
 
 describe("Given type", () => {

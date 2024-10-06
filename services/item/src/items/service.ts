@@ -22,7 +22,8 @@ async function getAllItems(dto: GetAllItemsDto) {
     itemsRepository.count(dto),
   ]);
 
-  const nextCursor = items.length === 0 ? null : items[items.length - 1]!._id;
+  const nextCursor =
+    items.length < dto.limit ? null : items[items.length - 1]!._id;
 
   const idStrippedItems = items.map((item) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
