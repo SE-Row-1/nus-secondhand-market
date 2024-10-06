@@ -1,4 +1,4 @@
-FROM docker.io/oven/bun AS build
+FROM oven/bun AS build
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ COPY . .
 
 RUN bun run build
 
-FROM docker.io/oven/bun AS production
+FROM oven/bun AS production
 
 WORKDIR /app
 
