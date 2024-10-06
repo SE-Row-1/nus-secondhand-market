@@ -33,17 +33,29 @@ itemsController.post(
   "/",
   auth(true),
   validator(
-    "json",
+    "form",
     z.object({
       name: z.string().min(1).max(50),
       description: z.string().min(1).max(500),
       price: z.coerce.number().positive(),
-      photo_urls: z.array(z.string().url()).max(5),
+      photos: z
+        .array(
+          z.custom<File>((data) => {
+            return (
+              data instanceof File &&
+              ["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
+                data.type,
+              ) &&
+              data.size <= 5 * 1024 * 1024
+            );
+          }),
+        )
+        .max(5),
     }),
   ),
   async (c) => {
-    const body = c.req.valid("json");
-    const result = await itemsService.createItem(body, c.var.user);
+    const form = c.req.valid("form");
+    const result = await itemsService.createItem(form, c.var.user);
     return c.json(result, 201);
   },
 );

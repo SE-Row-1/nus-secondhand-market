@@ -7,6 +7,12 @@ declare module "bun" {
     PORT?: number;
 
     /**
+     * The secret key for JWT decoding.
+     * Required.
+     */
+    JWT_SECRET: string;
+
+    /**
      * The URI of the MongoDB database.
      * Format: mongodb://<username>:<password>@<host>:<port>
      * Required.
@@ -20,9 +26,27 @@ declare module "bun" {
     MONGO_DB_NAME: string;
 
     /**
-     * The secret key for JWT decoding.
+     * The access key ID for the S3 bucket.
      * Required.
      */
-    JWT_SECRET: string;
+    S3_ACCESS_KEY_ID: string;
+
+    /**
+     * The secret access key for the S3 bucket.
+     * Required.
+     */
+    S3_SECRET_ACCESS_KEY: string;
+
+    /**
+     * The name of the S3 bucket.
+     * Required.
+     */
+    S3_BUCKET_NAME: string;
+
+    /**
+     * The region of the S3 bucket.
+     * Required.
+     */
+    S3_REGION: string;
   }
 }
