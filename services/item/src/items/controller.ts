@@ -19,6 +19,7 @@ itemsController.get(
       cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
+      seller_id: z.coerce.number().int().positive().optional(),
     }),
   ),
   async (c) => {

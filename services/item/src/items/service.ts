@@ -15,6 +15,7 @@ type GetAllItemsDto = {
   cursor?: string | undefined;
   type?: "single" | "pack" | undefined;
   status?: ItemStatus | undefined;
+  seller_id?: number | undefined;
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
@@ -22,6 +23,7 @@ async function getAllItems(dto: GetAllItemsDto) {
     ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status ? { status: dto.status } : {}),
+    ...(dto.seller_id ? { "seller.id": dto.seller_id } : {}),
   };
 
   const [items, count] = await Promise.all([
