@@ -13,9 +13,9 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { type FormEvent } from "react";
-import useSWRMutation from "swr/mutation";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -32,17 +32,14 @@ type Props = {
 export function UpdateEmailCard({ initialEmail }: Props) {
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation<
-    Account,
-    Error,
-    string,
-    FormEvent<HTMLFormElement>
-  >(
-    "/auth/me",
-    async (_, { arg: event }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const formData = Object.fromEntries(new FormData(event.currentTarget));
+      const target = event.target as HTMLFormElement;
+      const formData = Object.fromEntries(new FormData(target));
 
       const { email } = v.parse(formSchema, formData);
 
@@ -50,19 +47,17 @@ export function UpdateEmailCard({ initialEmail }: Props) {
         email,
       });
     },
-    {
-      populateCache: true,
-      revalidate: false,
-      throwOnError: false,
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Failed to update Email",
-          description: error.message,
-        });
-      },
+    onSuccess: (account) => {
+      queryClient.setQueryData(["auth", "me"], account);
     },
-  );
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to update Email",
+        description: error.message,
+      });
+    },
+  });
 
   return (
     <Card>
@@ -72,7 +67,7 @@ export function UpdateEmailCard({ initialEmail }: Props) {
           Your NUS email address, used for identity verification and login.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={trigger}>
+      <form onSubmit={mutate}>
         <CardContent>
           <Input
             type="email"
@@ -84,8 +79,8 @@ export function UpdateEmailCard({ initialEmail }: Props) {
           />
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button disabled={isMutating} type="submit">
-            {isMutating ? (
+          <Button disabled={isPending} type="submit">
+            {isPending ? (
               <Loader2Icon className="size-4 mr-2 animate-spin" />
             ) : (
               <SaveIcon className="size-4 mr-2" />

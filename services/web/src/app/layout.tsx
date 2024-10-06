@@ -1,5 +1,6 @@
 import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
 import { Toaster } from "@/components/ui/toaster";
+import { QueryProvider } from "@/contexts/query";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
@@ -26,15 +27,19 @@ export default function RootLayout({ children }: PropsWithChildren) {
         <ThemeInitializer />
       </head>
       <body className="bg-background font-sans text-foreground antialiased">
-        <div className="hidden md:block">
-          <Sidebar />
-        </div>
-        <div className="md:hidden">
-          <Header />
-        </div>
-        <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">
-          <div className="px-6 md:px-12 lg:px-24 py-4 md:py-8">{children}</div>
-        </main>
+        <QueryProvider>
+          <div className="hidden md:block">
+            <Sidebar />
+          </div>
+          <div className="md:hidden">
+            <Header />
+          </div>
+          <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">
+            <div className="px-6 md:px-12 lg:px-24 py-4 md:py-8">
+              {children}
+            </div>
+          </main>
+        </QueryProvider>
         <Toaster />
       </body>
     </html>

@@ -6,11 +6,11 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
-import useSWRMutation from "swr/mutation";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -30,49 +30,42 @@ export function LoginForm() {
 
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation<
-    Account,
-    Error,
-    string,
-    FormEvent<HTMLFormElement>
-  >(
-    "/auth/me",
-    async (_, { arg: event }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const formData = Object.fromEntries(new FormData(event.currentTarget));
+      const target = event.target as HTMLFormElement;
+      const formData = Object.fromEntries(new FormData(target));
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().post<Account>("/auth/token", {
+      return new ClientRequester().post<Account>("/auth/token", {
         email,
         password,
       });
     },
-    {
-      populateCache: true,
-      revalidate: false,
-      onSuccess: (account) => {
-        toast({
-          title: "Login successful",
-          description: `Welcome back, ${account.nickname ?? account.email}!`,
-        });
-        router.push("/");
-        router.refresh();
-      },
-      throwOnError: false,
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Login failed",
-          description: error.message,
-        });
-      },
+    onSuccess: (account) => {
+      queryClient.setQueryData(["auth", "me"], account);
+      toast({
+        title: "Login successful",
+        description: `Welcome back, ${account.nickname ?? account.email}!`,
+      });
+      router.push("/");
+      router.refresh();
     },
-  );
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: error.message,
+      });
+    },
+  });
 
   return (
-    <form onSubmit={trigger} className="grid gap-4">
+    <form onSubmit={mutate} className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -92,8 +85,8 @@ export function LoginForm() {
         </div>
         <Input type="password" name="password" required id="password" />
       </div>
-      <Button type="submit" disabled={isMutating} className="w-full">
-        {isMutating ? (
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
           <LogInIcon className="size-4 mr-2" />

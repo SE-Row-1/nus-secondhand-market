@@ -6,10 +6,10 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
-import useSWRMutation from "swr/mutation";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -34,17 +34,14 @@ export function RegisterForm() {
 
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation<
-    Account,
-    Error,
-    string,
-    FormEvent<HTMLFormElement>
-  >(
-    "/auth/me",
-    async (_, { arg: event }) => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const formData = Object.fromEntries(new FormData(event.currentTarget));
+      const target = event.target as HTMLFormElement;
+      const formData = Object.fromEntries(new FormData(target));
 
       const { email, password, confirmation } = v.parse(formSchema, formData);
 
@@ -52,35 +49,31 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await new ClientRequester().post<Account>("/auth/me", {
+      return new ClientRequester().post<Account>("/auth/me", {
         email,
         password,
       });
     },
-    {
-      populateCache: true,
-      revalidate: false,
-      onSuccess: (account) => {
-        toast({
-          title: "Registration successful",
-          description: `Welcome on board, ${account.email}!`,
-        });
-        router.push("/");
-        router.refresh();
-      },
-      throwOnError: false,
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Registration failed",
-          description: error.message,
-        });
-      },
+    onSuccess: (account) => {
+      queryClient.setQueryData(["auth", "me"], account);
+      toast({
+        title: "Login successful",
+        description: `Welcome on board, ${account.email}!`,
+      });
+      router.push("/");
+      router.refresh();
     },
-  );
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Registration failed",
+        description: error.message,
+      });
+    },
+  });
 
   return (
-    <form onSubmit={trigger} className="grid gap-4">
+    <form onSubmit={mutate} className="grid gap-4">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -111,8 +104,8 @@ export function RegisterForm() {
           id="confirmation"
         />
       </div>
-      <Button type="submit" disabled={isMutating} className="w-full">
-        {isMutating ? (
+      <Button type="submit" disabled={isPending} className="w-full">
+        {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
           <UserRoundPlusIcon className="size-4 mr-2" />

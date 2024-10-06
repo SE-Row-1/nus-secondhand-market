@@ -8,9 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const { items, count } = await new ServerRequester().get<{
+  const data = await new ServerRequester().get<{
     items: SingleItem[];
     count: number;
+    nextCursor: string;
   }>("/items");
 
   return (
@@ -21,7 +22,7 @@ export default async function Home() {
           We found something you might be interested in!
         </p>
       </div>
-      <ItemPreviewCardList initialItems={items} initialCount={count} />
+      <ItemPreviewCardList initialData={data} />
     </div>
   );
 }

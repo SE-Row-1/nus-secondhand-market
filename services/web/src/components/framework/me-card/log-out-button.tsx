@@ -3,57 +3,50 @@
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
-import useSWRMutation from "swr/mutation";
 
 export function LogOutButton() {
   const router = useRouter();
 
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation<
-    undefined,
-    Error,
-    string,
-    MouseEvent<HTMLButtonElement>
-  >(
-    "/auth/me",
-    async () => {
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
       return await new ClientRequester().delete<undefined>("/auth/token");
     },
-    {
-      populateCache: true,
-      revalidate: false,
-      onSuccess: () => {
-        toast({
-          title: "Logged out successfully",
-          description: "Hope to see you again soon! 👋",
-        });
-        router.push("/login");
-        router.refresh();
-      },
-      throwOnError: false,
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Failed to log out",
-          description: error.message,
-        });
-      },
+    onSuccess: () => {
+      queryClient.setQueryData(["auth", "me"], null);
+      toast({
+        title: "Logged out successfully",
+        description: "Hope to see you again soon! 👋",
+      });
+      router.push("/login");
+      router.refresh();
     },
-  );
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to log out",
+        description: error.message,
+      });
+    },
+  });
 
   return (
     <DropdownMenuItem onSelect={(event) => event.preventDefault()} asChild>
       <button
         type="button"
-        disabled={isMutating}
-        onClick={trigger}
+        disabled={isPending}
+        onClick={mutate}
         className="w-full"
       >
-        {isMutating ? (
+        {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
           <LogOutIcon className="size-4 mr-2" />
