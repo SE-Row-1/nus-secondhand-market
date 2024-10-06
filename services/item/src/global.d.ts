@@ -21,6 +21,7 @@ declare module "bun" {
 
     /**
      * The secret key for JWT decoding.
+     * This should be kept the same across all services.
      * Required.
      */
     JWT_SECRET: string;
