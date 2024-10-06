@@ -20,7 +20,7 @@ itemsController.get(
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce
         .number()
-        .transform((status) => status as ItemStatus)
+        .pipe(z.nativeEnum(ItemStatus))
         .default(ItemStatus.FOR_SALE),
     }),
   ),

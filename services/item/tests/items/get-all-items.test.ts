@@ -139,7 +139,15 @@ describe("Given status", () => {
     }
   });
 
-  it("returns 400 when status is invalid", async () => {
+  it("returns 400 when status is not a valid status", async () => {
+    const res = await request("/?status=100");
+    const body = await res.json();
+
+    expect(res.status).toEqual(400);
+    expect(body).toMatchObject({ error: expect.any(String) });
+  });
+
+  it("returns 400 when status is not a number", async () => {
     const res = await request("/?status=foo");
     const body = await res.json();
 
