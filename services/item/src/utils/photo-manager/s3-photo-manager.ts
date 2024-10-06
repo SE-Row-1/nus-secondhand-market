@@ -17,12 +17,14 @@ export class S3PhotoManager implements PhotoManager {
     region: Bun.env.S3_REGION,
   });
 
-  private static baseUrl = `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.S3_REGION}.amazonaws.com`;
+  private static BASE_URL = `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.S3_REGION}.amazonaws.com`;
+
+  private static UPLOAD_DIR = "item-photos";
 
   public async save(photo: File) {
     const [, extension] = photo.name.split(".");
 
-    const key = `${crypto.randomUUID()}.${extension}`;
+    const key = `${S3PhotoManager.UPLOAD_DIR}/${crypto.randomUUID()}.${extension}`;
 
     await S3PhotoManager.client.send(
       new PutObjectCommand({
@@ -32,14 +34,14 @@ export class S3PhotoManager implements PhotoManager {
       }),
     );
 
-    return `${S3PhotoManager.baseUrl}/${key}`;
+    return `${S3PhotoManager.BASE_URL}/${key}`;
   }
 
   public async remove(photoUrl: string): Promise<void> {
     await S3PhotoManager.client.send(
       new DeleteObjectCommand({
         Bucket: Bun.env.S3_BUCKET_NAME,
-        Key: photoUrl.replace(`${S3PhotoManager.baseUrl}/`, ""),
+        Key: photoUrl.replace(`${S3PhotoManager.BASE_URL}/`, ""),
       }),
     );
   }
