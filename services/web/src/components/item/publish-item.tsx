@@ -164,7 +164,12 @@ export function PublishItem() {
             </div>
           </div>
           <div className="grid gap-2">
-            <Label>Photos</Label>
+            <Label>
+              Photos&nbsp;
+              <span className="text-muted-foreground">
+                ({photoObjects.length}/5)
+              </span>
+            </Label>
             <div
               ref={photoListRef}
               className="flex gap-2 pb-2 overflow-x-auto scrollbar-thin scrollbar-thumb-border scrollbar-thumb-rounded-md snap-x"
@@ -191,14 +196,16 @@ export function PublishItem() {
                   </button>
                 </div>
               ))}
-              <Label
-                htmlFor="photos"
-                tabIndex={0}
-                className="shrink-0 grid place-items-center size-24 rounded-md border hover:bg-muted/40 text-muted-foreground transition-colors cursor-pointer snap-start"
-              >
-                <PlusIcon className="size-1/2" />
-                <span className="sr-only">Upload a photo of this item</span>
-              </Label>
+              {photoObjects.length < 5 && (
+                <Label
+                  htmlFor="photos"
+                  tabIndex={0}
+                  className="shrink-0 grid place-items-center size-24 rounded-md border hover:bg-muted/40 text-muted-foreground transition-colors cursor-pointer snap-start"
+                >
+                  <PlusIcon className="size-1/2" />
+                  <span className="sr-only">Upload a photo of this item</span>
+                </Label>
+              )}
             </div>
             <input
               type="file"
