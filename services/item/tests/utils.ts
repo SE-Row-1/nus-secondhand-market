@@ -3,13 +3,19 @@ import app from "@/index";
 /**
  * Fake a request to the server.
  */
-export async function request(endpoint: string, init: RequestInit = {}) {
+export async function request(
+  endpoint: string,
+  init: RequestInit = {},
+  contentType: "json" | "form" = "json",
+) {
   const res = await app.request(
     endpoint,
     {
       ...init,
       headers: {
-        "Content-Type": "application/json",
+        ...(contentType === "json"
+          ? { "Content-Type": "application/json" }
+          : {}),
         ...init.headers,
       },
     },

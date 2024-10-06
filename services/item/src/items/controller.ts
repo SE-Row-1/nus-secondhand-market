@@ -29,6 +29,16 @@ itemsController.get(
   },
 );
 
+const fileSchema = z.custom<File>((data) => {
+  return (
+    data instanceof File &&
+    ["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
+      data.type,
+    ) &&
+    data.size <= 5 * 1024 * 1024
+  );
+});
+
 itemsController.post(
   "/",
   auth(true),
@@ -39,18 +49,10 @@ itemsController.post(
       description: z.string().min(1).max(500),
       price: z.coerce.number().positive(),
       photos: z
-        .array(
-          z.custom<File>((data) => {
-            return (
-              data instanceof File &&
-              ["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
-                data.type,
-              ) &&
-              data.size <= 5 * 1024 * 1024
-            );
-          }),
-        )
-        .max(5),
+        .array(fileSchema)
+        .max(5)
+        .or(fileSchema.transform((file) => [file]))
+        .default([]),
     }),
   ),
   async (c) => {
