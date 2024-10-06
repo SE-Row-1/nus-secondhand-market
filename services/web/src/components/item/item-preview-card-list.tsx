@@ -1,8 +1,10 @@
 "use client";
 
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { SingleItem } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { useRef } from "react";
 import { SingleItemPreviewCard } from "./single-item-preview-card";
 
 type Props = {
@@ -14,7 +16,7 @@ type Props = {
 };
 
 export function ItemPreviewCardList({ initialData }: Props) {
-  const { data } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams();
@@ -37,11 +39,26 @@ export function ItemPreviewCardList({ initialData }: Props) {
     },
   });
 
+  const bottomRef = useRef<HTMLDivElement>(null);
+  useInfiniteScroll(bottomRef, () => {
+    if (hasNextPage) {
+      fetchNextPage();
+    }
+  });
+
   return (
-    <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-      {data?.pages
-        .flatMap((page) => page.items)
-        .map((item) => <SingleItemPreviewCard key={item.id} item={item} />)}
-    </ul>
+    <>
+      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+        {data?.pages
+          .flatMap((page) => page.items)
+          .map((item) => <SingleItemPreviewCard key={item.id} item={item} />)}
+      </ul>
+      <div ref={bottomRef}></div>
+      {hasNextPage || (
+        <p className="my-8 text-sm text-muted-foreground text-center">
+          - That&apos;s all we got for now! -
+        </p>
+      )}
+    </>
   );
 }
