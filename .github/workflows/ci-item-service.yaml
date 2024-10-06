@@ -89,6 +89,7 @@ jobs:
 
       - name: Test with coverage
         run: |
+          pip3 install podman-compose
           podman --version
           podman compose --version
           podman compose -f container-compose.test.yaml up -d --build
