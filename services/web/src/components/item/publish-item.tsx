@@ -7,7 +7,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import * as v from "valibot";
 import { Button } from "../ui/button";
 import {
@@ -53,6 +53,39 @@ export function PublishItem() {
     );
 
   const [photoListRef] = useAutoAnimate();
+
+  const handleSelectPhotos = (event: ChangeEvent<HTMLInputElement>) => {
+    const newPhotos = event.target.files;
+
+    if (!newPhotos || newPhotos.length === 0) {
+      return;
+    }
+
+    const nextPhotoObjects = [...photoObjects];
+
+    for (const photo of Array.from(newPhotos)) {
+      if (nextPhotoObjects.length >= 5) {
+        break;
+      }
+
+      if (photo.size > 1024 * 1024 * 5) {
+        toast({
+          variant: "destructive",
+          title: "Photo size exceeds 5MB",
+          description: `"${photo.name}" (${Math.floor((photo.size * 10) / 1024 / 1024) / 10}MB) is too big for us to handle. 🥲 Please select another smaller one.`,
+        });
+        continue;
+      }
+
+      nextPhotoObjects.push({
+        id: Math.random(),
+        file: photo,
+        previewUrl: URL.createObjectURL(photo),
+      });
+    }
+
+    setPhotoObjects(nextPhotoObjects);
+  };
 
   const { toast } = useToast();
 
@@ -212,16 +245,7 @@ export function PublishItem() {
               name="photos"
               accept="image/jpeg,image/png,image/webp,image/avif"
               multiple
-              onChange={(event) =>
-                setPhotoObjects((photoObjects) => [
-                  ...photoObjects,
-                  ...[...(event.target.files ?? [])].map((file) => ({
-                    id: Math.random(),
-                    file,
-                    previewUrl: URL.createObjectURL(file),
-                  })),
-                ])
-              }
+              onChange={handleSelectPhotos}
               className="hidden"
               id="photos"
             />
