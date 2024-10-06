@@ -1,5 +1,6 @@
-import { ItemStatus, type Item, type SingleItem } from "@/types";
+import { ItemStatus, type SingleItem } from "@/types";
 import { itemsCollection } from "@/utils/db";
+import { ObjectId } from "mongodb";
 
 /**
  * Data access layer for items.
@@ -12,20 +13,37 @@ export const itemsRepository = {
 
 type FindAllDto = {
   limit: number;
-  skip: number;
+  cursor?: string | undefined;
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
 };
 
 async function findAll(dto: FindAllDto) {
   return await itemsCollection
-    .find()
-    .project<Item>({ _id: 0 })
-    .limit(dto.limit)
-    .skip(dto.skip)
+    .find(
+      {
+        ...(dto.type ? { type: dto.type } : {}),
+        status: dto.status,
+        ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
+      },
+      {
+        sort: { _id: -1 },
+        limit: dto.limit,
+      },
+    )
     .toArray();
 }
 
-async function count() {
-  return await itemsCollection.estimatedDocumentCount();
+type CountDto = {
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
+};
+
+async function count(dto: CountDto) {
+  return await itemsCollection.countDocuments({
+    ...(dto.type ? { type: dto.type } : {}),
+    status: dto.status,
+  });
 }
 
 type InsertOneDto = {
@@ -46,7 +64,7 @@ async function insertOne(dto: InsertOneDto) {
     id: crypto.randomUUID(),
     type: "single",
     status: ItemStatus.FOR_SALE,
-    created_at: new Date(),
+    created_at: new Date().toISOString(),
     deleted_at: null,
   });
 

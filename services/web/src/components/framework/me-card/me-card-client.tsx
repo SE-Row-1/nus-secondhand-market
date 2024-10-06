@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
+import { useQuery } from "@tanstack/react-query";
 import { LifeBuoyIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import useSWR from "swr";
 import { LogOutButton } from "./log-out-button";
 
 type Props = {
@@ -23,16 +23,14 @@ type Props = {
 };
 
 export function MeCardClient({ initialMe, fallback }: Props) {
-  const { data: me } = useSWR(
-    "/auth/me",
-    async () => {
-      return await new ClientRequester().get<Account>("/auth/me");
+  const { data: me } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
+      return await new ClientRequester().get<Account | undefined>("/auth/me");
     },
-    {
-      fallbackData: initialMe as Account,
-      shouldRetryOnError: false,
-    },
-  );
+    initialData: initialMe,
+    retry: false,
+  });
 
   if (!me) {
     return fallback;

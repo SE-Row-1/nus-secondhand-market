@@ -21,10 +21,10 @@ import {
 } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
-import useSWRMutation from "swr/mutation";
 
 export function DeleteAccountCard() {
   return (
@@ -89,42 +89,35 @@ function DeleteAccountButton() {
 
   const { toast } = useToast();
 
-  const { trigger, isMutating } = useSWRMutation<
-    undefined,
-    Error,
-    string,
-    MouseEvent<HTMLButtonElement>
-  >(
-    "/auth/me",
-    async () => {
-      return await new ClientRequester().delete<undefined>("/auth/me");
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (event: MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      return new ClientRequester().delete<undefined>("/auth/me");
     },
-    {
-      populateCache: true,
-      revalidate: false,
-      onSuccess: () => {
-        toast({
-          title: "Account deactivated",
-          description:
-            "We are sorry to see you go. 🥲 Remember you can contact our support team to find your account back in the next 30 days!",
-        });
-        router.push("/");
-        router.refresh();
-      },
-      throwOnError: false,
-      onError: (error) => {
-        toast({
-          variant: "destructive",
-          title: "Failed to delete account",
-          description: error.message,
-        });
-      },
+    onSuccess: () => {
+      queryClient.setQueryData(["auth", "me"], null);
+      toast({
+        title: "Account deactivated",
+        description:
+          "We are sorry to see you go. 🥲 Remember you can contact our support team to find your account back in the next 30 days!",
+      });
+      router.push("/");
+      router.refresh();
     },
-  );
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to delete account",
+        description: error.message,
+      });
+    },
+  });
 
   return (
-    <AlertDialogAction disabled={isMutating} onClick={trigger}>
-      {isMutating ? (
+    <AlertDialogAction disabled={isPending} onClick={mutate}>
+      {isPending ? (
         <Loader2Icon className="size-4 mr-2 animate-spin" />
       ) : (
         <CheckIcon className="size-4 mr-2" />

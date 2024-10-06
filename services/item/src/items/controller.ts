@@ -1,5 +1,6 @@
 import { auth } from "@/middleware/auth";
 import { validator } from "@/middleware/validator";
+import { ItemStatus } from "@/types";
 import { Hono } from "hono";
 import { z } from "zod";
 import { itemsService } from "./service";
@@ -14,14 +15,19 @@ itemsController.get(
   validator(
     "query",
     z.object({
-      limit: z.coerce.number().int().positive().default(20),
-      skip: z.coerce.number().int().nonnegative().default(0),
+      limit: z.coerce.number().int().positive().default(8),
+      cursor: z.string().optional(),
+      type: z.enum(["single", "pack"]).optional(),
+      status: z.coerce
+        .number()
+        .pipe(z.nativeEnum(ItemStatus))
+        .default(ItemStatus.FOR_SALE),
     }),
   ),
   async (c) => {
-    const dto = c.req.valid("query");
-    const [items, total] = await itemsService.getAllItems(dto);
-    return c.json({ items, total }, 200);
+    const query = c.req.valid("query");
+    const result = await itemsService.getAllItems(query);
+    return c.json(result, 200);
   },
 );
 

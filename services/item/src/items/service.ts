@@ -1,4 +1,4 @@
-import { type Account } from "@/types";
+import { ItemStatus, type Account } from "@/types";
 import { itemsRepository } from "./repository";
 
 /**
@@ -11,16 +11,27 @@ export const itemsService = {
 
 type GetAllItemsDto = {
   limit: number;
-  skip: number;
+  cursor?: string | undefined;
+  type?: "single" | "pack" | undefined;
+  status: ItemStatus;
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
-  const [items, total] = await Promise.all([
+  const [items, count] = await Promise.all([
     itemsRepository.findAll(dto),
-    itemsRepository.count(),
+    itemsRepository.count(dto),
   ]);
 
-  return [items, total] as const;
+  const nextCursor =
+    items.length < dto.limit ? null : items[items.length - 1]!._id;
+
+  const idStrippedItems = items.map((item) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _id, ...rest } = item;
+    return { ...rest };
+  });
+
+  return { items: idStrippedItems, count, nextCursor };
 }
 
 type CreateItemDto = {
