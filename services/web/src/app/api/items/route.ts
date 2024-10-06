@@ -390,8 +390,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
-export async function POST(request: NextRequest) {
-  const body = await request.json();
+export async function POST() {
   return NextResponse.json(
     {
       id: crypto.randomUUID(),
@@ -401,7 +400,6 @@ export async function POST(request: NextRequest) {
         nickname: "Johnny",
         avatar_url: "https://avatars.githubusercontent.com/u/78269445?v=4",
       },
-      ...body,
       status: ItemStatus.FOR_SALE,
       created_at: new Date().toISOString(),
       deleted_at: null,
