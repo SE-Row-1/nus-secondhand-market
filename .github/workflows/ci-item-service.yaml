@@ -92,6 +92,5 @@ jobs:
 
       - name: Test with coverage
         run: |
-          podman-compose -f container-compose.test.yaml up -d
-          podman container ls -a
+          podman-compose -f container-compose.test.yaml up -d --build
           podman exec nshm-item-test_api_1 bun test --coverage
