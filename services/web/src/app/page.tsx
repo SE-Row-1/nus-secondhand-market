@@ -1,19 +1,12 @@
-import { ItemPreviewCardList } from "@/components/item/item-preview-card-list";
-import type { SingleItem } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { ItemCardList } from "@/components/item";
+import { ItemStatus } from "@/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Marketplace | NUS Second-Hand Market",
 };
 
-export default async function Home() {
-  const data = await new ServerRequester().get<{
-    items: SingleItem[];
-    count: number;
-    nextCursor: string;
-  }>("/items");
-
+export default function Home() {
   return (
     <div className="min-h-[calc(100vh-64px)]">
       <div className="space-y-4 mt-4 md:mt-8 mb-8">
@@ -22,7 +15,7 @@ export default async function Home() {
           We found something you might be interested in!
         </p>
       </div>
-      <ItemPreviewCardList initialData={data} />
+      <ItemCardList status={ItemStatus.FOR_SALE} />
     </div>
   );
 }
