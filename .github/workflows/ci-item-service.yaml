@@ -94,4 +94,4 @@ jobs:
         run: podman-compose -f container-compose.test.yaml up -d
 
       - name: Run tests
-        run: podman exec -it nshm-item-test_api_1 bun test
+        run: podman exec nshm-item-test_api_1 bun test --coverage
