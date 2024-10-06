@@ -6,7 +6,7 @@ import {
 } from "next/server";
 
 const NO_AUTH_REG_EXPS = [/^\/login$/, /^\/register$/];
-const AUTH_REG_EXPS = [/^\/settings/];
+const AUTH_REG_EXPS = [/^\/settings/, /^\/belongings/];
 
 export async function middleware(request: NextRequest) {
   const isAuthenticated = cookies().has("access_token");

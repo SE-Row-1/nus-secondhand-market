@@ -22,7 +22,7 @@ export function Nav() {
         <HeartIcon className="size-4" />
         My wishlist
       </NavLink>
-      <NavLink href="#">
+      <NavLink href="/belongings">
         <PackageIcon className="size-4" />
         My belongings
       </NavLink>
