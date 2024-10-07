@@ -13,7 +13,7 @@
 export type AccountPreview = {
   id: number;
   nickname: string | null;
-  avatar_url: string | null;
+  avatarUrl: string | null;
 };
 
 /**
@@ -32,10 +32,10 @@ export type Account = AccountPreview & {
     acronym: string;
     name: string;
   } | null;
-  phone_code: string | null;
-  phone_number: string | null;
-  created_at: string;
-  deleted_at: string | null;
+  phoneCode: string | null;
+  phoneNumber: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**
@@ -59,10 +59,10 @@ export type SingleItem = {
   name: string;
   description: string;
   price: number;
-  photo_urls: string[];
+  photoUrls: string[];
   status: ItemStatus;
-  created_at: string;
-  deleted_at: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**
@@ -77,8 +77,8 @@ export type ItemPack = {
   discount: number;
   status: ItemStatus;
   children: (SingleItem | ItemPack)[];
-  created_at: string;
-  deleted_at: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**

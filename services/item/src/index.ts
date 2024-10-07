@@ -8,6 +8,7 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
+import { transformCase } from "./middleware/transform-case";
 
 /**
  * The main entry point of the application.
@@ -55,6 +56,9 @@ app.use(
 
   // Add security-related headers to the response.
   secureHeaders(),
+
+  // Transform camel case JSON keys to snake case.
+  transformCase(),
 );
 
 // Health check endpoint.

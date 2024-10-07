@@ -7,12 +7,18 @@ import { UUID, type Filter, type FindOptions } from "mongodb";
  */
 export const itemsRepository = {
   findAll,
+  findOne,
   count,
   insertOne,
+  deleteOne,
 };
 
-async function findAll(filter: Filter<Item>, options: FindOptions<Item>) {
+async function findAll(filter: Filter<Item>, options?: FindOptions<Item>) {
   return await itemsCollection.find(filter, options).toArray();
+}
+
+async function findOne(filter: Filter<Item>, options?: FindOptions<Item>) {
+  return await itemsCollection.findOne(filter, options);
 }
 
 async function count(filter: Filter<Item>) {
@@ -23,11 +29,11 @@ type InsertOneDto = {
   name: string;
   description: string;
   price: number;
-  photo_urls: string[];
+  photoUrls: string[];
   seller: {
     id: number;
     nickname: string | null;
-    avatar_url: string | null;
+    avatarUrl: string | null;
   };
 };
 
@@ -37,8 +43,8 @@ async function insertOne(dto: InsertOneDto) {
     id: new UUID().toString(),
     type: "single",
     status: ItemStatus.FOR_SALE,
-    created_at: new Date().toISOString(),
-    deleted_at: null,
+    createdAt: new Date(),
+    deletedAt: null,
   });
 
   const item = await itemsCollection.findOne<SingleItem>(
@@ -47,4 +53,10 @@ async function insertOne(dto: InsertOneDto) {
   );
 
   return item;
+}
+
+async function deleteOne(filter: Filter<Item>) {
+  await itemsCollection.updateOne(filter, {
+    $set: { deletedAt: new Date() },
+  });
 }

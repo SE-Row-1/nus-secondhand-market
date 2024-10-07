@@ -19,7 +19,7 @@ itemsController.get(
       cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
-      seller_id: z.coerce.number().int().positive().optional(),
+      sellerId: z.coerce.number().int().positive().optional(),
     }),
   ),
   async (c) => {
@@ -59,5 +59,21 @@ itemsController.post(
     const form = c.req.valid("form");
     const result = await itemsService.createItem(form, c.var.user);
     return c.json(result, 201);
+  },
+);
+
+itemsController.delete(
+  "/:id",
+  auth(true),
+  validator(
+    "param",
+    z.object({
+      id: z.string().uuid(),
+    }),
+  ),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    await itemsService.takeDownItem(id, c.var.user);
+    return c.body(null, 204);
   },
 );

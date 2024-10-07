@@ -1,6 +1,7 @@
-import { ItemStatus, type Account } from "@/types";
+import { ItemStatus, type Account, type Item } from "@/types";
 import { photoManager } from "@/utils/photo-manager";
-import { ObjectId } from "mongodb";
+import { HTTPException } from "hono/http-exception";
+import { ObjectId, type Filter } from "mongodb";
 import { itemsRepository } from "./repository";
 
 /**
@@ -9,6 +10,7 @@ import { itemsRepository } from "./repository";
 export const itemsService = {
   getAllItems,
   createItem,
+  takeDownItem,
 };
 
 type GetAllItemsDto = {
@@ -16,15 +18,16 @@ type GetAllItemsDto = {
   cursor?: string | undefined;
   type?: "single" | "pack" | undefined;
   status?: ItemStatus | undefined;
-  seller_id?: number | undefined;
+  sellerId?: number | undefined;
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
-  const filter = {
+  const filter: Filter<Item> = {
     ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status ? { status: dto.status } : {}),
-    ...(dto.seller_id ? { "seller.id": dto.seller_id } : {}),
+    ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
+    deletedAt: null,
   };
 
   const [items, count] = await Promise.all([
@@ -58,13 +61,29 @@ async function createItem(dto: CreateItemDto, user: Account) {
     name: dto.name,
     description: dto.description,
     price: dto.price,
-    photo_urls: photoUrls,
+    photoUrls,
     seller: {
       id: user.id,
       nickname: user.nickname,
-      avatar_url: user.avatar_url,
+      avatarUrl: user.avatarUrl,
     },
   });
 
   return item;
+}
+
+async function takeDownItem(id: string, user: Account) {
+  const item = await itemsRepository.findOne({ id });
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  if (item.seller.id !== user.id) {
+    throw new HTTPException(403, {
+      message: "You can't take down someone else's items.",
+    });
+  }
+
+  await itemsRepository.deleteOne({ id });
 }
