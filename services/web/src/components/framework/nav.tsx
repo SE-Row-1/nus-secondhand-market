@@ -14,7 +14,7 @@ export function Nav() {
         <ShoppingBagIcon className="size-4" />
         Marketplace
       </NavLink>
-      <NavLink href="#">
+      <NavLink href="/search">
         <SearchIcon className="size-4" />
         Search
       </NavLink>
