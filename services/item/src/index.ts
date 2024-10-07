@@ -9,6 +9,7 @@ import { secureHeaders } from "hono/secure-headers";
 import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { transformCase } from "./middleware/transform-case";
+import { searchController } from "./search/controller";
 
 /**
  * The main entry point of the application.
@@ -66,6 +67,9 @@ app.get("/healthz", (c) => c.text("ok"));
 
 // API for items.
 app.route("/", itemsController);
+
+// API for searching items.
+app.route("/search", searchController);
 
 // Global error handler.
 app.onError(globalErrorHandler);
