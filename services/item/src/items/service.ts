@@ -18,7 +18,7 @@ type GetAllItemsDto = {
   cursor?: string | undefined;
   type?: "single" | "pack" | undefined;
   status?: ItemStatus | undefined;
-  seller_id?: number | undefined;
+  sellerId?: number | undefined;
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
@@ -26,8 +26,8 @@ async function getAllItems(dto: GetAllItemsDto) {
     ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status ? { status: dto.status } : {}),
-    ...(dto.seller_id ? { "seller.id": dto.seller_id } : {}),
-    deleted_at: null,
+    ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
+    deletedAt: null,
   };
 
   const [items, count] = await Promise.all([
@@ -61,11 +61,11 @@ async function createItem(dto: CreateItemDto, user: Account) {
     name: dto.name,
     description: dto.description,
     price: dto.price,
-    photo_urls: photoUrls,
+    photoUrls,
     seller: {
       id: user.id,
       nickname: user.nickname,
-      avatar_url: user.avatar_url,
+      avatarUrl: user.avatarUrl,
     },
   });
 
@@ -74,7 +74,6 @@ async function createItem(dto: CreateItemDto, user: Account) {
 
 async function takeDownItem(id: string, user: Account) {
   const item = await itemsRepository.findOne({ id });
-  console.log(id, item);
 
   if (!item) {
     throw new HTTPException(404, { message: "This item does not exist." });

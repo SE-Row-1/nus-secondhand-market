@@ -19,7 +19,7 @@ itemsController.get(
       cursor: z.string().optional(),
       type: z.enum(["single", "pack"]).optional(),
       status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
-      seller_id: z.coerce.number().int().positive().optional(),
+      sellerId: z.coerce.number().int().positive().optional(),
     }),
   ),
   async (c) => {
@@ -73,7 +73,6 @@ itemsController.delete(
   ),
   async (c) => {
     const { id } = c.req.valid("param");
-    console.log(id);
     await itemsService.takeDownItem(id, c.var.user);
     return c.body(null, 204);
   },

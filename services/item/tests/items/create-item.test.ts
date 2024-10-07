@@ -11,7 +11,7 @@ const me = {
   avatar_url: "https://example.com/test.jpg",
 };
 const MY_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyX3VybCI6Imh0dHBzOi8vZXhhbXBsZS5jb20vdGVzdC5qcGciLCJpYXQiOjE3MjgxOTc0OTUsIm5iZiI6MTcyODE5NzQ5NSwiZXhwIjozNDU2Mzk0OTgxfQ.IWELaGDOCNYDOei6KQxMSm4FOjCiGKXgMZqhWMLnMx8";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyVXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS90ZXN0LmpwZyIsImlhdCI6MTcyODI3NjE3MywibmJmIjoxNzI4Mjc2MTczLCJleHAiOjM1NTY1NTIzMzh9.OaSK7RM2K1Cyz_irHTm0e_01L-ECY2vWRvxcnAxonhs";
 
 it("creates a new item", async () => {
   // Without photo.

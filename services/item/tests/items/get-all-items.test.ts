@@ -1,12 +1,13 @@
 import { ItemStatus, type Item } from "@/types";
+import type { CamelToSnake } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { describe, expect, it } from "bun:test";
 import { request } from "../utils";
 
 type ExpectedResponse = {
-  items: Item[];
+  items: CamelToSnake<Item>[];
   count: number;
-  nextCursor: string | null;
+  next_cursor: string | null;
 };
 
 describe("Default behavior", () => {
@@ -59,13 +60,12 @@ describe("Given cursor", () => {
   it("skips every item before the given cursor", async () => {
     const res1 = await request("/?limit=1");
     const body1 = (await res1.json()) as ExpectedResponse;
-    const nextCursor = body1.nextCursor;
 
     expect(res1.status).toEqual(200);
     expect(body1.items).toBeArrayOfSize(1);
-    expect(nextCursor).toBeString();
+    expect(body1.next_cursor).toBeString();
 
-    const res2 = await request(`/?limit=1&cursor=${nextCursor}`);
+    const res2 = await request(`/?limit=1&cursor=${body1.next_cursor}`);
     const body2 = (await res2.json()) as ExpectedResponse;
 
     expect(res2.status).toEqual(200);
@@ -81,7 +81,7 @@ describe("Given cursor", () => {
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
-    expect(body.nextCursor).toBeNull();
+    expect(body.next_cursor).toBeNull();
   });
 });
 
@@ -191,11 +191,11 @@ describe("Ignores deleted items", () => {
       name: "test",
       description: "test",
       price: 100,
-      photo_urls: [],
-      seller: { id: 1, nickname: null, avatar_url: null },
+      photoUrls: [],
+      seller: { id: 1, nickname: null, avatarUrl: null },
       status: ItemStatus.FOR_SALE,
-      created_at: new Date().toISOString(),
-      deleted_at: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      deletedAt: new Date().toISOString(),
     });
 
     const res = await request("/?limit=1000");

@@ -1,7 +1,8 @@
+import { snakeToCamel } from "@/utils/case";
 import type { ValidationTargets } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { validator as honoValidator } from "hono/validator";
-import type { z, ZodError, ZodSchema } from "zod";
+import { z, type ZodError, type ZodSchema } from "zod";
 
 /**
  * Validate the data format of a particular part of an incoming request.
@@ -14,7 +15,9 @@ export function validator<
   Schema extends ZodSchema,
 >(target: Target, schema: Schema) {
   return honoValidator(target, async (value) => {
-    const { success, data, error } = await schema.safeParseAsync(value);
+    const { success, data, error } = await schema.safeParseAsync(
+      snakeToCamel(value),
+    );
 
     if (!success) {
       throw new HTTPException(400, { message: formatError(error) });
