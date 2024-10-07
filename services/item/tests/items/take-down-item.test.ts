@@ -1,16 +1,26 @@
 import { ItemStatus } from "@/types";
-import { snakeToCamel } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { expect, it } from "bun:test";
 import { request } from "../utils";
 
 const me = {
   id: 1,
+  email: "test@example.com",
   nickname: "test",
-  avatar_url: "https://example.com/test.jpg",
+  avatarUrl: "https://example.com/test.jpg",
+  phoneCode: "65",
+  phoneNumber: "12345678",
+  department: {
+    id: 1,
+    acronym: "TEST",
+    name: "test department",
+  },
+  createdAt: new Date("2024-10-07T06:49:51.460Z"),
+  deletedAt: null,
 };
+
 const MY_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyX3VybCI6Imh0dHBzOi8vZXhhbXBsZS5jb20vdGVzdC5qcGciLCJpYXQiOjE3MjgxOTc0OTUsIm5iZiI6MTcyODE5NzQ5NSwiZXhwIjozNDU2Mzk0OTgxfQ.IWELaGDOCNYDOei6KQxMSm4FOjCiGKXgMZqhWMLnMx8";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyVXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS90ZXN0LmpwZyIsInBob25lQ29kZSI6IjY1IiwicGhvbmVOdW1iZXIiOiIxMjM0NTY3OCIsImRlcGFydG1lbnQiOnsiaWQiOjEsImFjcm9ueW0iOiJURVNUIiwibmFtZSI6InRlc3QgZGVwYXJ0bWVudCJ9LCJjcmVhdGVkQXQiOiIyMDI0LTEwLTA3VDA2OjQ5OjUxLjQ2MFoiLCJkZWxldGVkQXQiOm51bGwsImlhdCI6MTcyODI4MzgzMiwibmJmIjoxNzI4MjgzODMyLCJleHAiOjM1NTY1NTk5OTd9.2cXAAWpEGuJnRK2bNuiUyD2tCDKZHWCi6yns2sEACWM";
 
 it("takes down an item", async () => {
   const id = crypto.randomUUID();
@@ -22,9 +32,13 @@ it("takes down an item", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: snakeToCamel(me),
+    seller: {
+      id: me.id,
+      nickname: me.nickname,
+      avatarUrl: me.avatarUrl,
+    },
     status: ItemStatus.FOR_SALE,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     deletedAt: null,
   });
 
@@ -78,7 +92,7 @@ it("returns 403 if user is not the seller", async () => {
       avatarUrl: "https://example.com/test.jpg",
     },
     status: ItemStatus.FOR_SALE,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     deletedAt: null,
   });
 

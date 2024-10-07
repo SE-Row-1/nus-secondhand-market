@@ -3,6 +3,33 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { verify } from "hono/jwt";
+import { z } from "zod";
+
+const payloadSchema = z.object({
+  id: z.number(),
+  email: z.string(),
+  nickname: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  phoneCode: z.string().nullable(),
+  phoneNumber: z.string().nullable(),
+  department: z
+    .object({
+      id: z.number(),
+      acronym: z.string(),
+      name: z.string(),
+    })
+    .nullable(),
+  createdAt: z
+    .string()
+    .transform((v) => new Date(v))
+    .pipe(z.date()),
+  deletedAt: z.null().or(
+    z
+      .string()
+      .transform((v) => new Date(v))
+      .pipe(z.date()),
+  ),
+});
 
 /**
  * Authenticate user.
@@ -32,7 +59,9 @@ export function auth<Strict extends boolean>(strict: Strict) {
       return await next();
     }
 
-    const user = await verifyJwt(accessToken);
+    const payload = await verifyJwt(accessToken);
+
+    const user = payloadSchema.parse(payload);
 
     // @ts-expect-error This actually works.
     c.set("user", user);

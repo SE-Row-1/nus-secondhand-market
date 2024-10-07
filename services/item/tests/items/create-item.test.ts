@@ -7,11 +7,22 @@ type ExpectedResponse = Item;
 
 const me = {
   id: 1,
+  email: "test@example.com",
   nickname: "test",
-  avatar_url: "https://example.com/test.jpg",
+  avatarUrl: "https://example.com/test.jpg",
+  phoneCode: "65",
+  phoneNumber: "12345678",
+  department: {
+    id: 1,
+    acronym: "TEST",
+    name: "test department",
+  },
+  createdAt: new Date("2024-10-07T06:49:51.460Z"),
+  deletedAt: null,
 };
+
 const MY_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyVXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS90ZXN0LmpwZyIsImlhdCI6MTcyODI3NjE3MywibmJmIjoxNzI4Mjc2MTczLCJleHAiOjM1NTY1NTIzMzh9.OaSK7RM2K1Cyz_irHTm0e_01L-ECY2vWRvxcnAxonhs";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyVXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS90ZXN0LmpwZyIsInBob25lQ29kZSI6IjY1IiwicGhvbmVOdW1iZXIiOiIxMjM0NTY3OCIsImRlcGFydG1lbnQiOnsiaWQiOjEsImFjcm9ueW0iOiJURVNUIiwibmFtZSI6InRlc3QgZGVwYXJ0bWVudCJ9LCJjcmVhdGVkQXQiOiIyMDI0LTEwLTA3VDA2OjQ5OjUxLjQ2MFoiLCJkZWxldGVkQXQiOm51bGwsImlhdCI6MTcyODI4MzgzMiwibmJmIjoxNzI4MjgzODMyLCJleHAiOjM1NTY1NTk5OTd9.2cXAAWpEGuJnRK2bNuiUyD2tCDKZHWCi6yns2sEACWM";
 
 it("creates a new item", async () => {
   // Without photo.
@@ -38,7 +49,11 @@ it("creates a new item", async () => {
   expect(body1).toMatchObject({
     id: expect.any(String),
     type: "single",
-    seller: me,
+    seller: {
+      id: me.id,
+      nickname: me.nickname,
+      avatar_url: me.avatarUrl,
+    },
     name: "test create",
     description: "test create",
     price: 100,
@@ -78,7 +93,11 @@ it("creates a new item", async () => {
   expect(body2).toMatchObject({
     id: expect.any(String),
     type: "single",
-    seller: me,
+    seller: {
+      id: me.id,
+      nickname: me.nickname,
+      avatar_url: me.avatarUrl,
+    },
     name: "test create",
     description: "test create",
     price: 100,
@@ -118,7 +137,11 @@ it("creates a new item", async () => {
   expect(body3).toMatchObject({
     id: expect.any(String),
     type: "single",
-    seller: me,
+    seller: {
+      id: me.id,
+      nickname: me.nickname,
+      avatar_url: me.avatarUrl,
+    },
     name: "test create",
     description: "test create",
     price: 100,

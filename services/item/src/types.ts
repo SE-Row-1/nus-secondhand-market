@@ -34,8 +34,8 @@ export type Account = AccountPreview & {
   } | null;
   phoneCode: string | null;
   phoneNumber: string | null;
-  createdAt: string;
-  deletedAt: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**
@@ -61,8 +61,8 @@ export type SingleItem = {
   price: number;
   photoUrls: string[];
   status: ItemStatus;
-  createdAt: string;
-  deletedAt: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**
@@ -77,8 +77,8 @@ export type ItemPack = {
   discount: number;
   status: ItemStatus;
   children: (SingleItem | ItemPack)[];
-  createdAt: string;
-  deletedAt: string | null;
+  createdAt: Date;
+  deletedAt: Date | null;
 };
 
 /**

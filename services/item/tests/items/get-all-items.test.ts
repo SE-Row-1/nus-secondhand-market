@@ -194,8 +194,8 @@ describe("Ignores deleted items", () => {
       photoUrls: [],
       seller: { id: 1, nickname: null, avatarUrl: null },
       status: ItemStatus.FOR_SALE,
-      createdAt: new Date().toISOString(),
-      deletedAt: new Date().toISOString(),
+      createdAt: new Date(),
+      deletedAt: new Date(),
     });
 
     const res = await request("/?limit=1000");

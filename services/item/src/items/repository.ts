@@ -43,7 +43,7 @@ async function insertOne(dto: InsertOneDto) {
     id: new UUID().toString(),
     type: "single",
     status: ItemStatus.FOR_SALE,
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
     deletedAt: null,
   });
 
@@ -57,6 +57,6 @@ async function insertOne(dto: InsertOneDto) {
 
 async function deleteOne(filter: Filter<Item>) {
   await itemsCollection.updateOne(filter, {
-    $set: { deletedAt: new Date().toISOString() },
+    $set: { deletedAt: new Date() },
   });
 }
