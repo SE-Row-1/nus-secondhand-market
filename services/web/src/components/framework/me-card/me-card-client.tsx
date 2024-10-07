@@ -9,31 +9,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMe } from "@/hooks/use-me";
 import { LifeBuoyIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogOutButton } from "./log-out-button";
 
 type Props = {
-  initialMe: Account | undefined;
-  fallback: ReactNode;
+  loadingFallback: ReactNode;
+  unauthFallback: ReactNode;
 };
 
-export function MeCardClient({ initialMe, fallback }: Props) {
-  const { data: me } = useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: async () => {
-      return await new ClientRequester().get<Account | undefined>("/auth/me");
-    },
-    initialData: initialMe,
-    retry: false,
-  });
+export function MeCardClient({ loadingFallback, unauthFallback }: Props) {
+  const { data: me, isPending } = useMe();
+
+  if (isPending) {
+    return loadingFallback;
+  }
 
   if (!me) {
-    return fallback;
+    return unauthFallback;
   }
 
   const nickname = me.nickname ?? me.email.replace("@u.nus.edu", "");
