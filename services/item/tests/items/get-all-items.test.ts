@@ -186,8 +186,10 @@ describe("Given seller_id", () => {
 
 describe("Ignores deleted items", () => {
   it("ignores deleted items", async () => {
+    const deletedId = crypto.randomUUID();
+
     await itemsCollection.insertOne({
-      id: crypto.randomUUID(),
+      id: deletedId,
       type: "single" as const,
       name: "test",
       description: "test",
@@ -208,9 +210,9 @@ describe("Ignores deleted items", () => {
 
     expect(res.status).toEqual(200);
     expect(body.items).not.toContainEqual(
-      expect.objectContaining({ name: "test" }),
+      expect.objectContaining({ id: deletedId }),
     );
 
-    await itemsCollection.deleteOne({ name: "test" });
+    await itemsCollection.deleteOne({ id: deletedId });
   });
 });

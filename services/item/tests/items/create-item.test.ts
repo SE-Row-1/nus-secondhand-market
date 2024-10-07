@@ -163,7 +163,7 @@ it("returns 400 when the file size is too large", async () => {
   expect(res.status).toEqual(400);
 });
 
-it("returns 400 when the FORM body is invalid", async () => {
+it("returns 400 when the form body is invalid", async () => {
   const formData = new FormData();
   formData.append("name", "");
   formData.append("description", "");
