@@ -1,7 +1,7 @@
-import { ItemStatus, type Account } from "@/types";
+import { ItemStatus, type Account, type Item } from "@/types";
 import { photoManager } from "@/utils/photo-manager";
 import { HTTPException } from "hono/http-exception";
-import { ObjectId } from "mongodb";
+import { ObjectId, type Filter } from "mongodb";
 import { itemsRepository } from "./repository";
 
 /**
@@ -22,11 +22,12 @@ type GetAllItemsDto = {
 };
 
 async function getAllItems(dto: GetAllItemsDto) {
-  const filter = {
+  const filter: Filter<Item> = {
     ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status ? { status: dto.status } : {}),
     ...(dto.seller_id ? { "seller.id": dto.seller_id } : {}),
+    deleted_at: null,
   };
 
   const [items, count] = await Promise.all([

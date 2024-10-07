@@ -1,4 +1,5 @@
 import { ItemStatus, type Item } from "@/types";
+import { itemsCollection } from "@/utils/db";
 import { describe, expect, it } from "bun:test";
 import { request } from "../utils";
 
@@ -179,5 +180,32 @@ describe("Given seller_id", () => {
 
     expect(res.status).toEqual(400);
     expect(body).toMatchObject({ error: expect.any(String) });
+  });
+});
+
+describe("Ignores deleted items", () => {
+  it("ignores deleted items", async () => {
+    await itemsCollection.insertOne({
+      id: crypto.randomUUID(),
+      type: "single",
+      name: "test",
+      description: "test",
+      price: 100,
+      photo_urls: [],
+      seller: { id: 1, nickname: null, avatar_url: null },
+      status: ItemStatus.FOR_SALE,
+      created_at: new Date().toISOString(),
+      deleted_at: new Date().toISOString(),
+    });
+
+    const res = await request("/?limit=1000");
+    const body = (await res.json()) as ExpectedResponse;
+
+    expect(res.status).toEqual(200);
+    expect(body.items).not.toContainEqual(
+      expect.objectContaining({ name: "test" }),
+    );
+
+    await itemsCollection.deleteOne({ name: "test" });
   });
 });
