@@ -1,9 +1,9 @@
 import { describe, expect, it } from "bun:test";
-import { request } from "./utils";
+import { GET } from "./test-utils/request";
 
 describe("GET /healthz", () => {
   it("always return 200", async () => {
-    const res = await request("/healthz");
+    const res = await GET("/healthz");
 
     expect(res.status).toEqual(200);
   });
@@ -11,7 +11,7 @@ describe("GET /healthz", () => {
 
 describe("Compression", () => {
   it("compresses in gzip when the client accepts gzip", async () => {
-    const res = await request("/healthz", {
+    const res = await GET("/healthz", {
       headers: {
         "Accept-Encoding": "gzip",
       },
@@ -21,7 +21,7 @@ describe("Compression", () => {
   });
 
   it("does not compress when the client does not accept gzip", async () => {
-    const res = await request("/healthz", {
+    const res = await GET("/healthz", {
       headers: {
         "Accept-Encoding": "deflate, br",
       },
@@ -31,7 +31,7 @@ describe("Compression", () => {
   });
 
   it("does not compress when the client does not accept any encodings", async () => {
-    const res = await request("/healthz");
+    const res = await GET("/healthz");
 
     expect(res.headers.get("Content-Encoding")).toBeNull();
   });
@@ -39,7 +39,7 @@ describe("Compression", () => {
 
 describe("CORS", () => {
   it("sets the correct CORS headers", async () => {
-    const res = await request("/healthz", {
+    const res = await GET("/healthz", {
       headers: {
         Origin: "http://localhost:3000",
       },
@@ -54,7 +54,7 @@ describe("CORS", () => {
 
 describe("Rate limit", () => {
   it("sets the correct rate limit headers", async () => {
-    const res = await request("/healthz");
+    const res = await GET("/healthz");
 
     expect(res.headers.get("RateLimit-Policy")).toEqual("10000;w=60");
     expect(res.headers.get("RateLimit-Limit")).toEqual("10000");
@@ -65,7 +65,7 @@ describe("Rate limit", () => {
 
 describe("Secure headers", () => {
   it("sets the correct security headers", async () => {
-    const res = await request("/healthz");
+    const res = await GET("/healthz");
 
     expect(res.headers.get("Cross-Origin-Resource-Policy")).toEqual(
       "same-origin",

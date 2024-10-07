@@ -61,7 +61,7 @@ export function auth<Strict extends boolean>(strict: Strict) {
 
     const payload = await verifyJwt(accessToken);
 
-    const user = payloadSchema.parse(payload);
+    const user = await payloadSchema.parseAsync(payload);
 
     // @ts-expect-error This actually works.
     c.set("user", user);

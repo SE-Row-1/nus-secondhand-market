@@ -1,28 +1,10 @@
 import { ItemStatus, type Item } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { expect, it } from "bun:test";
-import { request } from "../utils";
+import { me, myJwt } from "../test-utils/mock-data";
+import { FORM } from "../test-utils/request";
 
 type ExpectedResponse = Item;
-
-const me = {
-  id: 1,
-  email: "test@example.com",
-  nickname: "test",
-  avatarUrl: "https://example.com/test.jpg",
-  phoneCode: "65",
-  phoneNumber: "12345678",
-  department: {
-    id: 1,
-    acronym: "TEST",
-    name: "test department",
-  },
-  createdAt: new Date("2024-10-07T06:49:51.460Z"),
-  deletedAt: null,
-};
-
-const MY_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwibmlja25hbWUiOiJ0ZXN0IiwiYXZhdGFyVXJsIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS90ZXN0LmpwZyIsInBob25lQ29kZSI6IjY1IiwicGhvbmVOdW1iZXIiOiIxMjM0NTY3OCIsImRlcGFydG1lbnQiOnsiaWQiOjEsImFjcm9ueW0iOiJURVNUIiwibmFtZSI6InRlc3QgZGVwYXJ0bWVudCJ9LCJjcmVhdGVkQXQiOiIyMDI0LTEwLTA3VDA2OjQ5OjUxLjQ2MFoiLCJkZWxldGVkQXQiOm51bGwsImlhdCI6MTcyODI4MzgzMiwibmJmIjoxNzI4MjgzODMyLCJleHAiOjM1NTY1NTk5OTd9.2cXAAWpEGuJnRK2bNuiUyD2tCDKZHWCi6yns2sEACWM";
 
 it("creates a new item", async () => {
   // Without photo.
@@ -32,17 +14,11 @@ it("creates a new item", async () => {
   formData.append("description", "test create");
   formData.append("price", "100");
 
-  const res1 = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res1 = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
   const body1 = (await res1.json()) as ExpectedResponse;
 
   expect(res1.status).toEqual(201);
@@ -76,17 +52,11 @@ it("creates a new item", async () => {
     "test1.png",
   );
 
-  const res2 = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res2 = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
   const body2 = (await res2.json()) as ExpectedResponse;
 
   expect(res2.status).toEqual(201);
@@ -120,17 +90,11 @@ it("creates a new item", async () => {
     "test2.jpg",
   );
 
-  const res3 = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res3 = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
   const body3 = (await res3.json()) as ExpectedResponse;
 
   expect(res3.status).toEqual(201);
@@ -170,17 +134,11 @@ it("returns 400 when the MIME type is wrong", async () => {
     "test1.txt",
   );
 
-  const res = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
 
   expect(res.status).toEqual(400);
 });
@@ -196,38 +154,26 @@ it("returns 400 when the file size is too large", async () => {
     "test1.png",
   );
 
-  const res = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
 
   expect(res.status).toEqual(400);
 });
 
-it("returns 400 when the request body is invalid", async () => {
+it("returns 400 when the FORM body is invalid", async () => {
   const formData = new FormData();
   formData.append("name", "");
   formData.append("description", "");
   formData.append("price", "-1");
 
-  const res = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: `access_token=${MY_JWT}`,
-      },
+  const res = await FORM("/", formData, {
+    headers: {
+      Cookie: `access_token=${myJwt}`,
     },
-    "form",
-  );
+  });
 
   expect(res.status).toEqual(400);
 });
@@ -243,14 +189,7 @@ it("returns 401 when the user is not authenticated", async () => {
     "test1.png",
   );
 
-  const res = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-    },
-    "form",
-  );
+  const res = await FORM("/", formData);
 
   expect(res.status).toEqual(401);
 });
@@ -266,17 +205,11 @@ it("returns 401 when the JWT is invalid", async () => {
     "test1.png",
   );
 
-  const res = await request(
-    "/",
-    {
-      method: "POST",
-      body: formData,
-      headers: {
-        Cookie: "access_token=invalid",
-      },
+  const res = await FORM("/", formData, {
+    headers: {
+      Cookie: "access_token=invalid",
     },
-    "form",
-  );
+  });
 
   expect(res.status).toEqual(401);
 });
