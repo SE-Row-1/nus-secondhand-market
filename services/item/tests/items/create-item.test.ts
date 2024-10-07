@@ -5,7 +5,6 @@ import { request } from "../utils";
 
 type ExpectedResponse = Item;
 
-const ORIGINAL_COUNT = 31;
 const me = {
   id: 1,
   nickname: "test",
@@ -18,8 +17,8 @@ it("creates a new item", async () => {
   // Without photo.
 
   const formData = new FormData();
-  formData.append("name", "Test item name");
-  formData.append("description", "Test item description");
+  formData.append("name", "test create");
+  formData.append("description", "test create");
   formData.append("price", "100");
 
   const res1 = await request(
@@ -40,8 +39,8 @@ it("creates a new item", async () => {
     id: expect.any(String),
     type: "single",
     seller: me,
-    name: "Test item name",
-    description: "Test item description",
+    name: "test create",
+    description: "test create",
     price: 100,
     photo_urls: [],
     status: ItemStatus.FOR_SALE,
@@ -49,8 +48,10 @@ it("creates a new item", async () => {
     deleted_at: null,
   });
 
-  const currentCount1 = await itemsCollection.estimatedDocumentCount();
-  expect(currentCount1).toEqual(ORIGINAL_COUNT + 1);
+  const currentCount1 = await itemsCollection.countDocuments({
+    name: "test create",
+  });
+  expect(currentCount1).toEqual(1);
 
   // With exactly one photo.
 
@@ -78,8 +79,8 @@ it("creates a new item", async () => {
     id: expect.any(String),
     type: "single",
     seller: me,
-    name: "Test item name",
-    description: "Test item description",
+    name: "test create",
+    description: "test create",
     price: 100,
     photo_urls: ["uploads/test1.png"],
     status: ItemStatus.FOR_SALE,
@@ -87,8 +88,10 @@ it("creates a new item", async () => {
     deleted_at: null,
   });
 
-  const currentCount2 = await itemsCollection.estimatedDocumentCount();
-  expect(currentCount2).toEqual(ORIGINAL_COUNT + 2);
+  const currentCount2 = await itemsCollection.countDocuments({
+    name: "test create",
+  });
+  expect(currentCount2).toEqual(2);
 
   // With multiple photos.
 
@@ -116,8 +119,8 @@ it("creates a new item", async () => {
     id: expect.any(String),
     type: "single",
     seller: me,
-    name: "Test item name",
-    description: "Test item description",
+    name: "test create",
+    description: "test create",
     price: 100,
     photo_urls: ["uploads/test1.png", "uploads/test2.jpg"],
     status: ItemStatus.FOR_SALE,
@@ -125,10 +128,12 @@ it("creates a new item", async () => {
     deleted_at: null,
   });
 
-  const currentCount3 = await itemsCollection.estimatedDocumentCount();
-  expect(currentCount3).toEqual(ORIGINAL_COUNT + 3);
+  const currentCount3 = await itemsCollection.countDocuments({
+    name: "test create",
+  });
+  expect(currentCount3).toEqual(3);
 
-  await itemsCollection.deleteMany({ name: "Test item name" });
+  await itemsCollection.deleteMany({ name: "test create" });
 });
 
 it("returns 400 when the MIME type is wrong", async () => {
