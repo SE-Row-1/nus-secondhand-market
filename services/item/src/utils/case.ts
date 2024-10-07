@@ -1,9 +1,9 @@
-type SnakeToCamelString<Raw extends string> =
+export type SnakeToCamelString<Raw extends string> =
   Raw extends `${infer A}_${infer B}${infer C}`
     ? `${Lowercase<A>}${Uppercase<B>}${SnakeToCamelString<C>}`
     : Lowercase<Raw>;
 
-function snakeToCamelString<Raw extends string>(
+export function snakeToCamelString<Raw extends string>(
   raw: Raw,
 ): SnakeToCamelString<Raw> {
   return raw.replace(/(_\w)/g, (m) =>
@@ -11,12 +11,12 @@ function snakeToCamelString<Raw extends string>(
   ) as SnakeToCamelString<Raw>;
 }
 
-type CamelToSnakeString<Raw extends string> =
+export type CamelToSnakeString<Raw extends string> =
   Raw extends `${infer First}${infer Rest}`
     ? `${First extends Uppercase<First> ? `_${Lowercase<First>}` : First}${CamelToSnakeString<Rest>}`
     : Raw;
 
-function camelToSnakeString<Raw extends string>(
+export function camelToSnakeString<Raw extends string>(
   raw: Raw,
 ): CamelToSnakeString<Raw> {
   return raw.replace(

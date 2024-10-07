@@ -1,54 +1,67 @@
-import { camelToSnake, snakeToCamel } from "@/utils/case";
+import {
+  camelToSnake,
+  camelToSnakeString,
+  snakeToCamel,
+  snakeToCamelString,
+} from "@/utils/case";
 import { describe, expect, it } from "bun:test";
 
-describe("snakeToCamel transforms snake case to camel case", () => {
-  it("transforms object key at any level deep", () => {
+describe("transform snake case to camel case", () => {
+  it("`snakeToCamelString` transforms string", () => {
+    expect(snakeToCamelString("foo")).toEqual("foo");
+    expect(snakeToCamelString("foo_bar")).toEqual("fooBar");
+    expect(snakeToCamelString("foo_bar_baz")).toEqual("fooBarBaz");
+  });
+
+  it("`snakeToCamel` transforms array or object", () => {
     expect(
       snakeToCamel({
-        foo_foo_foo: [
+        foo_foo: [
           {
             bar_bar: {
-              baz: "test_value",
+              baz_baz: "test_value",
             },
           },
         ],
-        qux_qux: "test_value",
       }),
     ).toEqual({
-      fooFooFoo: [
+      fooFoo: [
         {
           barBar: {
-            baz: "test_value",
+            bazBaz: "test_value",
           },
         },
       ],
-      quxQux: "test_value",
     });
   });
 });
 
-describe("camelToSnake transforms camel case to snake case", () => {
-  it("transforms object key at any level deep", () => {
+describe("transform camel case to snake case", () => {
+  it("`camelToSnakeString` transforms string", () => {
+    expect(camelToSnakeString("foo")).toEqual("foo");
+    expect(camelToSnakeString("fooBar")).toEqual("foo_bar");
+    expect(camelToSnakeString("fooBarBaz")).toEqual("foo_bar_baz");
+  });
+
+  it("`camelToSnake` transforms array or object", () => {
     expect(
       camelToSnake({
-        fooFooFoo: [
+        fooFoo: [
           {
             barBar: {
-              baz: "testValue",
+              bazBaz: "test_value",
             },
           },
         ],
-        quxQux: "testValue",
       }),
     ).toEqual({
-      foo_foo_foo: [
+      foo_foo: [
         {
           bar_bar: {
-            baz: "testValue",
+            baz_baz: "test_value",
           },
         },
       ],
-      qux_qux: "testValue",
     });
   });
 });
