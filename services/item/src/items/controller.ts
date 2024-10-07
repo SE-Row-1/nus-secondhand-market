@@ -61,3 +61,20 @@ itemsController.post(
     return c.json(result, 201);
   },
 );
+
+itemsController.delete(
+  "/:id",
+  auth(true),
+  validator(
+    "param",
+    z.object({
+      id: z.string().uuid(),
+    }),
+  ),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    console.log(id);
+    await itemsService.takeDownItem(id, c.var.user);
+    return c.body(null, 204);
+  },
+);

@@ -1,5 +1,6 @@
 import { ItemStatus, type Account } from "@/types";
 import { photoManager } from "@/utils/photo-manager";
+import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
 import { itemsRepository } from "./repository";
 
@@ -9,6 +10,7 @@ import { itemsRepository } from "./repository";
 export const itemsService = {
   getAllItems,
   createItem,
+  takeDownItem,
 };
 
 type GetAllItemsDto = {
@@ -67,4 +69,21 @@ async function createItem(dto: CreateItemDto, user: Account) {
   });
 
   return item;
+}
+
+async function takeDownItem(id: string, user: Account) {
+  const item = await itemsRepository.findOne({ id });
+  console.log(id, item);
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  if (item.seller.id !== user.id) {
+    throw new HTTPException(403, {
+      message: "You can't take down someone else's items.",
+    });
+  }
+
+  await itemsRepository.deleteOne({ id });
 }

@@ -7,12 +7,18 @@ import { UUID, type Filter, type FindOptions } from "mongodb";
  */
 export const itemsRepository = {
   findAll,
+  findOne,
   count,
   insertOne,
+  deleteOne,
 };
 
-async function findAll(filter: Filter<Item>, options: FindOptions<Item>) {
+async function findAll(filter: Filter<Item>, options?: FindOptions<Item>) {
   return await itemsCollection.find(filter, options).toArray();
+}
+
+async function findOne(filter: Filter<Item>, options?: FindOptions<Item>) {
+  return await itemsCollection.findOne(filter, options);
 }
 
 async function count(filter: Filter<Item>) {
@@ -47,4 +53,10 @@ async function insertOne(dto: InsertOneDto) {
   );
 
   return item;
+}
+
+async function deleteOne(filter: Filter<Item>) {
+  await itemsCollection.updateOne(filter, {
+    $set: { deleted_at: new Date().toISOString() },
+  });
 }
