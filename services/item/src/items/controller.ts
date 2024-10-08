@@ -4,12 +4,13 @@ import { Hono } from "hono";
 import {
   getAllItemsQuerySchema,
   publishItemFormSchema,
+  searchItemQuerySchema,
   takeDownItemParamSchema,
 } from "./schema";
 import * as itemsService from "./service";
 
 /**
- * Items CRUD.
+ * Items related APIs.
  */
 export const itemsController = new Hono();
 
@@ -45,5 +46,15 @@ itemsController.delete(
     const { id } = c.req.valid("param");
     await itemsService.takeDownItem(id, c.var.user);
     return c.body(null, 204);
+  },
+);
+
+itemsController.get(
+  "/search",
+  validator("query", searchItemQuerySchema),
+  async (c) => {
+    const query = c.req.valid("query");
+    const result = await itemsService.search(query);
+    return c.json(result, 200);
   },
 );

@@ -91,3 +91,14 @@ export async function takeDownItem(id: string, user: Account) {
 
   await itemsRepository.deleteOne({ id });
 }
+
+type SearchItemServiceDto = {
+  q: string;
+  limit: number;
+  cursor?: string;
+  threshold?: number;
+};
+
+export async function search(dto: SearchItemServiceDto) {
+  return await itemsRepository.search(dto);
+}
