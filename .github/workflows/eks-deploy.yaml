@@ -3,17 +3,17 @@ name: EKS Deploy
 on:
   push:
     branches:
-      - main
+      - setup-infra
   workflow_dispatch:
     inputs:
-      provisioning:
+      eks-deploy:
         required: true
         default: 'false'
         type: boolean
 
 jobs:
   deploy:
-    if: ${{ github.event.inputs.provisioning == 'true' }}
+    if: ${{ github.event.inputs.eks-deploy == 'true' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -33,4 +33,4 @@ jobs:
     - name: Deploy to EKS using Kustomize
       run: |
         aws eks --region ap-southeast-1 update-kubeconfig --name nshm-eks
-        kubectl apply -k k8s
+        kubectl apply -k k8s/production

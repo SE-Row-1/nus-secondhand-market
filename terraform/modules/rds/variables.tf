@@ -1,3 +1,7 @@
+variable "vpc_id" {
+  type        = string
+}
+
 variable "db_name" {
   type        = string
   default     = "nshm"
@@ -13,9 +17,6 @@ variable "db_username" {
   default     = "nshmadmin"
 }
 
-variable "security_group_id" {
-  type        = string
-}
 
 variable "private_subnet_ids" {
   type        = list(string)

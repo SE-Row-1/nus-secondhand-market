@@ -12,13 +12,13 @@ vpc:
     publicAccess: false
     privateAccess: true
   subnets:
-    public:
-      ap-southeast-1a: { id: subnet-0a8858b3f689c562b }
-      ap-southeast-1c: { id: subnet-040b7e81cabd6daa3 }
     private:
-      ap-southeast-1a: { id: subnet-09e4452f6471a92d1 }
-      ap-southeast-1c: { id: subnet-0c23bd64158970e49 }
-  securityGroup: sg-0fe7864227e27898b
+      ap-southeast-1a: { id: subnet-0af29b6285e5b66af }
+      ap-southeast-1b: { id: subnet-0d1c95e49874593fc }
+   #public:
+   #  ap-southeast-1a: { id: subnet-09e4452f6471a92d1 }
+   #  ap-southeast-1c: { id: subnet-0c23bd64158970e49 }
+  securityGroup: sg-0800a34e14778b722
 cloudWatch:
   clusterLogging:
     enableTypes: ["*"]

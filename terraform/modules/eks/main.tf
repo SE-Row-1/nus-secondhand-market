@@ -1,4 +1,3 @@
-# Security Group for EKS
 resource "aws_security_group" "nshm-eks-sg" {
   vpc_id = var.vpc_id
 
@@ -6,7 +5,7 @@ resource "aws_security_group" "nshm-eks-sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   egress {
@@ -21,7 +20,6 @@ resource "aws_security_group" "nshm-eks-sg" {
   }
 }
 
-# EKS Cluster
 resource "aws_eks_cluster" "nshm_cluster" {
   name     = "nshm-eks"
   version  = "1.30"
@@ -47,11 +45,11 @@ resource "aws_eks_cluster" "nshm_cluster" {
 }
 
 # Managed Node Group
-resource "aws_eks_node_group" "nshm_node_group" {
+  resource "aws_eks_node_group" "nshm_node_group" {
   cluster_name    = aws_eks_cluster.nshm_cluster.name
   node_group_name = "nshm-eks-workers-30"
   node_role_arn   = aws_iam_role.eks_node_role.arn
-  subnet_ids      = var.private_subnet_ids
+  subnet_ids      = var.public_subnet_ids
   instance_types  = ["t2.micro", "t3.micro"]
   capacity_type   = "SPOT"
 
@@ -71,6 +69,10 @@ resource "aws_eks_node_group" "nshm_node_group" {
     Environment = "production"
     Created     = "EKS"
   }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.eks_worker_node_policy_attachment
+  ]
 }
 
 # IAM Policy for EKS Cluster Role

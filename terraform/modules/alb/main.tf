@@ -9,13 +9,6 @@ resource "aws_security_group" "alb_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -26,30 +19,14 @@ resource "aws_security_group" "alb_sg" {
 
 resource "aws_lb" "nshm_alb" {
   name               = "nshm-alb"
-  internal           = false
+  internal           = true
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = var.public_subnet_ids
+  subnets            = var.private_subnet_ids
 
   tags = {
     Name = "nshm-alb"
   }
-}
-
-resource "aws_acm_certificate" "alb_cert" {
-  domain_name       = aws_lb.nshm_alb.dns_name
-  validation_method = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "aws_acm_certificate_validation" "alb_cert_validation" {
-  certificate_arn = aws_acm_certificate.alb_cert.arn
-  validation_record_fqdns = [
-    aws_lb.nshm_alb.dns_name
-  ]
 }
 
 resource "aws_lb_target_group" "nshm_target_group" {
@@ -75,29 +52,11 @@ resource "aws_lb_listener" "http_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type = "redirect"
-    redirect {
-      protocol = "HTTPS"
-      port     = "443"
-      status_code = "HTTP_301"
-    }
+    type              = "forward"
+    target_group_arn  = aws_lb_target_group.nshm_target_group.arn
   }
 }
 
-resource "aws_lb_listener" "https_listener" {
-  load_balancer_arn = aws_lb.nshm_alb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.alb_cert.arn
-
-  default_action {
-    type = "forward"
-    target_group_arn = aws_lb_target_group.nshm_target_group.arn
-  }
-}
-
-output "alb_dns_name" {
+output "nshm_alb_dns" {
   value = aws_lb.nshm_alb.dns_name
 }
-

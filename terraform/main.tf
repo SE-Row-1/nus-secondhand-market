@@ -2,6 +2,20 @@ provider "aws" {
   region = "ap-southeast-1"
 }
 
+terraform {
+  required_providers {
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4"
+    }
+  }
+}
+
+module "dns" {
+  source = "./modules/dns"
+  nshm_alb_dns = module.alb.nshm_alb_dns
+}
+
 module "vpc" {
   source = "./modules/vpc"
 }
@@ -14,29 +28,26 @@ module "ec2" {
   source = "./modules/ec2"
   vpc_id            = module.vpc.vpc_id
   public_subnet_ids = module.vpc.public_subnet_ids
-  security_group_id = module.vpc.security_group_id
   cluster_name = module.eks.cluster_name
 }
 
 module "rds" {
   source = "./modules/rds"
+  vpc_id            = module.vpc.vpc_id
   private_subnet_ids = module.vpc.private_subnet_ids
-  security_group_id = module.vpc.security_group_id
 }
 
 module "eks" {
   source           = "./modules/eks"
   private_subnet_ids = module.vpc.private_subnet_ids
   public_subnet_ids = module.vpc.public_subnet_ids
-  security_group_id = module.vpc.security_group_id
   vpc_id            = module.vpc.vpc_id
 }
 
 module "alb" {
   source                = "./modules/alb"
   vpc_id                = module.vpc.vpc_id
-  public_subnet_ids     = module.vpc.public_subnet_ids
-  security_group_id     = module.vpc.security_group_id
+  private_subnet_ids     = module.vpc.private_subnet_ids
 }
 
 output "eks_cluster_endpoint" {
@@ -44,7 +55,7 @@ output "eks_cluster_endpoint" {
 }
 
 output "alb_dns_name" {
-  value = module.alb.alb_dns_name
+  value = module.alb.nshm_alb_dns
 }
 
 output "db_instance_endpoint" {
