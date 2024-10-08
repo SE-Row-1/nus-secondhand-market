@@ -60,6 +60,7 @@ it("implements cursor-based pagination", async () => {
     `/search?q=smart&limit=${limit}&cursor=${body1.next_cursor}&threshold=${body1.next_threshold}`,
   );
   const body2 = (await res2.json()) as ExpectedResponse;
+  console.log(body2);
 
   expect(res2.status).toEqual(200);
   expect(body2.items).toBeArrayOfSize(totalCount - limit);

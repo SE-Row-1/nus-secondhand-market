@@ -3,35 +3,38 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { verify } from "hono/jwt";
-import { z } from "zod";
+import * as v from "valibot";
 
 // JWT payload should contain the user's account information.
 //
 // Normally speaking, we trust the information carried in JWT,
 // so here we only do some basic validation for types.
-const accountSchema = z.object({
-  id: z.number(),
-  email: z.string(),
-  nickname: z.string().nullable(),
-  avatarUrl: z.string().nullable(),
-  phoneCode: z.string().nullable(),
-  phoneNumber: z.string().nullable(),
-  department: z
-    .object({
-      id: z.number(),
-      acronym: z.string(),
-      name: z.string(),
-    })
-    .nullable(),
-  createdAt: z
-    .string()
-    .transform((value) => new Date(value))
-    .pipe(z.date()),
-  deletedAt: z
-    .string()
-    .transform((value) => new Date(value))
-    .pipe(z.date())
-    .nullable(),
+const accountSchema = v.object({
+  id: v.number(),
+  email: v.string(),
+  nickname: v.nullable(v.string()),
+  avatarUrl: v.nullable(v.string()),
+  phoneCode: v.nullable(v.string()),
+  phoneNumber: v.nullable(v.string()),
+  department: v.nullable(
+    v.object({
+      id: v.number(),
+      acronym: v.string(),
+      name: v.string(),
+    }),
+  ),
+  createdAt: v.pipe(
+    v.string(),
+    v.transform((value) => new Date(value)),
+    v.date(),
+  ),
+  deletedAt: v.nullable(
+    v.pipe(
+      v.string(),
+      v.transform((value) => new Date(value)),
+      v.date(),
+    ),
+  ),
 });
 
 /**
@@ -82,7 +85,7 @@ export function auth<Strict extends boolean>(strict: Strict) {
 
     const payload = await verifyJwt(accessToken);
 
-    const account = await accountSchema.parseAsync(payload);
+    const account = await v.parseAsync(accountSchema, payload);
 
     // @ts-expect-error This works.
     c.set("user", account);

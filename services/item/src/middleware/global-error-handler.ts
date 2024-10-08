@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { isValiError } from "valibot";
 
 /**
  * Centralized error handling for the entire application.
@@ -9,6 +10,10 @@ import { HTTPException } from "hono/http-exception";
  * and then be caught and handled here.
  */
 export function globalErrorHandler(error: unknown, c: Context) {
+  if (isValiError(error)) {
+    return c.json({ error: error.message }, 400);
+  }
+
   if (error instanceof HTTPException) {
     if (error.status >= 500 && error.cause) {
       console.error(error.cause);

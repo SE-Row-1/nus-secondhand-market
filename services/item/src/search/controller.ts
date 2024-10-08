@@ -1,6 +1,6 @@
 import { validator } from "@/middleware/validator";
 import { Hono } from "hono";
-import { z } from "zod";
+import * as v from "valibot";
 import * as searchService from "./service";
 
 /**
@@ -12,11 +12,22 @@ searchController.get(
   "/",
   validator(
     "query",
-    z.object({
-      q: z.string().min(1).max(100),
-      limit: z.coerce.number().int().positive().default(8),
-      cursor: z.string().optional(),
-      threshold: z.coerce.number().optional(),
+    v.object({
+      q: v.pipe(v.string(), v.minLength(1), v.maxLength(100)),
+      limit: v.optional(
+        v.pipe(
+          v.unknown(),
+          v.transform(Number),
+          v.integer(),
+          v.minValue(1),
+          v.maxValue(100),
+        ),
+        8,
+      ),
+      cursor: v.optional(v.pipe(v.string(), v.regex(/^[0-9a-f]{24}$/))),
+      threshold: v.optional(
+        v.pipe(v.unknown(), v.transform(Number), v.number(), v.minValue(0)),
+      ),
     }),
   ),
   async (c) => {

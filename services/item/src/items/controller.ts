@@ -2,7 +2,7 @@ import { auth } from "@/middleware/auth";
 import { validator } from "@/middleware/validator";
 import { ItemStatus, ItemType } from "@/types";
 import { Hono } from "hono";
-import { z } from "zod";
+import * as v from "valibot";
 import * as itemsService from "./service";
 
 /**
@@ -14,12 +14,25 @@ itemsController.get(
   "/",
   validator(
     "query",
-    z.object({
-      type: z.nativeEnum(ItemType).optional(),
-      status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
-      sellerId: z.coerce.number().int().positive().optional(),
-      limit: z.coerce.number().int().positive().max(100).default(8),
-      cursor: z.string().optional(),
+    v.object({
+      type: v.optional(v.enum(ItemType)),
+      status: v.optional(
+        v.pipe(v.unknown(), v.transform(Number), v.enum(ItemStatus)),
+      ),
+      sellerId: v.optional(
+        v.pipe(v.unknown(), v.transform(Number), v.integer(), v.minValue(1)),
+      ),
+      limit: v.optional(
+        v.pipe(
+          v.unknown(),
+          v.transform(Number),
+          v.integer(),
+          v.minValue(1),
+          v.maxValue(100),
+        ),
+        8,
+      ),
+      cursor: v.optional(v.pipe(v.string(), v.regex(/^[0-9a-f]{24}$/))),
     }),
   ),
   async (c) => {
@@ -29,36 +42,39 @@ itemsController.get(
   },
 );
 
-const fileSchema = z.custom<File>((data) => {
-  return (
-    data instanceof File &&
-    ["image/jpeg", "image/png", "image/webp", "image/avif"].includes(
-      data.type,
-    ) &&
-    data.size <= 5 * 1024 * 1024
-  );
-});
+const fileSchema = v.pipe(
+  v.file(),
+  v.mimeType(["image/jpeg", "image/png", "image/webp", "image/avif"]),
+  v.maxSize(5 * 1024 * 1024),
+);
 
 itemsController.post(
   "/",
   auth(true),
   validator(
     "form",
-    z.object({
-      name: z.string().min(1).max(50),
-      description: z.string().min(1).max(500),
-      price: z.coerce.number().positive(),
-      photos: z
-        .array(fileSchema)
-        .max(5)
-        .or(fileSchema.transform((file) => [file]))
-        .default([]),
+    v.object({
+      name: v.pipe(v.string(), v.minLength(1), v.maxLength(50)),
+      description: v.pipe(v.string(), v.minLength(1), v.maxLength(500)),
+      price: v.pipe(v.unknown(), v.transform(Number), v.minValue(0)),
+      photos: v.optional(
+        v.union([
+          v.pipe(v.array(fileSchema), v.maxLength(5)),
+          v.pipe(
+            fileSchema,
+            v.transform((file) => [file]),
+          ),
+        ]),
+        [],
+      ),
     }),
   ),
   async (c) => {
     const form = c.req.valid("form");
-    const seller = c.var.user;
-    const result = await itemsService.publishItem({ ...form, seller });
+    const result = await itemsService.publishItem({
+      ...form,
+      user: c.var.user,
+    });
     return c.json(result, 201);
   },
 );
@@ -68,8 +84,8 @@ itemsController.delete(
   auth(true),
   validator(
     "param",
-    z.object({
-      id: z.string().uuid(),
+    v.object({
+      id: v.pipe(v.string(), v.uuid()),
     }),
   ),
   async (c) => {

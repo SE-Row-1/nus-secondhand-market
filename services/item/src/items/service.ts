@@ -11,11 +11,11 @@ import { ObjectId, type Filter } from "mongodb";
 import * as itemsRepository from "./repository";
 
 type GetAllItemsServiceDto = {
-  type?: ItemType | undefined;
-  status?: ItemStatus | undefined;
-  sellerId?: number | undefined;
+  type?: ItemType;
+  status?: ItemStatus;
+  sellerId?: number;
   limit: number;
-  cursor?: string | undefined;
+  cursor?: string;
 };
 
 export async function getAllItems(dto: GetAllItemsServiceDto) {
@@ -48,7 +48,7 @@ type PublishItemServiceDto = {
   description: string;
   price: number;
   photos: File[];
-  seller: Account;
+  user: Account;
 };
 
 export async function publishItem(dto: PublishItemServiceDto) {
@@ -63,9 +63,9 @@ export async function publishItem(dto: PublishItemServiceDto) {
     photoUrls,
     status: ItemStatus.FOR_SALE,
     seller: {
-      id: dto.seller.id,
-      nickname: dto.seller.nickname,
-      avatarUrl: dto.seller.avatarUrl,
+      id: dto.user.id,
+      nickname: dto.user.nickname,
+      avatarUrl: dto.user.avatarUrl,
     },
     createdAt: new Date(),
     deletedAt: null,
