@@ -17,6 +17,7 @@ resource "aws_subnet" "public" {
 
   tags = {
     Name = "nus-secondhand-market-public-subnet-${count.index + 1}"
+    "kubernetes.io/role/elb"         = "1"
   }
 }
 

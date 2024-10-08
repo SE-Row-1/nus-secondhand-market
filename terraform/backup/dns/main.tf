@@ -7,10 +7,10 @@ terraform {
   }
 }
 
-resource "cloudflare_record" "alb_dns_record" {
+resource "cloudflare_record" "argocd_dns_record" {
   zone_id = var.cloudflare_zone_id
-  name    = "www"
-  value   = var.nshm_alb_dns
+  name    = "argocd.nshm.store"
+  value   = var.argocd_ingress_dns
   type    = "CNAME"
   ttl     = 1
   proxied = true
