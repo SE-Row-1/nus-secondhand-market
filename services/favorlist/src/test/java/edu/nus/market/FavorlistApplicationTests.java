@@ -1,4 +1,4 @@
-package edu.nus.favorlist;
+package edu.nus.market;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

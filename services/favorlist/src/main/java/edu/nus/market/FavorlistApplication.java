@@ -1,4 +1,4 @@
-package edu.nus.favorlist;
+package edu.nus.market;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
