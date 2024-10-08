@@ -11,7 +11,7 @@ import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
 
-// The main entry point of the application.
+// Entry point of the application.
 const app = new Hono();
 
 // These middleware are applied to all routes.
@@ -70,10 +70,10 @@ app.use(
 // Health check endpoint.
 app.get("/healthz", (c) => c.text("ok"));
 
-// Register our controllers.
+// Register API controllers.
 app.route("/", itemsController);
 
-// Handle errors and endpoints not found.
+// Register global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
 

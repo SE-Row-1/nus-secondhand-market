@@ -7,8 +7,8 @@ import * as v from "valibot";
 
 // JWT payload should contain the user's account information.
 //
-// Normally speaking, we trust the information carried in JWT,
-// so here we only do some basic validation for types.
+// Normally speaking, we trust the information carried inside JWT,
+// so here we only do some basic validation on data types.
 const accountSchema = v.object({
   id: v.number(),
   email: v.string(),
@@ -48,7 +48,10 @@ async function verifyJwt(token: string) {
       throw new HTTPException(401, { message: error.message, cause: error });
     }
 
-    throw new HTTPException(500, { message: "Unknown error.", cause: error });
+    throw new HTTPException(500, {
+      message: "Unknown error during identity verification.",
+      cause: error,
+    });
   }
 }
 

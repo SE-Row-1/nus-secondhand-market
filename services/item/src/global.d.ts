@@ -8,9 +8,9 @@ declare module "bun" {
     PORT?: number;
 
     /**
-     * Secret key for decoding JWT tokens.
+     * JWT Secret key for decoding tokens.
      *
-     * This key should remain the same across all microservices.
+     * This value should remain the same across all microservices.
      *
      * Required.
      */

@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 
 /**
- * Customize 404 response if an endpoint is not found.
+ * Customize 404 response for unknown endpoints.
  */
 export function globalNotFoundHandler(c: Context) {
   return c.json(

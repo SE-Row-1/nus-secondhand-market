@@ -27,7 +27,7 @@ export async function getAllItems(dto: GetAllItemsServiceDto) {
     deletedAt: null,
   };
 
-  const withIdItems = await itemsRepository.findAll(filter, {
+  const withIdItems = await itemsRepository.find(filter, {
     sort: { _id: -1 },
     limit: dto.limit,
   });

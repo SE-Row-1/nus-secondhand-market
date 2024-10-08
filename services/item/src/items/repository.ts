@@ -7,10 +7,7 @@ import {
   type WithId,
 } from "mongodb";
 
-export async function findAll(
-  filter: Filter<Item>,
-  options?: FindOptions<Item>,
-) {
+export async function find(filter: Filter<Item>, options?: FindOptions<Item>) {
   return await itemsCollection.find(filter, options).toArray();
 }
 
@@ -34,8 +31,8 @@ export async function deleteOne(filter: Filter<Item>) {
 type SearchRepositoryDto = {
   q: string;
   limit: number;
-  cursor?: string | undefined;
-  threshold?: number | undefined;
+  cursor?: string;
+  threshold?: number;
 };
 
 export async function search(dto: SearchRepositoryDto) {
