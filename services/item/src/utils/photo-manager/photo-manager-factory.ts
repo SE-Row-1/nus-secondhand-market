@@ -3,7 +3,7 @@ import type { PhotoManager } from "./photo-manager-interface";
 import { S3PhotoManager } from "./s3-photo-manager";
 
 /**
- * Create a photo manager based on the running environment.
+ * Create a photo manager based on the environment.
  */
 export class PhotoManagerFactory {
   static createPhotoManager(): PhotoManager {

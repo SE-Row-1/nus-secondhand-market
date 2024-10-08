@@ -3,6 +3,9 @@ import { Hono } from "hono";
 import { z } from "zod";
 import * as searchService from "./service";
 
+/**
+ * Items searching.
+ */
 export const searchController = new Hono();
 
 searchController.get(

@@ -6,18 +6,18 @@ import {
 import type { PhotoManager } from "./photo-manager-interface";
 
 /**
- * Store photos in Amazon S3.
+ * Store photos in AWS S3.
  */
 export class S3PhotoManager implements PhotoManager {
   private static client = new S3Client({
     credentials: {
-      accessKeyId: Bun.env.S3_ACCESS_KEY_ID,
-      secretAccessKey: Bun.env.S3_SECRET_ACCESS_KEY,
+      accessKeyId: Bun.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: Bun.env.AWS_SECRET_ACCESS_KEY,
     },
-    region: Bun.env.S3_REGION,
+    region: Bun.env.AWS_REGION,
   });
 
-  private static BASE_URL = `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.S3_REGION}.amazonaws.com`;
+  private static BASE_URL = `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.AWS_REGION}.amazonaws.com`;
 
   private static UPLOAD_DIR = "item-photos";
 

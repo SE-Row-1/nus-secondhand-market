@@ -1,6 +1,9 @@
 import { camelToSnake } from "@/utils/case";
 import { createMiddleware } from "hono/factory";
 
+/**
+ * Transform the JSON response from camel case to snake case.
+ */
 export function transformCase() {
   return createMiddleware(async (c, next) => {
     await next();

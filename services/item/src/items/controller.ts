@@ -1,12 +1,12 @@
 import { auth } from "@/middleware/auth";
 import { validator } from "@/middleware/validator";
-import { ItemStatus } from "@/types";
+import { ItemStatus, ItemType } from "@/types";
 import { Hono } from "hono";
 import { z } from "zod";
-import { itemsService } from "./service";
+import * as itemsService from "./service";
 
 /**
- * Controller layer for items.
+ * Items CRUD.
  */
 export const itemsController = new Hono();
 
@@ -15,11 +15,11 @@ itemsController.get(
   validator(
     "query",
     z.object({
-      limit: z.coerce.number().int().positive().default(8),
-      cursor: z.string().optional(),
-      type: z.enum(["single", "pack"]).optional(),
+      type: z.nativeEnum(ItemType).optional(),
       status: z.coerce.number().pipe(z.nativeEnum(ItemStatus)).optional(),
       sellerId: z.coerce.number().int().positive().optional(),
+      limit: z.coerce.number().int().positive().max(100).default(8),
+      cursor: z.string().optional(),
     }),
   ),
   async (c) => {
@@ -57,7 +57,8 @@ itemsController.post(
   ),
   async (c) => {
     const form = c.req.valid("form");
-    const result = await itemsService.createItem(form, c.var.user);
+    const seller = c.var.user;
+    const result = await itemsService.publishItem({ ...form, seller });
     return c.json(result, 201);
   },
 );

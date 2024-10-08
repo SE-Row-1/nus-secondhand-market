@@ -6,9 +6,6 @@ import { z, type ZodError, type ZodSchema } from "zod";
 
 /**
  * Validate the data format of a particular part of an incoming request.
- *
- * @param target The target part to be validated.
- * @param schema A Zod schema that specifies the expected data format.
  */
 export function validator<
   Target extends keyof ValidationTargets,
@@ -20,7 +17,10 @@ export function validator<
     );
 
     if (!success) {
-      throw new HTTPException(400, { message: formatError(error) });
+      throw new HTTPException(400, {
+        message: formatError(error),
+        cause: error,
+      });
     }
 
     return data as z.infer<Schema>;

@@ -1,4 +1,4 @@
-import { ItemStatus } from "@/types";
+import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { expect, it } from "bun:test";
 import { me, myJwt, someoneElse } from "../test-utils/mock-data";
@@ -9,7 +9,7 @@ it("takes down an item", async () => {
 
   await itemsCollection.insertOne({
     id,
-    type: "single",
+    type: ItemType.SINGLE,
     name: "test",
     description: "test",
     price: 100,
@@ -59,7 +59,7 @@ it("returns 403 if user is not the seller", async () => {
 
   await itemsCollection.insertOne({
     id,
-    type: "single",
+    type: ItemType.SINGLE,
     name: "test",
     description: "test",
     price: 100,

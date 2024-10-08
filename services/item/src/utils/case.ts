@@ -3,6 +3,9 @@ export type SnakeToCamelString<Raw extends string> =
     ? `${Lowercase<A>}${Uppercase<B>}${SnakeToCamelString<C>}`
     : Lowercase<Raw>;
 
+/**
+ * Transform a string from snake case to camel case.
+ */
 export function snakeToCamelString<Raw extends string>(
   raw: Raw,
 ): SnakeToCamelString<Raw> {
@@ -16,6 +19,9 @@ export type CamelToSnakeString<Raw extends string> =
     ? `${First extends Uppercase<First> ? `_${Lowercase<First>}` : First}${CamelToSnakeString<Rest>}`
     : Raw;
 
+/**
+ * Transform a string from camel case to snake case.
+ */
 export function camelToSnakeString<Raw extends string>(
   raw: Raw,
 ): CamelToSnakeString<Raw> {
@@ -39,6 +45,9 @@ export type SnakeToCamel<Obj> = Obj extends (infer Item)[]
       }
     : Obj;
 
+/**
+ * Transform an array or object from snake case to camel case.
+ */
 export function snakeToCamel<Obj>(obj: Obj): SnakeToCamel<Obj> {
   if (Array.isArray(obj)) {
     return obj.map((item) => snakeToCamel(item)) as SnakeToCamel<Obj>;
@@ -66,6 +75,9 @@ export type CamelToSnake<Obj> = Obj extends (infer Item)[]
       }
     : Obj;
 
+/**
+ * Transform an array or object from camel case to snake case.
+ */
 export function camelToSnake<Obj>(obj: Obj): CamelToSnake<Obj> {
   if (Array.isArray(obj)) {
     return obj.map((item) => camelToSnake(item)) as CamelToSnake<Obj>;

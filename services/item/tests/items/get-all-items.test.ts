@@ -1,4 +1,4 @@
-import { ItemStatus, type Item } from "@/types";
+import { ItemStatus, ItemType, type Item } from "@/types";
 import type { CamelToSnake } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { describe, expect, it } from "bun:test";
@@ -7,7 +7,6 @@ import { GET } from "../test-utils/request";
 
 type ExpectedResponse = CamelToSnake<{
   items: Item[];
-  count: number;
   nextCursor: string | null;
 }>;
 
@@ -18,7 +17,6 @@ describe("Default behavior", () => {
 
     expect(res.status).toEqual(200);
     expect(body.items).toBeArray();
-    expect(body.count).toBeNumber();
   });
 });
 
@@ -29,7 +27,6 @@ describe("Given limit", () => {
 
     expect(res.status).toEqual(200);
     expect(body.items).toBeArrayOfSize(1);
-    expect(body.count).toBeGreaterThan(1);
   });
 
   it("returns 400 when limit is not a number", async () => {
@@ -94,7 +91,7 @@ describe("Given type", () => {
     expect(res.status).toEqual(200);
 
     for (const item of body.items) {
-      expect(item.type).toEqual("single");
+      expect(item.type).toEqual(ItemType.SINGLE);
     }
   });
 
@@ -105,7 +102,7 @@ describe("Given type", () => {
     expect(res.status).toEqual(200);
 
     for (const item of body.items) {
-      expect(item.type).toEqual("pack");
+      expect(item.type).toEqual(ItemType.PACK);
     }
   });
 
@@ -190,7 +187,7 @@ describe("Ignores deleted items", () => {
 
     await itemsCollection.insertOne({
       id: deletedId,
-      type: "single" as const,
+      type: ItemType.SINGLE,
       name: "test",
       description: "test",
       price: 100,
@@ -205,7 +202,7 @@ describe("Ignores deleted items", () => {
       deletedAt: new Date(),
     });
 
-    const res = await GET("/?limit=1000");
+    const res = await GET("/?limit=100");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);

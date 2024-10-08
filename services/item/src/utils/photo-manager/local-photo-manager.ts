@@ -16,9 +16,9 @@ export class LocalPhotoManager implements PhotoManager {
   }
 
   public async save(photo: File) {
-    const filePath = join(LocalPhotoManager.UPLOAD_DIR, photo.name);
-    await writeFile(filePath, new Uint8Array(await photo.arrayBuffer()));
-    return filePath;
+    const photoUrl = join(LocalPhotoManager.UPLOAD_DIR, photo.name);
+    await writeFile(photoUrl, new Uint8Array(await photo.arrayBuffer()));
+    return photoUrl;
   }
 
   public async remove(photoUrl: string) {

@@ -39,6 +39,14 @@ export type Account = AccountPreview & {
 };
 
 /**
+ * The item's type.
+ */
+export enum ItemType {
+  SINGLE = "single",
+  PACK = "pack",
+}
+
+/**
  * The item's status, according to the business logic.
  *
  * FOR_SALE <-> DEALT -> SOLD
@@ -54,7 +62,7 @@ export enum ItemStatus {
  */
 export type SingleItem = {
   id: string;
-  type: "single";
+  type: ItemType.SINGLE;
   seller: AccountPreview;
   name: string;
   description: string;
@@ -70,7 +78,7 @@ export type SingleItem = {
  */
 export type ItemPack = {
   id: string;
-  type: "pack";
+  type: ItemType.PACK;
   seller: AccountPreview;
   name: string;
   description: string;

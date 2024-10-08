@@ -1,78 +1,82 @@
-import { ItemStatus, type Account, type Item } from "@/types";
+import {
+  ItemStatus,
+  ItemType,
+  type Account,
+  type Item,
+  type SingleItem,
+} from "@/types";
 import { photoManager } from "@/utils/photo-manager";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId, type Filter } from "mongodb";
-import { itemsRepository } from "./repository";
+import * as itemsRepository from "./repository";
 
-/**
- * Service layer for items.
- */
-export const itemsService = {
-  getAllItems,
-  createItem,
-  takeDownItem,
-};
-
-type GetAllItemsDto = {
-  limit: number;
-  cursor?: string | undefined;
-  type?: "single" | "pack" | undefined;
+type GetAllItemsServiceDto = {
+  type?: ItemType | undefined;
   status?: ItemStatus | undefined;
   sellerId?: number | undefined;
+  limit: number;
+  cursor?: string | undefined;
 };
 
-async function getAllItems(dto: GetAllItemsDto) {
+export async function getAllItems(dto: GetAllItemsServiceDto) {
   const filter: Filter<Item> = {
-    ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status ? { status: dto.status } : {}),
     ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
+    ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     deletedAt: null,
   };
 
-  const [items, count] = await Promise.all([
-    itemsRepository.findAll(filter, { sort: { _id: -1 }, limit: dto.limit }),
-    itemsRepository.count(filter),
-  ]);
-
-  const nextCursor =
-    items.length < dto.limit ? null : items[items.length - 1]!._id;
-
-  const idStrippedItems = items.map((item) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...rest } = item;
-    return { ...rest };
+  const withIdItems = await itemsRepository.findAll(filter, {
+    sort: { _id: -1 },
+    limit: dto.limit,
   });
 
-  return { items: idStrippedItems, count, nextCursor };
+  const nextCursor =
+    withIdItems.length < dto.limit
+      ? null
+      : withIdItems[withIdItems.length - 1]!._id;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const items = withIdItems.map(({ _id, ...item }) => item);
+
+  return { items, nextCursor };
 }
 
-type CreateItemDto = {
+type PublishItemServiceDto = {
   name: string;
   description: string;
   price: number;
   photos: File[];
+  seller: Account;
 };
 
-async function createItem(dto: CreateItemDto, user: Account) {
+export async function publishItem(dto: PublishItemServiceDto) {
   const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
 
-  const item = await itemsRepository.insertOne({
+  const item: SingleItem = {
+    id: crypto.randomUUID(),
+    type: ItemType.SINGLE,
     name: dto.name,
     description: dto.description,
     price: dto.price,
     photoUrls,
+    status: ItemStatus.FOR_SALE,
     seller: {
-      id: user.id,
-      nickname: user.nickname,
-      avatarUrl: user.avatarUrl,
+      id: dto.seller.id,
+      nickname: dto.seller.nickname,
+      avatarUrl: dto.seller.avatarUrl,
     },
-  });
+    createdAt: new Date(),
+    deletedAt: null,
+  };
+
+  await itemsRepository.insertOne(item);
 
   return item;
 }
 
-async function takeDownItem(id: string, user: Account) {
+export async function takeDownItem(id: string, user: Account) {
   const item = await itemsRepository.findOne({ id });
 
   if (!item) {
