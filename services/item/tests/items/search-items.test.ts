@@ -10,14 +10,14 @@ type ExpectedResponse = CamelToSnake<{
   nextThreshold: number;
 }>;
 
-it("returns results containing the search query", async () => {
+it("returns search results", async () => {
   const res = await GET("/search?q=smart&limit=3");
   const body = (await res.json()) as ExpectedResponse;
 
   expect(res.status).toEqual(200);
-  expect(body.items).toBeArray();
-  expect(body.next_cursor).toBeString();
-  expect(body.next_threshold).toBeNumber();
+  expect(body.items).toBeArrayOfSize(3);
+  expect(body.next_cursor).toMatch(/^[0-9a-z]{24}$/);
+  expect(body.next_threshold).toBeGreaterThan(0);
 
   for (const item of body.items) {
     expect((item.name + item.description).toLowerCase()).toContain("smart");
@@ -30,16 +30,8 @@ it("limits the number of results", async () => {
 
   expect(res1.status).toEqual(200);
   expect(body1.items).toBeArrayOfSize(1);
-  expect(body1.next_cursor).toBeString();
-  expect(body1.next_threshold).toBeNumber();
-
-  const res2 = await GET(`/search?q=smart&limit=2`);
-  const body2 = (await res2.json()) as ExpectedResponse;
-
-  expect(res2.status).toEqual(200);
-  expect(body2.items).toBeArrayOfSize(2);
-  expect(body2.next_cursor).toBeString();
-  expect(body2.next_threshold).toBeNumber();
+  expect(body1.next_cursor).toMatch(/^[0-9a-z]{24}$/);
+  expect(body1.next_threshold).toBeGreaterThan(0);
 });
 
 it("implements cursor-based pagination", async () => {
@@ -53,24 +45,26 @@ it("implements cursor-based pagination", async () => {
 
   expect(res1.status).toEqual(200);
   expect(body1.items).toBeArrayOfSize(limit);
-  expect(body1.next_cursor).toBeString();
-  expect(body1.next_threshold).toBeNumber();
+  expect(body1.next_cursor).toMatch(/^[0-9a-z]{24}$/);
+  expect(body1.next_threshold).toBeGreaterThan(0);
 
   const res2 = await GET(
     `/search?q=smart&limit=${limit}&cursor=${body1.next_cursor}&threshold=${body1.next_threshold}`,
   );
   const body2 = (await res2.json()) as ExpectedResponse;
-  console.log(body2);
 
   expect(res2.status).toEqual(200);
   expect(body2.items).toBeArrayOfSize(totalCount - limit);
   expect(body2.next_cursor).toBeNull();
   expect(body2.next_threshold).toEqual(0);
 
-  expect(body1.items[0]!.id).not.toEqual(body2.items[0]!.id);
+  const idSet1 = new Set(body1.items.map((item) => item.id));
+  const idSet2 = new Set(body2.items.map((item) => item.id));
+  expect(idSet1.intersection(idSet2)).toBeEmpty();
+  expect(idSet1.union(idSet2)).toHaveLength(totalCount);
 });
 
-it("returns 400 if query is not given", async () => {
+it("returns 400 if query does not exist", async () => {
   const res = await GET("/search");
   const body = await res.json();
 
@@ -78,7 +72,7 @@ it("returns 400 if query is not given", async () => {
   expect(body).toMatchObject({ error: expect.any(String) });
 });
 
-it("returns 400 if query is empty", async () => {
+it("returns 400 if query is less than 1 character long", async () => {
   const res = await GET("/search?q=");
   const body = await res.json();
 
@@ -86,24 +80,8 @@ it("returns 400 if query is empty", async () => {
   expect(body).toMatchObject({ error: expect.any(String) });
 });
 
-it("returns 400 if query is too long", async () => {
-  const res = await GET(`/search?q=${"x".repeat(101)}`);
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if limit is not a number", async () => {
-  const res = await GET("/search?q=smart&limit=foo");
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if limit is not positive", async () => {
-  const res = await GET("/search?q=smart&limit=0");
+it("returns 400 if query is more than 100 characters long", async () => {
+  const res = await GET(`/search?q=${"a".repeat(101)}`);
   const body = await res.json();
 
   expect(res.status).toEqual(400);
@@ -118,8 +96,40 @@ it("returns 400 if limit is not an integer", async () => {
   expect(body).toMatchObject({ error: expect.any(String) });
 });
 
+it("returns 400 if limit is less than 1", async () => {
+  const res = await GET("/search?q=smart&limit=0");
+  const body = await res.json();
+
+  expect(res.status).toEqual(400);
+  expect(body).toMatchObject({ error: expect.any(String) });
+});
+
+it("returns 400 if limit is greater than 100", async () => {
+  const res = await GET("/search?q=smart&limit=101");
+  const body = await res.json();
+
+  expect(res.status).toEqual(400);
+  expect(body).toMatchObject({ error: expect.any(String) });
+});
+
+it("returns 400 if cursor is invalid", async () => {
+  const res = await GET("/search?q=smart&cursor=foo");
+  const body = await res.json();
+
+  expect(res.status).toEqual(400);
+  expect(body).toMatchObject({ error: expect.any(String) });
+});
+
 it("returns 400 if threshold is not a number", async () => {
   const res = await GET("/search?q=smart&threshold=foo");
+  const body = await res.json();
+
+  expect(res.status).toEqual(400);
+  expect(body).toMatchObject({ error: expect.any(String) });
+});
+
+it("returns 400 if threshold is less than 0", async () => {
+  const res = await GET("/search?q=smart&threshold=-1");
   const body = await res.json();
 
   expect(res.status).toEqual(400);
