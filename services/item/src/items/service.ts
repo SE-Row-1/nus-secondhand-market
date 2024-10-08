@@ -21,7 +21,7 @@ type GetAllItemsServiceDto = {
 export async function getAllItems(dto: GetAllItemsServiceDto) {
   const filter: Filter<Item> = {
     ...(dto.type ? { type: dto.type } : {}),
-    ...(dto.status ? { status: dto.status } : {}),
+    ...(dto.status !== undefined ? { status: dto.status } : {}),
     ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
     ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
     deletedAt: null,
