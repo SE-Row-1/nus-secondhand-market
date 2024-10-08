@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(
     {
       items,
-      count: 24,
-      nextCursor: items.length < 8 ? null : String(cursor + 8),
+      next_cursor: items.length < 8 ? null : String(cursor + 8),
     },
     { status: 200 },
   );

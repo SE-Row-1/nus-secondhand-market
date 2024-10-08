@@ -1,5 +1,5 @@
 import { ItemCardList } from "@/components/item";
-import { PublishItem } from "@/components/item/publish-item";
+import { PublishItemDialog } from "@/components/item/publish";
 import { ItemStatus } from "@/types";
 import type { Metadata } from "next";
 
@@ -17,7 +17,7 @@ export default function Home() {
             We found something you might be interested in!
           </p>
         </div>
-        <PublishItem />
+        <PublishItemDialog />
       </div>
       <ItemCardList status={ItemStatus.FOR_SALE} />
     </div>

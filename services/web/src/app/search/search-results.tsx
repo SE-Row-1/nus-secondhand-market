@@ -1,6 +1,6 @@
 "use client";
 
-import { SingleItemCard } from "@/components/item/single-item-card";
+import { SingleItemCard } from "@/components/item/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { SingleItem } from "@/types";

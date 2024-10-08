@@ -2,18 +2,22 @@ declare global {
   namespace NodeJS {
     interface ProcessEnv {
       /**
-       * How the user's browser accesses the backend API.
-       * For example, "https://nshm.mrcai.dev/api".
+       * Base URL for browser to access backend API.
+       *
        * Required.
+       *
        * @note Do not include a trailing slash.
+       * @example https://nshm.shop
        */
       NEXT_PUBLIC_API_BASE_URL: string;
 
       /**
-       * How the web service server accesses the backend API.
-       * For example, "http://service-registry:8761".
+       * Base URL for web service to access backend API.
+       *
        * Required.
+       *
        * @note Do not include a trailing slash.
+       * @example http://service-registry:8761
        */
       API_BASE_URL: string;
     }
