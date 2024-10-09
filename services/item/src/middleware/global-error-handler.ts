@@ -6,8 +6,7 @@ import { isValiError } from "valibot";
  * Centralized error handling for the entire application.
  *
  * In anywhere else, errors should not be directly returned as a response.
- * Rather, they should be thrown as an `HTTPException`,
- * and then be caught and handled here.
+ * Rather, they should be thrown and then be caught and handled here.
  */
 export function globalErrorHandler(error: unknown, c: Context) {
   if (isValiError(error)) {
