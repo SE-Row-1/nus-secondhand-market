@@ -1,5 +1,5 @@
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { PlusIcon, XIcon } from "lucide-react";
 import Image from "next/image";
