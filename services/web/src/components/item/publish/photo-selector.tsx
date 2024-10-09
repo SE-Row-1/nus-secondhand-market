@@ -64,7 +64,7 @@ export function PhotoSelector({ photoObjects, setPhotoObjects }: Props) {
       </Label>
       <div
         ref={photoListRef}
-        className="flex gap-2 pb-2 overflow-x-auto snap-x scrollbar-thin scrollbar-thumb-border scrollbar-thumb-rounded-md"
+        className="flex gap-2 pb-2 overflow-x-auto snap-x scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted"
       >
         {photoObjects.map(({ id, previewUrl }) => (
           <div

@@ -26,7 +26,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <head>
         <ThemeInitializer />
       </head>
-      <body className="bg-background font-sans text-foreground antialiased">
+      <body className="bg-background font-sans text-foreground antialiased scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
         <QueryProvider>
           <div className="hidden md:block">
             <Sidebar />
