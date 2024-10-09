@@ -5,10 +5,10 @@ on:
     branches:
       - setup-infra
     paths:
-      - 'service/web/**'
-      - 'service/account/**'
-      - 'service/item/**'
-      - 'service/wishlist/**'
+      - 'services/web/**'
+      - 'services/account/**'
+      - 'services/item/**'
+      - 'services/wishlist/**'
 
 jobs:
   build:
@@ -24,13 +24,13 @@ jobs:
         with:
           filters: |
             web:
-              - 'service/web/**'
+              - 'services/web/**'
             account:
-              - 'service/account/**'
+              - 'services/account/**'
             item:
-              - 'service/item/**'
+              - 'services/item/**'
             wishlist:
-              - 'service/wishlist/**'
+              - 'services/wishlist/**'
 
       - name: Set services matrix
         id: set-matrix
