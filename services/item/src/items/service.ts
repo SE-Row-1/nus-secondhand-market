@@ -10,7 +10,7 @@ import { HTTPException } from "hono/http-exception";
 import { ObjectId, type Filter } from "mongodb";
 import * as itemsRepository from "./repository";
 
-type GetAllItemsServiceDto = {
+type GetAllServiceDto = {
   type?: ItemType;
   status?: ItemStatus;
   sellerId?: number;
@@ -18,7 +18,7 @@ type GetAllItemsServiceDto = {
   cursor?: string;
 };
 
-export async function getAllItems(dto: GetAllItemsServiceDto) {
+export async function getAll(dto: GetAllServiceDto) {
   const filter: Filter<Item> = {
     ...(dto.type ? { type: dto.type } : {}),
     ...(dto.status !== undefined ? { status: dto.status } : {}),
@@ -43,7 +43,7 @@ export async function getAllItems(dto: GetAllItemsServiceDto) {
   return { items, nextCursor };
 }
 
-type PublishItemServiceDto = {
+type PublishServiceDto = {
   name: string;
   description: string;
   price: number;
@@ -51,7 +51,7 @@ type PublishItemServiceDto = {
   user: Account;
 };
 
-export async function publishItem(dto: PublishItemServiceDto) {
+export async function publish(dto: PublishServiceDto) {
   const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
 
   const item: SingleItem = {
@@ -76,29 +76,34 @@ export async function publishItem(dto: PublishItemServiceDto) {
   return item;
 }
 
-export async function takeDownItem(id: string, user: Account) {
-  const item = await itemsRepository.findOne({ id });
+type TakeDownServiceDto = {
+  id: string;
+  user: Account;
+};
+
+export async function takeDown(dto: TakeDownServiceDto) {
+  const item = await itemsRepository.findOne({ id: dto.id });
 
   if (!item) {
     throw new HTTPException(404, { message: "This item does not exist." });
   }
 
-  if (item.seller.id !== user.id) {
+  if (item.seller.id !== dto.user.id) {
     throw new HTTPException(403, {
       message: "You can't take down someone else's items.",
     });
   }
 
-  await itemsRepository.deleteOne({ id });
+  await itemsRepository.deleteOne({ id: dto.id });
 }
 
-type SearchItemServiceDto = {
+type SearchServiceDto = {
   q: string;
   limit: number;
   cursor?: string;
   threshold?: number;
 };
 
-export async function search(dto: SearchItemServiceDto) {
+export async function search(dto: SearchServiceDto) {
   return await itemsRepository.search(dto);
 }

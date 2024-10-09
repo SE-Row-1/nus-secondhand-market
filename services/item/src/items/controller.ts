@@ -19,7 +19,7 @@ itemsController.get(
   validator("query", getAllItemsQuerySchema),
   async (c) => {
     const query = c.req.valid("query");
-    const result = await itemsService.getAllItems(query);
+    const result = await itemsService.getAll(query);
     return c.json(result, 200);
   },
 );
@@ -30,10 +30,7 @@ itemsController.post(
   validator("form", publishItemFormSchema),
   async (c) => {
     const form = c.req.valid("form");
-    const result = await itemsService.publishItem({
-      ...form,
-      user: c.var.user,
-    });
+    const result = await itemsService.publish({ ...form, user: c.var.user });
     return c.json(result, 201);
   },
 );
@@ -44,7 +41,7 @@ itemsController.delete(
   validator("param", takeDownItemParamSchema),
   async (c) => {
     const { id } = c.req.valid("param");
-    await itemsService.takeDownItem(id, c.var.user);
+    await itemsService.takeDown({ id, user: c.var.user });
     return c.body(null, 204);
   },
 );
