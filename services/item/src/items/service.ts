@@ -1,13 +1,7 @@
-import {
-  ItemStatus,
-  ItemType,
-  type Account,
-  type Item,
-  type SingleItem,
-} from "@/types";
+import { ItemStatus, ItemType, type Account, type SingleItem } from "@/types";
 import { photoManager } from "@/utils/photo-manager";
 import { HTTPException } from "hono/http-exception";
-import { ObjectId, type Filter } from "mongodb";
+import { ObjectId } from "mongodb";
 import * as itemsRepository from "./repository";
 
 type GetAllServiceDto = {
@@ -19,18 +13,19 @@ type GetAllServiceDto = {
 };
 
 export async function getAll(dto: GetAllServiceDto) {
-  const filter: Filter<Item> = {
-    ...(dto.type ? { type: dto.type } : {}),
-    ...(dto.status !== undefined ? { status: dto.status } : {}),
-    ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
-    ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
-    deletedAt: null,
-  };
-
-  const withIdItems = await itemsRepository.find(filter, {
-    sort: { _id: -1 },
-    limit: dto.limit,
-  });
+  const withIdItems = await itemsRepository.find(
+    {
+      ...(dto.type ? { type: dto.type } : {}),
+      ...(dto.status !== undefined ? { status: dto.status } : {}),
+      ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
+      ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
+      deletedAt: null,
+    },
+    {
+      sort: { _id: -1 },
+      limit: dto.limit,
+    },
+  );
 
   const nextCursor =
     withIdItems.length < dto.limit
