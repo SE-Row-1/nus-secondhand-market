@@ -31,10 +31,10 @@ export enum ItemStatus {
   SOLD,
 }
 
-export type SingleItem = {
+export type SingleItem<A extends AccountPreview | Account = AccountPreview> = {
   id: string;
   type: ItemType.SINGLE;
-  seller: AccountPreview;
+  seller: A;
   name: string;
   description: string;
   price: number;
@@ -44,10 +44,10 @@ export type SingleItem = {
   deleted_at: string | null;
 };
 
-export type ItemPack = {
+export type ItemPack<A extends AccountPreview | Account = AccountPreview> = {
   id: string;
   type: ItemType.PACK;
-  seller: AccountPreview;
+  seller: A;
   name: string;
   description: string;
   discount: number;
