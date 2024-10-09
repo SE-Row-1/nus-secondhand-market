@@ -9,10 +9,10 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>edu.nus</groupId>
-  <artifactId>favorlist</artifactId>
+  <artifactId>wishlist</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>favorlist</name>
-  <description>favorlist</description>
+  <name>wishlist</name>
+  <description>wishlist</description>
   <url/>
   <licenses>
     <license/>
@@ -67,10 +67,19 @@
       <artifactId>jakarta.validation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>edu.nus</groupId>
-      <artifactId>market</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <scope>compile</scope>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-api</artifactId>
+      <version>0.11.2</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-impl</artifactId>
+      <version>0.11.2</version>
+    </dependency>
+    <dependency>
+      <groupId>io.jsonwebtoken</groupId>
+      <artifactId>jjwt-jackson</artifactId> <!-- for JSON handling -->
+      <version>0.11.2</version>
     </dependency>
   </dependencies>
 
