@@ -1,3 +1,4 @@
+import { camelToSnake } from "@/utils/case";
 import { Jwt } from "hono/utils/jwt";
 
 export const me = {
@@ -16,7 +17,7 @@ export const me = {
   deletedAt: null,
 };
 
-export const myJwt = await Jwt.sign(me, Bun.env.JWT_SECRET_KEY);
+export const myJwt = await Jwt.sign(camelToSnake(me), Bun.env.JWT_SECRET_KEY);
 
 export const someoneElse = {
   id: 2,
@@ -35,6 +36,6 @@ export const someoneElse = {
 };
 
 export const someoneElseJwt = await Jwt.sign(
-  someoneElse,
+  camelToSnake(someoneElse),
   Bun.env.JWT_SECRET_KEY,
 );
