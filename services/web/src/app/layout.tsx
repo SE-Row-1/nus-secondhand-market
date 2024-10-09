@@ -1,6 +1,6 @@
 import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryProvider } from "@/contexts/query";
+import { QueryProvider } from "@/contexts/query-provider";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
@@ -26,7 +26,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
       <head>
         <ThemeInitializer />
       </head>
-      <body className="bg-background font-sans text-foreground antialiased">
+      <body className="bg-background font-sans text-foreground antialiased scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
         <QueryProvider>
           <div className="hidden md:block">
             <Sidebar />

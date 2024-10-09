@@ -1,10 +1,3 @@
-import { useMe } from "@/hooks/use-me";
-import { useToast } from "@/hooks/use-toast";
-import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
-import type { MouseEvent } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +8,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/hooks/use-me";
+import type { SingleItem } from "@/types";
+import { ClientRequester } from "@/utils/requester/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
+import type { MouseEvent } from "react";
 
 type Props = {
   item: SingleItem;
@@ -54,18 +54,18 @@ export function DeleteItemDialog({ item }: Props) {
             <XIcon className="size-4 mr-2" />
             Cancel
           </AlertDialogCancel>
-          <DeleteItemButton itemId={item.id} />
+          <DeleteItemDialogAction itemId={item.id} />
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
 
-type DeleteItemButtonProps = {
+type DeleteItemDialogActionProps = {
   itemId: string;
 };
 
-function DeleteItemButton({ itemId }: DeleteItemButtonProps) {
+function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -73,6 +73,7 @@ function DeleteItemButton({ itemId }: DeleteItemButtonProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
+
       return await new ClientRequester().delete<undefined>(`/items/${itemId}`);
     },
     onSuccess: () => {

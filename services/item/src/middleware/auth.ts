@@ -3,39 +3,63 @@ import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { verify } from "hono/jwt";
-import { z } from "zod";
+import * as v from "valibot";
 
-const payloadSchema = z.object({
-  id: z.number(),
-  email: z.string(),
-  nickname: z.string().nullable(),
-  avatarUrl: z.string().nullable(),
-  phoneCode: z.string().nullable(),
-  phoneNumber: z.string().nullable(),
-  department: z
-    .object({
-      id: z.number(),
-      acronym: z.string(),
-      name: z.string(),
-    })
-    .nullable(),
-  createdAt: z
-    .string()
-    .transform((v) => new Date(v))
-    .pipe(z.date()),
-  deletedAt: z.null().or(
-    z
-      .string()
-      .transform((v) => new Date(v))
-      .pipe(z.date()),
+// JWT payload should contain the user's account information.
+//
+// Normally speaking, we trust the information carried inside JWT,
+// so here we only do some basic validation on data types.
+const accountSchema = v.object({
+  id: v.number(),
+  email: v.string(),
+  nickname: v.nullable(v.string()),
+  avatarUrl: v.nullable(v.string()),
+  phoneCode: v.nullable(v.string()),
+  phoneNumber: v.nullable(v.string()),
+  department: v.nullable(
+    v.object({
+      id: v.number(),
+      acronym: v.string(),
+      name: v.string(),
+    }),
+  ),
+  createdAt: v.pipe(
+    v.string(),
+    v.transform((value) => new Date(value)),
+    v.date(),
+  ),
+  deletedAt: v.nullable(
+    v.pipe(
+      v.string(),
+      v.transform((value) => new Date(value)),
+      v.date(),
+    ),
   ),
 });
 
 /**
+ * Verify and decode a JWT token.
+ */
+async function verifyJwt(token: string) {
+  try {
+    return await verify(token, Bun.env.JWT_SECRET_KEY);
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new HTTPException(401, { message: error.message, cause: error });
+    }
+
+    throw new HTTPException(500, {
+      message: "Unknown error during identity verification.",
+      cause: error,
+    });
+  }
+}
+
+/**
  * Authenticate user.
  *
- * - If the user has already logged in, the user's account will be stored
- * inside `c.var.user` for later use.
+ * - If the user has already logged in, the user's account information
+ * will be stored inside `c.var.user` for later use.
  * - If the user has not yet logged in, and `strict = true`, the middleware
  * will directly return 401.
  * - If the user has not yet logged in, and `strict = false`, `c.var.user`
@@ -54,44 +78,21 @@ export function auth<Strict extends boolean>(strict: Strict) {
     }
 
     if (accessToken === undefined) {
-      // @ts-expect-error This actually works.
+      // @ts-expect-error This works.
       c.set("user", undefined);
-      return await next();
+
+      await next();
+
+      return;
     }
 
     const payload = await verifyJwt(accessToken);
 
-    const user = await payloadSchema.parseAsync(payload);
+    const account = await v.parseAsync(accountSchema, payload);
 
-    // @ts-expect-error This actually works.
-    c.set("user", user);
-    return await next();
+    // @ts-expect-error This works.
+    c.set("user", account);
+
+    await next();
   });
-}
-
-/**
- * Verify and decode a JWT token.
- *
- * Claims are automatically removed from the payload.
- *
- * @param token The incoming JWT token.
- * @returns The payload of the JWT token.
- */
-async function verifyJwt(token: string) {
-  try {
-    const payload = await verify(token, Bun.env.JWT_SECRET);
-
-    delete payload.iat;
-    delete payload.exp;
-    delete payload.nbf;
-
-    return payload;
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new HTTPException(401, error);
-    }
-
-    console.error(error);
-    throw new HTTPException(500, { message: "Unknown error" });
-  }
 }

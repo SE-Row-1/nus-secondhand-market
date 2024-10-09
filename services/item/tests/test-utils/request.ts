@@ -47,7 +47,7 @@ export async function POST(
 }
 
 /**
- * Fake a POST request with form data.
+ * Fake a POST request with `multipart/form-data`.
  */
 export async function FORM(
   endpoint: string,

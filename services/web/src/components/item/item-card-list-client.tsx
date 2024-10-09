@@ -1,14 +1,19 @@
 "use client";
 
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import type { SingleItem } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import { SingleItemCard } from "./single-item-card";
-import type { ItemListResponse } from "./types";
+import { SingleItemCard } from "./card";
+
+type ItemsResponse = {
+  items: SingleItem[];
+  next_cursor: string;
+};
 
 type Props = {
-  initialData: ItemListResponse;
+  initialData: ItemsResponse;
   initialSearchParams: string;
 };
 
@@ -20,19 +25,20 @@ export function ItemCardListClient({
     queryKey: ["items"],
     queryFn: ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams(initialSearchParams);
+
       if (cursor) {
         searchParams.set("cursor", cursor);
       }
 
-      return new ClientRequester().get<ItemListResponse>(
+      return new ClientRequester().get<ItemsResponse>(
         `/items?${searchParams.toString()}`,
       );
     },
     initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.nextCursor,
+    getNextPageParam: (lastPage) => lastPage.next_cursor,
     initialData: {
       pages: [initialData],
-      pageParams: [undefined, initialData.nextCursor],
+      pageParams: [undefined, initialData.next_cursor],
     },
   });
 

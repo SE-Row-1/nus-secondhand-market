@@ -1,6 +1,13 @@
 import { MenuIcon } from "lucide-react";
 import { Button } from "../ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 import { Logo } from "./logo";
 import { MeCard } from "./me-card";
 import { Nav } from "./nav";
@@ -17,6 +24,12 @@ export function Header() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="flex flex-col border-r">
+          <SheetHeader className="hidden">
+            <SheetTitle>Navigation menu</SheetTitle>
+            <SheetDescription>
+              Navigation menu on mobile screen
+            </SheetDescription>
+          </SheetHeader>
           <Logo />
           <Nav />
           <ThemeToggle />

@@ -20,16 +20,21 @@ export type Account = AccountPreview & {
   deleted_at: string | null;
 };
 
+export enum ItemType {
+  SINGLE = "single",
+  PACK = "pack",
+}
+
 export enum ItemStatus {
   FOR_SALE,
   DEALT,
   SOLD,
 }
 
-export type SingleItem = {
+export type SingleItem<A extends AccountPreview | Account = AccountPreview> = {
   id: string;
-  type: "single";
-  seller: AccountPreview;
+  type: ItemType.SINGLE;
+  seller: A;
   name: string;
   description: string;
   price: number;
@@ -39,15 +44,15 @@ export type SingleItem = {
   deleted_at: string | null;
 };
 
-export type ItemPack = {
+export type ItemPack<A extends AccountPreview | Account = AccountPreview> = {
   id: string;
-  type: "pack";
-  seller: AccountPreview;
+  type: ItemType.PACK;
+  seller: A;
   name: string;
   description: string;
   discount: number;
   status: ItemStatus;
-  children: (SingleItem | ItemPack)[];
+  children: Item[];
   created_at: string;
   deleted_at: string | null;
 };

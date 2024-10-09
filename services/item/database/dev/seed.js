@@ -516,3 +516,5 @@ const items = [
 ];
 
 db.items.insertMany(items);
+
+db.items.createIndex({ name: "text", description: "text" });

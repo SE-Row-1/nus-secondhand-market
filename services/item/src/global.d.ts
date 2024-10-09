@@ -1,52 +1,63 @@
 declare module "bun" {
   interface Env {
     /**
-     * The port number that the server listens on.
+     * Port number for the server to listen on.
+     *
      * Optional. Default to 3000.
      */
     PORT?: number;
 
     /**
-     * The secret key for JWT decoding.
+     * JWT Secret key for decoding tokens.
+     *
+     * This value should remain the same across all microservices.
+     *
      * Required.
      */
-    JWT_SECRET: string;
+    JWT_SECRET_KEY: string;
 
     /**
-     * The URI of the MongoDB database.
+     * URI of MongoDB server.
+     *
      * Format: mongodb://<username>:<password>@<host>:<port>
+     *
      * Required.
      */
-    MONGO_DB_URI: string;
+    MONGO_URI: string;
 
     /**
-     * The name of the MongoDB database.
+     * Name of MongoDB database.
+     *
      * Required.
      */
     MONGO_DB_NAME: string;
 
     /**
-     * The access key ID for the S3 bucket.
+     * AWS access key ID.
+     *
      * Required.
      */
-    S3_ACCESS_KEY_ID: string;
+    AWS_ACCESS_KEY_ID: string;
 
     /**
-     * The secret access key for the S3 bucket.
+     * AWS secret access key.
+     *
      * Required.
      */
-    S3_SECRET_ACCESS_KEY: string;
+    AWS_SECRET_ACCESS_KEY: string;
 
     /**
-     * The name of the S3 bucket.
+     * AWS region, to which S3 client will send requests.
+     *
+     * Required.
+     */
+    AWS_REGION: string;
+
+    /**
+     * S3 bucket name.
+     *
      * Required.
      */
     S3_BUCKET_NAME: string;
-
-    /**
-     * The region of the S3 bucket.
-     * Required.
-     */
-    S3_REGION: string;
   }
 }

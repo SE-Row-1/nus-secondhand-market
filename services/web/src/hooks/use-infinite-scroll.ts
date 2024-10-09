@@ -1,5 +1,8 @@
 import { useEffect, useRef, type RefObject } from "react";
 
+/**
+ * Execute a callback only when user scrolls near the given element.
+ */
 export function useInfiniteScroll(
   bottomRef: RefObject<HTMLElement>,
   callback: () => void,

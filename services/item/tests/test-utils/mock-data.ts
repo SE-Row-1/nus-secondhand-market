@@ -1,4 +1,3 @@
-import { ItemStatus } from "@/types";
 import { Jwt } from "hono/utils/jwt";
 
 export const me = {
@@ -17,7 +16,7 @@ export const me = {
   deletedAt: null,
 };
 
-export const myJwt = await Jwt.sign(me, "nshm-item-service");
+export const myJwt = await Jwt.sign(me, Bun.env.JWT_SECRET_KEY);
 
 export const someoneElse = {
   id: 2,
@@ -35,21 +34,7 @@ export const someoneElse = {
   deletedAt: null,
 };
 
-export const someoneElseJwt = await Jwt.sign(someoneElse, "nshm-item-service");
-
-export const fakeSingleItem = {
-  id: crypto.randomUUID(),
-  type: "single" as const,
-  name: "test",
-  description: "test",
-  price: 100,
-  photoUrls: [],
-  seller: {
-    id: me.id,
-    nickname: me.nickname,
-    avatarUrl: me.avatarUrl,
-  },
-  status: ItemStatus.FOR_SALE,
-  createdAt: new Date(),
-  deletedAt: null,
-};
+export const someoneElseJwt = await Jwt.sign(
+  someoneElse,
+  Bun.env.JWT_SECRET_KEY,
+);
