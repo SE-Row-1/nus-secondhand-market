@@ -1,4 +1,5 @@
 import type { Endpoint, Fetcher } from "./fetcher";
+import { HttpError } from "./http-error";
 
 export class ClientFetcher implements Fetcher {
   public async fetch<T>(endpoint: Endpoint, init: RequestInit = {}) {
@@ -18,7 +19,7 @@ export class ClientFetcher implements Fetcher {
     const json = await res.json();
 
     if (!res.ok) {
-      throw new Error(json.error);
+      throw new HttpError(res.status, json.error);
     }
 
     return json as T;
