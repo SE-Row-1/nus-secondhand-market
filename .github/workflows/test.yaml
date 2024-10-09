@@ -1,0 +1,19 @@
+name: Test Workflow
+
+on:
+  push:
+    branches:
+      - setup-infra
+    paths:
+      - '**'  # Trigger on any file change
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log push event
+        run: echo "Triggered by a push to setup-infra"
+
