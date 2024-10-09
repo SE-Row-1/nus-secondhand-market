@@ -1,6 +1,6 @@
 import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryProvider } from "@/contexts/query";
+import { QueryProvider } from "@/contexts/query-provider";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
