@@ -31,7 +31,6 @@ export async function GET() {
       { status: 401 },
     );
   }
-  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   return NextResponse.json(mockAccount, { status: 200 });
 }

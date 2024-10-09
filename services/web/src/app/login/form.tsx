@@ -22,6 +22,7 @@ const formSchema = v.object({
   email: v.pipe(
     v.string("Email should be a text string."),
     v.email("Email format is invalid."),
+    v.endsWith("@u.nus.edu", "Email should be a NUS email address."),
   ),
   password: v.pipe(
     v.string("Password should be a text string."),

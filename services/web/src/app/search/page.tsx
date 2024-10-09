@@ -10,10 +10,8 @@ export const metadata: Metadata = {
 export default function SearchPage() {
   return (
     <Suspense>
-      <div className="min-h-[calc(100vh-64px)]">
-        <SearchBar />
-        <SearchResults />
-      </div>
+      <SearchBar />
+      <SearchResults />
     </Suspense>
   );
 }
