@@ -12,13 +12,9 @@ export function transformCase() {
       return;
     }
 
-    const camelCaseJson = (await c.res.json()) as Record<string, unknown>;
+    const camelCaseJson = await c.res.json();
     const snakeCaseJson = camelToSnake(camelCaseJson);
 
-    c.res = Response.json(snakeCaseJson, {
-      status: c.res.status,
-      statusText: c.res.statusText,
-      headers: c.res.headers,
-    });
+    c.res = Response.json(snakeCaseJson, c.res);
   });
 }
