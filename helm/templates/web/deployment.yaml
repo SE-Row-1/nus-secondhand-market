@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-service
+spec:
+  replicas: {{ .Values.web.replicas }}
+  selector:
+    matchLabels:
+      app: web-service
+  template:
+    metadata:
+      labels:
+        app: web-service
+    spec:
+      containers:
+      - name: web-service
+        image: {{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.web.resources.requests.memory }}
+            cpu: {{ .Values.web.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.web.resources.limits.memory }}
+            cpu: {{ .Values.web.resources.limits.cpu }}
+

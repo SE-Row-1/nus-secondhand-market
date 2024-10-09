@@ -54,8 +54,8 @@ resource "aws_eks_cluster" "nshm_cluster" {
   capacity_type   = "SPOT"
 
   scaling_config {
-    desired_size = 2
-    max_size     = 2
+    desired_size = 3
+    max_size     = 10
     min_size     = 0
   }
 
@@ -183,33 +183,6 @@ resource "aws_cloudwatch_log_group" "eks_log_group" {
   }
 }
 
-
-# aws-auth ConfigMap to add `nshm-bastion-role`
-resource "aws_eks_cluster_auth" "nshm_auth" {
-  cluster_name = aws_eks_cluster.nshm_cluster.name
-}
-
-resource "aws_eks_cluster_auth_config_map" "nshm_auth_config_map" {
-  cluster_name = aws_eks_cluster.nshm_cluster.name
-
-  map_roles = [
-    {
-      rolearn  = aws_iam_role.eks_node_role.arn
-      username = "system:node:{{EC2PrivateDNSName}}"
-      groups   = ["system:bootstrappers", "system:nodes"]
-    },
-    {
-      rolearn  = aws_iam_role.eks_cluster_role.arn
-      username = "eks-cluster"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = aws_iam_role.nshm_bastion_role.arn
-      username = "nshm-bastion"
-      groups   = ["system:masters"]  # or other group as needed
-    }
-  ]
-}
 
 # Output Variables
 output "cluster_endpoint" {

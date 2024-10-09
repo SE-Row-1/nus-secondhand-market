@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: nshm-project
+  namespace: argocd
+spec:
+  description: Project for NUS Secondhand Market
+  sourceRepos:
+    - '*'
+  destinations:
+    - namespace: default
+      server: 'https://kubernetes.default.svc'
+  roles:
+    - name: developer
+      policies:
+        - p, developer, applications, get, '*'

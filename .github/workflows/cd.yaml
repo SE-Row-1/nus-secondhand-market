@@ -1,0 +1,106 @@
+name: GitOps Workflow
+
+on:
+  push:
+    branches:
+      - setup-infra
+    paths:
+      - 'service/web/**'
+      - 'service/account/**'
+      - 'service/item/**'
+      - 'service/wishlist/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Filter file changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            web:
+              - 'service/web/**'
+            account:
+              - 'service/account/**'
+            item:
+              - 'service/item/**'
+            wishlist:
+              - 'service/wishlist/**'
+
+      - name: Set services matrix
+        id: set-matrix
+        run: |
+          SERVICES=()
+          if [[ "${{ steps.filter.outputs.web }}" == "true" ]]; then
+            SERVICES+=('web')
+          fi
+          if [[ "${{ steps.filter.outputs.account }}" == "true" ]]; then
+            SERVICES+=('account')
+          fi
+          if [[ "${{ steps.filter.outputs.item }}" == "true" ]]; then
+            SERVICES+=('item')
+          fi
+          if [[ "${{ steps.filter.outputs.wishlist }}" == "true" ]]; then
+            SERVICES+=('wishlist')
+          fi
+          echo "SERVICES=${SERVICES[*]}" >> $GITHUB_ENV
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  build-services:
+    runs-on: ubuntu-latest
+    needs: build
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES) }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Build and push service
+        uses: docker/build-push-action@v6
+        with:
+          context: ./service/${{ matrix.service }}
+          push: true
+          tags: |
+            z1yoon/nshm-${{ matrix.service }}:${{ github.sha }}
+            z1yoon/nshm-${{ matrix.service }}:latest
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
+
+  update:
+    name: Update Helm Manifests
+    runs-on: ubuntu-latest
+    needs: build-services
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Update Image Tag Values
+        run: |
+          chart_dir="helm"
+          new_image_tag=${{ github.sha }}
+
+          for service in $(echo "${{ env.SERVICES }}" | tr -d '[]' | tr ',' ' '); do
+            case $service in
+              web|account|item|wishlist)
+                sed -i -E "s|(repository: z1yoon/nshm-${service}[[:space:]]+tag: )[^\"]*|\1$new_image_tag|g" "$chart_dir/values.yaml"
+                ;;
+            esac
+          done
+
+      - name: Commit the changes
+        run: |
+          git commit -am "Updated image tags for services: ${{ env.SERVICES }}"
+          git push

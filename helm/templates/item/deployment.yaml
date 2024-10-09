@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: item-service
+spec:
+  replicas: {{ .Values.item.replicas }}
+  selector:
+    matchLabels:
+      app: item-service
+  template:
+    metadata:
+      labels:
+        app: item-service
+    spec:
+      containers:
+      - name: item-service
+        image: {{ .Values.item.image.repository }}:{{ .Values.item.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.item.resources.requests.memory }}
+            cpu: {{ .Values.item.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.item.resources.limits.memory }}
+            cpu: {{ .Values.item.resources.limits.cpu }}
+

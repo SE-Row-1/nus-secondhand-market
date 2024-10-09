@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: item
+  labels:
+    app: item
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: item
+  template:
+    metadata:
+      labels:
+        app: item
+    spec:
+      containers:
+      - name: item
+        image: z1yoon/nshm-item:setup-infra
+        ports:
+        - containerPort: 5000
+

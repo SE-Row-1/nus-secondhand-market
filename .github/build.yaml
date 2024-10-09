@@ -1,0 +1,76 @@
+iname: Build Docker Image
+
+on:
+  push:
+    branches:
+      - setup-infra
+    paths:
+      - 'service/web/**'
+      - 'service/account/**'
+      - 'service/item/**'
+      - 'service/wishlist/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Filter file changes
+      id: filter
+      uses: dorny/paths-filter@v3
+      with:
+        filters: |
+          web:
+            - 'service/web/**'
+          account:
+            - 'service/account/**'
+          item:
+            - 'service/item/**'
+          wishlist:
+            - 'service/wishlist/**'
+
+    - name: Set services matrix
+      id: set-matrix
+      run: |
+        echo "SERVICES=[]" >> $GITHUB_ENV
+        if [[ "${{ steps.filter.outputs.web }}" == "true" ]]; then
+          echo "SERVICES+=('web')" >> $GITHUB_ENV
+        fi
+        if [[ "${{ steps.filter.outputs.account }}" == "true" ]]; then
+          echo "SERVICES+=('account')" >> $GITHUB_ENV
+        fi
+        if [[ "${{ steps.filter.outputs.item }}" == "true" ]]; then
+          echo "SERVICES+=('item')" >> $GITHUB_ENV
+        fi
+        if [[ "${{ steps.filter.outputs.wishlist }}" == "true" ]]; then
+          echo "SERVICES+=('wishlist')" >> $GITHUB_ENV
+        fi
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  build-services:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: ${{ fromJson(env.SERVICES) }} # Dynamically builds only the services with changes
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Build and push service
+      uses: docker/build-push-action@v6
+      with:
+        context: ./service/${{ matrix.service }}
+        push: true
+        tags: |
+          z1yoon/nshm-${{ matrix.service }}:${{ github.ref_name }}
+          z1yoon/nshm-${{ matrix.service }}:${{ github.sha }}
+        build-args: |
+          ${{ if eq(matrix.service, 'web') }}NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}${{ else }}''${{ end }}

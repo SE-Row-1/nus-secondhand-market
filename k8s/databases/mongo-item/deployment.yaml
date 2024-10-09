@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-item
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-item
+  template:
+    metadata:
+      labels:
+        app: mongo-item
+    spec:
+      containers:
+      - name: mongo-item
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account-service
+spec:
+  replicas: {{ .Values.account.replicas }}
+  selector:
+    matchLabels:
+      app: account-service
+  template:
+    metadata:
+      labels:
+        app: account-service
+    spec:
+      containers:
+      - name: account-service
+        image: {{ .Values.account.image.repository }}:{{ .Values.account.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.account.resources.requests.memory }}
+            cpu: {{ .Values.account.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.account.resources.limits.memory }}
+            cpu: {{ .Values.account.resources.limits.cpu }}
+
