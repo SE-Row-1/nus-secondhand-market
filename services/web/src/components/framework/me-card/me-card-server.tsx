@@ -6,7 +6,7 @@ export async function MeCardServer() {
   return (
     <MeCardClient
       loadingFallback={<Loading />}
-      unauthFallback={<JoinNowCard />}
+      noAuthFallback={<JoinNowCard />}
     />
   );
 }

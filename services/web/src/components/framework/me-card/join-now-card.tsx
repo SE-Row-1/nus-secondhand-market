@@ -11,9 +11,9 @@ import Link from "next/link";
 
 export function JoinNowCard() {
   return (
-    <Card className="self-stretch md:mt-4">
+    <Card className="md:mt-4">
       <CardHeader>
-        <CardTitle>Join us now</CardTitle>
+        <CardTitle>Join now 🤝</CardTitle>
         <CardDescription>
           Find your counterparty, and communicate efficiently.
         </CardDescription>
@@ -22,7 +22,7 @@ export function JoinNowCard() {
         <Button variant="secondary" size="sm" className="w-full" asChild>
           <Link href="/login">
             <LogInIcon className="size-4 mr-2" />
-            Login
+            Log in
           </Link>
         </Button>
         <Button size="sm" className="w-full" asChild>

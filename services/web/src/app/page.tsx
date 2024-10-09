@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-64px)]">
+    <div>
       <div className="flex justify-between items-center flex-wrap gap-4 mt-4 md:mt-8 mb-8">
         <div className="space-y-4">
           <h1 className="font-bold text-3xl">Marketplace</h1>
