@@ -8,5 +8,6 @@ declare module "bun" {
     AWS_SECRET_ACCESS_KEY: string;
     AWS_REGION: string;
     S3_BUCKET_NAME: string;
+    ACCOUNT_SERVICE_BASE_URL: string;
   }
 }

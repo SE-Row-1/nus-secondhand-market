@@ -1,8 +1,12 @@
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it } from "bun:test";
+import { expect, it, mock } from "bun:test";
 import { me } from "../test-utils/mock-data";
 import { GET } from "../test-utils/request";
+
+mock.module("@/utils/requester", () => ({
+  createRequester: () => () => me,
+}));
 
 it("returns the item with the given ID", async () => {
   const insertedId = crypto.randomUUID();
@@ -28,7 +32,10 @@ it("returns the item with the given ID", async () => {
   const body = await res.json();
 
   expect(res.status).toEqual(200);
-  expect(body).toMatchObject({ id: insertedId });
+  expect(body).toMatchObject({
+    id: insertedId,
+    seller: expect.objectContaining({ id: me.id, email: me.email }),
+  });
 
   await itemsCollection.deleteOne({ id: insertedId });
 });

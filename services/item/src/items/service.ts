@@ -1,5 +1,6 @@
 import { ItemStatus, ItemType, type Account, type SingleItem } from "@/types";
 import { photoManager } from "@/utils/photo-manager";
+import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
 import * as itemsRepository from "./repository";
@@ -49,7 +50,11 @@ export async function getOne(dto: GetOneServiceDto) {
     throw new HTTPException(404, { message: "This item does not exist." });
   }
 
-  return item;
+  const seller = await createRequester("account")<Account>(
+    `/accounts/${item.seller.id}`,
+  );
+
+  return { ...item, seller };
 }
 
 type PublishServiceDto = {
