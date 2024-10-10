@@ -2,11 +2,11 @@ import { auth } from "@/middleware/auth";
 import { validator } from "@/middleware/validator";
 import { Hono } from "hono";
 import {
-  getAllItemsQuerySchema,
+  getAllQuerySchema,
   getOneParamSchema,
-  publishItemFormSchema,
-  searchItemQuerySchema,
-  takeDownItemParamSchema,
+  publishFormSchema,
+  searchQuerySchema,
+  takeDownParamSchema,
 } from "./schema";
 import * as itemsService from "./service";
 
@@ -15,15 +15,11 @@ import * as itemsService from "./service";
  */
 export const itemsController = new Hono();
 
-itemsController.get(
-  "/",
-  validator("query", getAllItemsQuerySchema),
-  async (c) => {
-    const query = c.req.valid("query");
-    const result = await itemsService.getAll(query);
-    return c.json(result, 200);
-  },
-);
+itemsController.get("/", validator("query", getAllQuerySchema), async (c) => {
+  const query = c.req.valid("query");
+  const result = await itemsService.getAll(query);
+  return c.json(result, 200);
+});
 
 itemsController.get(
   "/:id",
@@ -38,7 +34,7 @@ itemsController.get(
 itemsController.post(
   "/",
   auth(true),
-  validator("form", publishItemFormSchema),
+  validator("form", publishFormSchema),
   async (c) => {
     const form = c.req.valid("form");
     const result = await itemsService.publish({ ...form, user: c.var.user });
@@ -49,7 +45,7 @@ itemsController.post(
 itemsController.delete(
   "/:id",
   auth(true),
-  validator("param", takeDownItemParamSchema),
+  validator("param", takeDownParamSchema),
   async (c) => {
     const { id } = c.req.valid("param");
     await itemsService.takeDown({ id, user: c.var.user });
@@ -59,7 +55,7 @@ itemsController.delete(
 
 itemsController.get(
   "/search",
-  validator("query", searchItemQuerySchema),
+  validator("query", searchQuerySchema),
   async (c) => {
     const query = c.req.valid("query");
     const result = await itemsService.search(query);
