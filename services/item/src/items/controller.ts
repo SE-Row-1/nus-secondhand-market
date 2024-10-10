@@ -3,6 +3,7 @@ import { validator } from "@/middleware/validator";
 import { Hono } from "hono";
 import {
   getAllItemsQuerySchema,
+  getOneParamSchema,
   publishItemFormSchema,
   searchItemQuerySchema,
   takeDownItemParamSchema,
@@ -20,6 +21,16 @@ itemsController.get(
   async (c) => {
     const query = c.req.valid("query");
     const result = await itemsService.getAll(query);
+    return c.json(result, 200);
+  },
+);
+
+itemsController.get(
+  "/:id",
+  validator("param", getOneParamSchema),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const result = await itemsService.getOne({ id });
     return c.json(result, 200);
   },
 );

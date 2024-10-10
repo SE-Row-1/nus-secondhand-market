@@ -36,6 +36,10 @@ export const getAllItemsQuerySchema = v.object({
   ),
 });
 
+export const getOneParamSchema = v.object({
+  id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
+});
+
 const fileSchema = v.pipe(
   v.file("Not a file"),
   v.mimeType(

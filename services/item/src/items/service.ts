@@ -38,6 +38,20 @@ export async function getAll(dto: GetAllServiceDto) {
   return { items, nextCursor };
 }
 
+type GetOneServiceDto = {
+  id: string;
+};
+
+export async function getOne(dto: GetOneServiceDto) {
+  const item = await itemsRepository.findOne({ id: dto.id, deletedAt: null });
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  return item;
+}
+
 type PublishServiceDto = {
   name: string;
   description: string;
