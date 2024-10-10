@@ -10,6 +10,9 @@ on:
       - 'services/item/**'
       - 'services/wishlist/**'
 
+permissions:
+  contents: write
+
 jobs:
   define-matrix:
     runs-on: ubuntu-latest
