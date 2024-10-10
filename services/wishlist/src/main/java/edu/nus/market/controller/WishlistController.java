@@ -29,14 +29,27 @@ public class WishlistController {
 
     // Register and Delete
     @GetMapping("/me")
-    public ResponseEntity<Object> getFavorlist(@RequestParam("id") int id){
-//    public ResponseEntity<Object> getFavorlist(@RequestHeader(value = "Cookie", required = false) String token){
+//    public ResponseEntity<Object> getFavorlist(@RequestParam("id") int id){
+    public ResponseEntity<Object> getWishlist(@RequestHeader(value = "Cookie", required = false) String token){
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        int id = JwtTokenManager.decodeCookie(token);
+        return wishlistService.getWishlistService(id);
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<Object> addLike(@RequestBody AddLikeReq req){
+//    public ResponseEntity<Object> addLike(@RequestBody AddLikeReq req, @RequestHeader(value = "Cookie", required = false) String token){
 //        if (token == null || token.isEmpty())
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
 //        if (!JwtTokenManager.validateCookie(token)) {
 //            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
 //        }
 //        int id = JwtTokenManager.decodeCookie(token);
-        return wishlistService.getFavorlistService(id);
+//        req.setUserId(id);
+        return wishlistService.addLikeService(req);
     }
 }

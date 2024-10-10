@@ -16,7 +16,7 @@ public class Like {
     private ObjectId id;  // MongoDB 的唯一标识符
     private String type;
 
-    private String userId;  // 用户ID
+    private int userId;  // 用户ID
     private String itemId;  // 商品ID
 
     private Date favoriteDate;  // 收藏日期

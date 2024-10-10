@@ -1,7 +1,9 @@
 package edu.nus.market.service;
 
 import edu.nus.market.dao.WishlistDao;
+import edu.nus.market.pojo.AddLikeReq;
 import edu.nus.market.pojo.Like;
+import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
@@ -16,9 +18,16 @@ public class WishlistServiceImpl implements WishlistService {
     @Resource
     private WishlistDao wishlistDao;
 
+
     @Override
-    public ResponseEntity<Object> getFavorlistService(int id) {
+    public ResponseEntity<Object> getWishlistService(int id) {
         List<Like> likes = wishlistDao.findByUserId(id);
         return ResponseEntity.status(HttpStatus.OK).body(likes);
+    }
+
+    @Override
+    public ResponseEntity<Object> addLikeService(AddLikeReq addLikeReq) {
+
+        return ResponseEntity.status(HttpStatus.OK).body(wishlistDao.save(ConvertAddLikeReqToLike.convert(addLikeReq)));
     }
 }

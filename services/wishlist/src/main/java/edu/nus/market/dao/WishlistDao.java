@@ -12,4 +12,7 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     List<Like> findByUserId(int userId);
 
     Like findTopByItemIdOrderByFavoriteDateDesc(String itemId);
+
+    //insert one Like just use save()
+
 }

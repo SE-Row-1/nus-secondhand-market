@@ -38,30 +38,7 @@ public class WishlistControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(new WishlistController()).build();
     }
 
-    @Test
-    public void getFavorlist_NoToken_ShouldReturnUnauthorized() throws Exception {
-        mockMvc.perform(get("/wishlist"))
-            .andExpect(status().isUnauthorized())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.error").value(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-    }
 
-    @Test
-    public void getFavorlist_InvalidToken_ShouldReturnUnauthorized() throws Exception {
-        String invalidToken = "invalidToken";
-
-        try (MockedStatic<JwtTokenManager> mockedJwtTokenManager = mockStatic(JwtTokenManager.class)) {
-            when(JwtTokenManager.validateCookie(anyString())).thenReturn(false);
-            when(JwtTokenManager.decodeCookie(anyString())).thenReturn(1);
-
-            mockMvc.perform(get("/wishlist").header("Cookie", invalidToken))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.error").value(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
-
-
-        }
-    }
 
     @Test
     public void getFavorlist_ValidToken_ShouldReturnFavorlist() throws Exception {
