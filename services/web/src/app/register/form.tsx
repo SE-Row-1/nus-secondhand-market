@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ const formSchema = v.object({
   email: v.pipe(
     v.string("Email should be a text string."),
     v.email("Email format is invalid."),
+    v.endsWith("@u.nus.edu", "Email should be a NUS email address."),
   ),
   password: v.pipe(
     v.string("Password should be a text string."),

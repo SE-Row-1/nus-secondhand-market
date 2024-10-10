@@ -5,7 +5,7 @@ export class ServerFetcher implements Fetcher {
   public async fetch<T>(endpoint: Endpoint, init: RequestInit = {}) {
     const url = process.env.API_BASE_URL + endpoint;
 
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       ...init,
       headers: {
         ...init.headers,
@@ -13,13 +13,13 @@ export class ServerFetcher implements Fetcher {
       },
     });
 
-    if (response.status === 204) {
+    if (res.status === 204) {
       return undefined as never;
     }
 
-    const json = await response.json();
+    const json = await res.json();
 
-    if (!response.ok) {
+    if (!res.ok) {
       return undefined as never;
     }
 

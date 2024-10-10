@@ -1,28 +1,13 @@
 declare module "bun" {
   interface Env {
-    /**
-     * The port number that the server listens on.
-     * Optional. Default to 3000.
-     */
     PORT?: number;
-
-    /**
-     * The URI of the MongoDB database.
-     * Format: mongodb://<username>:<password>@<host>:<port>
-     * Required.
-     */
-    MONGO_DB_URI: string;
-
-    /**
-     * The name of the MongoDB database.
-     * Required.
-     */
+    JWT_SECRET_KEY: string;
+    MONGO_URI: string;
     MONGO_DB_NAME: string;
-
-    /**
-     * The secret key for JWT decoding.
-     * Required.
-     */
-    JWT_SECRET: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_REGION: string;
+    S3_BUCKET_NAME: string;
+    ACCOUNT_SERVICE_BASE_URL: string;
   }
 }

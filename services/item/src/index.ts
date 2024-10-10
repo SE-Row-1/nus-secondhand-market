@@ -8,38 +8,45 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
+import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
+import { transformCase } from "./middleware/transform-case";
 
-/**
- * The main entry point of the application.
- */
+// Entry point of the application.
 const app = new Hono();
 
-// Configure middleware for all APIs.
+// These middleware are applied to all routes.
 app.use(
   // Compress the response in gzip.
+  //
   // TODO: Replace `bun-compression` with `hono/compress`,
   // once Bun has implemented `CompressionStream`. See oven-sh/bun#1723.
   compress(),
 
-  // Enable CORS for local development and testing.
+  // Enable CORS in non-production environments.
+  //
+  // In production environment, frontend and backend are served
+  // on the same domain, so there is no need for CORS.
+  //
+  // TODO: Remove this middleware once we have a local load balancer.
   cors({
     origin: (origin) => (Bun.env.NODE_ENV === "production" ? null : origin),
     credentials: Bun.env.NODE_ENV === "production" ? false : true,
   }),
 
-  // Log every incoming request and their corresponding response.
-  // TODO: Write logs to a file for better monitoring.
+  // Log incoming requests and their corresponding responses.
+  //
+  // TODO: Persist logs into files for better monitoring.
   logger(),
 
-  // Rate limit (100 req/min) based on the user's IP address.
+  // Rate limit based on IP address. (100 req/min)
   //
-  // In most cases, IP address can be safely resolved and used as the criteria.
+  // In most cases, the user's IP address is available and used as the criteria.
   //
-  // However, in some marginal cases where IP address is not available,
-  // the user's identity will instead be used as a fallback.
+  // However, in some marginal cases where IP address cannot be resolved,
+  // the user's identity (indicated by JWT) will instead be used as a fallback.
   //
   // And if the user has not yet logged in at that time,
-  // he/she will be treated as an anonymous user,
+  // he/she will be considered as an anonymous user,
   // and share one rate limit quota with all other anonymous users.
   // This is a risky move, but normally our program will not reach this far.
   //
@@ -55,15 +62,19 @@ app.use(
 
   // Add security-related headers to the response.
   secureHeaders(),
+
+  // Transform the JSON response from camel case to snake case.
+  transformCase(),
 );
 
 // Health check endpoint.
 app.get("/healthz", (c) => c.text("ok"));
 
-// API for items.
-app.route("/", itemsController);
+// Register API controllers.
+app.route("/items", itemsController);
 
-// Global error handler.
+// Register global handlers.
 app.onError(globalErrorHandler);
+app.notFound(globalNotFoundHandler);
 
 export default app;

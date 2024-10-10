@@ -18,7 +18,7 @@ export abstract class Requester {
 
   public async post<T>(
     endpoint: Endpoint,
-    body: unknown = {},
+    body: Record<string, unknown> = {},
     init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
@@ -32,9 +32,21 @@ export abstract class Requester {
     });
   }
 
+  public async postForm<T>(
+    endpoint: Endpoint,
+    body: FormData,
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      ...init,
+      method: "POST",
+      body,
+    });
+  }
+
   public async put<T>(
     endpoint: Endpoint,
-    body: unknown = {},
+    body: Record<string, unknown> = {},
     init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
@@ -50,7 +62,7 @@ export abstract class Requester {
 
   public async patch<T>(
     endpoint: Endpoint,
-    body: unknown = {},
+    body: Record<string, unknown> = {},
     init: RequestInit = {},
   ) {
     return await this.fetcher.fetch<T>(endpoint, {
