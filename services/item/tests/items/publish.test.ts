@@ -20,6 +20,13 @@ it("creates an item without photo", async () => {
   const body = (await res.json()) as ExpectedResponse;
 
   expect(res.status).toEqual(201);
+  expect(body).toMatchObject({
+    name: "test",
+    description: "test",
+    price: 100,
+    photo_urls: [],
+  });
+  expect(body).not.toContainKey("_id");
 
   const count = await itemsCollection.countDocuments({ id: body.id });
   expect(count).toEqual(1);
@@ -46,6 +53,13 @@ it("creates an item with exactly 1 photo", async () => {
   const body = (await res.json()) as ExpectedResponse;
 
   expect(res.status).toEqual(201);
+  expect(body).toMatchObject({
+    name: "test",
+    description: "test",
+    price: 100,
+    photo_urls: ["uploads/test1.png"],
+  });
+  expect(body).not.toContainKey("_id");
 
   const count = await itemsCollection.countDocuments({ id: body.id });
   expect(count).toEqual(1);
@@ -77,6 +91,13 @@ it("creates an item with multiple photos", async () => {
   const body = (await res.json()) as ExpectedResponse;
 
   expect(res.status).toEqual(201);
+  expect(body).toMatchObject({
+    name: "test",
+    description: "test",
+    price: 100,
+    photo_urls: ["uploads/test1.png", "uploads/test2.jpg"],
+  });
+  expect(body).not.toContainKey("_id");
 
   const count = await itemsCollection.countDocuments({ id: body.id });
   expect(count).toEqual(1);

@@ -16,6 +16,7 @@ it("returns search results", async () => {
 
   expect(res.status).toEqual(200);
   expect(body.items).toBeArrayOfSize(3);
+  expect(body.items[0]).not.toContainKey("_id");
   expect(body.next_cursor).toMatch(/^[0-9a-z]{24}$/);
   expect(body.next_threshold).toBeGreaterThan(0);
 

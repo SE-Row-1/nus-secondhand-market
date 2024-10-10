@@ -44,7 +44,10 @@ type GetOneServiceDto = {
 };
 
 export async function getOne(dto: GetOneServiceDto) {
-  const item = await itemsRepository.findOne({ id: dto.id, deletedAt: null });
+  const item = await itemsRepository.findOne(
+    { id: dto.id, deletedAt: null },
+    { projection: { _id: 0 } },
+  );
 
   if (!item) {
     throw new HTTPException(404, { message: "This item does not exist." });

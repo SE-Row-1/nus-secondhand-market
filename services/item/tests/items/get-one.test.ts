@@ -36,6 +36,7 @@ it("returns the item with the given ID", async () => {
     id: insertedId,
     seller: expect.objectContaining({ id: me.id, email: me.email }),
   });
+  expect(body).not.toContainKey("_id");
 
   await itemsCollection.deleteOne({ id: insertedId });
 });
