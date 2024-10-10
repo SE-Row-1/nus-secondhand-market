@@ -1,9 +1,10 @@
-import app from "@/index";
 import { describe, expect, it } from "bun:test";
+import { GET } from "./test-utils/request";
 
 describe("GET /healthz", () => {
-  it("should return 200", async () => {
-    const res = await app.request("/healthz");
+  it("always returns 200", async () => {
+    const res = await GET("/healthz");
+
     expect(res.status).toEqual(200);
   });
 });

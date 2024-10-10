@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
     targetRevision: setup-infra
-    path: k8s
+    path: helm
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: nshm

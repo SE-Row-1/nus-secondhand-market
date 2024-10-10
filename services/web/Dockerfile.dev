@@ -1,0 +1,20 @@
+# docker build -f Dockerfile.dev -t web:dev .
+# docker run -d -p 3000:3000 --name web --env-file .env -v .:/app -v /app/node_modules web:dev
+
+FROM node:lts-alpine
+
+WORKDIR /app
+
+RUN apk add --no-cache libc6-compat
+
+RUN corepack enable pnpm
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+ENV HOSTNAME=0.0.0.0
+
+CMD ["pnpm", "run", "dev"]

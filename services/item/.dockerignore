@@ -1,6 +1,6 @@
-.git
-dist
-node_modules
-.dockerignore
-.env*
-Dockerfile
+*
+!/src
+!/tests
+!bun.lockb
+!package.json
+!tsconfig.json

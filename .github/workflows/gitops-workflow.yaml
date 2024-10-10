@@ -52,7 +52,6 @@ jobs:
           fi
 
           echo "matrix={\"include\":[${SERVICES[*]}]}" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
 
   build-services:
     runs-on: ubuntu-latest

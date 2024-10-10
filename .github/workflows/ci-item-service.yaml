@@ -1,0 +1,94 @@
+name: CI for item service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/item/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/item/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/item
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint with TSC
+        run: bun tsc
+
+      - name: Lint with ESLint
+        run: bun eslint .
+
+  format:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/item
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Check format
+        run: bun prettier . --check
+
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/item
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/item
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Start containers
+        run: docker compose -f docker-compose.test.yaml up -d
+
+      - name: Test with coverage
+        run: docker exec nshm-item-test-api-1 bun test --coverage
