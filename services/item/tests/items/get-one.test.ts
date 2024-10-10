@@ -65,6 +65,8 @@ it("ignores deleted items", async () => {
 
   expect(res.status).toEqual(404);
   expect(body).toMatchObject({ error: expect.any(String) });
+
+  await itemsCollection.deleteOne({ id: deletedId });
 });
 
 it("returns 400 if ID is not a UUID", async () => {
