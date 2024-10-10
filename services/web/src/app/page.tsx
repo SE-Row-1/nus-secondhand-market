@@ -1,6 +1,6 @@
 import { ItemCardList } from "@/components/item";
 import { PublishItemDialog } from "@/components/item/publish";
-import { ItemStatus } from "@/types";
+import { ItemStatus, ItemType } from "@/types";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -19,7 +19,7 @@ export default function Home() {
         </div>
         <PublishItemDialog />
       </div>
-      <ItemCardList status={ItemStatus.FOR_SALE} />
+      <ItemCardList type={ItemType.SINGLE} status={ItemStatus.FOR_SALE} />
     </div>
   );
 }
