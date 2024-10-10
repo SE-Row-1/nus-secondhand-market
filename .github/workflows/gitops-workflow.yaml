@@ -13,9 +13,8 @@ on:
 jobs:
   define-matrix:
     runs-on: ubuntu-latest
-
     outputs:
-      services: ${{ steps.set-matrix.outputs.services }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
       - name: Check out code
@@ -40,25 +39,26 @@ jobs:
         run: |
           SERVICES=()
           if [[ "${{ steps.filter.outputs.web }}" == "true" ]]; then
-            SERVICES+=('web')
+            SERVICES+=('{"service":"web"}')
           fi
           if [[ "${{ steps.filter.outputs.account }}" == "true" ]]; then
-            SERVICES+=('account')
+            SERVICES+=('{"service":"account"}')
           fi
           if [[ "${{ steps.filter.outputs.item }}" == "true" ]]; then
-            SERVICES+=('item')
+            SERVICES+=('{"service":"item"}')
           fi
           if [[ "${{ steps.filter.outputs.wishlist }}" == "true" ]]; then
-            SERVICES+=('wishlist')
+            SERVICES+=('{"service":"wishlist"}')
           fi
-          echo "services=${SERVICES[*]}" >> $GITHUB_OUTPUT
+
+          echo "matrix={\"include\":[${SERVICES[*]}]}" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
 
   build-services:
     runs-on: ubuntu-latest
     needs: define-matrix
     strategy:
-      matrix:
-        service: ${{ fromJSON(needs.define-matrix.outputs.services) }}
+      matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
 
     steps:
       - name: Check out code
@@ -84,7 +84,9 @@ jobs:
   update:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
-    needs: build-services
+    needs: define-matrix
+    strategy:
+      matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
 
     steps:
       - name: Check out code
@@ -94,16 +96,9 @@ jobs:
         run: |
           chart_dir="helm"
           new_image_tag=${{ github.sha }}
-
-          for service in ${{ fromJSON(needs.define-matrix.outputs.services) }}; do
-            case $service in
-              web|account|item|wishlist)
-                sed -i -E "s|(repository: z1yoon/nshm-${service}[[:space:]]+tag: )[^\"]*|\1$new_image_tag|g" "$chart_dir/values.yaml"
-                ;;
-            esac
-          done
+          sed -i -E "s|(repository: z1yoon/nshm-${{ matrix.service }}[[:space:]]+tag: )[^\"]*|\1$new_image_tag|g" "$chart_dir/values.yaml"
 
       - name: Commit the changes
         run: |
-          git commit -am "Updated image tags for services: ${{ fromJSON(needs.define-matrix.outputs.services) }}"
+          git diff --quiet || git commit -am "Updated image tags for services: ${{ matrix.service }}"
           git push
