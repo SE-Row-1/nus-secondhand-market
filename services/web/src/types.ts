@@ -57,4 +57,6 @@ export type ItemPack<A extends AccountPreview | Account = AccountPreview> = {
   deleted_at: string | null;
 };
 
-export type Item = SingleItem | ItemPack;
+export type Item<A extends AccountPreview | Account = AccountPreview> =
+  | SingleItem<A>
+  | ItemPack<A>;
