@@ -24,7 +24,7 @@ it("returns the item with the given ID", async () => {
     deletedAt: null,
   });
 
-  const res = await GET(`/${insertedId}`);
+  const res = await GET(`/items/${insertedId}`);
   const body = await res.json();
 
   expect(res.status).toEqual(200);
@@ -53,7 +53,7 @@ it("ignores deleted items", async () => {
     deletedAt: new Date(),
   });
 
-  const res = await GET(`/${deletedId}`);
+  const res = await GET(`/items/${deletedId}`);
   const body = await res.json();
 
   expect(res.status).toEqual(404);
@@ -61,7 +61,7 @@ it("ignores deleted items", async () => {
 });
 
 it("returns 400 if ID is not a UUID", async () => {
-  const res = await GET("/foo");
+  const res = await GET("/items/foo");
   const body = await res.json();
 
   expect(res.status).toEqual(400);

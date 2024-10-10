@@ -22,6 +22,16 @@ itemsController.get("/", validator("query", getAllQuerySchema), async (c) => {
 });
 
 itemsController.get(
+  "/search",
+  validator("query", searchQuerySchema),
+  async (c) => {
+    const query = c.req.valid("query");
+    const result = await itemsService.search(query);
+    return c.json(result, 200);
+  },
+);
+
+itemsController.get(
   "/:id",
   validator("param", getOneParamSchema),
   async (c) => {
@@ -50,15 +60,5 @@ itemsController.delete(
     const { id } = c.req.valid("param");
     await itemsService.takeDown({ id, user: c.var.user });
     return c.body(null, 204);
-  },
-);
-
-itemsController.get(
-  "/search",
-  validator("query", searchQuerySchema),
-  async (c) => {
-    const query = c.req.valid("query");
-    const result = await itemsService.search(query);
-    return c.json(result, 200);
   },
 );

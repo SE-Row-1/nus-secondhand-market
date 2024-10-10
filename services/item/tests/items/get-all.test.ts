@@ -12,7 +12,7 @@ type ExpectedResponse = CamelToSnake<{
 
 describe("Default behavior", () => {
   it("returns a list of items", async () => {
-    const res = await GET("/");
+    const res = await GET("/items");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
@@ -40,7 +40,7 @@ describe("Default behavior", () => {
       deletedAt: new Date(),
     });
 
-    const res = await GET("/?limit=100");
+    const res = await GET("/items?limit=100");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
@@ -54,7 +54,7 @@ describe("Default behavior", () => {
 
 describe("Given type", () => {
   it("filters items by type", async () => {
-    const res1 = await GET("/?type=single");
+    const res1 = await GET("/items?type=single");
     const body1 = (await res1.json()) as ExpectedResponse;
 
     expect(res1.status).toEqual(200);
@@ -63,7 +63,7 @@ describe("Given type", () => {
       expect(item.type).toEqual(ItemType.SINGLE);
     }
 
-    const res2 = await GET("/?type=pack");
+    const res2 = await GET("/items?type=pack");
     const body2 = (await res2.json()) as ExpectedResponse;
 
     expect(res2.status).toEqual(200);
@@ -74,7 +74,7 @@ describe("Given type", () => {
   });
 
   it("returns 400 if type is invalid", async () => {
-    const res = await GET("/?type=foo");
+    const res = await GET("/items?type=foo");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -84,7 +84,7 @@ describe("Given type", () => {
 
 describe("Given status", () => {
   it("filters items by status", async () => {
-    const res1 = await GET("/?status=0");
+    const res1 = await GET("/items?status=0");
     const body1 = (await res1.json()) as ExpectedResponse;
 
     expect(res1.status).toEqual(200);
@@ -93,7 +93,7 @@ describe("Given status", () => {
       expect(item.status).toEqual(ItemStatus.FOR_SALE);
     }
 
-    const res2 = await GET("/?status=1");
+    const res2 = await GET("/items?status=1");
     const body2 = (await res2.json()) as ExpectedResponse;
 
     expect(res2.status).toEqual(200);
@@ -102,7 +102,7 @@ describe("Given status", () => {
       expect(item.status).toEqual(ItemStatus.DEALT);
     }
 
-    const res3 = await GET("/?status=2");
+    const res3 = await GET("/items?status=2");
     const body3 = (await res3.json()) as ExpectedResponse;
 
     expect(res3.status).toEqual(200);
@@ -113,7 +113,7 @@ describe("Given status", () => {
   });
 
   it("returns 400 if status is invalid", async () => {
-    const res = await GET("/?status=100");
+    const res = await GET("/items?status=100");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -123,7 +123,7 @@ describe("Given status", () => {
 
 describe("Given seller ID", () => {
   it("filters items by seller", async () => {
-    const res = await GET("/?seller_id=1");
+    const res = await GET("/items?seller_id=1");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
@@ -134,7 +134,7 @@ describe("Given seller ID", () => {
   });
 
   it("returns 400 if seller ID is not an integer", async () => {
-    const res = await GET("/?seller_id=1.5");
+    const res = await GET("/items?seller_id=1.5");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -142,7 +142,7 @@ describe("Given seller ID", () => {
   });
 
   it("returns 400 if seller ID is less than 1", async () => {
-    const res = await GET("/?seller_id=0");
+    const res = await GET("/items?seller_id=0");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -152,7 +152,7 @@ describe("Given seller ID", () => {
 
 describe("Given limit", () => {
   it("limits the amount of items", async () => {
-    const res = await GET("/?limit=1");
+    const res = await GET("/items?limit=1");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
@@ -161,7 +161,7 @@ describe("Given limit", () => {
   });
 
   it("returns 400 if limit is not an integer", async () => {
-    const res = await GET("/?limit=1.5");
+    const res = await GET("/items?limit=1.5");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -169,7 +169,7 @@ describe("Given limit", () => {
   });
 
   it("returns 400 if limit is less than 1", async () => {
-    const res = await GET("/?limit=0");
+    const res = await GET("/items?limit=0");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -177,7 +177,7 @@ describe("Given limit", () => {
   });
 
   it("returns 400 if limit is greater than 100", async () => {
-    const res = await GET("/?limit=101");
+    const res = await GET("/items?limit=101");
     const body = await res.json();
 
     expect(res.status).toEqual(400);
@@ -187,21 +187,21 @@ describe("Given limit", () => {
 
 describe("Given cursor", () => {
   it("skips items before the cursor", async () => {
-    const res1 = await GET("/?limit=1");
+    const res1 = await GET("/items?limit=1");
     const body1 = (await res1.json()) as ExpectedResponse;
 
     expect(res1.status).toEqual(200);
     expect(body1.items).toBeArrayOfSize(1);
     expect(body1.next_cursor).toMatch(/^[0-9a-z]{24}$/);
 
-    const res2 = await GET(`/?limit=1&cursor=${body1.next_cursor}`);
+    const res2 = await GET(`/items?limit=1&cursor=${body1.next_cursor}`);
     const body2 = (await res2.json()) as ExpectedResponse;
 
     expect(res2.status).toEqual(200);
     expect(body2.items).toBeArrayOfSize(1);
     expect(body2.next_cursor).toMatch(/^[0-9a-z]{24}$/);
 
-    const res3 = await GET("/?limit=2");
+    const res3 = await GET("/items?limit=2");
     const body3 = (await res3.json()) as ExpectedResponse;
 
     expect(res3.status).toEqual(200);
@@ -216,7 +216,7 @@ describe("Given cursor", () => {
   });
 
   it("returns null cursor if coming to the end", async () => {
-    const res = await GET("/?limit=100");
+    const res = await GET("/items?limit=100");
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
@@ -224,7 +224,7 @@ describe("Given cursor", () => {
   });
 
   it("returns 400 if cursor is invalid", async () => {
-    const res = await GET("/?cursor=foo");
+    const res = await GET("/items?cursor=foo");
     const body = await res.json();
 
     expect(res.status).toEqual(400);

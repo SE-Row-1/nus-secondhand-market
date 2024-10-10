@@ -12,7 +12,7 @@ it("creates an item without photo", async () => {
   formData.append("description", "test");
   formData.append("price", "100");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -38,7 +38,7 @@ it("creates an item with exactly 1 photo", async () => {
     "test1.png",
   );
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -69,7 +69,7 @@ it("creates an item with multiple photos", async () => {
     "test2.jpg",
   );
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -90,7 +90,7 @@ it("returns 400 if name is less than 1 character long", async () => {
   formData.append("description", "test");
   formData.append("price", "100");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -107,7 +107,7 @@ it("returns 400 if name is more than 50 characters long", async () => {
   formData.append("description", "test");
   formData.append("price", "100");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -124,7 +124,7 @@ it("returns 400 if description is less than 1 character long", async () => {
   formData.append("description", "");
   formData.append("price", "100");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -141,7 +141,7 @@ it("returns 400 if description is more than 500 characters long", async () => {
   formData.append("description", "a".repeat(501));
   formData.append("price", "100");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -158,7 +158,7 @@ it("returns 400 if price is not a number", async () => {
   formData.append("description", "test");
   formData.append("price", "foo");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -175,7 +175,7 @@ it("returns 400 if price is less than 0", async () => {
   formData.append("description", "test");
   formData.append("price", "-1");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -193,7 +193,7 @@ it("returns 400 if photo is not file", async () => {
   formData.append("price", "100");
   formData.append("photos", "foo");
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -215,7 +215,7 @@ it("returns 400 if photo MIME type is unsupported", async () => {
     "test1.txt",
   );
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -237,7 +237,7 @@ it("returns 400 if photo size is too large", async () => {
     "test1.png",
   );
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -259,7 +259,7 @@ it("returns 401 if user is not authenticated", async () => {
     "test1.png",
   );
 
-  const res = await FORM("/", formData);
+  const res = await FORM("/items", formData);
   const body = await res.json();
 
   expect(res.status).toEqual(401);
@@ -277,7 +277,7 @@ it("returns 401 if JWT is invalid", async () => {
     "test1.png",
   );
 
-  const res = await FORM("/", formData, {
+  const res = await FORM("/items", formData, {
     headers: {
       Cookie: "access_token=invalid",
     },

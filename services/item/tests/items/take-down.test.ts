@@ -24,7 +24,7 @@ it.only("takes down an item", async () => {
     deletedAt: null,
   });
 
-  const res = await DELETE(`/${insertedId}`, {
+  const res = await DELETE(`/items/${insertedId}`, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -41,7 +41,7 @@ it.only("takes down an item", async () => {
 });
 
 it("returns 400 if ID is not a UUID", async () => {
-  const res = await DELETE("/invalid", {
+  const res = await DELETE("/items/invalid", {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -53,7 +53,7 @@ it("returns 400 if ID is not a UUID", async () => {
 });
 
 it("returns 401 if user is not authenticated", async () => {
-  const res = await DELETE("/00000000-0000-0000-0000-000000000000");
+  const res = await DELETE("/items/00000000-0000-0000-0000-000000000000");
   const body = await res.json();
 
   expect(res.status).toEqual(401);
@@ -61,7 +61,7 @@ it("returns 401 if user is not authenticated", async () => {
 });
 
 it("returns 401 if JWT is invalid", async () => {
-  const res = await DELETE("/00000000-0000-0000-0000-000000000000", {
+  const res = await DELETE("/items/00000000-0000-0000-0000-000000000000", {
     headers: {
       Cookie: `access_token=invalid`,
     },
@@ -92,7 +92,7 @@ it("returns 403 if user is not the seller", async () => {
     deletedAt: null,
   });
 
-  const res = await DELETE(`/${insertedId}`, {
+  const res = await DELETE(`/items/${insertedId}`, {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
@@ -106,7 +106,7 @@ it("returns 403 if user is not the seller", async () => {
 });
 
 it("returns 404 if item is not found", async () => {
-  const res = await DELETE("/00000000-0000-0000-0000-000000000000", {
+  const res = await DELETE("/items/00000000-0000-0000-0000-000000000000", {
     headers: {
       Cookie: `access_token=${myJwt}`,
     },
