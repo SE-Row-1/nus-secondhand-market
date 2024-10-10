@@ -1,5 +1,5 @@
 import { ItemCardList } from "@/components/item";
-import { type Account } from "@/types";
+import { ItemType, type Account } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
 
@@ -22,7 +22,7 @@ export default async function BelongingsPage() {
           Here are the items you have listed for sale.
         </p>
       </div>
-      <ItemCardList sellerId={me.id} />
+      <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
     </div>
   );
 }

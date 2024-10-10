@@ -1,4 +1,5 @@
 import type { Account } from "@/types";
+import { snakeToCamel } from "@/utils/case";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
@@ -88,7 +89,7 @@ export function auth<Strict extends boolean>(strict: Strict) {
 
     const payload = await verifyJwt(accessToken);
 
-    const account = await v.parseAsync(accountSchema, payload);
+    const account = await v.parseAsync(accountSchema, snakeToCamel(payload));
 
     // @ts-expect-error This works.
     c.set("user", account);

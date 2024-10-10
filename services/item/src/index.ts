@@ -71,7 +71,7 @@ app.use(
 app.get("/healthz", (c) => c.text("ok"));
 
 // Register API controllers.
-app.route("/", itemsController);
+app.route("/items", itemsController);
 
 // Register global handlers.
 app.onError(globalErrorHandler);

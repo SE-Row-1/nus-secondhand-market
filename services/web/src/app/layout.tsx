@@ -34,11 +34,11 @@ export default function RootLayout({ children }: PropsWithChildren) {
           <div className="md:hidden">
             <Header />
           </div>
-          <main className="md:pl-56 lg:pl-72 pt-16 md:pt-0">
-            <div className="px-6 md:px-12 lg:px-24 py-4 md:py-8">
+          <div className="md:pl-56 lg:pl-72 pt-14 md:pt-0">
+            <main className="px-6 md:px-12 lg:px-24 py-4 md:py-8">
               {children}
-            </div>
-          </main>
+            </main>
+          </div>
         </QueryProvider>
         <Toaster />
       </body>

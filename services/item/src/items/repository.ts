@@ -19,7 +19,7 @@ export async function findOne(
 }
 
 export async function insertOne(item: SingleItem) {
-  return await itemsCollection.insertOne(item);
+  return await itemsCollection.insertOne({ ...item });
 }
 
 export async function deleteOne(filter: Filter<Item>) {
