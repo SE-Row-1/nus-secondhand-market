@@ -108,6 +108,12 @@ public class AccountController {
         return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token));
     }
 
+    // get account info automatically
+    @GetMapping("/account/{id}")
+    public ResponseEntity<Object> getSpecificAccount(@PathVariable int id){
+        return accountService.getAccountService(id);
+    }
+
 
     @GetMapping("/healthz")
     public String checkHealth(){
