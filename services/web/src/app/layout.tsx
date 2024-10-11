@@ -1,4 +1,4 @@
-import { Header, Sidebar, ThemeInitializer } from "@/components/framework";
+import { Header, Sidebar } from "@/components/framework";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/contexts/query-provider";
 import type { Metadata } from "next";
@@ -24,7 +24,17 @@ export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className={fontSans.variable} suppressHydrationWarning>
       <head>
-        <ThemeInitializer />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              const storedTheme = localStorage.getItem("theme");
+              const isDarkSystem = matchMedia("(prefers-color-scheme: dark)").matches;
+              if (storedTheme === "dark" || (!storedTheme && isDarkSystem)) {
+                document.documentElement.classList.add("dark");
+              }
+            `,
+          }}
+        ></script>
       </head>
       <body className="bg-background font-sans text-foreground antialiased scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
         <QueryProvider>
