@@ -4,7 +4,7 @@ import { ServerRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type Props = {
   params: {
@@ -13,12 +13,17 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const item = await new ServerRequester().get<SingleItem<Account> | undefined>(
-    `/items/${id}`,
-  );
+  const [item, me] = await Promise.all([
+    new ServerRequester().get<SingleItem<Account> | undefined>(`/items/${id}`),
+    new ServerRequester().get<Account | undefined>("/auth/me"),
+  ]);
 
   if (!item) {
     notFound();
+  }
+
+  if (!me || item.seller.id !== me.id) {
+    redirect(`/items/${id}`);
   }
 
   return (
