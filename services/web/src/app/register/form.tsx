@@ -58,7 +58,7 @@ export function RegisterForm() {
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
       toast({
-        title: "Login successful",
+        title: "Registration success",
         description: `Welcome on board, ${account.email}!`,
       });
       router.push("/");

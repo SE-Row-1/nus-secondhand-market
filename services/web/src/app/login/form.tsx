@@ -31,7 +31,7 @@ const formSchema = v.object({
   ),
 });
 
-export function LoginForm() {
+export function LogInForm() {
   const router = useRouter();
 
   const { toast } = useToast();
@@ -55,7 +55,7 @@ export function LoginForm() {
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
       toast({
-        title: "Login successful",
+        title: "Log in successful",
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
       router.push("/");
@@ -64,7 +64,7 @@ export function LoginForm() {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Login failed",
+        title: "Log in failed",
         description: error.message,
       });
     },

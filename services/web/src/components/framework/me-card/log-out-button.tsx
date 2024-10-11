@@ -22,10 +22,12 @@ export function LogOutButton() {
     },
     onSuccess: () => {
       queryClient.setQueryData(["auth", "me"], null);
+
       toast({
         title: "Logged out successfully",
         description: "Hope to see you again soon! 👋",
       });
+
       router.push("/login");
       router.refresh();
     },
