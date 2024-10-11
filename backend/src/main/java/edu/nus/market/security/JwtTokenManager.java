@@ -1,5 +1,6 @@
 package edu.nus.market.security;
 
+import edu.nus.market.pojo.ResEntity.ResAccount;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,9 +18,18 @@ public class JwtTokenManager {
 
     private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
-    public static String generateAccessToken(int userid){
+    public static String generateAccessToken(ResAccount resAccount){
         return Jwts.builder()
-            .setSubject(String.valueOf(userid))
+            .setSubject(String.valueOf(resAccount.getId()))
+            .claim("email", resAccount.getEmail())
+            .claim("nickname", resAccount.getNickname())
+            .claim("avatarUrl", resAccount.getAvatarUrl())
+            .claim("departmentId", resAccount.getDepartmentId())
+            .claim("phoneCode", resAccount.getPhoneCode())
+            .claim("phoneNumber", resAccount.getPhoneNumber())
+            .claim("preferredCurrency", resAccount.getPreferredCurrency())
+            .claim("createdAt", resAccount.getCreatedAt())
+            .claim("deletedAt", resAccount.getDeletedAt())
             .setIssuedAt(new Date())//登录时间
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .setExpiration(new Date(new Date().getTime() + expirationTime))
@@ -42,7 +52,7 @@ public class JwtTokenManager {
         return validateToken(token);
     }
 
-    public static int decodeAccessToken(String token) {
+    public static ResAccount decodeAccessToken(String token) {
         try {
             // decode JWT
             Claims claims = Jwts.parser()
@@ -50,13 +60,18 @@ public class JwtTokenManager {
                 .parseClaimsJws(token)
                 .getBody();
 
-            return Integer.parseInt(claims.getSubject());
+            ResAccount resAccount = new ResAccount(Integer.parseInt(claims.getSubject()), (String)claims.get("email"), (String)claims.get("nickname"),
+                (String)claims.get("avatarUrl"), (int)claims.get("departmentId"), (String)claims.get("phoneCode"), (String)claims.get("phoneNumber"),
+                (String)claims.get("preferredCurrency"), (String)claims.get("createdAt"), (String)claims.get("deletedAt"));
+
+            return resAccount;
+
         } catch (Exception e) {
             throw new RuntimeException("Token decoding failed", e);
         }
     }
 
-    public static int decodeCookie(String cookie) {
+    public static ResAccount decodeCookie(String cookie) {
         String token = cookie.split("; ")[0].split("=")[1];
         return decodeAccessToken(token);
     }

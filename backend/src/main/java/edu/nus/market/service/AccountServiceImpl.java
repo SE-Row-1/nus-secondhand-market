@@ -73,7 +73,7 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(loginReq.getPassword() + account.getPasswordSalt(), account.getPasswordHash())){
-            String accessToken = jwtTokenManager.generateAccessToken(account.getId());
+            String accessToken = jwtTokenManager.generateAccessToken(new ResAccount(account));
             ResponseCookie cookie = cookieManager.generateCookie(accessToken);
             // generate the JWTaccesstoken and send it to the frontend
             return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
@@ -100,7 +100,7 @@ public class AccountServiceImpl implements AccountService{
         account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
         account = accountDao.registerNewAccount(account);
 
-        String accessToken = jwtTokenManager.generateAccessToken(account.getId());
+        String accessToken = jwtTokenManager.generateAccessToken(new ResAccount(account));
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
         // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
