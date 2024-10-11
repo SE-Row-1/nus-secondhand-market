@@ -6,7 +6,7 @@ import type { AccountPreview, SingleItem } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { HeartIcon, HeartOffIcon, Loader2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
 type Props = {
@@ -21,12 +21,16 @@ export function AddToWishListButton({ item, initialIsInWishlist }: Props) {
 
   const router = useRouter();
 
+  const pathname = usePathname();
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
 
       if (!me) {
-        router.push("/login");
+        const searchParams = new URLSearchParams();
+        searchParams.set("next", pathname);
+        router.push(`/login?${searchParams.toString()}`);
         return;
       }
 
