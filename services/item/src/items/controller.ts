@@ -7,6 +7,8 @@ import {
   publishFormSchema,
   searchQuerySchema,
   takeDownParamSchema,
+  updateFormSchema,
+  updateParamSchema,
 } from "./schema";
 import * as itemsService from "./service";
 
@@ -49,6 +51,19 @@ itemsController.post(
     const form = c.req.valid("form");
     const result = await itemsService.publish({ ...form, user: c.var.user });
     return c.json(result, 201);
+  },
+);
+
+itemsController.patch(
+  "/:id",
+  auth(true),
+  validator("param", updateParamSchema),
+  validator("form", updateFormSchema),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const form = c.req.valid("form");
+    const result = await itemsService.update({ id, ...form, user: c.var.user });
+    return c.json(result, 200);
   },
 );
 
