@@ -4,11 +4,7 @@ import type { Metadata } from "next";
 import { DeleteAccountCard } from "./cards/delete-account-card";
 import { UpdateEmailCard } from "./cards/update-email-card";
 
-export const metadata: Metadata = {
-  title: "Account Settings",
-};
-
-export default async function SettingsPage() {
+export default async function AccountSettingsPage() {
   const me = await new ServerRequester().get<Account | undefined>("/auth/me");
 
   return (
@@ -18,3 +14,7 @@ export default async function SettingsPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Account Settings",
+};

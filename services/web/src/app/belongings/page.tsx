@@ -3,10 +3,6 @@ import { ItemType, type Account } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "My Belongings",
-};
-
 export default async function BelongingsPage() {
   const me = await new ServerRequester().get<Account | undefined>("/auth/me");
 
@@ -26,3 +22,7 @@ export default async function BelongingsPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "My Belongings",
+};

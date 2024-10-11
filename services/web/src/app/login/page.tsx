@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LogInForm } from "./form";
 
@@ -17,3 +18,7 @@ export default function LogInPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Log in",
+};

@@ -3,10 +3,6 @@ import { PublishItemDialog } from "@/components/item/publish";
 import { ItemStatus, ItemType } from "@/types";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Marketplace | NUS Second-Hand Market",
-};
-
 export default function Home() {
   return (
     <div>
@@ -23,3 +19,7 @@ export default function Home() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Marketplace | NUS Second-Hand Market",
+};

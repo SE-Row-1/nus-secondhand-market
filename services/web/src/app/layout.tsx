@@ -11,15 +11,6 @@ const fontSans = FontSans({
   variable: "--font-sans",
 });
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | NUS Second-Hand Market",
-    default: "NUS Second-Hand Market",
-  },
-  description:
-    "Built by NUS students and for NUS students. Buy and sell second-hand items on the platform, find your counterparty, and communicate efficiently.",
-};
-
 export default function RootLayout({ children }: PropsWithChildren) {
   return (
     <html lang="en" className={fontSans.variable} suppressHydrationWarning>
@@ -55,3 +46,12 @@ export default function RootLayout({ children }: PropsWithChildren) {
     </html>
   );
 }
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | NUS Second-Hand Market",
+    default: "NUS Second-Hand Market",
+  },
+  description:
+    "Built by NUS students and for NUS students. Buy and sell second-hand items on the platform, find your counterparty, and communicate efficiently.",
+};

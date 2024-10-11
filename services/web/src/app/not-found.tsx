@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { HouseIcon, MapPinXInsideIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 export default function NotFoundPage() {
@@ -20,3 +21,7 @@ export default function NotFoundPage() {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Page not found",
+};

@@ -4,6 +4,7 @@ import { ServerRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 type Props = {
   params: {
@@ -12,9 +13,7 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const item = await new ServerRequester().get<SingleItem<Account> | undefined>(
-    `/items/${id}`,
-  );
+  const item = await getItem(id);
 
   if (!item) {
     notFound();
@@ -33,3 +32,17 @@ export default async function Page({ params: { id } }: Props) {
     </div>
   );
 }
+
+export async function generateMetadata({ params: { id } }: Props) {
+  const item = await getItem(id);
+
+  return {
+    title: item?.name,
+  };
+}
+
+const getItem = cache(async (id: string) => {
+  return await new ServerRequester().get<SingleItem<Account> | undefined>(
+    `/items/${id}`,
+  );
+});

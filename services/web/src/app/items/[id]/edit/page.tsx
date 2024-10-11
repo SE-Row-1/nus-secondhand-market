@@ -2,6 +2,7 @@ import { EditItem } from "@/components/item/edit/edit-item";
 import type { Account, SingleItem } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -36,3 +37,7 @@ export default async function Page({ params: { id } }: Props) {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Edit item",
+};
