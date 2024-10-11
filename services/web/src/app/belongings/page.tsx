@@ -1,12 +1,18 @@
 import { ItemCardList } from "@/components/item";
 import { ItemType, type Account } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { serverRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
 export default async function BelongingsPage() {
-  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
+  const { data: me, error } = await serverRequester.get<Account>("/auth/me");
 
-  if (!me) {
+  if (error && error.status === 401) {
+    redirect("/login");
+  }
+
+  if (error) {
+    console.error(error);
     return null;
   }
 

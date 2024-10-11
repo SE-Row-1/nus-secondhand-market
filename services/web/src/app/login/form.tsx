@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -39,7 +39,7 @@ export function LogInForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (event: FormEvent<HTMLFormElement>) => {
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const target = event.target as HTMLFormElement;
@@ -47,7 +47,7 @@ export function LogInForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return new ClientRequester().post<Account>("/auth/token", {
+      return await clientRequester.post<Account>("/auth/token", {
         email,
         password,
       });

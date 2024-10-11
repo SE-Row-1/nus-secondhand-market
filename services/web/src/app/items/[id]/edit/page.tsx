@@ -1,6 +1,6 @@
 import { EditItem } from "@/components/item/edit/edit-item";
 import type { Account, SingleItem } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { serverRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -13,16 +13,31 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const [item, me] = await Promise.all([
-    new ServerRequester().get<SingleItem<Account> | undefined>(`/items/${id}`),
-    new ServerRequester().get<Account | undefined>("/auth/me"),
-  ]);
+  const [{ data: item, error: itemError }, { data: me, error: meError }] =
+    await Promise.all([
+      serverRequester.get<SingleItem<Account>>(`/items/${id}`),
+      serverRequester.get<Account>("/auth/me"),
+    ]);
 
-  if (!item) {
+  if (itemError && itemError.status === 404) {
     notFound();
   }
 
-  if (!me || item.seller.id !== me.id) {
+  if (itemError) {
+    console.error(itemError);
+    return null;
+  }
+
+  if (meError && meError.status === 401) {
+    redirect(`/items/${id}`);
+  }
+
+  if (meError) {
+    console.error(meError);
+    return null;
+  }
+
+  if (item.seller.id !== me.id) {
     redirect(`/items/${id}`);
   }
 

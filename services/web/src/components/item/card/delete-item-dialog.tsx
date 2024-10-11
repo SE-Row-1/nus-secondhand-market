@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/hooks/use-me";
 import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
 import type { MouseEvent } from "react";
@@ -73,8 +73,7 @@ function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-
-      return await new ClientRequester().delete<undefined>(`/items/${itemId}`);
+      return await clientRequester.delete<undefined>(`/items/${itemId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });

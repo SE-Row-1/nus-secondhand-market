@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import type { Account, SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon, UndoIcon } from "lucide-react";
 import Link from "next/link";
@@ -61,10 +61,7 @@ export function EditItem({ id, initialItem }: Props) {
   const { data: item } = useQuery({
     queryKey: ["items", id],
     queryFn: async () => {
-      const res = await new ClientRequester().get<SingleItem<Account>>(
-        `/items/${id}`,
-      );
-      return res;
+      return await clientRequester.get<SingleItem<Account>>(`/items/${id}`);
     },
     initialData: initialItem,
   });
@@ -103,10 +100,7 @@ export function EditItem({ id, initialItem }: Props) {
         data.append("removed_photo_urls", url),
       );
 
-      return await new ClientRequester().patchForm<SingleItem>(
-        `/items/${id}`,
-        data,
-      );
+      return await clientRequester.patchForm<SingleItem>(`/items/${id}`, data);
     },
     onSuccess: (item) => {
       queryClient.setQueryData(["items", id], item);

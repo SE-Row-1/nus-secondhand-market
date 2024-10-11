@@ -4,7 +4,7 @@ import { SingleItemCard } from "@/components/item/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRef } from "react";
@@ -16,7 +16,7 @@ export function SearchResults() {
   const { data, fetchNextPage, hasNextPage, isPending, isFetching } =
     useInfiniteQuery({
       queryKey: ["search", q],
-      queryFn: ({ pageParam }) => {
+      queryFn: async ({ pageParam }) => {
         const nextSearchParams = new URLSearchParams({ q, limit: "8" });
 
         if (pageParam.cursor) {
@@ -27,7 +27,7 @@ export function SearchResults() {
           nextSearchParams.set("threshold", pageParam.threshold.toString());
         }
 
-        return new ClientRequester().get<{
+        return await clientRequester.get<{
           items: SingleItem[];
           next_cursor: string | null;
           next_threshold: number;

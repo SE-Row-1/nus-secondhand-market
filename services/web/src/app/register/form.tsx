@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function RegisterForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (event: FormEvent<HTMLFormElement>) => {
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const target = event.target as HTMLFormElement;
@@ -50,7 +50,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return new ClientRequester().post<Account>("/auth/me", {
+      return await clientRequester.post<Account>("/auth/me", {
         email,
         password,
       });

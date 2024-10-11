@@ -1,5 +1,5 @@
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { HttpError } from "@/utils/requester/http-error";
 import { useQuery } from "@tanstack/react-query";
 
@@ -11,7 +11,7 @@ export function useMe() {
     queryKey: ["auth", "me"],
     queryFn: async () => {
       try {
-        return await new ClientRequester().get<Account>("/auth/me");
+        return await clientRequester.get<Account>("/auth/me");
       } catch (error) {
         if (error instanceof HttpError && error.status === 401) {
           return null;
