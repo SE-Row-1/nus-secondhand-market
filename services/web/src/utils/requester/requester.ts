@@ -76,6 +76,18 @@ export abstract class Requester {
     });
   }
 
+  public async patchForm<T>(
+    endpoint: Endpoint,
+    body: FormData,
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      ...init,
+      method: "PATCH",
+      body,
+    });
+  }
+
   public async delete<T>(endpoint: Endpoint, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
       ...init,
