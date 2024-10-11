@@ -7,4 +7,5 @@ public interface WishlistService {
     ResponseEntity<Object> getWishlistService(int i);
 
     ResponseEntity<Object> addLikeService(AddLikeReq addLikeReq);
+
 }

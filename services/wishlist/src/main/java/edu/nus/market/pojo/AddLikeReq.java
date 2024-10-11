@@ -1,15 +1,13 @@
 package edu.nus.market.pojo;
 
-import jakarta.validation.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 
-import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,22 +15,34 @@ import java.util.Date;
 public class AddLikeReq {
 
     @NotBlank
-    private String type;
+    private String type;  //  "SINGLE" or "PACK"
 
 
-    private int userId;  // 用户ID
+    private int userId;  // add manually from path variable
+
     @NotBlank
-    private String itemId;  // 商品ID
-
+    @JsonProperty("id")
+    private String itemId;
 
     @NotBlank
     private String itemName;
-    @NotBlank
+
+    @NotNull
     private int itemStatus;
 
-    @NotBlank
-    private double price;
-    @NotBlank
-    private String photoURL;
+    @NotNull
+    private Double price;
+
+    // for SINGLE Item
+    private String[] photoUrls;
+
+    // for PACK Item
+    private List<AddLikeReq> children;
+
+    private Double discount;
+
+    @NotNull
+    private Seller seller;  // 卖家的 ID、昵称和头像
+
 
 }

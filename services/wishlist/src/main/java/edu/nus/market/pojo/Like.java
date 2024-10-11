@@ -12,29 +12,16 @@ import java.util.Date;
 @NoArgsConstructor
 
 @Document(collection = "wishlist")
-public class Like {
-    private ObjectId id;  // MongoDB 的唯一标识符
-    private String type;
+public abstract class Like {
 
-    private int userId;  // 用户ID
-    private String itemId;  // 商品ID
-
+    private ObjectId id;  // for MongoDB
+    private String type;  // "SINGLE" or "PACK"
+    private int userId;
+    private String itemId;
     private Date favoriteDate;  // 收藏日期
     private String itemName;
     private int itemStatus;
-
     private double price;
-    private String photoURL;
+    private Seller seller;
 
-
-
-    @Override
-    public String toString() {
-        return "Favorite{" +
-            "id='" + id + '\'' +
-            ", userId='" + userId + '\'' +
-            ", itemId='" + itemId + '\'' +
-            ", favoriteDate=" + favoriteDate +
-            '}';
-    }
 }

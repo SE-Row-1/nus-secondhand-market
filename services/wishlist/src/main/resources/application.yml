@@ -3,8 +3,10 @@ server:
 spring:
   application:
     name: wishlist
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
-# MongoDB Connection
+  # MongoDB Connection
   data:
     mongodb:
       host: localhost
@@ -12,3 +14,5 @@ spring:
       database: nshm_wishlist
 #      username: your_username  # 如果有用户名
 #      password: your_password  # 如果有密码
+
+

@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface WishlistDao extends MongoRepository<Like, ObjectId> {
@@ -14,5 +15,8 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     Like findTopByItemIdOrderByFavoriteDateDesc(String itemId);
 
     //insert one Like just use save()
+
+    //get Like by userid and item id
+    Optional<Like> findByUserIdAndItemId(int userId, String itemId);
 
 }
