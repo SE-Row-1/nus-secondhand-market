@@ -1,64 +1,126 @@
-import { ItemStatus, type Account } from "@/types";
+import { ItemStatus, ItemType, type Account, type SingleItem } from "@/types";
+import { photoManager } from "@/utils/photo-manager";
+import { createRequester } from "@/utils/requester";
+import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
-import { itemsRepository } from "./repository";
+import * as itemsRepository from "./repository";
 
-/**
- * Service layer for items.
- */
-export const itemsService = {
-  getAllItems,
-  createItem,
-};
-
-type GetAllItemsDto = {
+type GetAllServiceDto = {
+  type?: ItemType;
+  status?: ItemStatus;
+  sellerId?: number;
   limit: number;
-  cursor?: string | undefined;
-  type?: "single" | "pack" | undefined;
-  status?: ItemStatus | undefined;
-  seller_id?: number | undefined;
+  cursor?: string;
 };
 
-async function getAllItems(dto: GetAllItemsDto) {
-  const filter = {
-    ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
-    ...(dto.type ? { type: dto.type } : {}),
-    ...(dto.status ? { status: dto.status } : {}),
-    ...(dto.seller_id ? { "seller.id": dto.seller_id } : {}),
-  };
-
-  const [items, count] = await Promise.all([
-    itemsRepository.findAll(filter, { sort: { _id: -1 }, limit: dto.limit }),
-    itemsRepository.count(filter),
-  ]);
+export async function getAll(dto: GetAllServiceDto) {
+  const withIdItems = await itemsRepository.find(
+    {
+      ...(dto.type ? { type: dto.type } : {}),
+      ...(dto.status !== undefined ? { status: dto.status } : {}),
+      ...(dto.sellerId ? { "seller.id": dto.sellerId } : {}),
+      ...(dto.cursor ? { _id: { $lt: new ObjectId(dto.cursor) } } : {}),
+      deletedAt: null,
+    },
+    {
+      sort: { _id: -1 },
+      limit: dto.limit,
+    },
+  );
 
   const nextCursor =
-    items.length < dto.limit ? null : items[items.length - 1]!._id;
+    withIdItems.length < dto.limit
+      ? null
+      : withIdItems[withIdItems.length - 1]!._id;
 
-  const idStrippedItems = items.map((item) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { _id, ...rest } = item;
-    return { ...rest };
-  });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const items = withIdItems.map(({ _id, ...item }) => item);
 
-  return { items: idStrippedItems, count, nextCursor };
+  return { items, nextCursor };
 }
 
-type CreateItemDto = {
+type GetOneServiceDto = {
+  id: string;
+};
+
+export async function getOne(dto: GetOneServiceDto) {
+  const item = await itemsRepository.findOne(
+    { id: dto.id, deletedAt: null },
+    { projection: { _id: 0 } },
+  );
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  const seller = await createRequester("account")<Account>(
+    `/accounts/${item.seller.id}`,
+  );
+
+  return { ...item, seller };
+}
+
+type PublishServiceDto = {
   name: string;
   description: string;
   price: number;
-  photo_urls: string[];
+  photos: File[];
+  user: Account;
 };
 
-async function createItem(dto: CreateItemDto, user: Account) {
-  const item = await itemsRepository.insertOne({
-    ...dto,
+export async function publish(dto: PublishServiceDto) {
+  const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
+
+  const item: SingleItem = {
+    id: crypto.randomUUID(),
+    type: ItemType.SINGLE,
+    name: dto.name,
+    description: dto.description,
+    price: dto.price,
+    photoUrls,
+    status: ItemStatus.FOR_SALE,
     seller: {
-      id: user.id,
-      nickname: user.nickname,
-      avatar_url: user.avatar_url,
+      id: dto.user.id,
+      nickname: dto.user.nickname,
+      avatarUrl: dto.user.avatarUrl,
     },
-  });
+    createdAt: new Date(),
+    deletedAt: null,
+  };
+
+  await itemsRepository.insertOne(item);
 
   return item;
+}
+
+type TakeDownServiceDto = {
+  id: string;
+  user: Account;
+};
+
+export async function takeDown(dto: TakeDownServiceDto) {
+  const item = await itemsRepository.findOne({ id: dto.id });
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  if (item.seller.id !== dto.user.id) {
+    throw new HTTPException(403, {
+      message: "You can't take down someone else's items.",
+    });
+  }
+
+  await itemsRepository.deleteOne({ id: dto.id });
+}
+
+type SearchServiceDto = {
+  q: string;
+  limit: number;
+  cursor?: string;
+  threshold?: number;
+};
+
+export async function search(dto: SearchServiceDto) {
+  return await itemsRepository.search(dto);
 }

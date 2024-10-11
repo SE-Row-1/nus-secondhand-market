@@ -1,23 +1,25 @@
 import type { Endpoint, Fetcher } from "./fetcher";
+import { HttpError } from "./http-error";
 
 export class ClientFetcher implements Fetcher {
   public async fetch<T>(endpoint: Endpoint, init: RequestInit = {}) {
     const url = process.env.NEXT_PUBLIC_API_BASE_URL + endpoint;
 
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       ...init,
+      // TODO: Remove this option once we have a local load balancer.
       credentials:
         process.env.NODE_ENV === "production" ? "same-origin" : "include",
     });
 
-    if (response.status === 204) {
+    if (res.status === 204) {
       return undefined as never;
     }
 
-    const json = await response.json();
+    const json = await res.json();
 
-    if (!response.ok) {
-      throw new Error(json.error);
+    if (!res.ok) {
+      throw new HttpError(res.status, json.error);
     }
 
     return json as T;

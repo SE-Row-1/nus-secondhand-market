@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
 import { ClientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 import * as v from "valibot";
 
@@ -22,6 +22,7 @@ const formSchema = v.object({
   email: v.pipe(
     v.string("Email should be a text string."),
     v.email("Email format is invalid."),
+    v.endsWith("@u.nus.edu", "Email should be a NUS email address."),
   ),
   password: v.pipe(
     v.string("Password should be a text string."),
@@ -32,6 +33,9 @@ const formSchema = v.object({
 
 export function LoginForm() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") ?? "/";
 
   const { toast } = useToast();
 
@@ -57,7 +61,7 @@ export function LoginForm() {
         title: "Login successful",
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
-      router.push("/");
+      router.push(nextUrl);
       router.refresh();
     },
     onError: (error) => {

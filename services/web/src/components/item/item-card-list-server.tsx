@@ -1,10 +1,10 @@
-import type { ItemStatus, SingleItem } from "@/types";
+import type { ItemStatus, ItemType, SingleItem } from "@/types";
 import { ServerRequester } from "@/utils/requester/server";
 import { ItemCardListClient } from "./item-card-list-client";
 
 type Props = {
   limit?: number;
-  type?: "single" | "pack";
+  type?: ItemType;
   status?: ItemStatus;
   sellerId?: number;
 };
@@ -29,8 +29,7 @@ export async function ItemCardListServer({
 
   const initialData = await new ServerRequester().get<{
     items: SingleItem[];
-    count: number;
-    nextCursor: string;
+    next_cursor: string;
   }>(`/items?${initialSearchParams.toString()}`);
 
   return (

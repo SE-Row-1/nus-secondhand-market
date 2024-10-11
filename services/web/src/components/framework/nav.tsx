@@ -2,7 +2,6 @@ import {
   HeartIcon,
   PackageIcon,
   SearchIcon,
-  SettingsIcon,
   ShoppingBagIcon,
 } from "lucide-react";
 import { NavLink } from "./nav-link";
@@ -14,7 +13,7 @@ export function Nav() {
         <ShoppingBagIcon className="size-4" />
         Marketplace
       </NavLink>
-      <NavLink href="#">
+      <NavLink href="/search">
         <SearchIcon className="size-4" />
         Search
       </NavLink>
@@ -25,10 +24,6 @@ export function Nav() {
       <NavLink href="/belongings">
         <PackageIcon className="size-4" />
         My belongings
-      </NavLink>
-      <NavLink href="/settings">
-        <SettingsIcon className="size-4" />
-        Settings
       </NavLink>
     </nav>
   );

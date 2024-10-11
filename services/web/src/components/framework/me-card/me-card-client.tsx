@@ -9,37 +9,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
-import { useQuery } from "@tanstack/react-query";
-import { LifeBuoyIcon } from "lucide-react";
+import { useMe } from "@/hooks/use-me";
+import { SettingsIcon } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LogOutButton } from "./log-out-button";
 
 type Props = {
-  initialMe: Account | undefined;
-  fallback: ReactNode;
+  loadingFallback: ReactNode;
+  noAuthFallback: ReactNode;
 };
 
-export function MeCardClient({ initialMe, fallback }: Props) {
-  const { data: me } = useQuery({
-    queryKey: ["auth", "me"],
-    queryFn: async () => {
-      return await new ClientRequester().get<Account | undefined>("/auth/me");
-    },
-    initialData: initialMe,
-    retry: false,
-  });
+export function MeCardClient({ loadingFallback, noAuthFallback }: Props) {
+  const { data: me, isLoading } = useMe();
+
+  if (isLoading) {
+    return loadingFallback;
+  }
 
   if (!me) {
-    return fallback;
+    return noAuthFallback;
   }
 
   const nickname = me.nickname ?? me.email.replace("@u.nus.edu", "");
 
   return (
-    <div className="relative self-stretch flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card hover:bg-secondary transition-colors">
+    <div className="relative flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card hover:bg-secondary transition-colors">
       <Avatar className="size-8 lg:size-10">
         <AvatarImage src={me.avatar_url ?? undefined} alt="Your avatar" />
         <AvatarFallback>{nickname[0]}</AvatarFallback>
@@ -58,9 +53,9 @@ export function MeCardClient({ initialMe, fallback }: Props) {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="#">
-              <LifeBuoyIcon className="size-4 mr-2" />
-              Support
+            <Link href="/settings">
+              <SettingsIcon className="size-4 mr-2" />
+              Settings
             </Link>
           </DropdownMenuItem>
           <LogOutButton />

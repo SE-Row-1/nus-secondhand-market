@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
 
 import { cn } from "@/components/ui/utils";
 
@@ -13,13 +13,18 @@ const labelVariants = cva(
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root> &
-    VariantProps<typeof labelVariants>
->(({ className, ...props }, ref) => (
+    VariantProps<typeof labelVariants> & {
+      showRequiredMarker?: boolean;
+    }
+>(({ showRequiredMarker = false, className, children, ...props }, ref) => (
   <LabelPrimitive.Root
     ref={ref}
     className={cn(labelVariants(), className)}
     {...props}
-  />
+  >
+    {children}
+    {showRequiredMarker && <span className="ml-1 text-destructive">*</span>}
+  </LabelPrimitive.Root>
 ));
 Label.displayName = LabelPrimitive.Root.displayName;
 
