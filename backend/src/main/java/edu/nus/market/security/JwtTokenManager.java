@@ -3,6 +3,7 @@ package edu.nus.market.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
@@ -11,7 +12,9 @@ import java.util.Date;
 
 @Component
 public class JwtTokenManager {
-    private static final String secretKey = generateSecretKey(); // 加密密钥
+
+    private static String secretKey;
+
     private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
     public static String generateAccessToken(int userid){
@@ -63,5 +66,9 @@ public class JwtTokenManager {
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(randomBytes);
         return Base64.getEncoder().encodeToString(randomBytes);
+    }
+
+    public JwtTokenManager(@Value("${jwt.secretKey}")String secretKey){
+        this.secretKey = secretKey;
     }
 }
