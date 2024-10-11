@@ -2,7 +2,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { Account, SingleItem } from "@/types";
 import { fromNow } from "@/utils/datetime";
-import { HeartIcon, MailIcon } from "lucide-react";
+import { MailIcon } from "lucide-react";
+import { AddToWishListButton } from "./add-to-wishlist-button";
 import { ItemStatusBadge } from "./item-status-badge";
 import { PhotoCarousel } from "./photo-carousel";
 
@@ -50,10 +51,7 @@ export function SingleItemDetailsCard({ item }: Props) {
           </div>
         </div>
         <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-6">
-          <Button variant="secondary">
-            <HeartIcon className="size-4 mr-2" />
-            Add to wishlist
-          </Button>
+          <AddToWishListButton item={item} initialIsInWishlist={false} />
           <div className="space-y-1">
             <Button disabled={!item.seller.phone_number} className="w-full">
               <MailIcon className="size-4 mr-2" />
