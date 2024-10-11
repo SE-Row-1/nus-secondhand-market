@@ -11,7 +11,7 @@ export function Logo() {
         height={24}
         className="size-6"
       />
-      <span>NUS Market</span>
+      <span>NSHM</span>
     </Link>
   );
 }
