@@ -4,8 +4,8 @@ import type { Account, SingleItem } from "@/types";
 import { fromNow } from "@/utils/datetime";
 import { EditIcon, HeartIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
+import { ItemStatusBadge } from "../card/item-status-badge";
 import { DeleteItemDialog } from "./delete-item-dialog";
-import { ItemStatusBadge } from "./item-status-badge";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
@@ -22,18 +22,16 @@ export function SingleItemDetailsCard({ item, me }: Props) {
       <div className="max-w-xl mx-auto">
         <div className="flex justify-between items-center gap-x-8 gap-y-3 flex-wrap pt-12">
           <div className="grow flex items-center gap-3 sm:gap-4">
-            <h1 className="shrink-0 font-bold text-2xl lg:text-3xl line-clamp-1">
+            <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
               {item.name}
             </h1>
             <ItemStatusBadge status={item.status} />
           </div>
-          <span className="font-semibold text-xl lg:text-2xl text-primary">
+          <span className="font-medium text-lg lg:text-xl text-primary">
             {item.price} SGD
           </span>
         </div>
-        <p className="pt-4 lg:text-lg text-muted-foreground">
-          {item.description}
-        </p>
+        <p className="pt-4 text-muted-foreground">{item.description}</p>
         <div className="pt-6">
           <div className="flex items-center gap-3">
             <Avatar className="size-10">

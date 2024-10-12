@@ -22,7 +22,7 @@ export function SingleItemCard({ item }: Props) {
       <div className="grow flex flex-col justify-between gap-2 px-5 py-4">
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <p className="font-semibold text-lg line-clamp-1">{item.name}</p>
-          <p className="text-sm">{item.price}&nbsp;SGD</p>
+          <p className="font-medium text-primary">{item.price}&nbsp;SGD</p>
         </div>
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <ItemSeller seller={item.seller} />
