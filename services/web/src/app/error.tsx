@@ -18,8 +18,8 @@ export default function ErrorBoundary({ error, reset }: Props) {
       <CircleXIcon className="size-20" />
       <h1 className="font-bold text-3xl">Client-side error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">
-        Seems like you&apos;ve run into an unexpected client-side error. What
-        about trying again?
+        {error.message ??
+          "Seems like you've run into an unexpected client-side error. What about trying again?"}
       </p>
       {error.digest && (
         <p className="text-sm text-muted-foreground text-center text-balance">
