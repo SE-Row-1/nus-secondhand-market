@@ -2,10 +2,11 @@ import { auth } from "@/middleware/auth";
 import { validator } from "@/middleware/validator";
 import { Hono } from "hono";
 import {
-  getAllItemsQuerySchema,
-  publishItemFormSchema,
-  searchItemQuerySchema,
-  takeDownItemParamSchema,
+  getAllQuerySchema,
+  getOneParamSchema,
+  publishFormSchema,
+  searchQuerySchema,
+  takeDownParamSchema,
 } from "./schema";
 import * as itemsService from "./service";
 
@@ -14,12 +15,28 @@ import * as itemsService from "./service";
  */
 export const itemsController = new Hono();
 
+itemsController.get("/", validator("query", getAllQuerySchema), async (c) => {
+  const query = c.req.valid("query");
+  const result = await itemsService.getAll(query);
+  return c.json(result, 200);
+});
+
 itemsController.get(
-  "/",
-  validator("query", getAllItemsQuerySchema),
+  "/search",
+  validator("query", searchQuerySchema),
   async (c) => {
     const query = c.req.valid("query");
-    const result = await itemsService.getAllItems(query);
+    const result = await itemsService.search(query);
+    return c.json(result, 200);
+  },
+);
+
+itemsController.get(
+  "/:id",
+  validator("param", getOneParamSchema),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const result = await itemsService.getOne({ id });
     return c.json(result, 200);
   },
 );
@@ -27,13 +44,10 @@ itemsController.get(
 itemsController.post(
   "/",
   auth(true),
-  validator("form", publishItemFormSchema),
+  validator("form", publishFormSchema),
   async (c) => {
     const form = c.req.valid("form");
-    const result = await itemsService.publishItem({
-      ...form,
-      user: c.var.user,
-    });
+    const result = await itemsService.publish({ ...form, user: c.var.user });
     return c.json(result, 201);
   },
 );
@@ -41,20 +55,10 @@ itemsController.post(
 itemsController.delete(
   "/:id",
   auth(true),
-  validator("param", takeDownItemParamSchema),
+  validator("param", takeDownParamSchema),
   async (c) => {
     const { id } = c.req.valid("param");
-    await itemsService.takeDownItem(id, c.var.user);
+    await itemsService.takeDown({ id, user: c.var.user });
     return c.body(null, 204);
-  },
-);
-
-itemsController.get(
-  "/search",
-  validator("query", searchItemQuerySchema),
-  async (c) => {
-    const query = c.req.valid("query");
-    const result = await itemsService.search(query);
-    return c.json(result, 200);
   },
 );

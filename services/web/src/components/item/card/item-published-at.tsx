@@ -1,7 +1,4 @@
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-dayjs.extend(relativeTime);
+import { fromNow } from "@/utils/datetime";
 
 type Props = {
   publishedAt: string;
@@ -13,7 +10,7 @@ export function ItemPublishedAt({ publishedAt }: Props) {
       dateTime={publishedAt}
       className="text-sm text-muted-foreground group-hover:text-foreground transition-colors"
     >
-      {dayjs(publishedAt).fromNow()}
+      {fromNow(publishedAt)}
     </time>
   );
 }

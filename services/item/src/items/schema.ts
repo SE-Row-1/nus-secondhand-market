@@ -1,7 +1,7 @@
 import { ItemStatus, ItemType } from "@/types";
 import * as v from "valibot";
 
-export const getAllItemsQuerySchema = v.object({
+export const getAllQuerySchema = v.object({
   type: v.optional(v.enum(ItemType, "Invalid item type")),
   status: v.optional(
     v.pipe(
@@ -36,6 +36,10 @@ export const getAllItemsQuerySchema = v.object({
   ),
 });
 
+export const getOneParamSchema = v.object({
+  id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
+});
+
 const fileSchema = v.pipe(
   v.file("Not a file"),
   v.mimeType(
@@ -45,7 +49,7 @@ const fileSchema = v.pipe(
   v.maxSize(5 * 1024 * 1024, "Image size should not exceed 5MB"),
 );
 
-export const publishItemFormSchema = v.object({
+export const publishFormSchema = v.object({
   name: v.pipe(
     v.string("Name should be a string"),
     v.minLength(1, "Name should be at least 1 character long"),
@@ -74,11 +78,11 @@ export const publishItemFormSchema = v.object({
   ),
 });
 
-export const takeDownItemParamSchema = v.object({
+export const takeDownParamSchema = v.object({
   id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
 });
 
-export const searchItemQuerySchema = v.object({
+export const searchQuerySchema = v.object({
   q: v.pipe(
     v.string("Q should be a string"),
     v.minLength(1, "Q should be at least 1 character long"),

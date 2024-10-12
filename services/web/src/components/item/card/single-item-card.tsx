@@ -31,7 +31,7 @@ export function SingleItemCard({ item }: Props) {
         </div>
       </div>
       <Link
-        href="#"
+        href={`/items/${item.id}`}
         className="absolute inset-0 rounded-lg ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         <span className="sr-only">View item detail</span>
