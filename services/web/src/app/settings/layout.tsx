@@ -8,6 +8,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
       <PageTitle
         title="Settings"
         description="Manage your profile and account"
+        className="mb-8"
       />
       <div className="flex flex-col md:flex-row gap-6 md:gap-24 xl:gap-40 mt-8">
         <nav

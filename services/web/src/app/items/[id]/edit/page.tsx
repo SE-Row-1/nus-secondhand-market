@@ -41,10 +41,10 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   return (
-    <div className="space-y-8 w-full max-w-xl mx-auto">
+    <div className="w-full max-w-xl mx-auto">
       <Link
         href={`/items/${id}`}
-        className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+        className="flex items-center mb-8 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
@@ -52,6 +52,7 @@ export default async function Page({ params: { id } }: Props) {
       <PageTitle
         title="Edit item"
         description="Update the details of your item"
+        className="mb-8"
       />
       <EditItem id={id} initialItem={item} />
     </div>
