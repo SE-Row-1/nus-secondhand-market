@@ -8,7 +8,7 @@ import { NavLink } from "./nav-link";
 
 export function Nav() {
   return (
-    <nav className="grow flex flex-col gap-0.5 lg:gap-1 py-3 lg:py-4 font-medium text-sm">
+    <nav className="grow flex flex-col gap-0.5 lg:gap-1 py-3 lg:py-4">
       <NavLink href="/">
         <ShoppingBagIcon className="size-4" />
         Marketplace

@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function RegisterForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (event: FormEvent<HTMLFormElement>) => {
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const target = event.target as HTMLFormElement;
@@ -50,7 +50,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return new ClientRequester().post<Account>("/auth/me", {
+      return await clientRequester.post<Account>("/auth/me", {
         email,
         password,
       });
@@ -58,7 +58,7 @@ export function RegisterForm() {
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
       toast({
-        title: "Login successful",
+        title: "Registration success",
         description: `Welcome on board, ${account.email}!`,
       });
       router.push("/");
@@ -74,7 +74,7 @@ export function RegisterForm() {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form onSubmit={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -105,7 +105,7 @@ export function RegisterForm() {
           id="confirmation"
         />
       </div>
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" disabled={isPending}>
         {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (

@@ -17,11 +17,12 @@ export function ThemeToggle() {
 }
 
 function toggleTheme() {
-  if (document.documentElement.classList.contains("dark")) {
-    document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", "light");
-  } else {
-    document.documentElement.classList.add("dark");
-    localStorage.setItem("theme", "dark");
-  }
+  const isNowDark = document.documentElement.classList.toggle("dark");
+
+  localStorage.setItem("theme", isNowDark ? "dark" : "light");
+
+  document.documentElement.classList.add("disable-transitions");
+  setTimeout(() => {
+    document.documentElement.classList.remove("disable-transitions");
+  }, 1);
 }

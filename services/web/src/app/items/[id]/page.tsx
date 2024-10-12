@@ -1,9 +1,10 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
 import type { Account, SingleItem } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { serverRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { cache } from "react";
 
 type Props = {
   params: {
@@ -12,24 +13,43 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const item = await new ServerRequester().get<SingleItem<Account> | undefined>(
-    `/items/${id}`,
-  );
+  const [{ data: item, error: itemError }, { data: me, error: meError }] =
+    await Promise.all([getItem(id), serverRequester.get<Account>("/auth/me")]);
 
-  if (!item) {
+  if (itemError && itemError.status === 404) {
     notFound();
   }
 
+  if (itemError) {
+    redirect(`/error?message=${itemError.message}`);
+  }
+
+  if (meError && meError.status !== 401) {
+    redirect(`/error?message=${meError.message}`);
+  }
+
   return (
-    <div className="flex flex-col justify-center relative min-h-[calc(100vh-84px)] ">
+    <div className="w-full max-w-xl mx-auto">
       <Link
         href="/"
-        className="flex items-center absolute top-4 left-4 text-sm sm:text-base hover:text-primary transition-colors"
+        className="flex items-center mb-8 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard item={item} />
+      <SingleItemDetailsCard item={item} me={me} />
     </div>
   );
 }
+
+export async function generateMetadata({ params: { id } }: Props) {
+  const { data: item } = await getItem(id);
+
+  return {
+    title: item?.name,
+  };
+}
+
+const getItem = cache(async (id: string) => {
+  return await serverRequester.get<SingleItem<Account>>(`/items/${id}`);
+});

@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SendIcon } from "lucide-react";
 import type { FormEvent } from "react";
@@ -54,7 +54,7 @@ export function UpdateWhatsappCard({
 
       const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
 
-      return await new ClientRequester().patch<Account>("/auth/me", {
+      return await clientRequester.patch<Account>("/auth/me", {
         phone_code: phoneCode,
         phone_number: phoneNumber,
       });
@@ -99,7 +99,7 @@ export function UpdateWhatsappCard({
             className="grow"
           />
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
+        <CardFooter>
           <Button disabled={isPending} type="submit">
             {isPending ? (
               <Loader2Icon className="size-4 mr-2 animate-spin" />

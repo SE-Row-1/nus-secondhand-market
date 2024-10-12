@@ -64,3 +64,14 @@
     @apply border-border;
   }
 }
+
+/* https://github.com/pacocoursey/next-themes/blob/main/next-themes/src/index.tsx#L222 */
+.disable-transitions *,
+.disable-transitions *::before,
+.disable-transitions *::after {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  -ms-transition: none !important;
+  transition: none !important;
+}

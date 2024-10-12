@@ -2,7 +2,7 @@
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,14 +18,16 @@ export function LogOutButton() {
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      return await new ClientRequester().delete<undefined>("/auth/token");
+      return await clientRequester.delete<undefined>("/auth/token");
     },
     onSuccess: () => {
       queryClient.setQueryData(["auth", "me"], null);
+
       toast({
         title: "Logged out successfully",
         description: "Hope to see you again soon! 👋",
       });
+
       router.push("/login");
       router.refresh();
     },
