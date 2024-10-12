@@ -16,3 +16,5 @@ spring:
 #      password: your_password  # 如果有密码
 
 
+jwt:
+  secretKey: ${SECRET_KEY}

@@ -41,7 +41,7 @@ public class WishlistController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        if (userId != JwtTokenManager.decodeCookie(token)) {
+        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         return wishlistService.getWishlistService(userId);
@@ -49,7 +49,7 @@ public class WishlistController {
 
     @PostMapping("/{user_id}/items/{item_id}")
 //    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @RequestBody AddLikeReq req){
-    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("user_id") String itemId, @Valid @RequestBody AddLikeReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @Valid @RequestBody AddLikeReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
@@ -57,11 +57,11 @@ public class WishlistController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         if (bindingResult.hasErrors()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
 
         // check userId
-        if (userId != JwtTokenManager.decodeCookie(token)) {
+        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         // check req.userId

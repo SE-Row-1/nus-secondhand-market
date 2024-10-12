@@ -47,7 +47,7 @@ public class WishlistControllerTest {
 
         try (MockedStatic<JwtTokenManager> mockedJwtTokenManager = mockStatic(JwtTokenManager.class)) {
             when(JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            when(JwtTokenManager.decodeCookie(anyString())).thenReturn(userId);
+//            when(JwtTokenManager.decodeCookie(anyString())).thenReturn(userId);
 
             mockMvc.perform(get("/wishlist").header("Cookie", validToken))
                 .andExpect(status().isOk());
