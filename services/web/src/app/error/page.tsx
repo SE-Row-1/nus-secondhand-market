@@ -1,14 +1,14 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { CircleXIcon, HouseIcon } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
-export default function ErrorPage() {
-  const searchParams = useSearchParams();
-  const message = searchParams.get("message");
+type Props = {
+  searchParams: {
+    message: string;
+  };
+};
 
+export default function ErrorPage({ searchParams: { message } }: Props) {
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
       <CircleXIcon className="size-20" />
