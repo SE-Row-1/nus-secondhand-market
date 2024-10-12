@@ -396,6 +396,18 @@ tcpListenOptions:
   ##
   keepalive: false
 configuration: |-
+  ## Queue Configuration
+  {{- if .Values.queues.enabled }}
+  queues:
+    {{- range .Values.queues.list }}
+    - name: {{ .name }}
+      durable: {{ .durable }}
+      {{- if .arguments }}
+      arguments: {{ .arguments | toJson }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
   ## Username and password
   default_user = {{ .Values.auth.username }}
   {{- if and (not .Values.auth.securePassword) .Values.auth.password }}

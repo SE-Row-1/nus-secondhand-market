@@ -1,8 +1,4 @@
 #!/bin/bash
-sudo apt-get update
-sudo apt-get install -y curl unzip gnupg
-
-aws s3 cp s3://nus-backend-terraform/setup/cloudflare-adddns.yaml .
 aws s3 cp s3://nus-backend-terraform/setup/argo-values.yaml .
 aws s3 cp s3://nus-backend-terraform/setup/argocd-project.yaml .
 aws s3 cp s3://nus-backend-terraform/setup/argocd-app.yaml .
@@ -10,7 +6,7 @@ aws s3 cp s3://nus-backend-terraform/setup/ec2.gpg .
 aws s3 cp s3://nus-backend-terraform/setup/nshm.passphrase .
 gpg --batch --yes --decrypt --passphrase-file=nshm.passphrase --output ec2 ec2.gpg
 source ec2
-
+alias k='kubectl'
 
 # Install eksctl
 ARCH=amd64
@@ -18,11 +14,6 @@ PLATFORM=$(uname -s)_$ARCH
 curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
 tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
 sudo mv /tmp/eksctl /usr/local/bin
-
-# Install AWS CLI
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
 
 # Install kubectl
 curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -36,8 +27,15 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 aws eks --region ap-southeast-1 update-kubeconfig --name nshm-eks
 
 # Deploy autoscaler
-export AWS_ACCESS_KEY_ID=$(awk -F ' = ' '/aws_access_key_id/ {print $2}' ~/.aws/credentials)
-export AWS_SECRET_ACCESS_KEY=$(awk -F ' = ' '/aws_secret_access_key/ {print $2}' ~/.aws/credentials)
+if [[ ! -e ~/.aws/credentials ]]; then
+  echo "There is no credentials file.. Please check !!!!"
+else
+  echo "Exporting credentials for cluster autoscaler....."
+  export AWS_ACCESS_KEY_ID=$(awk -F ' = ' '/aws_access_key_id/ {print $2}' ~/.aws/credentials)
+  export AWS_SECRET_ACCESS_KEY=$(awk -F ' = ' '/aws_secret_access_key/ {print $2}' ~/.aws/credentials)
+fi
+
+helm repo add autoscaler https://kubernetes.github.io/autoscaler
 helm install -n kube-system cluster-autoscaler autoscaler/cluster-autoscaler \
 --set autoDiscovery.clusterName=nshm-eks \
 --set awsRegion=ap-southeast-1 \
@@ -57,6 +55,7 @@ eksctl create iamserviceaccount \
 --role-name AmazonEKSLoadBalancerControllerRole \
 --attach-policy-arn=arn:aws:iam::985539788320:policy/AWSLoadBalancerControllerIAMPolicy \
 --approve
+
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update eks
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
@@ -82,7 +81,3 @@ sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
 kubectl create ns nshm
 kubectl apply -f argocd-project.yaml -n argocd
 kubectl apply -f argocd-app.yaml -n argocd
-
-bash cloudflare-adddns.sh
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode > argocd-admin-secret.txt
-

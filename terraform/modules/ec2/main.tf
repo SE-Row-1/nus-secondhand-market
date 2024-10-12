@@ -75,9 +75,15 @@ resource "aws_instance" "nshm_bastion" {
 
   user_data = <<-EOF
     #!/bin/bash
-  aws s3 cp s3://nus-backend-terraform/setup/ec2-installation.sh .
-  ./ec2-installation.sh
-  EOF
+    sudo apt-get update
+    sudo apt-get install -y curl unzip gnupg
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+
+    aws s3 cp s3://nus-backend-terraform/setup/ec2-installation.sh .
+    bash ec2-installation.sh
+    EOF
 
   tags = {
     Name = "nshm-bastion"

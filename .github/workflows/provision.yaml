@@ -44,8 +44,6 @@ jobs:
           cd terraform/
           RDS_ENDPOINT=$(terraform output -raw db_instance_endpoint)
           RDS_PASSWORD=$(terraform output -raw db_instance_password)
-          ALB_DNSNAME=$(terraform output -raw alb_dns_name)
-          echo $ALB_DNSNAME
           echo $RDS_ENDPOINT > rds_endpoint.txt
           echo $RDS_PASSWORD > rds_password.txt
 

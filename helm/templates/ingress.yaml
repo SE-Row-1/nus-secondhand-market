@@ -50,4 +50,4 @@ spec:
               service:
                 name: wishlist-service
                 port:
-                  number: 6000
+                  number: 8082

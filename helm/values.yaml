@@ -1,7 +1,7 @@
 # Global values for MongoDB and RabbitMQ
 
 # MongoDB custom values for item service
-mongodb-item:
+mongodb_item:
   auth:
     enabled: true
     rootPassword: "mongodb-item-root-password"
@@ -12,7 +12,7 @@ mongodb-item:
     enabled: false
 
 # MongoDB custom values for wishlist service
-mongodb-wishlist:
+mongodb_wishlist:
   auth:
     enabled: true
     rootPassword: "mongodb-wishlist-root-password"
@@ -30,6 +30,17 @@ rabbitmq:
   persistence:
     enabled: true
     size: 1Gi
+  queues:
+    enabled: true
+    list:
+      - name: whishlist
+        durable: true
+        arguments:
+          x-message-ttl: 86400000
+      - name: item
+        durable: true
+        arguments:
+          x-message-ttl: 86400000
 
 # Account service values
 account:

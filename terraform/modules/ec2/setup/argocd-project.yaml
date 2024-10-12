@@ -8,7 +8,7 @@ spec:
   sourceRepos:
     - '*'
   destinations:
-    - namespace: default
+    - namespace: nshm
       server: 'https://kubernetes.default.svc'
   roles:
     - name: developer
