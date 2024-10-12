@@ -61,7 +61,6 @@ jobs:
     needs: define-matrix
     strategy:
       matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
-      fail-fast: false
 
     steps:
       - name: Check out code
