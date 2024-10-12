@@ -5,8 +5,8 @@ import type { Metadata } from "next";
 
 export default function Home() {
   return (
-    <div>
-      <div className="flex justify-between items-center flex-wrap gap-4 mt-4 md:mt-8 mb-8">
+    <>
+      <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
         <div className="space-y-4">
           <h1 className="font-bold text-3xl">Marketplace</h1>
           <p className="text-muted-foreground">
@@ -16,7 +16,7 @@ export default function Home() {
         <PublishItemDialog />
       </div>
       <ItemCardList type={ItemType.SINGLE} status={ItemStatus.FOR_SALE} />
-    </div>
+    </>
   );
 }
 

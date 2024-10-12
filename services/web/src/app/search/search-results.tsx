@@ -55,7 +55,7 @@ export function SearchResults() {
 
   if (!!q && isPending) {
     return (
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6 mt-8">
+      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6">
         {[...Array(4)].map((_, index) => (
           <Skeleton key={index} className="aspect-[3/4]" />
         ))}
@@ -65,7 +65,7 @@ export function SearchResults() {
 
   return (
     <>
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6 mt-8">
+      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6">
         {data?.pages
           .flatMap((page) => page.items)
           .map((item) => <SingleItemCard key={item.id} item={item} />)}

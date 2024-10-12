@@ -36,7 +36,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             <Header />
           </div>
           <div className="md:pl-56 lg:pl-72 pt-14 md:pt-0">
-            <main className="px-6 md:px-12 lg:px-24 py-4 md:py-8">
+            <main className="flex flex-col min-h-[calc(100vh-56px)] md:min-h-screen px-6 md:px-12 lg:px-24 py-8 md:py-16">
               {children}
             </main>
           </div>

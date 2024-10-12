@@ -40,7 +40,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   return (
-    <div className="max-w-xl min-h-[calc(100vh-84px)] py-4 md:py-8 mx-auto">
+    <div className="w-full max-w-xl mx-auto">
       <Link
         href={`/items/${id}`}
         className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"

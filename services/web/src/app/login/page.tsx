@@ -4,7 +4,7 @@ import { LogInForm } from "./form";
 
 export default function LogInPage() {
   return (
-    <div className="grid place-items-center min-h-screen">
+    <div className="grow grid place-items-center">
       <div className="min-w-80">
         <h1 className="mb-6 font-bold text-3xl text-center">Log in</h1>
         <LogInForm />

@@ -29,7 +29,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   return (
-    <div className="flex flex-col justify-center relative min-h-[calc(100vh-84px)] ">
+    <div className="grow flex flex-col justify-center relative">
       <Link
         href="/"
         className="flex items-center absolute top-4 left-4 text-sm sm:text-base hover:text-primary transition-colors"

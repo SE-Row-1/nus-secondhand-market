@@ -21,7 +21,7 @@ export function SearchBar() {
   return (
     <div
       className={cn(
-        "max-w-2xl mx-auto transition-transform",
+        "w-[clamp(256px,100%,512px)] mx-auto mb-8 transition-transform",
         debouncedQ || "translate-y-[30vh]",
       )}
     >

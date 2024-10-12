@@ -14,7 +14,7 @@ export default function ErrorBoundary({ error, reset }: Props) {
   useEffect(() => console.error(error), [error]);
 
   return (
-    <div className="flex flex-col justify-center items-center gap-4 min-h-[calc(100vh-88px)]">
+    <div className="grow flex flex-col justify-center items-center gap-4">
       <CircleXIcon className="size-24" />
       <h1 className="font-bold text-3xl">Error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">
