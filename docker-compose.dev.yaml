@@ -1,6 +1,63 @@
+version: '3.8'
+
 name: NSHM
 
 services:
+  # Database Services
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - ./services/account/database:/docker-entrypoint-initdb.d
+    restart: always
+
+  mongo_item:
+    image: mongo
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${ITEM_SERVICE_MONGO_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${ITEM_SERVICE_MONGO_DB_PASS}
+      - MONGO_INITDB_DATABASE=${ITEM_SERVICE_MONGO_DB}
+    volumes:
+      - ./services/item/mongodb:/data/db
+    restart: always
+
+  mongo_wishlist:
+    image: mongo
+    ports:
+      - 27018:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${WISHLIST_SERVICE_MONGO_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${WISHLIST_SERVICE_MONGO_DB_PASS}
+      - MONGO_INITDB_DATABASE=${WISHLIST_SERVICE_MONGO_DB}
+    volumes:
+      - ./services/wishlist/mongodb:/data/db
+    restart: always
+
+  # Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl status"]
+      interval: 30s
+      retries: 5
+    restart: always
+
+  # Application Services
   web:
     build:
       context: services/web
@@ -25,22 +82,39 @@ services:
       - POSTGRES_URL=${POSTGRES_URL}
       - POSTGRES_USERNAME=${POSTGRES_USERNAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    restart: always
     depends_on:
       - postgres
+    restart: always
 
-  postgres:
-    image: postgres
+  wishlist:
+    build:
+      context: services/wishlist
+      dockerfile: Dockerfile
     ports:
-      - 5432:5432
+      - 8082:8082
     environment:
-      - POSTGRES_USER=${POSTGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./services/account/database:/docker-entrypoint-initdb.d
+      - MONGO_URL=mongodb://${MONGO_WISHLIST_USER}:${MONGO_WISHLIST_PASSWORD}@mongo_wishlist:27017/${MONGO_WISHLIST_DB}
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    depends_on:
+      - mongo_wishlist
+      - rabbitmq
+    restart: always
 
+  item:
+    build:
+      context: services/item
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8083:8083
+    environment:
+      - MONGO_URL=mongodb://${MONGO_ITEM_USER}:${MONGO_ITEM_PASSWORD}@mongo_item:27017/${MONGO_ITEM_DB}
+      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    depends_on:
+      - mongo_item
+      - rabbitmq
+    restart: always
+
+  # Reverse Proxy
   nginx:
     image: nginx:stable-alpine
     ports:
@@ -53,4 +127,5 @@ services:
     restart: always
 
 volumes:
-  pgdata:
+  rabbitmq_data:
+
