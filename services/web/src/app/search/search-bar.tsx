@@ -21,16 +21,11 @@ export function SearchBar() {
   return (
     <div
       className={cn(
-        "w-[clamp(256px,100%,512px)] mx-auto mb-8 transition-transform",
+        "space-y-8 w-[clamp(256px,100%,512px)] mx-auto mb-8 transition-transform",
         debouncedQ || "translate-y-[30vh]",
       )}
     >
-      <h1
-        className={cn(
-          "flex justify-center items-center mb-8 font-bold text-3xl",
-          debouncedQ && "sr-only",
-        )}
-      >
+      <h1 className="flex justify-center items-center font-bold text-3xl">
         <SearchIcon className="size-8 mr-3" />
         Search
       </h1>

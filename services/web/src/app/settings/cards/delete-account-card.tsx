@@ -41,7 +41,7 @@ export function DeleteAccountCard() {
           caution.
         </CardDescription>
       </CardHeader>
-      <CardFooter className="border-t px-6 py-4">
+      <CardFooter>
         <DeleteAccountDialog />
       </CardFooter>
     </Card>

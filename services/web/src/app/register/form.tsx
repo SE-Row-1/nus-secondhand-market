@@ -74,7 +74,7 @@ export function RegisterForm() {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form onSubmit={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -105,7 +105,7 @@ export function RegisterForm() {
           id="confirmation"
         />
       </div>
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" disabled={isPending}>
         {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (

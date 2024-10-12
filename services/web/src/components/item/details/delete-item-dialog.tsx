@@ -37,7 +37,7 @@ export function DeleteItemDialog({ item }: Props) {
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
           <TrashIcon className="size-4 mr-2" />
-          Take down this item
+          Take down
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>

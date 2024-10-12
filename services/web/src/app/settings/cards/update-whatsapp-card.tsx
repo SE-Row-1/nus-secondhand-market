@@ -99,7 +99,7 @@ export function UpdateWhatsappCard({
             className="grow"
           />
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
+        <CardFooter>
           <Button disabled={isPending} type="submit">
             {isPending ? (
               <Loader2Icon className="size-4 mr-2 animate-spin" />

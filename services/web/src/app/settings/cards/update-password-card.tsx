@@ -43,7 +43,7 @@ export function UpdatePasswordCard() {
             id="confirm-password"
           />
         </CardContent>
-        <CardFooter className="border-t px-6 py-4">
+        <CardFooter>
           <Button type="submit">
             <SaveIcon className="size-4 mr-2" />
             Save

@@ -29,10 +29,10 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   return (
-    <div className="grow flex flex-col justify-center relative">
+    <div className="w-full max-w-xl mx-auto">
       <Link
         href="/"
-        className="flex items-center absolute top-4 left-4 text-sm sm:text-base hover:text-primary transition-colors"
+        className="flex items-center mb-8 text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
