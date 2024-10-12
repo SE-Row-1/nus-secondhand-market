@@ -62,7 +62,6 @@ export function LogInForm() {
         title: "Log in successful",
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
-
       router.push(nextUrl);
       router.refresh();
     },
