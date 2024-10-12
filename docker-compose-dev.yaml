@@ -31,13 +31,28 @@ services:
     networks:
       - local
 
-  # item:
-  #   build:
-  #     context: services/item
-  #     dockerfile: Dockerfile.dev
-  #   ports:
-  #     - ""
+  # todo: port
+  item:
+    build:
+      context: services/item
+      dockerfile: Dockerfile.test
+    environment:
+      - JWT_SECRET_KEY=nshm-item-service
+      - MONGO_URI=mongodb://mongo:27017
+      - MONGO_DB_NAME=nshm
+    depends_on:
+      - mongo
+    networks:
+      - local
 
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_DATABASE=nshm
+    volumes:
+      - ./database/test:/docker-entrypoint-initdb.d
+    networks:
+      - local
 
   postgres:
     image: postgres:latest
@@ -53,19 +68,6 @@ services:
       - ./init:/docker-entrypoint-initdb.d
     networks:
       - local
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"  
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root  # modify
-      MONGO_INITDB_ROOT_PASSWORD: root  # modify
-    volumes:
-      - mongo-data:/data/db  # Persist MongoDB data to a Docker volume
-    networks:
-      - local
-
 
 
   nginx:
