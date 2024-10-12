@@ -9,7 +9,7 @@ export default async function BelongingsPage() {
   const { data: me, error } = await serverRequester.get<Account>("/auth/me");
 
   if (error && error.status === 401) {
-    redirect("/login");
+    redirect("/login?next=/belongings");
   }
 
   if (error) {

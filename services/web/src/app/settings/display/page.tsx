@@ -8,7 +8,7 @@ export default async function DisplaySettingsPage() {
   const { data: me, error } = await serverRequester.get<Account>("/auth/me");
 
   if (error && error.status === 401) {
-    redirect("/login");
+    redirect("/login?next=/settings/display");
   }
 
   if (error) {
