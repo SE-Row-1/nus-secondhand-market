@@ -1,17 +1,19 @@
 {
-  "name": "item-service",
+  "name": "item",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun build src/index.ts --outdir=dist --target=bun --minify",
+    "build": "bun build --outdir=dist --target=bun --minify src/index.ts",
     "start": "bun dist/index.js"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.665.0",
     "bun-compression": "^0.0.4",
     "hono": "^4.6.3",
     "hono-rate-limiter": "^0.4.0",
-    "mongodb": "^6.9.0"
+    "mongodb": "^6.9.0",
+    "valibot": "^1.0.0-beta.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
@@ -23,6 +25,6 @@
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "^5.6.2",
-    "typescript-eslint": "^8.7.0"
+    "typescript-eslint": "^8.8.0"
   }
 }

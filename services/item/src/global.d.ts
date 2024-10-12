@@ -1,8 +1,13 @@
 declare module "bun" {
-  // See `.env.example` for details on environment variables.
   interface Env {
     PORT?: number;
-    MONGO_DB_URI: string;
+    JWT_SECRET_KEY: string;
+    MONGO_URI: string;
     MONGO_DB_NAME: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
+    AWS_REGION: string;
+    S3_BUCKET_NAME: string;
+    ACCOUNT_SERVICE_BASE_URL: string;
   }
 }
