@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wishlist-service
+  name: wishlist
 spec:
   type: ClusterIP
   ports:
     - port: 8082
       targetPort: 8082
   selector:
-    app: wishlist-service
+    app: wishlist

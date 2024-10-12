@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: web-service
+  name: web
 spec:
   replicas: {{ .Values.web.replicas }}
   selector:
     matchLabels:
-      app: web-service
+      app: web
   template:
     metadata:
       labels:
-        app: web-service
+        app: web
     spec:
       containers:
-      - name: web-service
+      - name: web
         image: {{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}
         resources:
           requests:

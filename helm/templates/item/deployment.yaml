@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: item-service
+  name: item
 spec:
   replicas: {{ .Values.item.replicas }}
   selector:
     matchLabels:
-      app: item-service
+      app: item
   template:
     metadata:
       labels:
-        app: item-service
+        app: item
     spec:
       containers:
-      - name: item-service
+      - name: item
         image: {{ .Values.item.image.repository }}:{{ .Values.item.image.tag }}
         resources:
           requests:

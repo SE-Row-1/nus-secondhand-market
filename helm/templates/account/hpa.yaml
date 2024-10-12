@@ -6,7 +6,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: account-service
+    name: account
   minReplicas: 1
   maxReplicas: 5
   metrics:

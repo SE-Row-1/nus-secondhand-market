@@ -20,34 +20,34 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: frontend-service
+                name: frontend
                 port:
                   number: 3000
-          - path: /api/auth/*
+          - path: /api/auth
             pathType: Prefix
             backend:
               service:
-                name: account-service
+                name: account
                 port:
                   number: 8081
-          - path: /api/accounts/*
+          - path: /api/accounts
             pathType: Prefix
             backend:
               service:
-                name: account-service
+                name: account
                 port:
                   number: 8081
-          - path: /api/items/*
+          - path: /api/items
             pathType: Prefix
             backend:
               service:
-                name: item-service
+                name: item
                 port:
                   number: 5000
-          - path: /api/wishlist/*
+          - path: /api/wishlist
             pathType: Prefix
             backend:
               service:
-                name: wishlist-service
+                name: wishlist
                 port:
                   number: 8082
