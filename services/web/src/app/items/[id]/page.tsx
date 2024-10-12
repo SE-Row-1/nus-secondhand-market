@@ -13,14 +13,19 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const { data: item, error } = await getItem(id);
+  const [{ data: item, error: itemError }, { data: me, error: meError }] =
+    await Promise.all([getItem(id), serverRequester.get<Account>("/auth/me")]);
 
-  if (error && error.status === 404) {
+  if (itemError && itemError.status === 404) {
     notFound();
   }
 
-  if (error) {
-    redirect(`/error?message=${error.message}`);
+  if (itemError) {
+    redirect(`/error?message=${itemError.message}`);
+  }
+
+  if (meError && meError.status !== 401) {
+    redirect(`/error?message=${meError.message}`);
   }
 
   return (
@@ -32,7 +37,7 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard item={item} />
+      <SingleItemDetailsCard item={item} me={me} />
     </div>
   );
 }

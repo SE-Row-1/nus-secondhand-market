@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { type SingleItem } from "@/types";
 import Link from "next/link";
-import { DeleteItemDialog } from "./delete-item-dialog";
 import { ItemPhoto } from "./item-photo";
 import { ItemPublishedAt } from "./item-published-at";
 import { ItemSeller } from "./item-seller";
@@ -36,9 +35,6 @@ export function SingleItemCard({ item }: Props) {
       >
         <span className="sr-only">View item detail</span>
       </Link>
-      <div className="flex justify-evenly items-center absolute inset-x-0 bottom-0 z-10 translate-y-1/2">
-        <DeleteItemDialog item={item} />
-      </div>
     </Card>
   );
 }

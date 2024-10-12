@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { mockItems } from "../mock";
 
 export async function GET() {
-  return NextResponse.json(mockItems[1]);
+  return NextResponse.json(mockItems[0]);
 }
 
 export async function PATCH(req: NextRequest) {

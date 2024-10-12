@@ -2,15 +2,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { Account, SingleItem } from "@/types";
 import { fromNow } from "@/utils/datetime";
-import { HeartIcon, MailIcon } from "lucide-react";
+import { EditIcon, HeartIcon, MailIcon } from "lucide-react";
+import Link from "next/link";
+import { DeleteItemDialog } from "./delete-item-dialog";
 import { ItemStatusBadge } from "./item-status-badge";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
   item: SingleItem<Account>;
+  me: Account | null;
 };
 
-export function SingleItemDetailsCard({ item }: Props) {
+export function SingleItemDetailsCard({ item, me }: Props) {
   return (
     <div>
       <div className="max-w-xl mx-auto">
@@ -50,21 +53,35 @@ export function SingleItemDetailsCard({ item }: Props) {
           </div>
         </div>
         <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-6">
-          <Button variant="secondary">
-            <HeartIcon className="size-4 mr-2" />
-            Add to wishlist
-          </Button>
-          <div className="space-y-1">
-            <Button disabled={!item.seller.phone_number} className="w-full">
-              <MailIcon className="size-4 mr-2" />
-              Contact seller
-            </Button>
-            {item.seller.phone_number || (
-              <p className="text-xs text-muted-foreground text-center text-balance">
-                This seller has not yet provided his contact number
-              </p>
-            )}
-          </div>
+          {me?.id === item.seller.id ? (
+            <>
+              <Button variant="secondary" asChild>
+                <Link href={`/items/${item.id}/edit`}>
+                  <EditIcon className="size-4 mr-2" />
+                  Edit
+                </Link>
+              </Button>
+              <DeleteItemDialog item={item} />
+            </>
+          ) : (
+            <>
+              <Button variant="secondary">
+                <HeartIcon className="size-4 mr-2" />
+                Add to wishlist
+              </Button>
+              <div className="space-y-1">
+                <Button disabled={!item.seller.phone_number} className="w-full">
+                  <MailIcon className="size-4 mr-2" />
+                  Contact seller
+                </Button>
+                {item.seller.phone_number || (
+                  <p className="text-xs text-muted-foreground text-center text-balance">
+                    This seller has not yet provided his contact number
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
