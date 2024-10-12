@@ -1,28 +1,33 @@
+import { PageTitle } from "@/components/framework";
 import { ItemCardList } from "@/components/item";
 import { ItemType, type Account } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { serverRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+
+export default async function BelongingsPage() {
+  const { data: me, error } = await serverRequester.get<Account>("/auth/me");
+
+  if (error && error.status === 401) {
+    redirect("/login?next=/belongings");
+  }
+
+  if (error) {
+    redirect(`/error?message=${error.message}`);
+  }
+
+  return (
+    <>
+      <PageTitle
+        title="My belongings"
+        description="Here are the items you have listed"
+        className="mb-8"
+      />
+      <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
+    </>
+  );
+}
 
 export const metadata: Metadata = {
   title: "My Belongings",
 };
-
-export default async function BelongingsPage() {
-  const me = await new ServerRequester().get<Account | undefined>("/auth/me");
-
-  if (!me) {
-    return null;
-  }
-
-  return (
-    <div>
-      <div className="space-y-4 mt-4 md:mt-8 mb-8">
-        <h1 className="font-bold text-3xl">My Belongings</h1>
-        <p className="text-muted-foreground">
-          Here are the items you have listed for sale.
-        </p>
-      </div>
-      <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
-    </div>
-  );
-}

@@ -1,11 +1,11 @@
 import { JoinNowCard } from "./join-now-card";
-import { Loading } from "./loading";
+import { LoadingCard } from "./loading-card";
 import { MeCardClient } from "./me-card-client";
 
 export async function MeCardServer() {
   return (
     <MeCardClient
-      loadingFallback={<Loading />}
+      loadingFallback={<LoadingCard />}
       noAuthFallback={<JoinNowCard />}
     />
   );

@@ -9,9 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProfileReq {
+    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
+    private String email;
+
     private String nickname;
 
-    private String avatar;
+    private String avatarUrl;
 
     @Pattern(regexp = "^[0-9]+$")
     private String phoneCode;
@@ -19,5 +22,7 @@ public class UpdateProfileReq {
     @Pattern(regexp = "^[0-9]+$")
     private String phoneNumber;
 
-    private String currency;
+    private String preferredCurrency;
+
+    private Integer departmentId;
 }

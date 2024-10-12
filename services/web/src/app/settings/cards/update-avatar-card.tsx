@@ -29,7 +29,7 @@ export function UpdateAvatarCard() {
           </Avatar>
         </CardContent>
       </div>
-      <CardFooter className="border-t px-6 py-4">
+      <CardFooter>
         <Button className="cursor-pointer" asChild>
           <label htmlFor="avatar" tabIndex={0}>
             <UploadIcon className="size-4 mr-2" />

@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export function DeleteAccountCard() {
           caution.
         </CardDescription>
       </CardHeader>
-      <CardFooter className="border-t px-6 py-4">
+      <CardFooter>
         <DeleteAccountDialog />
       </CardFooter>
     </Card>
@@ -92,9 +92,9 @@ function DeleteAccountButton() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (event: MouseEvent<HTMLButtonElement>) => {
+    mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      return new ClientRequester().delete<undefined>("/auth/me");
+      return await clientRequester.delete<undefined>("/auth/me");
     },
     onSuccess: () => {
       queryClient.setQueryData(["auth", "me"], null);

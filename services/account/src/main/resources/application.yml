@@ -10,10 +10,15 @@ spring:
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
 
-
   jackson:
     property-naming-strategy: SNAKE_CASE
+
+  availableDomain:
+    frontendUrl: ${EC2_PUBLIC}
 
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+
+jwt:
+  secretKey: ${SECRET_KEY}

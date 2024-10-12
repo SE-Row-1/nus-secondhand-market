@@ -15,7 +15,8 @@ import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
   return (
-    <header className="fixed top-0 inset-x-0 flex justify-center items-center py-2 border-b bg-background/80 backdrop-blur-lg z-10">
+    <header className="fixed top-0 inset-x-0 flex justify-center items-center py-2 border-b bg-background z-20">
+      <Logo />
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="absolute left-2">
@@ -36,7 +37,6 @@ export function Header() {
           <MeCard />
         </SheetContent>
       </Sheet>
-      <Logo />
     </header>
   );
 }

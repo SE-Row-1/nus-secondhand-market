@@ -22,6 +22,14 @@ export async function insertOne(item: SingleItem) {
   return await itemsCollection.insertOne({ ...item });
 }
 
+export async function updateOne(filter: Filter<Item>, update: Partial<Item>) {
+  return await itemsCollection.findOneAndUpdate(
+    filter,
+    { $set: update },
+    { projection: { _id: 0 }, returnDocument: "after" },
+  );
+}
+
 export async function deleteOne(filter: Filter<Item>) {
   return await itemsCollection.updateOne(filter, {
     $set: { deletedAt: new Date() },
