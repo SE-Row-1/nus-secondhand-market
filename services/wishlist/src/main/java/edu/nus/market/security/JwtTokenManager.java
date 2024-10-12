@@ -83,6 +83,11 @@ public class JwtTokenManager {
         return Base64.getEncoder().encodeToString(randomBytes);
     }
 
+    // set secret key
+    public static void setSecretKey(String secretKey){
+        JwtTokenManager.secretKey = secretKey;
+    }
+
     public JwtTokenManager(@Value("${jwt.secretKey}")String secretKey){
         this.secretKey = secretKey;
     }
