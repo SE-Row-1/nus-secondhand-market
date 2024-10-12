@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { CircleXIcon, HouseIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 type Props = {
@@ -25,3 +26,7 @@ export default function ErrorPage({ searchParams: { message } }: Props) {
     </div>
   );
 }
+
+export const metadata: Metadata = {
+  title: "Error occurred",
+};
