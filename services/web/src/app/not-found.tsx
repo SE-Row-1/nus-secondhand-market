@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function NotFoundPage() {
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
-      <MapPinXInsideIcon className="size-24" />
+      <MapPinXInsideIcon className="size-20" />
       <h1 className="font-bold text-3xl">Page not found</h1>
       <p className="text-muted-foreground text-center text-balance">
         Oops! The page you&apos;re looking for does not exist. Let&apos;s get

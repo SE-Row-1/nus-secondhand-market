@@ -11,8 +11,8 @@ export default function ErrorPage() {
 
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
-      <CircleXIcon className="size-24" />
-      <h1 className="font-bold text-3xl">Error occurred</h1>
+      <CircleXIcon className="size-20" />
+      <h1 className="font-bold text-3xl">Server-side error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">
         {message ?? "No message provided"}
       </p>

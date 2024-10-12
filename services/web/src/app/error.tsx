@@ -15,11 +15,11 @@ export default function ErrorBoundary({ error, reset }: Props) {
 
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
-      <CircleXIcon className="size-24" />
-      <h1 className="font-bold text-3xl">Error occurred</h1>
+      <CircleXIcon className="size-20" />
+      <h1 className="font-bold text-3xl">Client-side error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">
-        Seems like you&apos;ve run into an unexpected error. What about trying
-        again?
+        Seems like you&apos;ve run into an unexpected client-side error. What
+        about trying again?
       </p>
       {error.digest && (
         <p className="text-sm text-muted-foreground text-center text-balance">
