@@ -1,4 +1,4 @@
-name: Provision Infrastructure
+name: Infrastructure Management
 
 on:
   push:
