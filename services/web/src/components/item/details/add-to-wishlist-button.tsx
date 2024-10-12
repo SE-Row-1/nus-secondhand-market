@@ -1,9 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/hooks/use-me";
 import type { AccountPreview, SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { HeartIcon, HeartOffIcon, Loader2Icon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -23,6 +24,8 @@ export function AddToWishListButton({ item, initialIsInWishlist }: Props) {
 
   const pathname = usePathname();
 
+  const { toast } = useToast();
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
@@ -35,15 +38,22 @@ export function AddToWishListButton({ item, initialIsInWishlist }: Props) {
       }
 
       if (isInWishlist) {
-        return await new ClientRequester().delete<undefined>(
+        return await clientRequester.delete<undefined>(
           `/wishlists/${me.id}/items/${item.id}`,
         );
       }
 
-      return await new ClientRequester().post(`/wishlists/${me.id}`, item);
+      return await clientRequester.post(`/wishlists/${me.id}`, item);
     },
     onSuccess: () => {
       setIsInWishlist((isInWishlist) => !isInWishlist);
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error occurred",
+        description: error.message,
+      });
     },
   });
 
