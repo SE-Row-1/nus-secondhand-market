@@ -1,5 +1,6 @@
 import type { ItemStatus, ItemType, SingleItem } from "@/types";
-import { ServerRequester } from "@/utils/requester/server";
+import { serverRequester } from "@/utils/requester/server";
+import { redirect } from "next/navigation";
 import { ItemCardListClient } from "./item-card-list-client";
 
 type Props = {
@@ -27,10 +28,14 @@ export async function ItemCardListServer({
     initialSearchParams.set("seller_id", String(sellerId));
   }
 
-  const initialData = await new ServerRequester().get<{
+  const { data: initialData, error } = await serverRequester.get<{
     items: SingleItem[];
     next_cursor: string;
   }>(`/items?${initialSearchParams.toString()}`);
+
+  if (error) {
+    redirect(`/error?message=${error.message}`);
+  }
 
   return (
     <ItemCardListClient

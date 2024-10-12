@@ -2,7 +2,7 @@
 
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 import { SingleItemCard } from "./card";
@@ -23,14 +23,14 @@ export function ItemCardListClient({
 }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["items"],
-    queryFn: ({ pageParam: cursor }) => {
+    queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams(initialSearchParams);
 
       if (cursor) {
         searchParams.set("cursor", cursor);
       }
 
-      return new ClientRequester().get<ItemsResponse>(
+      return await clientRequester.get<ItemsResponse>(
         `/items?${searchParams.toString()}`,
       );
     },

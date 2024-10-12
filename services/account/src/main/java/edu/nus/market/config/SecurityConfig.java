@@ -1,6 +1,7 @@
 
 package edu.nus.market.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Value("${spring.availableDomain.frontendUrl}")
+    String EC2_PUBLIC_IP;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -27,8 +30,8 @@ public class SecurityConfig {
     //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {
 //        CorsConfiguration configuration = new CorsConfiguration();
-//        configuration.addAllowedOrigin("http://localhost"); // 允许的域名"http://13.212.58.250", "http://localhost"
-//        configuration.addAllowedOrigin("http://13.212.58.250");
+//        configuration.addAllowedOrigin("http://localhost"); // 允许的域名EC2_PUBLIC_IP, "http://localhost"
+//        configuration.addAllowedOrigin(EC2_PUBLIC_IP);
 //        configuration.addAllowedMethod("GET"); // 允许的 HTTP 方法
 //        configuration.addAllowedMethod("POST");
 //        configuration.addAllowedMethod("PUT");

@@ -1,6 +1,7 @@
 package edu.nus.market;
 
 import edu.nus.market.pojo.RegisterReq;
+import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.controller.AccountController;
 import edu.nus.market.dao.AccountDao;
@@ -57,13 +58,13 @@ class MarketApplicationTests {
 
     }
 
-
     @Test
     void testTokenEncoderandDecoder(){
-        int userid = 15;
-
-        String token = JwtTokenManager.generateAccessToken(userid);
-        assert (userid == (JwtTokenManager.decodeAccessToken(token)));
+        ResAccount resAccount = new ResAccount(15, "e1351827@u.nus.edu", "test", "https://avatar_url", 1, "65", "12345678",
+            "CNY", "2024-10-03 10:26:25.407451+08", null);
+        String token = JwtTokenManager.generateAccessToken(resAccount);
+        ResAccount testResAccount = (JwtTokenManager.decodeAccessToken(token));
+        assert (resAccount.equals(testResAccount) );
     }
 
 }

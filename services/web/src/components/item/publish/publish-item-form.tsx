@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
@@ -75,7 +75,7 @@ export function PublishItemForm({ closeDialog }: Props) {
       data.append("price", validFormData.price.toString());
       validFormData.photos.forEach((photo) => data.append("photos", photo));
 
-      return await new ClientRequester().postForm<SingleItem>("/items", data);
+      return await clientRequester.postForm<SingleItem>("/items", data);
     },
     onSuccess: () => {
       closeDialog();

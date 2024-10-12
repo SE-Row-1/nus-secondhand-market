@@ -78,6 +78,58 @@ export const publishFormSchema = v.object({
   ),
 });
 
+export const updateParamSchema = v.object({
+  id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
+});
+
+export const updateFormSchema = v.object({
+  name: v.optional(
+    v.pipe(
+      v.string("Name should be a string"),
+      v.minLength(1, "Name should be at least 1 character long"),
+      v.maxLength(50, "Name should be at most 50 characters long"),
+    ),
+  ),
+  description: v.optional(
+    v.pipe(
+      v.string("Description should be a string"),
+      v.minLength(1, "Description should be at least 1 character long"),
+      v.maxLength(500, "Description should be at most 500 characters long"),
+    ),
+  ),
+  price: v.optional(
+    v.pipe(
+      v.unknown(),
+      v.transform(Number),
+      v.number("Price should be a number"),
+      v.minValue(0, "Price should be at least 0"),
+    ),
+  ),
+  addedPhotos: v.optional(
+    v.union([
+      v.pipe(v.array(fileSchema), v.maxLength(5, "Only allow up to 5 images")),
+      v.pipe(
+        fileSchema,
+        v.transform((file) => [file]),
+      ),
+    ]),
+    [],
+  ),
+  removedPhotoUrls: v.optional(
+    v.union([
+      v.pipe(
+        v.array(v.string("Photo URL should be a string")),
+        v.maxLength(5, "Only allow up to 5 photo URLs"),
+      ),
+      v.pipe(
+        v.string("Photo URL should be a string"),
+        v.transform((url) => [url]),
+      ),
+    ]),
+    [],
+  ),
+});
+
 export const takeDownParamSchema = v.object({
   id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
 });

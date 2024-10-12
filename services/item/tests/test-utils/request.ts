@@ -111,6 +111,22 @@ export async function PATCH(
   );
 }
 
+export async function PATCH_FORM(
+  endpoint: string,
+  formData: FormData,
+  init: RequestInit = {},
+) {
+  return await app.request(
+    endpoint,
+    {
+      ...init,
+      method: "PATCH",
+      body: formData,
+    },
+    honoEnv,
+  );
+}
+
 /**
  * Fake a DELETE request.
  */

@@ -6,7 +6,8 @@ public enum ErrorMsgEnum {
     WRONG_PASSWORD("Wrong password. Please try again."),
     ACCOUNT_NOT_FOUND("This account does not exist."),
     UNAUTHORIZED_ACCESS("Token validation failed."),
-    NOT_LOGGED_IN("Please log in first.")
+    NOT_LOGGED_IN("Please log in first."),
+    FAILED_UPDATE("Failed to update profile.")
 
     ;
     public String ErrorMsg;
