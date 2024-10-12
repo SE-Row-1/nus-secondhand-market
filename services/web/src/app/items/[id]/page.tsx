@@ -3,7 +3,7 @@ import type { Account, SingleItem } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 
 type Props = {
@@ -20,8 +20,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   if (error) {
-    console.error(error);
-    return null;
+    redirect(`/error?message=${error.message}`);
   }
 
   return (

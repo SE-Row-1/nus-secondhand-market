@@ -1,5 +1,6 @@
 import type { ItemStatus, ItemType, SingleItem } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
+import { redirect } from "next/navigation";
 import { ItemCardListClient } from "./item-card-list-client";
 
 type Props = {
@@ -33,8 +34,7 @@ export async function ItemCardListServer({
   }>(`/items?${initialSearchParams.toString()}`);
 
   if (error) {
-    console.error(error);
-    return null;
+    redirect(`/error?message=${error.message}`);
   }
 
   return (

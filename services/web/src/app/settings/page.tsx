@@ -13,8 +13,7 @@ export default async function AccountSettingsPage() {
   }
 
   if (error) {
-    console.error(error);
-    return null;
+    redirect(`/error?message=${error.message}`);
   }
 
   return (

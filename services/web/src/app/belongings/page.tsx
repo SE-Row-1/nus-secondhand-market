@@ -12,8 +12,7 @@ export default async function BelongingsPage() {
   }
 
   if (error) {
-    console.error(error);
-    return null;
+    redirect(`/error?message=${error.message}`);
   }
 
   return (

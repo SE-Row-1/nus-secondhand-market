@@ -24,17 +24,15 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   if (itemError) {
-    console.error(itemError);
-    return null;
+    redirect(`/error?message=${itemError}`);
   }
 
   if (meError && meError.status === 401) {
-    redirect(`/items/${id}`);
+    redirect(`/login?next=/items/${id}/edit`);
   }
 
   if (meError) {
-    console.error(meError);
-    return null;
+    redirect(`/error?message=${meError}`);
   }
 
   if (item.seller.id !== me.id) {
