@@ -1,3 +1,4 @@
+import { PageTitle } from "@/components/framework/page-title";
 import { ItemCardList } from "@/components/item";
 import { ItemType, type Account } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
@@ -17,13 +18,13 @@ export default async function BelongingsPage() {
 
   return (
     <>
-      <div className="space-y-4 mb-8">
-        <h1 className="font-bold text-3xl">My Belongings</h1>
-        <p className="text-muted-foreground">
-          Here are the items you have listed for sale.
-        </p>
+      <PageTitle
+        title="My belongings"
+        description="Here are the items you have listed"
+      />
+      <div className="mt-8">
+        <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
       </div>
-      <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
     </>
   );
 }

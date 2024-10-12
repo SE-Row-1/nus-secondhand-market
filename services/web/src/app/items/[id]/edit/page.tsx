@@ -1,3 +1,4 @@
+import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
 import type { Account, SingleItem } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
@@ -40,7 +41,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   return (
-    <div className="w-full max-w-xl mx-auto">
+    <div className="space-y-8 w-full max-w-xl mx-auto">
       <Link
         href={`/items/${id}`}
         className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
@@ -48,10 +49,11 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
       </Link>
-      <h1 className="pt-8 font-bold text-3xl">Edit item details</h1>
-      <div className="pt-6">
-        <EditItem id={id} initialItem={item} />
-      </div>
+      <PageTitle
+        title="Edit item"
+        description="Update the details of your item"
+      />
+      <EditItem id={id} initialItem={item} />
     </div>
   );
 }

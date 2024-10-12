@@ -1,11 +1,15 @@
+import { PageTitle } from "@/components/framework/page-title";
 import type { PropsWithChildren } from "react";
 import { NavLink } from "./nav-link";
 
 export default function SettingsLayout({ children }: PropsWithChildren) {
   return (
     <>
-      <h1 className="font-bold text-3xl">Settings</h1>
-      <div className="flex flex-col md:flex-row gap-6 md:gap-24 xl:gap-40">
+      <PageTitle
+        title="Settings"
+        description="Manage your profile and account"
+      />
+      <div className="flex flex-col md:flex-row gap-6 md:gap-24 xl:gap-40 mt-8">
         <nav
           aria-label="Settings navigation"
           className="self-start grid gap-4 text-sm text-muted-foreground"
