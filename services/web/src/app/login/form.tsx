@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import type { Account } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent } from "react";
 import * as v from "valibot";
 
@@ -31,15 +31,18 @@ const formSchema = v.object({
   ),
 });
 
-export function LoginForm() {
+export function LogInForm() {
   const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const nextUrl = searchParams.get("next") ?? "/";
 
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (event: FormEvent<HTMLFormElement>) => {
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
       const target = event.target as HTMLFormElement;
@@ -47,31 +50,33 @@ export function LoginForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return new ClientRequester().post<Account>("/auth/token", {
+      return await clientRequester.post<Account>("/auth/token", {
         email,
         password,
       });
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
+
       toast({
-        title: "Login successful",
+        title: "Log in successful",
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
-      router.push("/");
+
+      router.push(nextUrl);
       router.refresh();
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Login failed",
+        title: "Log in failed",
         description: error.message,
       });
     },
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form onSubmit={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -91,7 +96,7 @@ export function LoginForm() {
         </div>
         <Input type="password" name="password" required id="password" />
       </div>
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" disabled={isPending}>
         {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (

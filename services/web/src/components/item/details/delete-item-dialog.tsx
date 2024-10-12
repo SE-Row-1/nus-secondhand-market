@@ -1,3 +1,5 @@
+"use client";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,9 +15,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/hooks/use-me";
 import type { SingleItem } from "@/types";
-import { ClientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
 
 type Props = {
@@ -32,13 +35,9 @@ export function DeleteItemDialog({ item }: Props) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button
-          variant="destructive"
-          size="icon"
-          className="rounded-full scale-0 group-hover:scale-100 group-focus-within:scale-100 transition"
-        >
-          <TrashIcon className="size-4" />
-          <span className="sr-only">Take down this item</span>
+        <Button variant="destructive">
+          <TrashIcon className="size-4 mr-2" />
+          Take down
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -66,6 +65,8 @@ type DeleteItemDialogActionProps = {
 };
 
 function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
+  const router = useRouter();
+
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -73,8 +74,7 @@ function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-
-      return await new ClientRequester().delete<undefined>(`/items/${itemId}`);
+      return await clientRequester.delete<undefined>(`/items/${itemId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
@@ -83,6 +83,8 @@ function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
         title: "Item taken down",
         description: "Your item has been taken down successfully.",
       });
+
+      router.push("/");
     },
     onError: (error) => {
       toast({

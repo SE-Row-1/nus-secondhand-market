@@ -93,6 +93,73 @@ export async function publish(dto: PublishServiceDto) {
   return item;
 }
 
+type UpdateServiceDto = {
+  id: string;
+  name?: string;
+  description?: string;
+  price?: number;
+  addedPhotos: File[];
+  removedPhotoUrls: string[];
+  user: Account;
+};
+
+export async function update(dto: UpdateServiceDto) {
+  const item = await itemsRepository.findOne({ id: dto.id, deletedAt: null });
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  if (item.seller.id !== dto.user.id) {
+    throw new HTTPException(403, {
+      message: "You can't update someone else's items.",
+    });
+  }
+
+  if (item.type !== ItemType.SINGLE) {
+    throw new HTTPException(422, {
+      message: "This endpoint only updates single item.",
+    });
+  }
+
+  if (
+    item.photoUrls.length +
+      dto.addedPhotos.length -
+      dto.removedPhotoUrls.length >
+    5
+  ) {
+    throw new HTTPException(400, { message: "Only allow up to 5 photos." });
+  }
+
+  for (const removedPhotoUrl of dto.removedPhotoUrls) {
+    if (!item.photoUrls.includes(removedPhotoUrl)) {
+      throw new HTTPException(400, {
+        message: "The photo you want to remove does not exist.",
+      });
+    }
+  }
+
+  await Promise.all(dto.removedPhotoUrls.map(photoManager.remove));
+
+  const addedPhotoUrls = await Promise.all(
+    dto.addedPhotos.map(photoManager.save),
+  );
+
+  const newPhotoUrls = [...item.photoUrls, ...addedPhotoUrls].filter(
+    (url) => !dto.removedPhotoUrls.includes(url),
+  );
+
+  return await itemsRepository.updateOne(
+    { id: dto.id },
+    {
+      ...(dto.name ? { name: dto.name } : {}),
+      ...(dto.description ? { description: dto.description } : {}),
+      ...(dto.price ? { price: dto.price } : {}),
+      photoUrls: newPhotoUrls,
+    },
+  );
+}
+
 type TakeDownServiceDto = {
   id: string;
   user: Account;

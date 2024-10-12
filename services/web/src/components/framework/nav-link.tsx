@@ -19,8 +19,10 @@ export function NavLink({ children, href }: Props) {
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg hover:text-primary transition-colors",
-        isActive ? "bg-muted text-primary" : "text-muted-foreground",
+        "flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition-colors",
+        isActive
+          ? "bg-muted text-primary"
+          : "text-muted-foreground hover:text-primary",
       )}
     >
       {children}

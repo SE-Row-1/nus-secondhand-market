@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function Loading() {
+export function LoadingCard() {
   return (
     <div className="flex items-center gap-3 px-4 py-3 border rounded-lg md:mt-4 bg-card">
       <Skeleton className="size-8 lg:size-10 rounded-full" />

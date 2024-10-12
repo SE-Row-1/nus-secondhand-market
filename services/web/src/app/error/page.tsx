@@ -1,16 +1,21 @@
 import { Button } from "@/components/ui/button";
-import { HouseIcon, MapPinXInsideIcon } from "lucide-react";
+import { CircleXIcon, HouseIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export default function NotFoundPage() {
+type Props = {
+  searchParams: {
+    message: string;
+  };
+};
+
+export default function ErrorPage({ searchParams: { message } }: Props) {
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
-      <MapPinXInsideIcon className="size-20" />
-      <h1 className="font-bold text-3xl">Page not found</h1>
+      <CircleXIcon className="size-20" />
+      <h1 className="font-bold text-3xl">Server-side error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">
-        Oops! The page you&apos;re looking for does not exist. Let&apos;s get
-        you back on track!
+        {message ?? "No message provided"}
       </p>
       <Button asChild>
         <Link href="/">
@@ -23,5 +28,5 @@ export default function NotFoundPage() {
 }
 
 export const metadata: Metadata = {
-  title: "Page not found",
+  title: "Error occurred",
 };
