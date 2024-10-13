@@ -8,7 +8,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"nshm.shop/notification/notification"
+	"nshm.shop/notification/processors"
 )
 
 func main() {
@@ -29,12 +29,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	err = startQueue[*notification.EmailPayload](channel, "email")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	err = startQueue[notification.WhatsappPayload](channel, "whatsapp")
+	err = startQueue[processors.EmailPayload](channel, "email")
 	if err != nil {
 		log.Panic(err)
 	}

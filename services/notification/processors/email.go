@@ -1,4 +1,4 @@
-package notification
+package processors
 
 import (
 	"context"
@@ -43,6 +43,5 @@ func (payload EmailPayload) Process() error {
 	}
 
 	log.Printf("sent email: %s\n", sent.Id)
-
 	return nil
 }
