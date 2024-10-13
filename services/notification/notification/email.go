@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/resend/resend-go/v2"
@@ -31,7 +32,10 @@ func (payload EmailPayload) Process() error {
 
 	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
-	sent, err := client.Emails.SendWithContext(context.TODO(), &resend.SendEmailRequest{
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	sent, err := client.Emails.SendWithContext(ctx, &resend.SendEmailRequest{
 		From:    "NUS Second-Hand Market <notifications@nshm.store>",
 		To:      []string{payload.To},
 		Subject: payload.Title,
