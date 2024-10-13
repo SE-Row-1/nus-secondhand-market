@@ -7,7 +7,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/resend/resend-go/v2"
-	"nshm.shop/notification/utils"
 )
 
 type EmailPayload struct {
@@ -30,7 +29,7 @@ func (payload EmailPayload) Process() error {
 		return nil
 	}
 
-	client := utils.NewResendClient()
+	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
 	sent, err := client.Emails.SendWithContext(context.TODO(), &resend.SendEmailRequest{
 		From:    "NUS Second-Hand Market <notifications@nshm.store>",
