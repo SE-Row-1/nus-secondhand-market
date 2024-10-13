@@ -29,7 +29,7 @@ func (payload EmailPayload) Process() error {
 
 	client := resend.NewClient(os.Getenv("RESEND_API_KEY"))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	sent, err := client.Emails.SendWithContext(ctx, &resend.SendEmailRequest{
@@ -38,7 +38,6 @@ func (payload EmailPayload) Process() error {
 		Subject: payload.Title,
 		Html:    payload.Content,
 	})
-
 	if err != nil {
 		return err
 	}
