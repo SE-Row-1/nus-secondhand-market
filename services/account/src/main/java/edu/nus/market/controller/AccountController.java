@@ -39,7 +39,7 @@ public class AccountController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.deleteAccountService(JwtTokenManager.decodeCookie(token));
+        return accountService.deleteAccountService(JwtTokenManager.decodeCookie(token).getId());
     }
 
     // Get Account Info
@@ -50,7 +50,7 @@ public class AccountController {
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.getAccountService(JwtTokenManager.decodeCookie(token));
+        return accountService.getAccountService(JwtTokenManager.decodeCookie(token).getId());
     }
 
 
@@ -90,7 +90,7 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token));
+        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token).getId());
     }
 
 
@@ -105,10 +105,14 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token));
+        return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token).getId());
     }
 
-
+    // get account info automatically
+    @GetMapping("/account/{id}")
+    public ResponseEntity<Object> getSpecificAccount(@PathVariable int id){
+        return accountService.getAccountService(id);
+    }
 
 
     @GetMapping("/healthz")
