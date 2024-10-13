@@ -65,6 +65,8 @@ services:
     environment:
       - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
       - API_BASE_URL=${API_BASE_URL}
+    env_file:
+      - .env
     volumes:
       - ./services/web:/app
       - /app/node_modules
@@ -80,6 +82,8 @@ services:
       - POSTGRES_URL=${POSTGRES_URL}
       - POSTGRES_USERNAME=${POSTGRES_USERNAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     depends_on:
       - postgres
       - rabbitmq
@@ -94,6 +98,8 @@ services:
     environment:
       - MONGO_URL=mongodb://${MONGO_WISHLIST_USER}:${MONGO_WISHLIST_PASSWORD}@mongo_wishlist:27017/${MONGO_WISHLIST_DB}
       - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    env_file:
+      - .env
     depends_on:
       - mongo_wishlist
       - rabbitmq
@@ -108,6 +114,8 @@ services:
     environment:
       - MONGO_URL=mongodb://${MONGO_ITEM_USER}:${MONGO_ITEM_PASSWORD}@mongo_item:27017/${MONGO_ITEM_DB}
       - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
+    env_file:
+      - .env
     depends_on:
       - mongo_item
       - rabbitmq
