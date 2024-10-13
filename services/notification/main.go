@@ -9,12 +9,9 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"nshm.shop/notification/notification"
-	"nshm.shop/notification/utils"
 )
 
 func main() {
-	utils.InitValidator()
-
 	connection, err := amqp.Dial(os.Getenv("RABBITMQ_URI"))
 	if err != nil {
 		log.Panic(err)
@@ -32,7 +29,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	err = startQueue[notification.EmailPayload](channel, "email")
+	err = startQueue[*notification.EmailPayload](channel, "email")
 	if err != nil {
 		log.Panic(err)
 	}
