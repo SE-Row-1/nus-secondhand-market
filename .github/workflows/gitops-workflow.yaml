@@ -3,7 +3,7 @@ name: GitOps Workflow
 on:
   push:
     branches:
-      - setup-infra
+      - main
     paths:
       - 'services/web/**'
       - 'services/account/**'
