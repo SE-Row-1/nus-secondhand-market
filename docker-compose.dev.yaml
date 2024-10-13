@@ -1,5 +1,3 @@
-version: '3.8'
-
 name: NSHM
 
 services:
@@ -25,7 +23,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${ITEM_SERVICE_MONGO_DB_PASS}
       - MONGO_INITDB_DATABASE=${ITEM_SERVICE_MONGO_DB}
     volumes:
-      - ./services/item/mongodb:/data/db
+      - ./services/item/database/dev:/docker-entrypoint-initdb.d
     restart: always
 
   mongo_wishlist:
@@ -37,7 +35,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${WISHLIST_SERVICE_MONGO_DB_PASS}
       - MONGO_INITDB_DATABASE=${WISHLIST_SERVICE_MONGO_DB}
     volumes:
-      - ./services/wishlist/mongodb:/data/db
+      - ./services/wishlist/database:/docker-entrypoint-initdb.d
     restart: always
 
   # Message Broker
@@ -84,6 +82,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     depends_on:
       - postgres
+      - rabbitmq
     restart: always
 
   wishlist:
