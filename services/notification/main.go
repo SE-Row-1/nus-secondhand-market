@@ -24,7 +24,7 @@ func main() {
 	}
 	defer channel.Close()
 
-	err = channel.ExchangeDeclare("notification", "topic", false, false, false, false, nil)
+	err = channel.ExchangeDeclare("notification", "topic", true, false, false, false, nil)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -41,7 +41,7 @@ func main() {
 }
 
 func startQueue[Payload interface{ Process() error }](ch *amqp.Channel, topic string) error {
-	queue, err := ch.QueueDeclare("notification."+topic, false, false, false, false, nil)
+	queue, err := ch.QueueDeclare("notification."+topic, true, false, false, false, nil)
 	if err != nil {
 		return fmt.Errorf("failed to declare queue '%s'", queue.Name)
 	}
