@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-playground/validator/v10"
 	"github.com/resend/resend-go/v2"
+	"nshm.shop/notification/utils"
 )
 
 type EmailPayload struct {
@@ -16,11 +16,8 @@ type EmailPayload struct {
 	Content string `json:"content" validate:"required"`
 }
 
-var validate *validator.Validate
-
 func (payload EmailPayload) Process() error {
-	validate = validator.New()
-	err := validate.Struct(payload)
+	err := utils.Validate(payload)
 	if err != nil {
 		return err
 	}
