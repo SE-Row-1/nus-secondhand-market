@@ -33,7 +33,7 @@ rabbitmq:
   queues:
     enabled: true
     list:
-      - name: whishlist
+      - name: wishlist
         durable: true
         arguments:
           x-message-ttl: 86400000
