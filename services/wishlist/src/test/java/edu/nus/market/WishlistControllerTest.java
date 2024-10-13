@@ -1,6 +1,7 @@
 package edu.nus.market;
 
 import edu.nus.market.controller.WishlistController;
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.pojo.*;
 import edu.nus.market.security.CookieManager;

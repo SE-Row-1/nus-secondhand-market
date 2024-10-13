@@ -1,6 +1,7 @@
-package edu.nus.market.pojo;
+package edu.nus.market.pojo.ReqEntity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.nus.market.pojo.Seller;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -2,6 +2,7 @@ package edu.nus.market;
 
 import edu.nus.market.dao.WishlistDao;
 import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.service.WishlistServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
