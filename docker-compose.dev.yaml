@@ -121,10 +121,11 @@ services:
     depends_on:
       - web
       - account
+      - item
+      - wishlist
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     restart: always
 
 volumes:
   rabbitmq_data:
-
