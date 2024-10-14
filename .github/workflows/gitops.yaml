@@ -23,7 +23,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          initial-fetch-depth: 1
+          base: ${{ github.ref }}
           filters: |
             web:
               - 'services/web/**'
@@ -40,11 +40,6 @@ jobs:
           echo "Account changed: ${{ steps.filter.outputs.account }}"
           echo "Item changed: ${{ steps.filter.outputs.item }}"
           echo "Wishlist changed: ${{ steps.filter.outputs.wishlist }}"
-
-      - name: List changed files
-        run: |
-          echo "Changed files:"
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }}
 
       - name: Set services matrix
         id: set-matrix
