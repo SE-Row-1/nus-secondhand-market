@@ -28,6 +28,7 @@ jobs:
         uses: dorny/paths-filter@v3
         with:
           ref: ${{ github.ref }}
+          initial-fetch-depth: 1
           filters: |
             web:
               - 'services/web/**'
