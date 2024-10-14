@@ -31,7 +31,7 @@ public class JwtTokenManager {
             .claim("preferredCurrency", resAccount.getPreferredCurrency())
             .claim("createdAt", resAccount.getCreatedAt())
             .claim("deletedAt", resAccount.getDeletedAt())
-            .setIssuedAt(new Date())//登录时间
+            .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .setExpiration(new Date(new Date().getTime() + expirationTime))
             .compact();

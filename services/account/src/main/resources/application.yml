@@ -22,3 +22,9 @@ mybatis:
 
 jwt:
   secretKey: ${JWT_SECRET_KEY}
+
+logging:
+  level:
+    org.springframework.jdbc.core: DEBUG
+    org.hibernate.SQL: DEBUG
+

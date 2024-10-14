@@ -3,6 +3,7 @@ package edu.nus.market.controller;
 import edu.nus.market.dao.AccountDao;
 
 import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
@@ -53,7 +54,6 @@ public class AccountController {
         return accountService.getAccountService(JwtTokenManager.decodeCookie(token).getId());
     }
 
-
     // Login and Logout
     @PostMapping("/token")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
@@ -69,12 +69,12 @@ public class AccountController {
 
     //Forgot password and reset without Login
     @PatchMapping("/reset-password")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
+    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgetPasswordReq forgotPasswordReq, BindingResult bindingResult){
         //forget password and reset
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.forgotPasswordService(forgotPasswordReq);
+        return accountService.forgetPasswordService(forgotPasswordReq);
     }
 
 
