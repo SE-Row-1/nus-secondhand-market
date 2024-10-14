@@ -1,6 +1,6 @@
 package edu.nus.market.converter;
 
-import edu.nus.market.pojo.AddLikeReq;
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.SingleLike;
 import edu.nus.market.pojo.PackLike;
 import edu.nus.market.pojo.Like;
