@@ -1,4 +1,6 @@
 #!/bin/sh
+echo "Pre-commit hook triggered"
+
 echo "[account pre-commit] Running tests for account module..."
 ./mvnw clean test
 
