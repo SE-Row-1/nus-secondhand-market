@@ -1,0 +1,11 @@
+#!/bin/sh
+echo "[account pre-commit] Running tests for account module..."
+./mvnw clean test
+
+if [ $? -ne 0 ]; then
+  echo "[account pre-commit] Tests failed. Commit aborted."
+  exit 1
+fi
+
+echo "[account pre-commit] All tests passed. Proceeding with commit."
+exit 0
