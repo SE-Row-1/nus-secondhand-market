@@ -1,36 +1,65 @@
 package edu.nus.market;
 
-import edu.nus.market.pojo.ErrorMsg;
-import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.RegisterReq;
+import edu.nus.market.dao.AccountDao;
+import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.ReqBody.RegisterReq;
+import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RegisterServiceTest {
+
     @Resource
     AccountService accountService;
 
-    @Test
-    void registerSuccessTest(){
-        RegisterReq registerReq = new RegisterReq();
-        registerReq.setEmail("e1351895@u.nus.edu");
-        registerReq.setPassword("12345678");
-        assert (accountService.registerService(registerReq).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.CREATED.value())));
-        // we can't hard code the information inside
+    @Resource
+    AccountDao accountDao;
+
+    @BeforeAll
+    void setup(){
+        accountDao.cleanTable();
     }
 
     @Test
+    @Order(1)
+    void registerSuccessTest(){
+        RegisterReq registerReq = createRegisterReq();
+
+        ResponseEntity<Object> registerResponse = accountService.registerService(registerReq);
+
+        assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
+        assertNotNull(accountDao.getAccountByEmail("e1351826@u.nus.edu"));
+        assertTrue(registerResponse.getBody() instanceof ResAccount);
+    }
+
+    @Test
+    @Order(2)
     void registerAccountConflictTest(){
+        RegisterReq registerReq = createRegisterReq();
+
+        ResponseEntity<Object> conflictResponse = accountService.registerService(registerReq);
+        assertEquals(HttpStatus.CONFLICT, conflictResponse.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg), conflictResponse.getBody());
+    }
+
+    @AfterAll
+    void cleanup(){
+        accountDao.deleteAccountByEmail("e1351826@u.nus.edu");
+    }
+
+    private RegisterReq createRegisterReq() {
         RegisterReq registerReq = new RegisterReq();
-        registerReq.setEmail("e1351886@u.nus.edu");
+        registerReq.setEmail("e1351826@u.nus.edu");
         registerReq.setPassword("12345678");
-        assert (accountService.registerService(registerReq).equals(ResponseEntity.status(HttpStatus.CONFLICT).
-            body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg))));
+        return registerReq;
     }
 }
