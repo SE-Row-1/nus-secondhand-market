@@ -1,9 +1,11 @@
-variable "vpc_security_group_id" {
-  description = "The VPC Security Group ID"
+variable "vpc_id" {
   type        = string
 }
 
-variable "subnet_id" {
-  description = "The subnet ID for the EC2 instance"
+variable "public_subnet_ids" {
+  type        = list(string)
+}
+
+variable "cluster_name" {
   type        = string
 }

@@ -1,4 +1,4 @@
-name: Provisioning Infrastructure
+name: Provision Infrastructure
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       provision:
+        description: 'Would you like to provision infra resources?'
         required: true
-        default: 'false'
         type: boolean
 
 jobs:
-  deploy:
-    if: ${{ github.event.inputs.provision == 'true' }}
+  provision:
+    if: ${{ github.event.inputs.provision }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -42,11 +42,6 @@ jobs:
       - name: Get Terraform Outputs and Save Artifact
         run: |
           cd terraform/
-          PUBLIC_IP=$(terraform output -raw public_ip)
-          echo $PUBLIC_IP > ec2_public_ip.txt
-
-      - name: Upload Outputs as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-outputs
-          path: terraform/*.txt
+          RDS_PASSWORD=$(terraform output -raw db_instance_password)
+          echo $RDS_PASSWORD > rds_password.txt
+          aws s3 cp rds_password.txt s3://nus-backend-terraform

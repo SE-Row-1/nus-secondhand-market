@@ -1,16 +1,42 @@
+#!/bin/bash
+
 DOCKER_COMPOSE_FILE=docker-compose.dev.yaml
+ENVS_DIR="./envs"
+PASSPHRASE_FILE="nshm.passphrase"
 
-if [[ ! -f .env ]] && [[ -f .env.gpg ]]; then
-  if [[ -z $(cat nshm.passphrase) ]]; then
-    aws s3 cp s3://nus-backend-terraform/nshm.passphrase .
+# Check if passphrase file exists, if not, download it from S3
+if [[ ! -f "$PASSPHRASE_FILE" ]]; then
+  echo "Passphrase file not found. Downloading from S3..."
+  aws s3 cp s3://nus-backend-terraform/nshm.passphrase .
+  if [[ $? -ne 0 ]]; then
+    echo "Failed to download passphrase file. Exiting."
+    exit 1
   fi
-  gpg --batch --yes --decrypt --passphrase-file=nshm.passphrase --output .env .env.gpg
-  echo ".env file created successfully"
 fi
 
-if [ "$(docker ps -q -f name=account)" ] || [ "$(docker ps -q -f name=web)" ]; then
+# Decrypt each .env.gpg file inside the envs directory
+for env_file_gpg in "$ENVS_DIR"/*.env.gpg; do
+  env_file="${env_file_gpg%.gpg}" # Remove the .gpg extension to get the original file name
+  if [[ -f "$env_file_gpg" ]] && [[ ! -f "$env_file" ]]; then
+    echo "Decrypting $env_file_gpg..."
+    gpg --batch --yes --decrypt --passphrase-file="$PASSPHRASE_FILE" --output "$env_file" "$env_file_gpg"
+    if [[ $? -eq 0 ]]; then
+      echo "$env_file decrypted successfully."
+    else
+      echo "Failed to decrypt $env_file_gpg."
+      exit 1
+    fi
+  fi
+done
+
+# Check if the rabbitmq container is running, stop all containers if necessary
+if [ "$(docker ps -q -f name=rabbitmq)" ]; then
   echo "Stopping running containers..."
-  docker compose -f $DOCKER_COMPOSE_FILE down
+  docker compose -f "$DOCKER_COMPOSE_FILE" down
 fi
 
-docker compose -f $DOCKER_COMPOSE_FILE up --build -d
+# Start the Docker Compose services
+echo "Starting Docker Compose services..."
+docker compose -f "$DOCKER_COMPOSE_FILE" up --build -d
+
+echo "Docker Compose services started."

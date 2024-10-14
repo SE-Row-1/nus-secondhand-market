@@ -1,35 +1,96 @@
-resource "aws_instance" "nus-secondhand-market" {
-  ami           = "ami-01811d4912b4ccb26"
-  instance_type = "t3.micro"
-  key_name     = "nus-secondhand-market"
-  vpc_security_group_ids = [var.vpc_security_group_id]
-  subnet_id     = var.subnet_id
+resource "aws_iam_role" "nshm-bastion-role" {
+  name = "nshm-bastion-role"
 
-   user_data = <<-EOF
-   #!/bin/bash
-   # Install docker
-     sudo apt-get update
-     sudo apt-get install -y cloud-utils apt-transport-https ca-certificates curl software-properties-common
-     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-     sudo add-apt-repository \
-          "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-          $(lsb_release -cs) \
-          stable"
-     sudo apt-get update
-     sudo apt-get install -y docker-ce
-     sudo usermod -aG docker ubuntu
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Action" : "sts:AssumeRole",
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
 
-    # Install docker-compose
-     sudo curl -L https://github.com/docker/compose/releases/download/2.29.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-     sudo chmod +x /usr/local/bin/docker-compose
-                  EOF
+resource "aws_iam_role_policy" "nshm-bastion-role_policy" {
+  name   = "nshm-bastion-role_policy"
+  role   = aws_iam_role.nshm-bastion-role.id
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:*",
+          "eks:*",
+          "ec2:*",
+          "iam:PassRole"  # Required for the ALB controller
+        ],
+        "Resource": "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_instance_profile" "ec2_instance_profile" {
+  name = "ec2-instance-profile"
+  role = aws_iam_role.nshm-bastion-role.name
+}
+
+resource "aws_security_group" "nshm_bastion_sg" {
+  name        = "nshm-bastion-sg"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # For ALB traffic
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   tags = {
-    Name = "nus-secondhand-market-ec2"
+    Name = "nshm-bastion-sg"
   }
 }
 
+resource "aws_instance" "nshm_bastion" {
+  ami             = "ami-01811d4912b4ccb26"
+  instance_type   = "t3.micro"
+  key_name        = "nus-secondhand-market"
+  subnet_id       = var.public_subnet_ids[0]
 
-output "public_ip" {
-  value = aws_instance.nus-secondhand-market.public_ip
+  vpc_security_group_ids = [aws_security_group.nshm_bastion_sg.id]
+  iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
+
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt-get update
+    sudo apt-get install -y curl unzip gnupg
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install
+
+    aws s3 cp s3://nus-backend-terraform/setup/ec2-installation.sh .
+    bash ec2-installation.sh
+    EOF
+
+  tags = {
+    Name = "nshm-bastion"
+  }
 }
+
+output "bastion_host_public_ip" {
+  value = aws_instance.nshm_bastion.public_ip
+}
+
