@@ -3,6 +3,7 @@ name: GitOps
 on:
   push:
     branches:
+      - main
       - setup-infra
 
 permissions:
@@ -22,7 +23,6 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          base: setup-infra
           initial-fetch-depth: 1
           filters: |
             web:
