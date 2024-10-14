@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.ReqBody;
+package edu.nus.market.pojo.ReqEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginReq {
+public class ForgotPasswordReq {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     String email;
 
     @NotBlank
     @Size(min = 8, max = 20)
-    String password;
+    String newPassword;
 }

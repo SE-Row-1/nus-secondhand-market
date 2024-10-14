@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.ReqBody;
+package edu.nus.market.pojo.ReqEntity;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
