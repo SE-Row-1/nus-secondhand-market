@@ -59,7 +59,8 @@ jobs:
           fi
 
           if [ ${#SERVICES[@]} -eq 0 ]; then
-            echo "No services have changed. Exiting..."
+            echo "No services have changed. Setting matrix to an empty array."
+            echo "matrix={\"include\":[]}" >> $GITHUB_OUTPUT
             exit 0 # Exit if no services have changed
           fi
 
