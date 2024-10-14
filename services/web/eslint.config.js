@@ -10,7 +10,7 @@ const config = [
     compat.extends("next/core-web-vitals", "next/typescript"),
   ),
   prettier,
-  { ignores: [".next", "coverage"] },
+  { ignores: [".next/", "coverage/"] },
 ];
 
 export default config;
