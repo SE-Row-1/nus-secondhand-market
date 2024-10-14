@@ -8,4 +8,6 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
+ENV PORT=8083
+
 CMD ["bun", "run", "dev"]

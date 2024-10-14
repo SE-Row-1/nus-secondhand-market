@@ -3,6 +3,8 @@ package edu.nus.market.controller;
 
 
 import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
+
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.WishlistService;
 import jakarta.annotation.Resource;
@@ -71,5 +73,35 @@ public class WishlistController {
 
         req.setUserId(userId);
         return wishlistService.addLikeService(req);
+    }
+
+    @DeleteMapping("/{user_id}/items/{item_id}")
+    public ResponseEntity<Object> deleteLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
+        // account verification
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+
+        // check userId
+        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        // check req.userId
+
+        return wishlistService.deleteLikeService(userId, itemId);
+    }
+
+    @GetMapping("/items/{item_id}")
+    public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
+        // account verification
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+
+        return wishlistService.getItemLikeInfo(itemId);
     }
 }

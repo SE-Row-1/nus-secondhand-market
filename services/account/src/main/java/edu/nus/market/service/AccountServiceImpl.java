@@ -40,7 +40,6 @@ public class AccountServiceImpl implements AccountService{
      * @return ResponseEntity
      * @author jyf
      */
-
     @Override
     public ResponseEntity<Object> getAccountService(int id) {
         Account account = accountDao.getAccountById(id);
