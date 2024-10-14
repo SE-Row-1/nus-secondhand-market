@@ -55,6 +55,11 @@ jobs:
             SERVICES+=('{"service":"wishlist"}')
           fi
 
+          if [ ${#SERVICES[@]} -eq 0 ]; then
+            echo "No services have changed. Exiting..."
+            exit 0 # Exit if no services have changed
+          fi
+
           MATRIX_JSON=$(IFS=,; echo "${SERVICES[*]}")
           echo "matrix={\"include\":[${MATRIX_JSON}]}" >> $GITHUB_OUTPUT
 
