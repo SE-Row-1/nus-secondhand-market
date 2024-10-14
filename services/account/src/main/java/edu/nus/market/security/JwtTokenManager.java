@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 
@@ -47,7 +48,15 @@ public class JwtTokenManager {
 
     public static boolean validateCookie(String Cookie) {
         // extract the access token from the cookie and validate it using validateToken method
-        String token = Cookie.split("; ")[0].split("=")[1];
+        String token = Arrays.stream(Cookie.split("; "))
+            .filter(part -> part.startsWith("access_token="))
+            .map(part -> part.split("=")[1])
+            .findFirst()
+            .orElse(null);
+
+        if (token == null) {
+            return false;
+        }
 
         return validateToken(token);
     }
