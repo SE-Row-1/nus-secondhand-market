@@ -1,9 +1,8 @@
-name: GitOps Workflow
+name: GitOps
 
 on:
   push:
     branches:
-      - main
       - setup-infra
     paths:
       - 'services/web/**'
