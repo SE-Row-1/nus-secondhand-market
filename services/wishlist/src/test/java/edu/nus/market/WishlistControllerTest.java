@@ -17,10 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,7 +126,6 @@ class WishlistControllerTest {
         req.setItemName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
-        req.setDiscount(0.0);
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
@@ -140,5 +136,54 @@ class WishlistControllerTest {
         ResponseEntity<Object> response = wishlistController.addLike(1, "item001", req, bindingResult, cookie);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void testDeleteLike_Success() {
+        // Arrange
+        when(wishlistService.deleteLikeService(anyInt(), anyString())).thenReturn(ResponseEntity.ok().build());
+
+        // Act
+        ResponseEntity<Object> response = wishlistController.deleteLike(1, "item001", cookie);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void testDeleteLike_Unauthorized() {
+        // Act
+        ResponseEntity<Object> response = wishlistController.deleteLike(1, "item001", "");
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg), response.getBody());
+    }
+
+    @Test
+    void testGetItemLikeInfo_Success() {
+        // Arrange
+        Map<String, Object> mockResponse = new HashMap<>();
+        mockResponse.put("count", 1);
+        mockResponse.put("favoriteDate", new Date());
+
+        when(wishlistService.getItemLikeInfo(anyString())).thenReturn(ResponseEntity.ok(mockResponse));
+
+        // Act
+        ResponseEntity<Object> response = wishlistController.getItemLikeInfo("item001", cookie);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockResponse, response.getBody());
+    }
+
+    @Test
+    void testGetItemLikeInfo_Unauthorized() {
+        // Act
+        ResponseEntity<Object> response = wishlistController.getItemLikeInfo("item001", "");
+
+        // Assert
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg), response.getBody());
     }
 }

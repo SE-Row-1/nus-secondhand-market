@@ -3,6 +3,7 @@ package edu.nus.market;
 import edu.nus.market.dao.WishlistDao;
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
+import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
 import edu.nus.market.service.WishlistServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,12 +13,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class WishlistServiceImplTest {
@@ -28,81 +29,114 @@ class WishlistServiceImplTest {
     @InjectMocks
     private WishlistServiceImpl wishlistService;
 
+    private Like mockLike;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        prepareTestData();
+    }
+
+    private void prepareTestData() {
+        mockLike = new SingleLike();
+        mockLike.setUserId(1);
+        mockLike.setItemId("item001");
+        mockLike.setItemName("iPhone 12");
+        mockLike.setItemStatus(1);
+        mockLike.setFavoriteDate(new Date());
     }
 
     @Test
     void testGetWishlistService_Success() {
-        // Arrange
-        List<Like> mockLikes = List.of(new SingleLike());
+        List<Like> mockLikes = List.of(mockLike);
         when(wishlistDao.findByUserId(anyInt())).thenReturn(mockLikes);
 
-        // Act
         ResponseEntity<Object> response = wishlistService.getWishlistService(1);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockLikes, response.getBody());
     }
 
     @Test
     void testGetWishlistService_EmptyList() {
-        // Arrange
         when(wishlistDao.findByUserId(anyInt())).thenReturn(List.of());
 
-        // Act
         ResponseEntity<Object> response = wishlistService.getWishlistService(1);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0, ((List<?>) response.getBody()).size());
     }
 
     @Test
     void testAddLikeService_Success() {
-        // Arrange
         AddLikeReq req = new AddLikeReq();
-        req.setItemStatus(1);
+        req.setUserId(1);
         req.setItemId("item001");
-        req.setItemName("iPhone 13");
-        req.setPrice(999.99);
-        req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
-        req.setDiscount(0.0);
+        req.setPrice(99.0);
+        req.setItemName("iPhone 12");
+        req.setItemStatus(1);
+        req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
+        when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.empty());
 
-        when(wishlistDao.findByUserIdAndItemId(anyInt(), any())).thenReturn(Optional.empty());
-
-        // Act
         ResponseEntity<Object> response = wishlistService.addLikeService(req);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(wishlistDao, times(1)).save(any(Like.class));
     }
 
     @Test
     void testAddLikeService_Conflict() {
-        // Arrange
         AddLikeReq req = new AddLikeReq();
         req.setUserId(1);
         req.setItemId("item001");
+        req.setPrice(99.0);
+        req.setItemName("iPhone 12");
+        req.setItemStatus(1);
+        req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
+        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setType("SINGLE");
 
-        Like existingLike = new SingleLike();
-        when(wishlistDao.findByUserIdAndItemId(anyInt(), any())).thenReturn(Optional.of(existingLike));
+        when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.of(mockLike));
 
-        // Act
         ResponseEntity<Object> response = wishlistService.addLikeService(req);
 
-        // Assert
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals(
-            new ErrorMsg(ErrorMsgEnum.WISHLIST_CONFLICT.ErrorMsg),
-            response.getBody()
-        );
+        assertEquals(new ErrorMsg(ErrorMsgEnum.WISHLIST_CONFLICT.ErrorMsg), response.getBody());
         verify(wishlistDao, never()).save(any(Like.class));
+    }
+
+    @Test
+    void testDeleteLikeService_Success() {
+        when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.of(mockLike));
+
+        ResponseEntity<Object> response = wishlistService.deleteLikeService(1, "item001");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(wishlistDao, times(1)).delete(mockLike);
+    }
+
+    @Test
+    void testDeleteLikeService_NotFound() {
+        when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.empty());
+
+        ResponseEntity<Object> response = wishlistService.deleteLikeService(1, "item001");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.LIKE_NOT_FOUND.ErrorMsg), response.getBody());
+        verify(wishlistDao, never()).delete(any(Like.class));
+    }
+
+    @Test
+    void testGetItemLikeInfo_Success() {
+        when(wishlistDao.countByItemId(anyString())).thenReturn(1);
+        when(wishlistDao.findTopFavoriteDateByItemId(anyString())).thenReturn(new Date());
+
+        ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(ResItemLikeInfo.class, response.getBody().getClass());
     }
 }
