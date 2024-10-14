@@ -41,14 +41,14 @@ jobs:
       - name: Check if any services have changes
         id: check
         run: |
-         if [[ "${{ needs.changes.outputs.web }}" != 'true' &&
-             "${{ needs.changes.outputs.account }}" != 'true' &&
-             "${{ needs.changes.outputs.item }}" != 'true' &&
-             "${{ needs.changes.outputs.wishlist }}" != 'true' ]]; then
-           echo "No changes detected in services. Exiting workflow."
-           exit 0
+         services_output='${{ steps.filter.outputs.changes }}'
+         if [[ "$services_output" == "" ]]; then
+           echo "Output is an empty string."
+         elif [[ "$services_output" == "[]" ]]; then
+           echo "Output is an empty array."
+         else
+           echo "Output is non-empty: $services_output"
          fi
-
 
   build:
     name: Build and push Docker image
