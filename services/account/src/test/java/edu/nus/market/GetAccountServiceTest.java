@@ -28,14 +28,13 @@ public class GetAccountServiceTest {
 
     @BeforeAll
     void setup() {
-        accountDao.cleanTable();  // 确保每次测试前清空数据库
+        accountDao.cleanTable();
 
         if (accountDao.getAccountByEmail("e1351826@u.nus.edu") == null) {
             RegisterReq registerReq = new RegisterReq();
             registerReq.setEmail("e1351826@u.nus.edu");
             registerReq.setPassword("12345678");
 
-            // 注册并检查返回体是否为 ResAccount
             ResponseEntity<Object> responseEntity = accountService.registerService(registerReq);
             assertNotNull(responseEntity.getBody());
             assertInstanceOf(ResAccount.class, responseEntity.getBody());
@@ -77,7 +76,7 @@ public class GetAccountServiceTest {
     @AfterAll
     void cleanUp() {
         if (userId != 0) {
-            accountDao.hardDeleteAccount(userId);  // 清理账户
+            accountDao.hardDeleteAccount(userId);
         }
     }
 }
