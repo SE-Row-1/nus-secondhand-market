@@ -27,8 +27,9 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          ref: ${{ github.ref }}
+          ref: setup-infra
           initial-fetch-depth: 1
+          predicate-quantifier: 'every'
           filters: |
             web:
               - 'services/web/**'
