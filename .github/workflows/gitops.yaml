@@ -55,7 +55,9 @@ jobs:
             SERVICES+=('{"service":"wishlist"}')
           fi
 
-          echo "matrix={\"include\":[${SERVICES[*]}]}" >> $GITHUB_OUTPUT
+          MATRIX_JSON=$(IFS=,; echo "${SERVICES[*]}")
+          echo "matrix={\"include\":[${MATRIX_JSON}]}" >> $GITHUB_OUTPUT
+
 
   build-services:
     runs-on: ubuntu-latest
