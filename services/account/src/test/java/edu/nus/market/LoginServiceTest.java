@@ -49,6 +49,7 @@ public class LoginServiceTest {
         ResAccount resAccount = (ResAccount) response.getBody();
         assertNotNull(resAccount);
         assertEquals(EMAIL, resAccount.getEmail());
+        assertNotNull(resAccount.getCreatedAt());
     }
 
     @Test
