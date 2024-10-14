@@ -4,15 +4,18 @@ on:
   push:
     branches:
       - main
+      - setup-infra
+    paths:
+      - services/**
 
 permissions:
   contents: write
 
 jobs:
-  define-matrix:
+  changes:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      services: ${{ steps.filter.outputs.changes }}
 
     steps:
       - name: Check out code
@@ -33,43 +36,13 @@ jobs:
             wishlist:
               - 'services/wishlist/**'
 
-      - name: Log filter outputs
-        run: |
-          echo "Web changed: ${{ steps.filter.outputs.web }}"
-          echo "Account changed: ${{ steps.filter.outputs.account }}"
-          echo "Item changed: ${{ steps.filter.outputs.item }}"
-          echo "Wishlist changed: ${{ steps.filter.outputs.wishlist }}"
-
-      - name: Set services matrix
-        id: set-matrix
-        run: |
-          SERVICES=()
-          if [[ "${{ steps.filter.outputs.web }}" == "true" ]]; then
-            SERVICES+=('{"service":"web"}')
-          fi
-          if [[ "${{ steps.filter.outputs.account }}" == "true" ]]; then
-            SERVICES+=('{"service":"account"}')
-          fi
-          if [[ "${{ steps.filter.outputs.item }}" == "true" ]]; then
-            SERVICES+=('{"service":"item"}')
-          fi
-          if [[ "${{ steps.filter.outputs.wishlist }}" == "true" ]]; then
-            SERVICES+=('{"service":"wishlist"}')
-          fi
-
-          if [ ${#SERVICES[@]} -eq 0 ]; then
-            echo "No services have changed. Exiting..."
-            exit 0 # Exit if no services have changed
-          fi
-
-          MATRIX_JSON=$(IFS=,; echo "${SERVICES[*]}")
-          echo "matrix={\"include\":[${MATRIX_JSON}]}" >> $GITHUB_OUTPUT
-
-  build-services:
+  build:
+    name: Build and push Docker image
     runs-on: ubuntu-latest
-    needs: define-matrix
+    needs: changes
     strategy:
-      matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
+      matrix:
+        service: ${{ fromJson(needs.changes.outputs.services) }}
 
     steps:
       - name: Check out code
@@ -95,9 +68,10 @@ jobs:
   update:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
-    needs: define-matrix
+    needs: changes
     strategy:
-      matrix: ${{ fromJson(needs.define-matrix.outputs.matrix) }}
+      matrix:
+        service: ${{ fromJson(needs.changes.outputs.services) }}
 
     steps:
       - name: Check out code
@@ -111,10 +85,8 @@ jobs:
 
       - name: Commit the changes
         run: |
-          if ! git diff --quiet; then
-            git commit -am "Updated image tags for services: ${{ matrix.service }}"
-            git push
-          else
-            echo "No changes to commit."
-          fi
-
+          git config --global user.email "nshm@u.nus.edu"
+          git config --global user.name "nshm"
+          git commit -am "Updated image tags for services: ${{ matrix.service }}"
+          git push
+        continue-on-error: true
