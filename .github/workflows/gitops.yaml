@@ -35,10 +35,11 @@ jobs:
               - 'services/wishlist/**'
 
   build:
+    name: Build and push Docker image
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ needs.changes.outputs.services != '' }}
     strategy:
+      fail-fast: true
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
 
@@ -67,7 +68,6 @@ jobs:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
     needs: changes
-    if: ${{ needs.changes.outputs.services != '' }}
     strategy:
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
