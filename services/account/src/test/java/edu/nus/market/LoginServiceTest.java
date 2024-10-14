@@ -74,7 +74,6 @@ public class LoginServiceTest {
         accountDao.deleteAccountByEmail(EMAIL);
     }
 
-    // 辅助方法来创建 LoginReq，减少重复代码
     private LoginReq createLoginReq(String email, String password) {
         LoginReq loginReq = new LoginReq();
         loginReq.setEmail(email);
