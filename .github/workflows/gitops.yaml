@@ -1,14 +1,9 @@
-name: GitOps Workflow
+name: GitOps
 
 on:
   push:
     branches:
       - main
-    paths:
-      - 'services/web/**'
-      - 'services/account/**'
-      - 'services/item/**'
-      - 'services/wishlist/**'
 
 permissions:
   contents: write
@@ -27,6 +22,7 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
+          base: ${{ github.ref }}
           filters: |
             web:
               - 'services/web/**'
@@ -36,6 +32,13 @@ jobs:
               - 'services/item/**'
             wishlist:
               - 'services/wishlist/**'
+
+      - name: Log filter outputs
+        run: |
+          echo "Web changed: ${{ steps.filter.outputs.web }}"
+          echo "Account changed: ${{ steps.filter.outputs.account }}"
+          echo "Item changed: ${{ steps.filter.outputs.item }}"
+          echo "Wishlist changed: ${{ steps.filter.outputs.wishlist }}"
 
       - name: Set services matrix
         id: set-matrix
@@ -54,7 +57,13 @@ jobs:
             SERVICES+=('{"service":"wishlist"}')
           fi
 
-          echo "matrix={\"include\":[${SERVICES[*]}]}" >> $GITHUB_OUTPUT
+          if [ ${#SERVICES[@]} -eq 0 ]; then
+            echo "No services have changed. Exiting..."
+            exit 0 # Exit if no services have changed
+          fi
+
+          MATRIX_JSON=$(IFS=,; echo "${SERVICES[*]}")
+          echo "matrix={\"include\":[${MATRIX_JSON}]}" >> $GITHUB_OUTPUT
 
   build-services:
     runs-on: ubuntu-latest
@@ -102,5 +111,10 @@ jobs:
 
       - name: Commit the changes
         run: |
-          git diff --quiet || git commit -am "Updated image tags for services: ${{ matrix.service }}"
-          git push
+          if ! git diff --quiet; then
+            git commit -am "Updated image tags for services: ${{ matrix.service }}"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+
