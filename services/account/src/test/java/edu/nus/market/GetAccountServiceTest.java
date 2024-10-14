@@ -3,7 +3,7 @@ package edu.nus.market;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.ReqBody.RegisterReq;
+import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;

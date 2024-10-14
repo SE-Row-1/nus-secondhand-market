@@ -2,7 +2,7 @@ package edu.nus.market;
 
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
-import edu.nus.market.pojo.ReqBody.RegisterReq;
+import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
@@ -24,6 +24,10 @@ public class RegisterServiceTest {
     @Resource
     AccountDao accountDao;
 
+    private static final String EMAIL = "e1351827@u.nus.edu";
+    private static final String PASSWORD = "12345678";
+
+
     @BeforeAll
     void setup(){
         accountDao.cleanTable();
@@ -37,7 +41,7 @@ public class RegisterServiceTest {
         ResponseEntity<Object> registerResponse = accountService.registerService(registerReq);
 
         assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
-        assertNotNull(accountDao.getAccountByEmail("e1351826@u.nus.edu"));
+        assertNotNull(accountDao.getAccountByEmail(EMAIL));
         assertInstanceOf (ResAccount.class, registerResponse.getBody());
     }
 
@@ -53,13 +57,13 @@ public class RegisterServiceTest {
 
     @AfterAll
     void cleanup(){
-        accountDao.deleteAccountByEmail("e1351826@u.nus.edu");
+        accountDao.deleteAccountByEmail(EMAIL);
     }
 
     private RegisterReq createRegisterReq() {
         RegisterReq registerReq = new RegisterReq();
-        registerReq.setEmail("e1351826@u.nus.edu");
-        registerReq.setPassword("12345678");
+        registerReq.setEmail(EMAIL);
+        registerReq.setPassword(PASSWORD);
         return registerReq;
     }
 }
