@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
@@ -50,7 +50,7 @@ export function LogInForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await clientRequester.post<Account>("/auth/token", {
+      return await clientRequester.post<DetailedAccount>("/auth/token", {
         email,
         password,
       });

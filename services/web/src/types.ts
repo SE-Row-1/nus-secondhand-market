@@ -4,13 +4,13 @@ export type Department = {
   name: string;
 };
 
-export type AccountPreview = {
+export type SimplifiedAccount = {
   id: number;
   nickname: string | null;
   avatar_url: string | null;
 };
 
-export type Account = AccountPreview & {
+export type DetailedAccount = SimplifiedAccount & {
   email: string;
   department: Department | null;
   phone_code: string | null;
@@ -31,32 +31,36 @@ export enum ItemStatus {
   SOLD,
 }
 
-export type SingleItem<A extends AccountPreview | Account = AccountPreview> = {
+export type SingleItem<
+  A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
+> = {
   id: string;
   type: ItemType.SINGLE;
-  seller: A;
   name: string;
   description: string;
   price: number;
   photo_urls: string[];
   status: ItemStatus;
+  seller: A;
   created_at: string;
   deleted_at: string | null;
 };
 
-export type ItemPack<A extends AccountPreview | Account = AccountPreview> = {
+export type ItemPack<
+  A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
+> = {
   id: string;
   type: ItemType.PACK;
-  seller: A;
   name: string;
   description: string;
   discount: number;
-  status: ItemStatus;
   children: Item[];
+  status: ItemStatus;
+  seller: A;
   created_at: string;
   deleted_at: string | null;
 };
 
-export type Item<A extends AccountPreview | Account = AccountPreview> =
-  | SingleItem<A>
-  | ItemPack<A>;
+export type Item<
+  A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
+> = SingleItem<A> | ItemPack<A>;

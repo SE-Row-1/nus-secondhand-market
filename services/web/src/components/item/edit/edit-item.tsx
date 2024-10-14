@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import type { Account, SingleItem } from "@/types";
+import type { DetailedAccount, SingleItem } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon, UndoIcon } from "lucide-react";
@@ -52,7 +52,7 @@ const formSchema = v.object({
 
 type Props = {
   id: string;
-  initialItem: SingleItem<Account>;
+  initialItem: SingleItem<DetailedAccount>;
 };
 
 type Photo = { url: string; file?: File };
@@ -61,7 +61,9 @@ export function EditItem({ id, initialItem }: Props) {
   const { data: item } = useQuery({
     queryKey: ["items", id],
     queryFn: async () => {
-      return await clientRequester.get<SingleItem<Account>>(`/items/${id}`);
+      return await clientRequester.get<SingleItem<DetailedAccount>>(
+        `/items/${id}`,
+      );
     },
     initialData: initialItem,
   });

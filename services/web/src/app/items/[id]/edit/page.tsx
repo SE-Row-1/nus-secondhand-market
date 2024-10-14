@@ -1,6 +1,6 @@
 import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
-import type { Account, SingleItem } from "@/types";
+import type { DetailedAccount, SingleItem } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -16,8 +16,8 @@ type Props = {
 export default async function Page({ params: { id } }: Props) {
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
     await Promise.all([
-      serverRequester.get<SingleItem<Account>>(`/items/${id}`),
-      serverRequester.get<Account>("/auth/me"),
+      serverRequester.get<SingleItem<DetailedAccount>>(`/items/${id}`),
+      serverRequester.get<DetailedAccount>("/auth/me"),
     ]);
 
   if (itemError && itemError.status === 404) {

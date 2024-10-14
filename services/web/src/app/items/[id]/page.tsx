@@ -1,5 +1,5 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
-import type { Account, SingleItem } from "@/types";
+import type { DetailedAccount, SingleItem } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +14,10 @@ type Props = {
 
 export default async function Page({ params: { id } }: Props) {
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([getItem(id), serverRequester.get<Account>("/auth/me")]);
+    await Promise.all([
+      getItem(id),
+      serverRequester.get<DetailedAccount>("/auth/me"),
+    ]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -51,5 +54,5 @@ export async function generateMetadata({ params: { id } }: Props) {
 }
 
 const getItem = cache(async (id: string) => {
-  return await serverRequester.get<SingleItem<Account>>(`/items/${id}`);
+  return await serverRequester.get<SingleItem<DetailedAccount>>(`/items/${id}`);
 });

@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { AccountPreview } from "@/types";
+import type { SimplifiedAccount } from "@/types";
 
 type Props = {
-  seller: AccountPreview;
+  seller: SimplifiedAccount;
 };
 
 export function ItemSeller({ seller }: Props) {

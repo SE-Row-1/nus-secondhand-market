@@ -1,6 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { Account, SingleItem } from "@/types";
+import type { DetailedAccount, SingleItem } from "@/types";
 import { fromNow } from "@/utils/datetime";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
@@ -10,8 +10,8 @@ import { DeleteItemDialog } from "./delete-item-dialog";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
-  item: SingleItem<Account>;
-  me: Account | null;
+  item: SingleItem<DetailedAccount>;
+  me: DetailedAccount | null;
 };
 
 export function SingleItemDetailsCard({ item, me }: Props) {
