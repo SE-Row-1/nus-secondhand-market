@@ -89,3 +89,4 @@ jobs:
           git config --global user.name "nshm"
           git commit -am "Updated image tags for services: ${{ matrix.service }}"
           git push
+        continue-on-error: true
