@@ -8,7 +8,8 @@ public enum ErrorMsgEnum {
     UNAUTHORIZED_ACCESS("Token validation failed."),
     NOT_LOGGED_IN("Please log in first."),
     WISHLIST_CONFLICT("Already added to wishlist."),
-    INVALID_DATA("Invalid Data.")
+    INVALID_DATA("Invalid Data."),
+    LIKE_NOT_FOUND("This like record does not exist."),
 
     ;
     public String ErrorMsg;
