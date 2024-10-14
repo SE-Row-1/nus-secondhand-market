@@ -1,4 +1,4 @@
-package edu.nus.market;
+package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;

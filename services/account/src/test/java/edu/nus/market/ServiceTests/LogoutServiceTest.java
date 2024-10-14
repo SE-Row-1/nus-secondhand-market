@@ -1,15 +1,7 @@
-package edu.nus.market;
+package edu.nus.market.ServiceTests;
 
-import edu.nus.market.dao.AccountDao;
-import edu.nus.market.pojo.ErrorMsg;
-import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.ReqEntity.LoginReq;
-import edu.nus.market.pojo.ReqEntity.RegisterReq;
-import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;

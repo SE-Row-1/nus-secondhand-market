@@ -1,4 +1,4 @@
-package edu.nus.market;
+package edu.nus.market.SecurityTests;
 
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
