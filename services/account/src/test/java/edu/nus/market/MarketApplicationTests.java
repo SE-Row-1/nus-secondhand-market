@@ -1,6 +1,7 @@
 package edu.nus.market;
 
-import edu.nus.market.pojo.RegisterReq;
+import edu.nus.market.pojo.ReqEntity.RegisterReq;
+import edu.nus.market.pojo.ReqEntity.UpdPswReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.controller.AccountController;

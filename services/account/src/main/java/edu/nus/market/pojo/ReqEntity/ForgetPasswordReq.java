@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ForgotPasswordReq {
+public class ForgetPasswordReq {
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     String email;
 
