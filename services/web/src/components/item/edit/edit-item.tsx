@@ -102,7 +102,9 @@ export function EditItem({ id, initialItem }: Props) {
         data.append("removed_photo_urls", url),
       );
 
-      return await clientRequester.patchForm<SingleItem>(`/items/${id}`, data);
+      return await clientRequester.form<SingleItem>(`/items/${id}`, data, {
+        method: "PATCH",
+      });
     },
     onSuccess: (item) => {
       queryClient.setQueryData(["items", id], item);
