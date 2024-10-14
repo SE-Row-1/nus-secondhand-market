@@ -20,27 +20,24 @@ fi
 # Get a list of service directories
 service_dirs=($(ls -d "$SERVICES_DIR"/*))
 
-# Prompt user to select a service
-echo "Please select a service to encrypt its .env file:"
-for i in "${!service_dirs[@]}"; do
-  echo "$((i + 1))) ${service_dirs[$i]}"
+# Loop through each service directory and encrypt its .env file
+for service_dir in "${service_dirs[@]}"; do
+  SERVICE_NAME=$(basename "$service_dir")
+  ENV_FILE="$service_dir/.env"
+  # Check if .env file exists
+  if [ -f "$ENV_FILE" ]; then
+    echo "Encrypting $ENV_FILE..."
+    gpg --batch --yes --passphrase-file "$PASSPHRASE_FILE" --symmetric --output "envs/$SERVICE_NAME.env.gpg" "$ENV_FILE"
+    if [ $? -eq 0 ]; then
+      echo "$ENV_FILE encrypted successfully and moved to envs/$SERVICE_NAME.env.gpg"
+    else
+      echo "Failed to encrypt $ENV_FILE for $SERVICE_NAME. Exiting..."
+      exit 1
+    fi
+  else
+    echo "No .env file found in $service_dir, skipping..."
+  fi
 done
 
-read -p "Enter the number corresponding to the service: " service_num
+echo "All services processed."
 
-# Get the service name from the array
-SERVICE_NAME=$(basename "${service_dirs[$service_num - 1]}")
-
-# Construct the full path to the .env file
-ENV_FILE="$SERVICES_DIR/$SERVICE_NAME/.env"
-
-# Encrypt the selected .env file and move it to the envs directory
-echo "Encrypting $ENV_FILE..."
-gpg --batch --yes --passphrase-file "$PASSPHRASE_FILE" --symmetric --output "envs/$SERVICE_NAME.env.gpg" "$ENV_FILE"
-
-if [ $? -eq 0 ]; then
-  echo "$ENV_FILE encrypted successfully and moved to envs/$SERVICE_NAME.env.gpg"
-else
-  echo "Failed to encrypt $ENV_FILE. Exiting..."
-  exit 1
-fi
