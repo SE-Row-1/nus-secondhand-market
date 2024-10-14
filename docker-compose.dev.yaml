@@ -6,10 +6,8 @@ services:
     image: postgres
     ports:
       - 5432:5432
-    environment:
-      - POSTGRES_USER=${POSTGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+    env_file:
+      - envs/account.env
     volumes:
       - ./services/account/database:/docker-entrypoint-initdb.d
     restart: always
@@ -19,9 +17,11 @@ services:
     ports:
       - 27017:27017
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${ITEM_SERVICE_MONGO_DB_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${ITEM_SERVICE_MONGO_DB_PASS}
-      - MONGO_INITDB_DATABASE=${ITEM_SERVICE_MONGO_DB}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASS}
+      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME}
+    env_file:
+      - envs/item.env
     volumes:
       - ./services/item/database/dev:/docker-entrypoint-initdb.d
     restart: always
@@ -31,9 +31,11 @@ services:
     ports:
       - 27018:27017
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${WISHLIST_SERVICE_MONGO_DB_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${WISHLIST_SERVICE_MONGO_DB_PASS}
-      - MONGO_INITDB_DATABASE=${WISHLIST_SERVICE_MONGO_DB}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASS}
+      - MONGO_INITDB_DATABASE=${MONGO_DB_NAME}
+    env_file:
+      - envs/wishlist.env
     volumes:
       - ./services/wishlist/database:/docker-entrypoint-initdb.d
     restart: always
@@ -44,9 +46,8 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    env_file:
+      - envs/infra.env
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     healthcheck:
@@ -62,11 +63,8 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - 3000:3000
-    environment:
-      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
-      - API_BASE_URL=${API_BASE_URL}
     env_file:
-      - .env
+      - envs/web.env
     volumes:
       - ./services/web:/app
       - /app/node_modules
@@ -78,12 +76,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8081:8081
-    environment:
-      - POSTGRES_URL=${POSTGRES_URL}
-      - POSTGRES_USERNAME=${POSTGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     env_file:
-      - .env
+      - envs/account.env
     depends_on:
       - postgres
       - rabbitmq
@@ -95,11 +89,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8082:8082
-    environment:
-      - MONGO_URL=mongodb://${MONGO_WISHLIST_USER}:${MONGO_WISHLIST_PASSWORD}@mongo_wishlist:27017/${MONGO_WISHLIST_DB}
-      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
     env_file:
-      - .env
+      - envs/wishlist.env
+      - envs/infra.env
     depends_on:
       - mongo_wishlist
       - rabbitmq
@@ -111,11 +103,9 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - 8083:8083
-    environment:
-      - MONGO_URL=mongodb://${MONGO_ITEM_USER}:${MONGO_ITEM_PASSWORD}@mongo_item:27017/${MONGO_ITEM_DB}
-      - RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq:5672
     env_file:
-      - .env
+      - envs/item.env
+      - envs/infra.env
     depends_on:
       - mongo_item
       - rabbitmq
