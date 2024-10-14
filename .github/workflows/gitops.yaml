@@ -37,9 +37,9 @@ jobs:
   build:
     name: Build and push Docker image
     runs-on: ubuntu-latest
+    continue-on-error: false
     needs: changes
     strategy:
-      fail-fast: true
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
 
@@ -67,6 +67,7 @@ jobs:
   update:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: changes
     strategy:
       matrix:
