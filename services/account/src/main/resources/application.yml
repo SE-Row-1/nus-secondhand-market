@@ -21,4 +21,4 @@ mybatis:
     map-underscore-to-camel-case: true
 
 jwt:
-  secretKey: ${SECRET_KEY}
+  secretKey: ${JWT_SECRET_KEY}
