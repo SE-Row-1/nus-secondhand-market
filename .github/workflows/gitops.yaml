@@ -4,11 +4,6 @@ on:
   push:
     branches:
       - setup-infra
-    paths:
-      - 'services/web/**'
-      - 'services/account/**'
-      - 'services/item/**'
-      - 'services/wishlist/**'
 
 permissions:
   contents: write
@@ -27,9 +22,8 @@ jobs:
         id: filter
         uses: dorny/paths-filter@v3
         with:
-          ref: setup-infra
+          base: setup-infra
           initial-fetch-depth: 1
-          predicate-quantifier: 'every'
           filters: |
             web:
               - 'services/web/**'
