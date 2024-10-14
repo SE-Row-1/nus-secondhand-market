@@ -22,13 +22,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-        with:
-          ref: setup-infra
 
       - name: Filter file changes
         id: filter
         uses: dorny/paths-filter@v3
         with:
+          ref: ${{ github.ref }}
           filters: |
             web:
               - 'services/web/**'
