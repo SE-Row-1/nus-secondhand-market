@@ -1,6 +1,5 @@
 package edu.nus.market;
 
-
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
@@ -8,18 +7,17 @@ import edu.nus.market.pojo.ReqBody.RegisterReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class GetAccountServiceTest{
+public class GetAccountServiceTest {
+
     @Resource
     AccountService accountService;
 
@@ -29,37 +27,57 @@ public class GetAccountServiceTest{
     private static int userId;
 
     @BeforeAll
-    void setup(){
-        accountDao.cleanTable();
-        if(accountDao.getAccountByEmail("e1351826@u.nus.edu") == null){
+    void setup() {
+        accountDao.cleanTable();  // 确保每次测试前清空数据库
+
+        if (accountDao.getAccountByEmail("e1351826@u.nus.edu") == null) {
             RegisterReq registerReq = new RegisterReq();
             registerReq.setEmail("e1351826@u.nus.edu");
             registerReq.setPassword("12345678");
-            ResAccount resAccount = (ResAccount)accountService.registerService(registerReq).getBody();
+
+            // 注册并检查返回体是否为 ResAccount
+            ResponseEntity<Object> responseEntity = accountService.registerService(registerReq);
+            assertNotNull(responseEntity.getBody());
+            assertInstanceOf(ResAccount.class, responseEntity.getBody());
+
+            ResAccount resAccount = (ResAccount) responseEntity.getBody();
             userId = resAccount.getId();
         }
     }
 
     @Test
-    void getAccountSuccessTest(){
-        assert (accountService.getAccountService(userId).getStatusCode().equals(HttpStatusCode.valueOf(HttpStatus.OK.value())));
+    void getAccountSuccessTest() {
+        ResponseEntity<Object> responseEntity = accountService.getAccountService(userId);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+        assertNotNull(responseEntity.getBody());
+        assertTrue(responseEntity.getBody() instanceof ResAccount);
     }
 
     @Test
-    void getAccountNotFoundTest(){
-        assert (accountService.getAccountService(userId + 1).equals(ResponseEntity.status(HttpStatus.NOT_FOUND).
-            body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg))));
+    void getAccountNotFoundTest() {
+        ResponseEntity<Object> responseEntity = accountService.getAccountService(userId + 1);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+
+        ErrorMsg expectedErrorMsg = new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg);
+        assertEquals(expectedErrorMsg, responseEntity.getBody());
     }
 
     @Test
-    void getAccountDeletedTest(){
+    void getAccountDeletedTest() {
         accountDao.deleteAccount(userId);
-        assert (accountService.getAccountService(userId).equals(ResponseEntity.status(HttpStatus.NOT_FOUND).
-            body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg))));
+
+        ResponseEntity<Object> responseEntity = accountService.getAccountService(userId);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+
+        ErrorMsg expectedErrorMsg = new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg);
+        assertEquals(expectedErrorMsg, responseEntity.getBody());
     }
 
     @AfterAll
-    void cleanUp(){
-        accountDao.hardDeleteAccount(userId);
+    void cleanUp() {
+        if (userId != 0) {
+            accountDao.hardDeleteAccount(userId);  // 清理账户
+        }
     }
 }

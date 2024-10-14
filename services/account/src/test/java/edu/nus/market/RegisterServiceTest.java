@@ -38,7 +38,7 @@ public class RegisterServiceTest {
 
         assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
         assertNotNull(accountDao.getAccountByEmail("e1351826@u.nus.edu"));
-        assertTrue(registerResponse.getBody() instanceof ResAccount);
+        assertInstanceOf (ResAccount.class, registerResponse.getBody());
     }
 
     @Test
