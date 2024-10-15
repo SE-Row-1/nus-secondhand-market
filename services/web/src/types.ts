@@ -64,3 +64,10 @@ export type ItemPack<
 export type Item<
   A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
 > = SingleItem<A> | ItemPack<A>;
+
+export type PaginatedItems<
+  A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
+> = {
+  items: Item<A>[];
+  next_cursor: string;
+};

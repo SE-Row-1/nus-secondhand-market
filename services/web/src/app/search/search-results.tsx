@@ -3,11 +3,11 @@
 import { ItemList } from "@/components/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import type { PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRef } from "react";
-import type { ResPage } from "./types";
 
 export function SearchResults() {
   const searchParams = useSearchParams();
@@ -24,9 +24,9 @@ export function SearchResults() {
           ...(threshold && { threshold: String(threshold) }),
         });
 
-        return await clientRequester.get<ResPage>(
-          `/items/search?${searchParams.toString()}`,
-        );
+        return await clientRequester.get<
+          PaginatedItems & { next_threshold: number }
+        >(`/items/search?${searchParams.toString()}`);
       },
       initialPageParam: {} as { cursor?: string | null; threshold?: number },
       getNextPageParam: (lastPage) => {

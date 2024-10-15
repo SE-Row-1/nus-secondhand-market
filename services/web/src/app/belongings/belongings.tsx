@@ -2,18 +2,17 @@
 
 import { ItemList } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { DetailedAccount } from "@/types";
+import type { DetailedAccount, PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import type { ResPage } from "./types";
 
 type Props = {
-  firstPage: ResPage;
+  firstPage: PaginatedItems;
   me: DetailedAccount;
 };
 
-export function BelongingsList({ firstPage, me }: Props) {
+export function Belongings({ firstPage, me }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: async ({ pageParam: cursor }) => {
@@ -23,7 +22,7 @@ export function BelongingsList({ firstPage, me }: Props) {
         ...(cursor && { cursor }),
       });
 
-      return await clientRequester.get<ResPage>(
+      return await clientRequester.get<PaginatedItems>(
         `/items?${searchParams.toString()}`,
       );
     },

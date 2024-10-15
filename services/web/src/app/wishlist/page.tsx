@@ -1,8 +1,8 @@
 import { PageTitle } from "@/components/framework";
 import { prefetchMe } from "@/prefetches/me";
+import type { PaginatedItems } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
 import { redirect } from "next/navigation";
-import type { ResPage } from "./types";
 import { WishList } from "./wishlist";
 
 export default async function WishlistPage() {
@@ -16,9 +16,8 @@ export default async function WishlistPage() {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const { data: page, error: pageError } = await serverRequester.get<ResPage>(
-    `/wishlists/${me.id}?limit=8`,
-  );
+  const { data: page, error: pageError } =
+    await serverRequester.get<PaginatedItems>(`/wishlists/${me.id}?limit=8`);
 
   if (pageError) {
     redirect(`/error?message=${pageError.message}`);

@@ -1,13 +1,13 @@
 import { PageTitle } from "@/components/framework";
 import { PublishItemDialog } from "@/components/item/publish";
+import type { PaginatedItems } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { MarketplaceList } from "./marketplace-list";
-import type { ResPage } from "./types";
+import { Marketplace } from "./marketplace";
 
 export default async function MarketplacePage() {
-  const { data: page, error } = await serverRequester.get<ResPage>(
+  const { data: page, error } = await serverRequester.get<PaginatedItems>(
     "/items?status=0&limit=8",
   );
 
@@ -24,7 +24,7 @@ export default async function MarketplacePage() {
         />
         <PublishItemDialog />
       </div>
-      <MarketplaceList firstPage={page} />
+      <Marketplace firstPage={page} />
     </>
   );
 }

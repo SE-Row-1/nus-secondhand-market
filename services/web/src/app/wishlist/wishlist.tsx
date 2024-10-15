@@ -2,14 +2,13 @@
 
 import { ItemList } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { DetailedAccount } from "@/types";
+import type { DetailedAccount, PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import type { ResPage } from "./types";
 
 type Props = {
-  firstPage: ResPage;
+  firstPage: PaginatedItems;
   me: DetailedAccount;
 };
 
@@ -22,7 +21,7 @@ export function WishList({ firstPage, me }: Props) {
         ...(cursor && { cursor }),
       });
 
-      return await clientRequester.get<ResPage>(
+      return await clientRequester.get<PaginatedItems>(
         `/wishlists/${me.id}?${searchParams.toString()}`,
       );
     },
