@@ -1,7 +1,6 @@
 import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
-import { prefetchItem } from "@/prefetches/item";
-import { prefetchMe } from "@/prefetches/me";
+import { prefetchItem, prefetchMe } from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";

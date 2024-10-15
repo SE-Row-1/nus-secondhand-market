@@ -1,4 +1,4 @@
-import { prefetchMe } from "@/prefetches/me";
+import { prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { UpdateWhatsappCard } from "../cards/update-whatsapp-card";

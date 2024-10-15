@@ -1,15 +1,12 @@
 import { PageTitle } from "@/components/framework";
 import { PublishItemDialog } from "@/components/item/publish";
-import type { PaginatedItems } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchMarketplace } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Marketplace } from "./marketplace";
 
 export default async function MarketplacePage() {
-  const { data: page, error } = await serverRequester.get<PaginatedItems>(
-    "/items?status=0&limit=8",
-  );
+  const { data: page, error } = await prefetchMarketplace();
 
   if (error) {
     redirect(`/error?message=${error.message}`);

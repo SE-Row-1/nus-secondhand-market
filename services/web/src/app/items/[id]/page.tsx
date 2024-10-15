@@ -1,6 +1,5 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
-import { prefetchItem } from "@/prefetches/item";
-import { prefetchMe } from "@/prefetches/me";
+import { prefetchItem, prefetchMe } from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";

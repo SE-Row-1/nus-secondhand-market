@@ -1,7 +1,5 @@
 import { PageTitle } from "@/components/framework";
-import { prefetchMe } from "@/prefetches/me";
-import type { PaginatedItems } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchBelongings, prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Belongings } from "./belongings";
@@ -17,10 +15,7 @@ export default async function BelongingsPage() {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const { data: page, error: pageError } =
-    await serverRequester.get<PaginatedItems>(
-      `/items?seller_id=${me.id}&limit=8`,
-    );
+  const { data: page, error: pageError } = await prefetchBelongings(me.id);
 
   if (pageError) {
     redirect(`/error?message=${pageError.message}`);
