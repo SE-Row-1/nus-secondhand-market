@@ -5,7 +5,7 @@ type Props = {
   status: ItemStatus;
 };
 
-export function ItemStatusBadge({ status }: Props) {
+export function StatusBadge({ status }: Props) {
   switch (status) {
     case ItemStatus.FOR_SALE:
       return <Badge className="bg-green-600">FOR SALE</Badge>;

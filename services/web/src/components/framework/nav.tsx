@@ -17,7 +17,7 @@ export function Nav() {
         <SearchIcon className="size-4" />
         Search
       </NavLink>
-      <NavLink href="#">
+      <NavLink href="/wishlist">
         <HeartIcon className="size-4" />
         My wishlist
       </NavLink>

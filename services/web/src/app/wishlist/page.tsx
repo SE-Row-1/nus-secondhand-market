@@ -1,10 +1,10 @@
 import { PageTitle } from "@/components/framework";
-import { prefetchBelongings, prefetchMe } from "@/prefetchers";
+import { prefetchMe, prefetchWishlist } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Belongings } from "./belongings";
+import { WishList } from "./wishlist";
 
-export default async function BelongingsPage() {
+export default async function WishlistPage() {
   const { data: me, error: meError } = await prefetchMe();
 
   if (meError && meError.status === 401) {
@@ -15,7 +15,7 @@ export default async function BelongingsPage() {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const { data: page, error: pageError } = await prefetchBelongings(me.id);
+  const { data: page, error: pageError } = await prefetchWishlist(me.id);
 
   if (pageError) {
     redirect(`/error?message=${pageError.message}`);
@@ -24,15 +24,15 @@ export default async function BelongingsPage() {
   return (
     <>
       <PageTitle
-        title="My belongings"
-        description="Here are the items you have listed"
+        title="My Wishlist"
+        description="Here are the items you wanted"
         className="mb-8"
       />
-      <Belongings firstPage={page} me={me} />
+      <WishList firstPage={page} me={me} />
     </>
   );
 }
 
 export const metadata: Metadata = {
-  title: "My Belongings",
+  title: "My Wishlist",
 };
