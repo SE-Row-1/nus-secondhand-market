@@ -26,7 +26,7 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
         "{ $limit: 1 }",
         "{ $project: { 'favoriteDate': 1, '_id': 0 } }"
     })
-    Date findTopFavoriteDateByItemId(String itemId);
+    Date findTopFavoriteDateById(String itemId);
 
     int countByItemId(String itemId);
 

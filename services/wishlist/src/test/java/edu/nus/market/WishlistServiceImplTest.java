@@ -132,7 +132,7 @@ class WishlistServiceImplTest {
     @Test
     void testGetItemLikeInfo_Success() {
         when(wishlistDao.countByItemId(anyString())).thenReturn(1);
-        when(wishlistDao.findTopFavoriteDateByItemId(anyString())).thenReturn(new Date());
+        when(wishlistDao.findTopFavoriteDateById(anyString())).thenReturn(new Date());
 
         ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001");
 
