@@ -83,7 +83,7 @@ public class WishlistDAOTest {
 
         // Act: 查询该商品的收藏次数和最近的收藏时间
         int count = wishlistDao.countByItemId(ITEM_ID);
-        Date favoriteDate = wishlistDao.findTopFavoriteDateById(ITEM_ID);
+        Date favoriteDate = wishlistDao.findTopWantedAtByItemId(ITEM_ID);
 
         // Assert: 验证查询结果
         assertEquals(1, count);

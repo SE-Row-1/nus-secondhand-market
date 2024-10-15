@@ -55,7 +55,7 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public ResponseEntity<Object> getItemLikeInfo(String itemId) {
         int count = wishlistDao.countByItemId(itemId);
-        Date favoriteDate = wishlistDao.findTopFavoriteDateById(itemId);
+        Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
 
 
         ResItemLikeInfo response = new ResItemLikeInfo(count, favoriteDate);
