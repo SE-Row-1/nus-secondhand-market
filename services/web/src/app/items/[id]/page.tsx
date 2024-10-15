@@ -1,5 +1,9 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
-import { prefetchItem, prefetchMe } from "@/prefetchers";
+import {
+  prefetchItem,
+  prefetchMe,
+  prefetchWishlistStatistics,
+} from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -11,8 +15,15 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([prefetchItem(id), prefetchMe()]);
+  const [
+    { data: item, error: itemError },
+    { data: wishlistStatistics, error: wishlistStatisticsError },
+    { data: me, error: meError },
+  ] = await Promise.all([
+    prefetchItem(id),
+    prefetchWishlistStatistics(id),
+    prefetchMe(),
+  ]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -20,6 +31,10 @@ export default async function Page({ params: { id } }: Props) {
 
   if (itemError) {
     redirect(`/error?message=${itemError.message}`);
+  }
+
+  if (wishlistStatisticsError) {
+    redirect(`/error?message=${wishlistStatisticsError.message}`);
   }
 
   if (meError && meError.status !== 401) {
@@ -35,7 +50,11 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard item={item} me={me} />
+      <SingleItemDetailsCard
+        item={item}
+        wishlistStatistics={wishlistStatistics}
+        me={me}
+      />
     </div>
   );
 }

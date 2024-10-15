@@ -1,9 +1,10 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { DetailedAccount, SingleItem } from "@/types";
+import type { DetailedAccount, SingleItem, WishlistStatistics } from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
 import { ItemStatusBadge } from "../card/item-status-badge";
+import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { ItemPublishedAt } from "./item-published-at";
@@ -11,10 +12,11 @@ import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
   item: SingleItem<DetailedAccount>;
+  wishlistStatistics: WishlistStatistics;
   me: DetailedAccount | null;
 };
 
-export function SingleItemDetailsCard({ item, me }: Props) {
+export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
   return (
     <div>
       <div className="max-w-xl mx-auto">
@@ -51,7 +53,17 @@ export function SingleItemDetailsCard({ item, me }: Props) {
             </span>
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-6">
+        {wishlistStatistics.count >= 3 ? (
+          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
+            🔥 {wishlistStatistics.count} people want this item.
+          </p>
+        ) : wishlistStatistics.last_wanted_at ? (
+          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
+            🔥 Someone wanted it&nbsp;
+            <FromNow date={wishlistStatistics.last_wanted_at} />.
+          </p>
+        ) : null}
+        <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5">
           {me?.id === item.seller.id ? (
             <>
               <Button variant="secondary" asChild>

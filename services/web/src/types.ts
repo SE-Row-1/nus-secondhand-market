@@ -71,3 +71,8 @@ export type PaginatedItems<
   items: Item<A>[];
   next_cursor: string;
 };
+
+export type WishlistStatistics = {
+  count: number;
+  last_wanted_at: string | null;
+};
