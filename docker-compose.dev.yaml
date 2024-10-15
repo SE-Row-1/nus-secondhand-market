@@ -31,19 +31,19 @@ services:
     networks:
       - bridge
     depends_on:
-      - account-db
+      - account-postgres
       - rabbitmq
     restart: always
 
-  account-db:
+  account-postgres:
     image: postgres
     ports:
       - 5432:5432
     env_file:
-      - envs/account-db.env
+      - envs/account-postgres.env
     volumes:
       - ./services/account/database:/docker-entrypoint-initdb.d
-      - account-db-data:/var/lib/postgresql/data
+      - account-postgres-data:/var/lib/postgresql/data
     networks:
       - bridge
     restart: always
@@ -59,19 +59,19 @@ services:
     networks:
       - bridge
     depends_on:
-      - item-db
+      - item-mongo
       - rabbitmq
     restart: always
 
-  item-db:
+  item-mongo:
     image: mongo
     ports:
       - 27017:27017
     env_file:
-      - envs/item-db.env
+      - envs/item-mongo.env
     volumes:
       - ./services/item/database/dev:/docker-entrypoint-initdb.d
-      - item-db-data:/data/db
+      - item-mongo-data:/data/db
     networks:
       - bridge
     restart: always
@@ -87,19 +87,19 @@ services:
     networks:
       - bridge
     depends_on:
-      - wishlist-db
+      - wishlist-mongo
       - rabbitmq
     restart: always
 
-  wishlist-db:
+  wishlist-mongo:
     image: mongo
     ports:
       - 27018:27017
     env_file:
-      - envs/wishlist-db.env
+      - envs/wishlist-mongo.env
     volumes:
       - ./services/wishlist/database:/docker-entrypoint-initdb.d
-      - wishlist-db-data:/data/db
+      - wishlist-mongo-data:/data/db
     networks:
       - bridge
     restart: always
@@ -137,9 +137,9 @@ services:
     restart: always
 
 volumes:
-  account-db-data:
-  item-db-data:
-  wishlist-db-data:
+  account-postgres-data:
+  item-mongo-data:
+  wishlist-mongo-data:
   rabbitmq-data:
 
 networks:
