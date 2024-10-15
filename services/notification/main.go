@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	connection, err := amqp.Dial(os.Getenv("RABBITMQ_URI"))
+	connection, err := amqp.Dial(os.Getenv("RABBITMQ_URL"))
 	if err != nil {
 		log.Panic(err)
 	}
