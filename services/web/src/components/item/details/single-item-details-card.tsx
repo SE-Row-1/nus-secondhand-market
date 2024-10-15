@@ -1,12 +1,12 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import type { DetailedAccount, SingleItem } from "@/types";
-import { fromNow } from "@/utils/datetime";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
 import { ItemStatusBadge } from "../card/item-status-badge";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
+import { ItemPublishedAt } from "./item-published-at";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
@@ -47,7 +47,7 @@ export function SingleItemDetailsCard({ item, me }: Props) {
             <span>{item.seller.nickname ?? "Seller " + item.seller.id}</span>
             <span className="text-muted-foreground">
               published at&nbsp;
-              <time dateTime={item.created_at}>{fromNow(item.created_at)}</time>
+              <ItemPublishedAt publishedAt={item.created_at} />
             </span>
           </div>
         </div>

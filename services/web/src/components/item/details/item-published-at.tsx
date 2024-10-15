@@ -11,11 +11,6 @@ export function ItemPublishedAt({ publishedAt }: Props) {
   const isMounted = useIsMounted();
 
   return (
-    <time
-      dateTime={publishedAt}
-      className="text-sm text-muted-foreground group-hover:text-foreground transition-colors"
-    >
-      {isMounted && fromNow(publishedAt)}
-    </time>
+    <time dateTime={publishedAt}>{isMounted && fromNow(publishedAt)}</time>
   );
 }
