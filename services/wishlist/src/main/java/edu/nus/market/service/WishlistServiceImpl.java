@@ -26,7 +26,7 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public ResponseEntity<Object> getWishlistService(int id) {
-        List<Like> likes = wishlistDao.findByUserId(id);
+        List<Like> likes = wishlistDao.findByUserIdOrderByWantedAtDesc(id);
         return ResponseEntity.status(HttpStatus.OK).body(likes);
     }
 

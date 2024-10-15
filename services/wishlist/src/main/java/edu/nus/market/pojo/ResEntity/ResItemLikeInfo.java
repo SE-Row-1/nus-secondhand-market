@@ -11,5 +11,5 @@ import java.util.Date;
 @NoArgsConstructor
 public class ResItemLikeInfo{
     private int count;
-    private Date LatestFavoriteDate;
+    private Date LatestWantedAt;
 }
