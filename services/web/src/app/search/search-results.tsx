@@ -1,6 +1,6 @@
 "use client";
 
-import { ItemList } from "@/components/item";
+import { ItemGrid } from "@/components/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import type { PaginatedItems } from "@/types";
@@ -60,7 +60,7 @@ export function SearchResults() {
 
   return (
     <>
-      <ItemList items={data?.pages.flatMap((page) => page.items) ?? []} />
+      <ItemGrid items={data?.pages.flatMap((page) => page.items) ?? []} />
       <div ref={bottomRef}></div>
       {!q || hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">

@@ -1,6 +1,6 @@
 "use client";
 
-import { ItemList } from "@/components/item";
+import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
 import { ItemStatus, type PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
@@ -42,7 +42,7 @@ export function Marketplace({ firstPage }: Props) {
 
   return (
     <>
-      <ItemList items={data.pages.flatMap((page) => page.items)} />
+      <ItemGrid items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
