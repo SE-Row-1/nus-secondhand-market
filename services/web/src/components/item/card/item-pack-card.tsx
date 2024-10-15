@@ -17,7 +17,10 @@ export function ItemPackCard({ item }: Props) {
         <ItemStatusBadge status={item.status} />
       </div>
       <div className="rounded-t-lg overflow-hidden">
-        <BoxesIcon className="size-8" />
+        <div className="grid place-items-center aspect-square bg-muted">
+          <BoxesIcon className="size-1/3 text-muted-foreground" />
+          <span className="sr-only">No preview photo availble</span>
+        </div>
       </div>
       <div className="grow flex flex-col justify-between gap-2 px-5 py-4">
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
