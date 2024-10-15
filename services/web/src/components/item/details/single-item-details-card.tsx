@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import type { DetailedAccount, SingleItem, WishlistStatistics } from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
-import { ItemStatusBadge } from "../card/item-status-badge";
+import { StatusBadge } from "../card/status-badge";
 import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
@@ -27,7 +27,7 @@ export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
             <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
               {item.name}
             </h1>
-            <ItemStatusBadge status={item.status} />
+            <StatusBadge status={item.status} />
           </div>
           <span className="font-medium text-lg lg:text-xl text-primary">
             {item.price} SGD
