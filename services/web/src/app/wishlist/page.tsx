@@ -1,5 +1,6 @@
 import { PageTitle } from "@/components/framework";
 import { prefetchMe, prefetchWishlist } from "@/prefetchers";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { WishList } from "./wishlist";
 
@@ -31,3 +32,7 @@ export default async function WishlistPage() {
     </>
   );
 }
+
+export const metadata: Metadata = {
+  title: "My Wishlist",
+};
