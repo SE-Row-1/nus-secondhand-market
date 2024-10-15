@@ -1,5 +1,6 @@
 server:
-  port: 8081
+  port: ${PORT}
+
 spring:
   application:
     name: market
@@ -21,4 +22,4 @@ mybatis:
     map-underscore-to-camel-case: true
 
 jwt:
-  secretKey: ${SECRET_KEY}
+  secretKey: ${JWT_SECRET_KEY}
