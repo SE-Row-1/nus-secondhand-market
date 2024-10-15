@@ -7,7 +7,7 @@ export default async function ContactsSettingsPage() {
   const { data: me, error } = await prefetchMe();
 
   if (error && error.status === 401) {
-    redirect("/login?next=/settings/contacts");
+    redirect("/login");
   }
 
   if (error) {

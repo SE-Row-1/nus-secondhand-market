@@ -7,7 +7,7 @@ export default async function DisplaySettingsPage() {
   const { data: me, error } = await prefetchMe();
 
   if (error && error.status === 401) {
-    redirect("/login?next=/settings/display");
+    redirect("/login");
   }
 
   if (error) {

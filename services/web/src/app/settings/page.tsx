@@ -8,7 +8,7 @@ export default async function AccountSettingsPage() {
   const { data: me, error } = await prefetchMe();
 
   if (error && error.status === 401) {
-    redirect("/login?next=/settings");
+    redirect("/login");
   }
 
   if (error) {

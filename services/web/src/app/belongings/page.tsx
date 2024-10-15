@@ -10,7 +10,7 @@ export default async function BelongingsPage() {
   const { data: me, error: meError } = await prefetchMe();
 
   if (meError && meError.status === 401) {
-    redirect("/login?next=/belongings");
+    redirect("/login");
   }
 
   if (meError) {

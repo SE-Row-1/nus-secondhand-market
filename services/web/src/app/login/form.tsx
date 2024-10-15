@@ -10,7 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import * as v from "valibot";
 
@@ -33,9 +33,6 @@ const formSchema = v.object({
 
 export function LogInForm() {
   const router = useRouter();
-
-  const searchParams = useSearchParams();
-  const nextUrl = searchParams.get("next") ?? "/";
 
   const { toast } = useToast();
 
@@ -63,7 +60,7 @@ export function LogInForm() {
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
 
-      router.push(nextUrl);
+      router.push("/");
       router.refresh();
     },
     onError: (error) => {

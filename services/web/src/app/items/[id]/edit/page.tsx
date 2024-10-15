@@ -26,7 +26,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   if (meError && meError.status === 401) {
-    redirect(`/login?next=/items/${id}/edit`);
+    redirect("/login");
   }
 
   if (meError) {
