@@ -104,6 +104,18 @@ services:
       - bridge
     restart: always
 
+  notification:
+    build:
+      context: services/notification
+      dockerfile: Dockerfile
+    env_file:
+      - services/notification/.env
+    networks:
+      - bridge
+    depends_on:
+      - rabbitmq
+    restart: always
+
   rabbitmq:
     image: rabbitmq
     ports:
