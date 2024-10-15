@@ -43,6 +43,7 @@ services:
       - envs/account-db.env
     volumes:
       - ./services/account/database:/docker-entrypoint-initdb.d
+      - account-db-data:/var/lib/postgresql/data
     networks:
       - bridge
     restart: always
@@ -70,6 +71,7 @@ services:
       - envs/item-db.env
     volumes:
       - ./services/item/database/dev:/docker-entrypoint-initdb.d
+      - item-db-data:/data/db
     networks:
       - bridge
     restart: always
@@ -97,6 +99,7 @@ services:
       - envs/wishlist-db.env
     volumes:
       - ./services/wishlist/database:/docker-entrypoint-initdb.d
+      - wishlist-db-data:/data/db
     networks:
       - bridge
     restart: always
@@ -109,7 +112,7 @@ services:
     env_file:
       - envs/rabbitmq.env
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD-SHELL", "rabbitmqctl status"]
       interval: 30s
@@ -134,7 +137,10 @@ services:
     restart: always
 
 volumes:
-  rabbitmq_data:
+  account-db-data:
+  item-db-data:
+  wishlist-db-data:
+  rabbitmq-data:
 
 networks:
   bridge:
