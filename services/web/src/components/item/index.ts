@@ -1,1 +1,2 @@
-export { ItemCardListServer as ItemCardList } from "./item-card-list-server";
+export { ItemCard } from "./card";
+export { ItemList } from "./item-card-list";

@@ -1,44 +1,36 @@
 "use client";
 
+import { ItemList } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { SingleItem } from "@/types";
+import { ItemStatus } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import { SingleItemCard } from "./card";
-
-type ItemsResponse = {
-  items: SingleItem[];
-  next_cursor: string;
-};
+import type { ResPage } from "./types";
 
 type Props = {
-  initialData: ItemsResponse;
-  initialSearchParams: string;
+  firstPage: ResPage;
 };
 
-export function ItemCardListClient({
-  initialData,
-  initialSearchParams,
-}: Props) {
+export function MarketplaceList({ firstPage }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: async ({ pageParam: cursor }) => {
-      const searchParams = new URLSearchParams(initialSearchParams);
+      const searchParams = new URLSearchParams({
+        limit: "8",
+        status: String(ItemStatus.FOR_SALE),
+        ...(cursor && { cursor }),
+      });
 
-      if (cursor) {
-        searchParams.set("cursor", cursor);
-      }
-
-      return await clientRequester.get<ItemsResponse>(
+      return await clientRequester.get<ResPage>(
         `/items?${searchParams.toString()}`,
       );
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.next_cursor,
     initialData: {
-      pages: [initialData],
-      pageParams: [undefined, initialData.next_cursor],
+      pages: [firstPage],
+      pageParams: [undefined, firstPage.next_cursor],
     },
   });
 
@@ -51,15 +43,11 @@ export function ItemCardListClient({
 
   return (
     <>
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6">
-        {data?.pages
-          .flatMap((page) => page.items)
-          .map((item) => <SingleItemCard key={item.id} item={item} />)}
-      </ul>
+      <ItemList items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - That&apos;s all we got for now! -
+          - These are all we&apos;ve got for now -
         </p>
       )}
       {isFetching && (

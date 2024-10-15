@@ -1,10 +1,20 @@
 import { PageTitle } from "@/components/framework";
-import { ItemCardList } from "@/components/item";
 import { PublishItemDialog } from "@/components/item/publish";
-import { ItemStatus, ItemType } from "@/types";
+import { serverRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { MarketplaceList } from "./marketplace-list";
+import type { ResPage } from "./types";
 
-export default function Home() {
+export default async function MarketplacePage() {
+  const { data: page, error } = await serverRequester.get<ResPage>(
+    "/items?status=0&limit=8",
+  );
+
+  if (error) {
+    redirect(`/error?message=${error.message}`);
+  }
+
   return (
     <>
       <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
@@ -14,7 +24,7 @@ export default function Home() {
         />
         <PublishItemDialog />
       </div>
-      <ItemCardList type={ItemType.SINGLE} status={ItemStatus.FOR_SALE} />
+      <MarketplaceList firstPage={page} />
     </>
   );
 }

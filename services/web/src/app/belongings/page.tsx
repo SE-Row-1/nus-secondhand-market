@@ -1,19 +1,28 @@
 import { PageTitle } from "@/components/framework";
-import { ItemCardList } from "@/components/item";
 import { prefetchMe } from "@/prefetches/me";
-import { ItemType } from "@/types";
+import { serverRequester } from "@/utils/requester/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { BelongingsList } from "./belongings-list";
+import type { ResPage } from "./types";
 
 export default async function BelongingsPage() {
-  const { data: me, error } = await prefetchMe();
+  const { data: me, error: meError } = await prefetchMe();
 
-  if (error && error.status === 401) {
+  if (meError && meError.status === 401) {
     redirect("/login?next=/belongings");
   }
 
-  if (error) {
-    redirect(`/error?message=${error.message}`);
+  if (meError) {
+    redirect(`/error?message=${meError.message}`);
+  }
+
+  const { data: page, error: pageError } = await serverRequester.get<ResPage>(
+    `/items?seller_id=${me.id}&limit=8`,
+  );
+
+  if (pageError) {
+    redirect(`/error?message=${pageError.message}`);
   }
 
   return (
@@ -23,7 +32,7 @@ export default async function BelongingsPage() {
         description="Here are the items you have listed"
         className="mb-8"
       />
-      <ItemCardList type={ItemType.SINGLE} sellerId={me.id} />
+      <BelongingsList firstPage={page} me={me} />
     </>
   );
 }
