@@ -22,7 +22,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   if (itemError) {
-    redirect(`/error?message=${itemError}`);
+    redirect(`/error?message=${itemError.message}`);
   }
 
   if (meError && meError.status === 401) {
@@ -30,7 +30,7 @@ export default async function Page({ params: { id } }: Props) {
   }
 
   if (meError) {
-    redirect(`/error?message=${meError}`);
+    redirect(`/error?message=${meError.message}`);
   }
 
   if (item.seller.id !== me.id) {
