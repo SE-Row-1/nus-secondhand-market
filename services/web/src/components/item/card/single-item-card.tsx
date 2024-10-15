@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { type SingleItem } from "@/types";
 import Link from "next/link";
-import { ItemPhoto } from "./item-photo";
+import { Cover } from "./cover";
 import { ItemPublishedAt } from "./item-published-at";
 import { ItemSeller } from "./item-seller";
 import { ItemStatusBadge } from "./item-status-badge";
@@ -12,13 +12,11 @@ type Props = {
 
 export function SingleItemCard({ item }: Props) {
   return (
-    <Card className="group relative flex flex-col hover:bg-muted/30 transition-colors">
+    <Card className="group relative flex flex-col hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors">
       <div className="absolute top-3 left-4 z-10">
         <ItemStatusBadge status={item.status} />
       </div>
-      <div className="rounded-t-lg overflow-hidden">
-        <ItemPhoto photoUrl={item.photo_urls[0]} />
-      </div>
+      <Cover photoUrls={item.photo_urls} />
       <div className="grow flex flex-col justify-between gap-2 px-5 py-4">
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <p className="font-semibold text-lg line-clamp-1">{item.name}</p>

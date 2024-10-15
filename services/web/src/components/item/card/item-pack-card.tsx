@@ -16,11 +16,8 @@ export function ItemPackCard({ item }: Props) {
       <div className="absolute top-3 left-4 z-10">
         <ItemStatusBadge status={item.status} />
       </div>
-      <div className="rounded-t-lg overflow-hidden">
-        <div className="grid place-items-center aspect-square bg-muted">
-          <BoxesIcon className="size-1/3 text-muted-foreground" />
-          <span className="sr-only">No preview photo availble</span>
-        </div>
+      <div className="grid place-items-center aspect-square rounded-t-lg bg-muted">
+        <BoxesIcon className="size-1/3 text-muted-foreground" />
       </div>
       <div className="grow flex flex-col justify-between gap-2 px-5 py-4">
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
