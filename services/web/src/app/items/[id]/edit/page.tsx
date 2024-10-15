@@ -1,7 +1,7 @@
 import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
-import type { DetailedAccount, SingleItem } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchItem } from "@/prefetches/item";
+import { prefetchMe } from "@/prefetches/me";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -15,10 +15,7 @@ type Props = {
 
 export default async function Page({ params: { id } }: Props) {
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([
-      serverRequester.get<SingleItem<DetailedAccount>>(`/items/${id}`),
-      serverRequester.get<DetailedAccount>("/auth/me"),
-    ]);
+    await Promise.all([prefetchItem(id), prefetchMe()]);
 
   if (itemError && itemError.status === 404) {
     notFound();

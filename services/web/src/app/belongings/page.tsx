@@ -1,13 +1,12 @@
 import { PageTitle } from "@/components/framework";
 import { ItemCardList } from "@/components/item";
-import { ItemType, type DetailedAccount } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchMe } from "@/prefetches/me";
+import { ItemType } from "@/types";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export default async function BelongingsPage() {
-  const { data: me, error } =
-    await serverRequester.get<DetailedAccount>("/auth/me");
+  const { data: me, error } = await prefetchMe();
 
   if (error && error.status === 401) {
     redirect("/login?next=/belongings");

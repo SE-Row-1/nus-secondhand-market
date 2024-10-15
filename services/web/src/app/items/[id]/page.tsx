@@ -1,10 +1,9 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
-import type { DetailedAccount, SingleItem } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchItem } from "@/prefetches/item";
+import { prefetchMe } from "@/prefetches/me";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { cache } from "react";
 
 type Props = {
   params: {
@@ -14,10 +13,7 @@ type Props = {
 
 export default async function Page({ params: { id } }: Props) {
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([
-      getItem(id),
-      serverRequester.get<DetailedAccount>("/auth/me"),
-    ]);
+    await Promise.all([prefetchItem(id), prefetchMe()]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -46,13 +42,9 @@ export default async function Page({ params: { id } }: Props) {
 }
 
 export async function generateMetadata({ params: { id } }: Props) {
-  const { data: item } = await getItem(id);
+  const { data: item } = await prefetchItem(id);
 
   return {
     title: item?.name,
   };
 }
-
-const getItem = cache(async (id: string) => {
-  return await serverRequester.get<SingleItem<DetailedAccount>>(`/items/${id}`);
-});
