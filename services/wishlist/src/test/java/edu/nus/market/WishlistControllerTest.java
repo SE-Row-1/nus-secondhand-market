@@ -51,12 +51,12 @@ class WishlistControllerTest {
 
         SingleLike singleLike = new SingleLike();
         singleLike.setItemId("item001");
-        singleLike.setItemName("iPhone 12");
-        singleLike.setItemStatus(1);
+        singleLike.setName("iPhone 12");
+        singleLike.setStatus(1);
         singleLike.setPrice(999.99);
         singleLike.setPhotoUrls(new String[]{"http://example.com/iphone12_front.jpg"});
         singleLike.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
-        singleLike.setFavoriteDate(new Date());
+        singleLike.setWantedAt(new Date());
 
         mockLikes.add(singleLike);
     }
@@ -79,9 +79,9 @@ class WishlistControllerTest {
     @Test
     void testAddLike_Conflict() {
         AddLikeReq req = new AddLikeReq();
-        req.setItemStatus(1);
+        req.setStatus(1);
         req.setItemId("item001");
-        req.setItemName("iPhone 13");
+        req.setName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
         req.setDiscount(0.0);
@@ -121,9 +121,9 @@ class WishlistControllerTest {
     @Test
     void testAddLike_Success() {
         AddLikeReq req = new AddLikeReq();
-        req.setItemStatus(1);
+        req.setStatus(1);
         req.setItemId("item001");
-        req.setItemName("iPhone 13");
+        req.setName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));

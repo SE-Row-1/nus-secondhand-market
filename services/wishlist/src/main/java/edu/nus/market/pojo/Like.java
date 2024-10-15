@@ -1,5 +1,7 @@
 package edu.nus.market.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +16,17 @@ import java.util.Date;
 @Document(collection = "wishlist")
 public abstract class Like {
 
+    @JsonIgnore  //
     private ObjectId id;  // for MongoDB
-    private String type;  // "SINGLE" or "PACK"
+    @JsonIgnore
     private int userId;
+
+    private String type;  // "SINGLE" or "PACK"
+    @JsonProperty("id")
     private String itemId;
-    private Date favoriteDate;  // 收藏日期
-    private String itemName;
-    private int itemStatus;
+    private Date wantedAt;  // 收藏日期
+    private String name;
+    private int status;
     private double price;
     private Seller seller;
 
