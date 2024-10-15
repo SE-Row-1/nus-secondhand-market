@@ -7,7 +7,6 @@ import { ItemStatusBadge } from "../card/item-status-badge";
 import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
-import { ItemPublishedAt } from "./item-published-at";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
@@ -49,7 +48,7 @@ export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
             <span>{item.seller.nickname ?? "Seller " + item.seller.id}</span>
             <span className="text-muted-foreground">
               published at&nbsp;
-              <ItemPublishedAt publishedAt={item.created_at} />
+              <FromNow date={item.created_at} />
             </span>
           </div>
         </div>

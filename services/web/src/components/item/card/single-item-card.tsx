@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { type SingleItem } from "@/types";
 import Link from "next/link";
+import { FromNow } from "../from-now";
 import { Cover } from "./cover";
-import { ItemPublishedAt } from "./item-published-at";
 import { ItemSeller } from "./item-seller";
 import { ItemStatusBadge } from "./item-status-badge";
 
@@ -24,7 +24,7 @@ export function SingleItemCard({ item }: Props) {
         </div>
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <ItemSeller seller={item.seller} />
-          <ItemPublishedAt publishedAt={item.created_at} />
+          <FromNow date={item.created_at} className="text-sm" />
         </div>
       </div>
       <Link

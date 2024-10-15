@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 import { type ItemPack } from "@/types";
 import { BoxesIcon } from "lucide-react";
 import Link from "next/link";
-import { ItemPublishedAt } from "./item-published-at";
+import { FromNow } from "../from-now";
 import { ItemSeller } from "./item-seller";
 import { ItemStatusBadge } from "./item-status-badge";
 
@@ -26,7 +26,7 @@ export function ItemPackCard({ item }: Props) {
         </div>
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <ItemSeller seller={item.seller} />
-          <ItemPublishedAt publishedAt={item.created_at} />
+          <FromNow date={item.created_at} className="text-sm" />
         </div>
       </div>
       <Link

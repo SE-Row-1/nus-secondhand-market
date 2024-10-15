@@ -5,10 +5,15 @@ import { fromNow } from "@/utils/datetime";
 
 type Props = {
   date: string;
+  className?: string;
 };
 
-export function FromNow({ date }: Props) {
+export function FromNow({ date, className = "" }: Props) {
   const isMounted = useIsMounted();
 
-  return <time dateTime={date}>{isMounted && fromNow(date)}</time>;
+  return (
+    <time dateTime={date} className={className}>
+      {isMounted && fromNow(date)}
+    </time>
+  );
 }
