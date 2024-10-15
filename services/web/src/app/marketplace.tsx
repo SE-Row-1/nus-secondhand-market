@@ -16,8 +16,8 @@ export function Marketplace({ firstPage }: Props) {
     queryKey: ["items"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
-        limit: "8",
         status: String(ItemStatus.FOR_SALE),
+        limit: "8",
         ...(cursor && { cursor }),
       });
 
@@ -46,12 +46,12 @@ export function Marketplace({ firstPage }: Props) {
       <div ref={bottomRef}></div>
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - These are all we&apos;ve got for now -
+          - You have come to an end :) -
         </p>
       )}
       {isFetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more items...
+          Loading more for you...
         </p>
       )}
     </>

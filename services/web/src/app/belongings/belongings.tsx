@@ -47,12 +47,12 @@ export function Belongings({ firstPage, me }: Props) {
       <div ref={bottomRef}></div>
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - These are all your belongings for now -
+          - You have come to an end :) -
         </p>
       )}
       {isFetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more belongings...
+          Loading more for you...
         </p>
       )}
     </>

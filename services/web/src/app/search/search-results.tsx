@@ -64,12 +64,12 @@ export function SearchResults() {
       <div ref={bottomRef}></div>
       {!q || hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - We can&apos;t find any more -
+          - You have come to an end :) -
         </p>
       )}
       {isFetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more items...
+          Loading more for you...
         </p>
       )}
     </>

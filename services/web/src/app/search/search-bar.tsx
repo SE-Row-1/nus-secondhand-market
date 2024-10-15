@@ -9,13 +9,15 @@ import { useEffect, useState } from "react";
 
 export function SearchBar() {
   const searchParams = useSearchParams();
+
   const [q, setQ] = useState(searchParams.get("q") ?? "");
   const debouncedQ = useDebounce(q);
 
   const router = useRouter();
 
   useEffect(() => {
-    router.push(`/search?${debouncedQ ? `q=${debouncedQ}` : ""}`);
+    const searchParams = new URLSearchParams(debouncedQ && { q: debouncedQ });
+    router.push(`/search?${searchParams.toString()}`);
   }, [router, debouncedQ]);
 
   return (
