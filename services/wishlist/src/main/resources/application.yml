@@ -1,8 +1,8 @@
 spring:
   application:
     name: wishlist
-#  config:
-#    import: "optional:file:./services/wishlist/.env"
+  config:
+    import: "optional:file:./services/wishlist/.env"
   jackson:
     property-naming-strategy: SNAKE_CASE
 
