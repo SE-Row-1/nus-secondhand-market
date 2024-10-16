@@ -16,7 +16,7 @@ export default async function DisplaySettingsPage() {
 
   return (
     <div className="grid gap-6">
-      <UpdateNicknameCard initialNickname={me.nickname} />
+      <UpdateNicknameCard id={me.id} initialNickname={me.nickname} />
     </div>
   );
 }
