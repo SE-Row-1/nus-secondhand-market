@@ -1,44 +1,36 @@
 "use client";
 
+import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { SingleItem } from "@/types";
+import type { DetailedAccount, PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
-import { SingleItemCard } from "./card";
-
-type ItemsResponse = {
-  items: SingleItem[];
-  next_cursor: string;
-};
 
 type Props = {
-  initialData: ItemsResponse;
-  initialSearchParams: string;
+  firstPage: PaginatedItems;
+  me: DetailedAccount;
 };
 
-export function ItemCardListClient({
-  initialData,
-  initialSearchParams,
-}: Props) {
+export function Belongings({ firstPage, me }: Props) {
   const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: async ({ pageParam: cursor }) => {
-      const searchParams = new URLSearchParams(initialSearchParams);
+      const searchParams = new URLSearchParams({
+        seller_id: String(me.id),
+        limit: "8",
+        ...(cursor && { cursor }),
+      });
 
-      if (cursor) {
-        searchParams.set("cursor", cursor);
-      }
-
-      return await clientRequester.get<ItemsResponse>(
+      return await clientRequester.get<PaginatedItems>(
         `/items?${searchParams.toString()}`,
       );
     },
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => lastPage.next_cursor,
     initialData: {
-      pages: [initialData],
-      pageParams: [undefined, initialData.next_cursor],
+      pages: [firstPage],
+      pageParams: [undefined, firstPage.next_cursor],
     },
   });
 
@@ -51,20 +43,16 @@ export function ItemCardListClient({
 
   return (
     <>
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6">
-        {data?.pages
-          .flatMap((page) => page.items)
-          .map((item) => <SingleItemCard key={item.id} item={item} />)}
-      </ul>
+      <ItemGrid items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
       {hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - That&apos;s all we got for now! -
+          - You have come to an end :) -
         </p>
       )}
       {isFetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more items...
+          Loading more for you...
         </p>
       )}
     </>

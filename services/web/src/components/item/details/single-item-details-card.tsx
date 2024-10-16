@@ -1,20 +1,21 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { Account, SingleItem } from "@/types";
-import { fromNow } from "@/utils/datetime";
+import type { DetailedAccount, SingleItem, WishlistStatistics } from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
-import { ItemStatusBadge } from "../card/item-status-badge";
+import { StatusBadge } from "../card/status-badge";
+import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { PhotoCarousel } from "./photo-carousel";
 
 type Props = {
-  item: SingleItem<Account>;
-  me: Account | null;
+  item: SingleItem<DetailedAccount>;
+  wishlistStatistics: WishlistStatistics;
+  me: DetailedAccount | null;
 };
 
-export function SingleItemDetailsCard({ item, me }: Props) {
+export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
   return (
     <div>
       <div className="max-w-xl mx-auto">
@@ -26,7 +27,7 @@ export function SingleItemDetailsCard({ item, me }: Props) {
             <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
               {item.name}
             </h1>
-            <ItemStatusBadge status={item.status} />
+            <StatusBadge status={item.status} />
           </div>
           <span className="font-medium text-lg lg:text-xl text-primary">
             {item.price} SGD
@@ -47,11 +48,21 @@ export function SingleItemDetailsCard({ item, me }: Props) {
             <span>{item.seller.nickname ?? "Seller " + item.seller.id}</span>
             <span className="text-muted-foreground">
               published at&nbsp;
-              <time dateTime={item.created_at}>{fromNow(item.created_at)}</time>
+              <FromNow date={item.created_at} />
             </span>
           </div>
         </div>
-        <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-6">
+        {wishlistStatistics.count >= 3 ? (
+          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
+            🔥 {wishlistStatistics.count} people want this item.
+          </p>
+        ) : wishlistStatistics.last_wanted_at ? (
+          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
+            🔥 Someone wanted it&nbsp;
+            <FromNow date={wishlistStatistics.last_wanted_at} />.
+          </p>
+        ) : null}
+        <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5">
           {me?.id === item.seller.id ? (
             <>
               <Button variant="secondary" asChild>

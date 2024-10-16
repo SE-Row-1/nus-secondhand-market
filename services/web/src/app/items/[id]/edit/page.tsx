@@ -1,7 +1,6 @@
 import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
-import type { Account, SingleItem } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchItem, prefetchMe } from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -15,25 +14,22 @@ type Props = {
 
 export default async function Page({ params: { id } }: Props) {
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([
-      serverRequester.get<SingleItem<Account>>(`/items/${id}`),
-      serverRequester.get<Account>("/auth/me"),
-    ]);
+    await Promise.all([prefetchItem(id), prefetchMe()]);
 
   if (itemError && itemError.status === 404) {
     notFound();
   }
 
   if (itemError) {
-    redirect(`/error?message=${itemError}`);
+    redirect(`/error?message=${itemError.message}`);
   }
 
   if (meError && meError.status === 401) {
-    redirect(`/login?next=/items/${id}/edit`);
+    redirect("/login");
   }
 
   if (meError) {
-    redirect(`/error?message=${meError}`);
+    redirect(`/error?message=${meError.message}`);
   }
 
   if (item.seller.id !== me.id) {

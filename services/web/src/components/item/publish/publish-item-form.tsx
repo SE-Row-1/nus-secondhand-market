@@ -75,7 +75,7 @@ export function PublishItemForm({ closeDialog }: Props) {
       data.append("price", validFormData.price.toString());
       validFormData.photos.forEach((photo) => data.append("photos", photo));
 
-      return await clientRequester.postForm<SingleItem>("/items", data);
+      return await clientRequester.form<SingleItem>("/items", data);
     },
     onSuccess: () => {
       closeDialog();

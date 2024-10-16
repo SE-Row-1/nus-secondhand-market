@@ -6,7 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ShoppingBagIcon } from "lucide-react";
-import { ItemPhoto } from "../card/item-photo";
+import Image from "next/image";
 
 type Props = {
   photoUrls: string[];
@@ -32,8 +32,13 @@ export function PhotoCarousel({ photoUrls }: Props) {
         <CarouselContent>
           {photoUrls.map((photoUrl) => (
             <CarouselItem key={photoUrl}>
-              <div className="max-w-72 rounded-lg mx-auto overflow-hidden">
-                <ItemPhoto photoUrl={photoUrl} />
+              <div className="max-w-72 aspect-square rounded-lg mx-auto overflow-hidden">
+                <Image
+                  src={photoUrl}
+                  alt="Photo of this item"
+                  width={288}
+                  height={288}
+                />
               </div>
             </CarouselItem>
           ))}

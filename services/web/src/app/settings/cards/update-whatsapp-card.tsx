@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SendIcon } from "lucide-react";
@@ -54,7 +54,7 @@ export function UpdateWhatsappCard({
 
       const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
 
-      return await clientRequester.patch<Account>("/auth/me", {
+      return await clientRequester.patch<DetailedAccount>("/auth/me", {
         phone_code: phoneCode,
         phone_number: phoneNumber,
       });

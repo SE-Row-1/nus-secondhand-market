@@ -28,5 +28,5 @@ export default function ErrorPage({ searchParams: { message } }: Props) {
 }
 
 export const metadata: Metadata = {
-  title: "Error occurred",
+  title: "Server-side Error",
 };

@@ -1,20 +1,20 @@
 server:
-  port: 8082
+  port: ${PORT}
+
 spring:
   application:
     name: wishlist
+
   jackson:
     property-naming-strategy: SNAKE_CASE
 
-  # MongoDB Connection
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: nshm_wishlist
-#      username: your_username  # 如果有用户名
-#      password: your_password  # 如果有密码
-
+      host: ${MONGO_HOST}
+      port: ${MONGO_PORT}
+      database: ${MONGO_DB}
+      username: ${MONGO_USERNAME}
+      password: ${MONGO_PASSWORD}
 
 jwt:
-  secretKey: ${SECRET_KEY}
+  secretKey: ${JWT_SECRET_KEY}

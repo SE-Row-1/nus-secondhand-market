@@ -1,10 +1,12 @@
 import { SingleItemDetailsCard } from "@/components/item/details";
-import type { Account, SingleItem } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import {
+  prefetchItem,
+  prefetchMe,
+  prefetchWishlistStatistics,
+} from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { cache } from "react";
 
 type Props = {
   params: {
@@ -13,8 +15,15 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([getItem(id), serverRequester.get<Account>("/auth/me")]);
+  const [
+    { data: item, error: itemError },
+    { data: wishlistStatistics, error: wishlistStatisticsError },
+    { data: me, error: meError },
+  ] = await Promise.all([
+    prefetchItem(id),
+    prefetchWishlistStatistics(id),
+    prefetchMe(),
+  ]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -22,6 +31,10 @@ export default async function Page({ params: { id } }: Props) {
 
   if (itemError) {
     redirect(`/error?message=${itemError.message}`);
+  }
+
+  if (wishlistStatisticsError) {
+    redirect(`/error?message=${wishlistStatisticsError.message}`);
   }
 
   if (meError && meError.status !== 401) {
@@ -37,19 +50,19 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard item={item} me={me} />
+      <SingleItemDetailsCard
+        item={item}
+        wishlistStatistics={wishlistStatistics}
+        me={me}
+      />
     </div>
   );
 }
 
 export async function generateMetadata({ params: { id } }: Props) {
-  const { data: item } = await getItem(id);
+  const { data: item } = await prefetchItem(id);
 
   return {
     title: item?.name,
   };
 }
-
-const getItem = cache(async (id: string) => {
-  return await serverRequester.get<SingleItem<Account>>(`/items/${id}`);
-});
