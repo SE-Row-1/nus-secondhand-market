@@ -1,5 +1,6 @@
 server:
-  port: 8081
+  port: ${PORT}
+
 spring:
   application:
     name: market
@@ -27,4 +28,3 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
-

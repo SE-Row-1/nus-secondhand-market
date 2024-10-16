@@ -1,42 +1,10 @@
-import { cookies } from "next/headers";
-import {
-  NextResponse,
-  type MiddlewareConfig,
-  type NextRequest,
-} from "next/server";
-
-/**
- * Regular expressions for routes accessible only if user IS NOT authenticated.
- */
-const NO_AUTH_REG_EXPS = [/^\/login$/, /^\/register$/];
-
-/**
- * Regular expressions for routes accessible only if user IS authenticated.
- */
-const AUTH_REG_EXPS = [/^\/settings/, /^\/belongings/];
+import { type MiddlewareConfig, type NextRequest } from "next/server";
+import { AuthGuard } from "./middleware/auth-guard";
 
 export async function middleware(req: NextRequest) {
-  const isAuthenticated = cookies().has("access_token");
+  const authGuard = new AuthGuard();
 
-  if (
-    isAuthenticated &&
-    NO_AUTH_REG_EXPS.some((regExp) => regExp.test(req.nextUrl.pathname))
-  ) {
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = "/";
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  if (
-    !isAuthenticated &&
-    AUTH_REG_EXPS.some((regExp) => regExp.test(req.nextUrl.pathname))
-  ) {
-    const redirectUrl = req.nextUrl.clone();
-    redirectUrl.pathname = "/login";
-    return NextResponse.redirect(redirectUrl);
-  }
-
-  return NextResponse.next();
+  return authGuard.handle(req);
 }
 
 export const config: MiddlewareConfig = {
