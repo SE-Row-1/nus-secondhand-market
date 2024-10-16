@@ -1,7 +1,7 @@
 import type { Item } from "@/types";
 import amqplib from "amqplib";
 
-const connection = await amqplib.connect(Bun.env.RABBITMQ_URL);
+const connection = await amqplib.connect(process.env.RABBITMQ_URL);
 const channel = await connection.createChannel();
 const itemExchange = await channel.assertExchange("item", "topic");
 

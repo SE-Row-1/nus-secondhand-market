@@ -1,9 +1,9 @@
 import type { Item } from "@/types";
 import { MongoClient } from "mongodb";
 
-const client = await MongoClient.connect(Bun.env.MONGO_URL);
+const client = await MongoClient.connect(process.env.MONGO_URL);
 
-const db = client.db(Bun.env.MONGO_DB_NAME);
+const db = client.db(process.env.MONGO_DB_NAME);
 
 /**
  * The MongoDB collection that stores all items.

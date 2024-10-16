@@ -1,15 +1,22 @@
-import { compress } from "bun-compression";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
-import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
-import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
+
+const compress =
+  process.env.NODE_ENV === "test"
+    ? await import("bun-compression").then((m) => m.compress)
+    : await import("hono/compress").then((m) => m.compress);
+
+const getConnInfo =
+  process.env.NODE_ENV === "test"
+    ? await import("hono/bun").then((m) => m.getConnInfo)
+    : await import("@hono/node-server/conninfo").then((m) => m.getConnInfo);
 
 // Entry point of the application.
 const app = new Hono();
@@ -21,17 +28,6 @@ app.use(
   // TODO: Replace `bun-compression` with `hono/compress`,
   // once Bun has implemented `CompressionStream`. See oven-sh/bun#1723.
   compress(),
-
-  // Enable CORS in non-production environments.
-  //
-  // In production environment, frontend and backend are served
-  // on the same domain, so there is no need for CORS.
-  //
-  // TODO: Remove this middleware once we have a local load balancer.
-  cors({
-    origin: (origin) => (Bun.env.NODE_ENV === "production" ? null : origin),
-    credentials: Bun.env.NODE_ENV === "production" ? false : true,
-  }),
 
   // Log incoming requests and their corresponding responses.
   //
@@ -53,7 +49,7 @@ app.use(
   // In testing environment, the rate limit is lifted to 10000 req/min.
   rateLimiter({
     windowMs: 1000 * 60,
-    limit: Bun.env.NODE_ENV === "test" ? 10000 : 100,
+    limit: process.env.NODE_ENV === "test" ? 10000 : 100,
     keyGenerator: (c) =>
       getConnInfo(c).remote.address ??
       getCookie(c, "access_token") ??
@@ -76,5 +72,14 @@ app.route("/items", itemsController);
 // Register global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
+
+if (process.env.NODE_ENV !== "test") {
+  const serve = await import("@hono/node-server").then((m) => m.serve);
+
+  serve({
+    fetch: app.fetch,
+    port: process.env.PORT ?? 3000,
+  });
+}
 
 export default app;

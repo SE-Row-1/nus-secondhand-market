@@ -43,7 +43,7 @@ const accountSchema = v.object({
  */
 async function verifyJwt(token: string) {
   try {
-    return await verify(token, Bun.env.JWT_SECRET_KEY);
+    return await verify(token, process.env.JWT_SECRET_KEY);
   } catch (error) {
     if (error instanceof Error) {
       throw new HTTPException(401, { message: error.message, cause: error });
