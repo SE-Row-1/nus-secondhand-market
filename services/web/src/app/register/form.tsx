@@ -50,7 +50,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await clientRequester.post<DetailedAccount>("/auth/me", {
+      return await clientRequester.post<DetailedAccount>("/accounts", {
         email,
         password,
       });

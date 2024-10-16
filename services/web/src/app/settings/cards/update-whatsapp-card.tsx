@@ -33,11 +33,13 @@ const formSchema = v.object({
 });
 
 type Props = {
+  id: number;
   initialPhoneCode: string | null;
   initialPhoneNumber: string | null;
 };
 
 export function UpdateWhatsappCard({
+  id,
   initialPhoneCode,
   initialPhoneNumber,
 }: Props) {
@@ -54,7 +56,7 @@ export function UpdateWhatsappCard({
 
       const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
 
-      return await clientRequester.patch<DetailedAccount>("/auth/me", {
+      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         phone_code: phoneCode,
         phone_number: phoneNumber,
       });

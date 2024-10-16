@@ -27,10 +27,11 @@ const formSchema = v.object({
 });
 
 type Props = {
+  id: number;
   initialNickname: string | null;
 };
 
-export function UpdateNicknameCard({ initialNickname }: Props) {
+export function UpdateNicknameCard({ id, initialNickname }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -44,7 +45,7 @@ export function UpdateNicknameCard({ initialNickname }: Props) {
 
       const { nickname } = v.parse(formSchema, formData);
 
-      return await clientRequester.patch<DetailedAccount>("/auth/me", {
+      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         nickname,
       });
     },
