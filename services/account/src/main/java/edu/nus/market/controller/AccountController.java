@@ -42,7 +42,7 @@ public class AccountController {
         }
         int userId = JwtTokenManager.decodeCookie(token).getId();
         if (userId != id){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
         return accountService.deleteAccountService(id);
     }
@@ -60,7 +60,7 @@ public class AccountController {
         }
         int userId = JwtTokenManager.decodeCookie(token).getId();
         if (userId != id){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
         return accountService.updateProfileService(req, id);
     }

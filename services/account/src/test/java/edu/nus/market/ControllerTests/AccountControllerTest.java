@@ -172,8 +172,8 @@ public class AccountControllerTest {
             // Perform the mock request
             mockMvc.perform(delete("/accounts/2")
                     .header("Cookie", "Valid Token"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
 
             // Verify that the mocked accountService method was called
             Mockito.verify(accountService, Mockito.never()).deleteAccountService(anyInt());
@@ -320,8 +320,8 @@ public class AccountControllerTest {
                 .header("Cookie", "Valid Token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error").value(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.error").value(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
 
             // Verify that the mocked accountService method was called
             Mockito.verify(accountService, Mockito.never()).updateProfileService(any(UpdateProfileReq.class), anyInt());
