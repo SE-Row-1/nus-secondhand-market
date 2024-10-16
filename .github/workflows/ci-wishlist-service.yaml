@@ -40,12 +40,6 @@ jobs:
       run:
         working-directory: services/wishlist
 
-    services:
-      mongo:
-        image: mongo:latest
-        ports:
-          - 27018:27017
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -56,9 +50,8 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Start containers
+      - name: Start containers using docker-compose
         run: docker compose -f docker-compose.test.yaml up -d
-
 
       - name: Run tests with Maven (without Checkstyle)
         run: mvn test -Dcheckstyle.skip=true
