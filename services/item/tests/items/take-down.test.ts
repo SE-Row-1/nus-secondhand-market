@@ -1,10 +1,15 @@
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it } from "bun:test";
+import { publishItemEvent } from "@/utils/mq";
+import { expect, it, mock } from "bun:test";
 import { me, myJwt, someoneElse } from "../test-utils/mock-data";
 import { DELETE } from "../test-utils/request";
 
-it.only("takes down an item", async () => {
+it("takes down an item", async () => {
+  mock.module("@/utils/mq", () => ({
+    publishItemEvent: mock(),
+  }));
+
   const insertedId = crypto.randomUUID();
 
   await itemsCollection.insertOne({
@@ -33,6 +38,7 @@ it.only("takes down an item", async () => {
 
   expect(res.status).toEqual(204);
   expect(body).toBeEmpty();
+  expect(publishItemEvent).toHaveBeenCalledTimes(1);
 
   const item = await itemsCollection.findOne({ id: insertedId });
   expect(item?.deletedAt).toBeDate();
