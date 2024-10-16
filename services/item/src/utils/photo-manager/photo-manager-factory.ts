@@ -7,7 +7,7 @@ import { S3PhotoManager } from "./s3-photo-manager";
  */
 export class PhotoManagerFactory {
   static createPhotoManager(): PhotoManager {
-    if (Bun.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production") {
       return new S3PhotoManager();
     }
 

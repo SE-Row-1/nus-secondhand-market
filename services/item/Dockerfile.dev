@@ -1,4 +1,4 @@
-FROM oven/bun
+FROM oven/bun AS build
 
 WORKDIR /app
 
@@ -8,6 +8,12 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-ENV PORT=8083
+RUN bun build --outdir=dist --target=node --entry-naming="[dir]/[name].mjs" ./src/index.ts
 
-CMD ["bun", "run", "dev"]
+FROM node:lts-alpine AS production
+
+WORKDIR /app
+
+COPY --from=build /app/dist/index.mjs .
+
+CMD ["node", "index.mjs"]

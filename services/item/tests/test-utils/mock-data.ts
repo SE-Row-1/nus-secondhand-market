@@ -17,7 +17,10 @@ export const me = {
   deletedAt: null,
 };
 
-export const myJwt = await Jwt.sign(camelToSnake(me), Bun.env.JWT_SECRET_KEY);
+export const myJwt = await Jwt.sign(
+  camelToSnake(me),
+  process.env.JWT_SECRET_KEY,
+);
 
 export const someoneElse = {
   id: 2,
@@ -37,5 +40,5 @@ export const someoneElse = {
 
 export const someoneElseJwt = await Jwt.sign(
   camelToSnake(someoneElse),
-  Bun.env.JWT_SECRET_KEY,
+  process.env.JWT_SECRET_KEY,
 );

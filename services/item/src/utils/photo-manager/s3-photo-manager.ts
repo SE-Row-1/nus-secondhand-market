@@ -12,13 +12,13 @@ import type { PhotoManager } from "./photo-manager-interface";
 export class S3PhotoManager implements PhotoManager {
   private static client = new S3Client({
     credentials: {
-      accessKeyId: Bun.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: Bun.env.AWS_SECRET_ACCESS_KEY,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     },
-    region: Bun.env.AWS_REGION,
+    region: process.env.AWS_REGION,
   });
 
-  private static BASE_URL = `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.AWS_REGION}.amazonaws.com`;
+  private static BASE_URL = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com`;
 
   private static UPLOAD_DIR = "item-photos";
 
@@ -27,7 +27,7 @@ export class S3PhotoManager implements PhotoManager {
 
     await S3PhotoManager.client.send(
       new PutObjectCommand({
-        Bucket: Bun.env.S3_BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: key,
         Body: new Uint8Array(await photo.arrayBuffer()),
       }),
@@ -39,7 +39,7 @@ export class S3PhotoManager implements PhotoManager {
   public async remove(photoUrl: string) {
     await S3PhotoManager.client.send(
       new DeleteObjectCommand({
-        Bucket: Bun.env.S3_BUCKET_NAME,
+        Bucket: process.env.S3_BUCKET_NAME,
         Key: photoUrl.replace(`${S3PhotoManager.BASE_URL}/`, ""),
       }),
     );
