@@ -15,7 +15,7 @@ spring:
       password: ${MONGO_PASSWORD}
 
 server:
-  port: ${PORT}
+  port: ${WISHLIST_PORT}
 
 
 jwt:
