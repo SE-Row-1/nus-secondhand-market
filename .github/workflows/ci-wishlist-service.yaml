@@ -59,12 +59,6 @@ jobs:
       - name: Start containers
         run: docker compose -f docker-compose.test.yaml up -d
 
-      - name: Wait for MongoDB to be ready
-        run: |
-          until docker exec nshm-wishlist-test-mongo-1 mongo --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
-            echo "Waiting for MongoDB to be ready..."
-            sleep 5
-          done
 
       - name: Run tests with Maven (without Checkstyle)
         run: mvn test -Dcheckstyle.skip=true
