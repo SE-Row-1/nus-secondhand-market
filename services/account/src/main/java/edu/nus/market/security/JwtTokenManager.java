@@ -7,10 +7,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.HttpCookie;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenManager {
@@ -81,7 +83,18 @@ public class JwtTokenManager {
     }
 
     public static ResAccount decodeCookie(String cookie) {
-        String token = cookie.split("; ")[0].split("=")[1];
+        if (cookie == null || cookie.isEmpty()) {
+            throw new IllegalArgumentException("Cookie cannot be null or empty");
+        }
+
+        List<HttpCookie> cookies = HttpCookie.parse(cookie);
+
+        String token = cookies.stream()
+            .filter(c -> "access_token".equals(c.getName()))
+            .map(HttpCookie::getValue)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Missing access_token in the provided cookie"));
+
         return decodeAccessToken(token);
     }
 
