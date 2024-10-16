@@ -7,9 +7,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.HttpCookie;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenManager {
@@ -30,7 +33,7 @@ public class JwtTokenManager {
             .claim("preferredCurrency", resAccount.getPreferredCurrency())
             .claim("createdAt", resAccount.getCreatedAt())
             .claim("deletedAt", resAccount.getDeletedAt())
-            .setIssuedAt(new Date())//登录时间
+            .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .setExpiration(new Date(new Date().getTime() + expirationTime))
             .compact();
@@ -47,7 +50,15 @@ public class JwtTokenManager {
 
     public static boolean validateCookie(String Cookie) {
         // extract the access token from the cookie and validate it using validateToken method
-        String token = Cookie.split("; ")[0].split("=")[1];
+        String token = Arrays.stream(Cookie.split("; "))
+            .filter(part -> part.startsWith("access_token="))
+            .map(part -> part.split("=")[1])
+            .findFirst()
+            .orElse(null);
+
+        if (token == null) {
+            return false;
+        }
 
         return validateToken(token);
     }
@@ -72,7 +83,18 @@ public class JwtTokenManager {
     }
 
     public static ResAccount decodeCookie(String cookie) {
-        String token = cookie.split("; ")[0].split("=")[1];
+        if (cookie == null || cookie.isEmpty()) {
+            throw new IllegalArgumentException("Cookie cannot be null or empty");
+        }
+
+        List<HttpCookie> cookies = HttpCookie.parse(cookie);
+
+        String token = cookies.stream()
+            .filter(c -> "access_token".equals(c.getName()))
+            .map(HttpCookie::getValue)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Missing access_token in the provided cookie"));
+
         return decodeAccessToken(token);
     }
 

@@ -1,7 +1,7 @@
 package edu.nus.market.dao;
 
 import edu.nus.market.pojo.Account;
-import edu.nus.market.pojo.UpdateProfileReq;
+import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
@@ -22,23 +22,9 @@ public interface AccountDao {
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
         "created_at AS createdAt, deleted_at AS deletedAt")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "email", column = "email"),
-        @Result(property = "nickname", column = "nickname"),
-        @Result(property = "avatarUrl", column = "avatar_url"),
-        @Result(property = "departmentId", column = "department_id"),
-        @Result(property = "phoneCode", column = "phone_code"),
-        @Result(property = "phoneNumber", column = "phone_number"),
-        @Result(property = "preferredCurrency", column = "preferred_currency"),
-        @Result(property = "createdAt", column = "created_at"),
-        @Result(property = "deletedAt", column = "deleted_at")
-    })
     Account registerNewAccount(Account account);
 
-
-
-    @Delete("UPDATE FROM account WHERE id = #{id}")
+    @Delete("DELETE FROM account WHERE id = #{id}")
     void hardDeleteAccount(int id);
 
     @Update("UPDATE account SET deleted_at = now() WHERE id = #{id}")
@@ -59,21 +45,16 @@ public interface AccountDao {
         "WHERE id = #{id} " +
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
-        "created_at AS createdAt, deleted_at AS deletedAt")
-    @Results({
-        @Result(property = "id", column = "id"),
-        @Result(property = "email", column = "email"),
-        @Result(property = "nickname", column = "nickname"),
-        @Result(property = "avatarUrl", column = "avatar_url"),
-        @Result(property = "departmentId", column = "department_id"),
-        @Result(property = "phoneCode", column = "phone_code"),
-        @Result(property = "phoneNumber", column = "phone_number"),
-        @Result(property = "preferredCurrency", column = "preferred_currency"),
-        @Result(property = "createdAt", column = "created_at"),
-        @Result(property = "deletedAt", column = "deleted_at")
-    })
+        "created_at AS createdAt, deleted_at AS deletedAt"
+    )
     Account updateProfile(UpdateProfileReq updateProfileReq, int id);
 
+    // clean table everytime before and after test
+    @Delete("Delete FROM account")
+    void cleanTable();
 
+    // delete account by email
+    @Delete("DELETE FROM account WHERE email = #{email}")
+    void deleteAccountByEmail(String email);
 }
 

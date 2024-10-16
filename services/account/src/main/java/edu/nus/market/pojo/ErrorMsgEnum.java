@@ -7,7 +7,8 @@ public enum ErrorMsgEnum {
     ACCOUNT_NOT_FOUND("This account does not exist."),
     UNAUTHORIZED_ACCESS("Token validation failed."),
     NOT_LOGGED_IN("Please log in first."),
-    FAILED_UPDATE("Failed to update profile.")
+    FAILED_UPDATE("Failed to update profile."),
+    ACCESS_FORBIDDEN("You are not allowed to access this resource."),
 
     ;
     public String ErrorMsg;

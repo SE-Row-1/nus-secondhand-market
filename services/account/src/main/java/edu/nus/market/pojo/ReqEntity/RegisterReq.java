@@ -1,4 +1,4 @@
-package edu.nus.market.pojo;
+package edu.nus.market.pojo.ReqEntity;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterReq {
+    @NotBlank
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     String email;
 //

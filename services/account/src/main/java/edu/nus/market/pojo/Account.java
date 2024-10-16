@@ -1,5 +1,6 @@
 package edu.nus.market.pojo;
 
+import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
