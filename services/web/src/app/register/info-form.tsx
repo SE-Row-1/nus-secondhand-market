@@ -8,31 +8,33 @@ import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { type FormEvent } from "react";
+import type { FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
-  email: v.pipe(
-    v.string("Email should be a text string."),
-    v.email("Email format is invalid."),
-    v.endsWith("@u.nus.edu", "Email should be a NUS email address."),
-  ),
   password: v.pipe(
-    v.string("Password should be a text string."),
-    v.minLength(8, "Password should be at least 8 characters long."),
-    v.maxLength(20, "Password should be at most 20 characters long."),
+    v.string("Password should be a string"),
+    v.minLength(8, "Password should be at least 8 characters long"),
+    v.maxLength(20, "Password should be at most 20 characters long"),
   ),
-  confirmation: v.pipe(
-    v.string("Password should be a text string."),
-    v.minLength(8, "Password should be at least 8 characters long."),
-    v.maxLength(20, "Password should be at most 20 characters long."),
+  passwordConfirmation: v.pipe(
+    v.string("Password should be a string"),
+    v.minLength(8, "Password should be at least 8 characters long"),
+    v.maxLength(20, "Password should be at most 20 characters long"),
+  ),
+  nickname: v.pipe(
+    v.string("Nickname should be a string"),
+    v.minLength(2, "Nickname should be at least 2 characters long"),
+    v.maxLength(20, "Nickname should be at most 20 characters long"),
   ),
 });
 
-export function RegisterForm() {
-  const router = useRouter();
+type Props = {
+  email: string;
+  progressToNextStep: () => void;
+};
 
+export function InfoForm({ email, progressToNextStep }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -41,33 +43,30 @@ export function RegisterForm() {
     mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
+      const { password, passwordConfirmation, nickname } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+      );
 
-      const { email, password, confirmation } = v.parse(formSchema, formData);
-
-      if (password !== confirmation) {
+      if (password !== passwordConfirmation) {
         throw new Error("Passwords do not match. Please double check.");
       }
 
       return await clientRequester.post<DetailedAccount>("/accounts", {
         email,
         password,
+        nickname,
       });
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
-      toast({
-        title: "Registration success",
-        description: `Welcome on board, ${account.email}!`,
-      });
-      router.push("/");
-      router.refresh();
+
+      progressToNextStep();
     },
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Registration failed",
+        title: "Failed to register",
         description: error.message,
       });
     },
@@ -76,17 +75,9 @@ export function RegisterForm() {
   return (
     <form onSubmit={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          type="email"
-          name="email"
-          required
-          placeholder="e1234567@u.nus.edu"
-          id="email"
-        />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="password">Password</Label>
+        <Label showRequiredMarker htmlFor="password">
+          Password
+        </Label>
         <Input
           type="password"
           name="password"
@@ -96,13 +87,24 @@ export function RegisterForm() {
         />
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="confirmation">Confirm password</Label>
+        <Label showRequiredMarker htmlFor="passwordConfirmation">
+          Confirm password
+        </Label>
         <Input
           type="password"
-          name="confirmation"
+          name="passwordConfirmation"
           required
           placeholder="Type your password again"
-          id="confirmation"
+          id="passwordConfirmation"
+        />
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="nickname">Nickname</Label>
+        <Input
+          type="text"
+          name="nickname"
+          placeholder="2-20 characters"
+          id="nickname"
         />
       </div>
       <Button type="submit" disabled={isPending}>
@@ -111,7 +113,7 @@ export function RegisterForm() {
         ) : (
           <UserRoundPlusIcon className="size-4 mr-2" />
         )}
-        Register
+        Finish
       </Button>
     </form>
   );
