@@ -33,13 +33,13 @@ export default async function Page({ params: { id } }: Props) {
     redirect(`/error?message=${itemError.message}`);
   }
 
-  if (wishlistStatisticsError) {
-    redirect(`/error?message=${wishlistStatisticsError.message}`);
-  }
-
   if (meError && meError.status !== 401) {
     redirect(`/error?message=${meError.message}`);
   }
+
+  const safeWishlistStatistics = wishlistStatisticsError
+    ? { count: 0, last_wanted_at: null }
+    : wishlistStatistics;
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -52,7 +52,7 @@ export default async function Page({ params: { id } }: Props) {
       </Link>
       <SingleItemDetailsCard
         item={item}
-        wishlistStatistics={wishlistStatistics}
+        wishlistStatistics={safeWishlistStatistics}
         me={me}
       />
     </div>
