@@ -10,6 +10,7 @@ import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon, UndoIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import * as v from "valibot";
 import { PhotoSlots } from "./photo-slots";
@@ -70,6 +71,8 @@ export function EditItem({ id, initialItem }: Props) {
 
   const queryClient = useQueryClient();
 
+  const router = useRouter();
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -113,6 +116,8 @@ export function EditItem({ id, initialItem }: Props) {
         title: "Update success",
         description: "Your item has been updated successfully",
       });
+
+      router.push(`/items/${id}`);
     },
     onError: (error) => {
       toast({
