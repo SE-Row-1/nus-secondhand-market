@@ -14,9 +14,6 @@ import {
 } from "./schema";
 import * as itemsService from "./service";
 
-/**
- * Items related APIs.
- */
 export const itemsController = new Hono();
 
 itemsController.get("/", validator("query", getAllQuerySchema), async (c) => {
@@ -39,8 +36,8 @@ itemsController.get(
   "/:id",
   validator("param", getOneParamSchema),
   async (c) => {
-    const { id } = c.req.valid("param");
-    const result = await itemsService.getOne({ id });
+    const param = c.req.valid("param");
+    const result = await itemsService.getOne(param);
     return c.json(result, 200);
   },
 );
@@ -62,9 +59,13 @@ itemsController.patch(
   validator("param", updateParamSchema),
   validator("form", updateFormSchema),
   async (c) => {
-    const { id } = c.req.valid("param");
+    const param = c.req.valid("param");
     const form = c.req.valid("form");
-    const result = await itemsService.update({ id, ...form, user: c.var.user });
+    const result = await itemsService.update({
+      ...param,
+      ...form,
+      user: c.var.user,
+    });
     return c.json(result, 200);
   },
 );
@@ -75,11 +76,11 @@ itemsController.put(
   validator("param", updateStatusParamSchema),
   validator("json", updateStatusJsonSchema),
   async (c) => {
-    const { id } = c.req.valid("param");
-    const { status } = c.req.valid("json");
+    const param = c.req.valid("param");
+    const json = c.req.valid("json");
     const result = await itemsService.updateStatus({
-      id,
-      status,
+      ...param,
+      ...json,
       user: c.var.user,
     });
     return c.json(result, 200);
@@ -91,8 +92,8 @@ itemsController.delete(
   auth(true),
   validator("param", takeDownParamSchema),
   async (c) => {
-    const { id } = c.req.valid("param");
-    await itemsService.takeDown({ id, user: c.var.user });
+    const param = c.req.valid("param");
+    await itemsService.takeDown({ ...param, user: c.var.user });
     return c.body(null, 204);
   },
 );

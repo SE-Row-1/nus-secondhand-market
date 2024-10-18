@@ -12,8 +12,8 @@ type Props = {
 };
 
 export function Marketplace({ firstPage }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
-    queryKey: ["items"],
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ["items", "marketplace"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
         status: String(ItemStatus.FOR_SALE),
@@ -44,16 +44,6 @@ export function Marketplace({ firstPage }: Props) {
     <>
       <ItemGrid items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
-      {hasNextPage || (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          - You have come to an end :) -
-        </p>
-      )}
-      {isFetching && (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more for you...
-        </p>
-      )}
     </>
   );
 }

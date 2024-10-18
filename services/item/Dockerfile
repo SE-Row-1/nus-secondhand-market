@@ -16,4 +16,4 @@ WORKDIR /app
 
 COPY --from=build /app/dist/index.js .
 
-CMD ["bun", "index.js"]
+CMD ["bun", "run", "index.js"]

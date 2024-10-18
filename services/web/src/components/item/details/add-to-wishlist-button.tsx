@@ -43,7 +43,10 @@ export function AddToWishListButton({ item, initialIsInWishlist }: Props) {
         );
       }
 
-      return await clientRequester.post(`/wishlists/${me.id}`, item);
+      return await clientRequester.post(
+        `/wishlists/${me.id}/items/${item.id}`,
+        item,
+      );
     },
     onSuccess: () => {
       setIsInWishlist((isInWishlist) => !isInWishlist);

@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function WishList({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["wishlist"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
@@ -44,16 +44,6 @@ export function WishList({ firstPage, me }: Props) {
     <>
       <ItemGrid items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
-      {hasNextPage || (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          - You have come to an end :) -
-        </p>
-      )}
-      {isFetching && (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more for you...
-        </p>
-      )}
     </>
   );
 }

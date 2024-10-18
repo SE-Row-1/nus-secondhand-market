@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/components/ui/utils";
 import { useItem } from "@/hooks/use-item";
 import {
   ItemStatus,
@@ -80,7 +81,12 @@ export function SingleItemDetails({
             <FromNow date={wishlistStatistics.last_wanted_at} />.
           </p>
         ) : null}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 pt-5">
+        <div
+          className={cn(
+            "grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5",
+            me?.id === item.seller.id && "lg:grid-cols-3",
+          )}
+        >
           {me?.id === item.seller.id ? (
             <>
               {item.status === ItemStatus.FOR_SALE ? (

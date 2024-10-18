@@ -56,11 +56,16 @@ services:
       - 8082:8082
     env_file:
       - services/item/.env
+    volumes:
+      - ./services/item:/app
+      - /app/node_modules
     networks:
       - bridge
     depends_on:
-      - item-mongo
-      - rabbitmq
+      item-mongo:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     restart: always
 
   item-mongo:
@@ -126,7 +131,7 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
-      test: ["CMD-SHELL", "rabbitmqctl status"]
+      test: [ "CMD-SHELL", "rabbitmqctl status" ]
       interval: 30s
       retries: 5
     networks:
@@ -153,6 +158,7 @@ volumes:
   item-mongo-data:
   wishlist-mongo-data:
   rabbitmq-data:
+
 
 networks:
   bridge:

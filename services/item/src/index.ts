@@ -1,5 +1,7 @@
+import { compress } from "bun-compression";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
+import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
@@ -7,16 +9,6 @@ import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
-
-const compress =
-  process.env.NODE_ENV === "test"
-    ? await import("bun-compression").then((m) => m.compress)
-    : await import("hono/compress").then((m) => m.compress);
-
-const getConnInfo =
-  process.env.NODE_ENV === "test"
-    ? await import("hono/bun").then((m) => m.getConnInfo)
-    : await import("@hono/node-server/conninfo").then((m) => m.getConnInfo);
 
 // Entry point of the application.
 const app = new Hono();
@@ -49,7 +41,7 @@ app.use(
   // In testing environment, the rate limit is lifted to 10000 req/min.
   rateLimiter({
     windowMs: 1000 * 60,
-    limit: process.env.NODE_ENV === "test" ? 10000 : 100,
+    limit: Bun.env.NODE_ENV === "test" ? 10000 : 100,
     keyGenerator: (c) =>
       getConnInfo(c).remote.address ??
       getCookie(c, "access_token") ??
@@ -59,27 +51,18 @@ app.use(
   // Add security-related headers to the response.
   secureHeaders(),
 
-  // Transform the JSON response from camel case to snake case.
+  // Transform JSON response from camel case to snake case.
   transformCase(),
 );
 
 // Health check endpoint.
 app.get("/healthz", (c) => c.text("ok"));
 
-// Register API controllers.
+// Register controllers.
 app.route("/items", itemsController);
 
 // Register global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
-
-if (process.env.NODE_ENV !== "test") {
-  const serve = await import("@hono/node-server").then((m) => m.serve);
-
-  serve({
-    fetch: app.fetch,
-    port: process.env.PORT ?? 3000,
-  });
-}
 
 export default app;

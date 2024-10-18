@@ -5,7 +5,7 @@ import { me } from "../test-utils/mock-data";
 import { GET } from "../test-utils/request";
 
 mock.module("@/utils/requester", () => ({
-  createRequester: () => () => me,
+  createRequester: () => () => me.detailedAccount,
 }));
 
 it("returns the item with the given ID", async () => {
@@ -13,17 +13,13 @@ it("returns the item with the given ID", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
-    status: ItemStatus.FOR_SALE,
+    seller: me.simplifiedAccount,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -34,7 +30,7 @@ it("returns the item with the given ID", async () => {
   expect(res.status).toEqual(200);
   expect(body).toMatchObject({
     id: insertedId,
-    seller: expect.objectContaining({ id: me.id, email: me.email }),
+    seller: me.detailed_account,
   });
   expect(body).not.toContainKey("_id");
 
@@ -46,17 +42,13 @@ it("ignores deleted items", async () => {
 
   await itemsCollection.insertOne({
     id: deletedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
-    status: ItemStatus.FOR_SALE,
+    seller: me.simplifiedAccount,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: new Date(),
   });

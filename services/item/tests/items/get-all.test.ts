@@ -26,17 +26,13 @@ describe("Default behavior", () => {
 
     await itemsCollection.insertOne({
       id: deletedId,
-      type: ItemType.SINGLE,
+      type: ItemType.Single,
       name: "test",
       description: "test",
       price: 100,
       photoUrls: [],
-      seller: {
-        id: me.id,
-        nickname: me.nickname,
-        avatarUrl: me.avatarUrl,
-      },
-      status: ItemStatus.FOR_SALE,
+      seller: me.simplifiedAccount,
+      status: ItemStatus.ForSale,
       createdAt: new Date(),
       deletedAt: new Date(),
     });
@@ -61,7 +57,7 @@ describe("Given type", () => {
     expect(res1.status).toEqual(200);
 
     for (const item of body1.items) {
-      expect(item.type).toEqual(ItemType.SINGLE);
+      expect(item.type).toEqual(ItemType.Single);
     }
 
     const res2 = await GET("/items?type=pack");
@@ -70,7 +66,7 @@ describe("Given type", () => {
     expect(res2.status).toEqual(200);
 
     for (const item of body2.items) {
-      expect(item.type).toEqual(ItemType.PACK);
+      expect(item.type).toEqual(ItemType.Pack);
     }
   });
 
@@ -91,7 +87,7 @@ describe("Given status", () => {
     expect(res1.status).toEqual(200);
 
     for (const item of body1.items) {
-      expect(item.status).toEqual(ItemStatus.FOR_SALE);
+      expect(item.status).toEqual(ItemStatus.ForSale);
     }
 
     const res2 = await GET("/items?status=1");
@@ -100,7 +96,7 @@ describe("Given status", () => {
     expect(res2.status).toEqual(200);
 
     for (const item of body2.items) {
-      expect(item.status).toEqual(ItemStatus.DEALT);
+      expect(item.status).toEqual(ItemStatus.Dealt);
     }
 
     const res3 = await GET("/items?status=2");
@@ -109,7 +105,7 @@ describe("Given status", () => {
     expect(res3.status).toEqual(200);
 
     for (const item of body3.items) {
-      expect(item.status).toEqual(ItemStatus.SOLD);
+      expect(item.status).toEqual(ItemStatus.Sold);
     }
   });
 

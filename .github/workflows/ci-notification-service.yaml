@@ -33,7 +33,7 @@ jobs:
         run: go mod download
 
       - name: Lint
-        run: go vet .
+        run: go vet ./...
 
   format:
     runs-on: ubuntu-latest

@@ -12,6 +12,7 @@ async function serverFetch<T>(endpoint: string, init: RequestInit = {}) {
         ...init.headers,
         Cookie: cookies().toString(),
       },
+      signal: AbortSignal.timeout(5000),
     });
 
     if (res.status === 204) {
