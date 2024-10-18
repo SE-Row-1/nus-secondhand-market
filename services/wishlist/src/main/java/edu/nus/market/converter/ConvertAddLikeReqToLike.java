@@ -14,27 +14,20 @@ public class ConvertAddLikeReqToLike {
     public static Like convert(AddLikeReq req) {
         Like like;
 
-        if ("PACK".equalsIgnoreCase(req.getType())) {
+        if ("pack".equals(req.getType())) {
             // Convert to PackLike
             PackLike packLike = new PackLike();
             setCommonPara(req, packLike);
-            packLike.setDiscount(req.getDiscount());  // Set discount for PackLike
-
-            // Convert each child to SingleLike
-            packLike.setChildren(
-                req.getChildren().stream()
-                    .map(ConvertAddLikeReqToLike::convert)
-                    .map(SingleLike.class::cast)
-                    .collect(Collectors.toList())
-            );
-
+            packLike.setDiscount(req.getDiscount());
             like = packLike;
-        } else {
+        } else if ("single".equals(req.getType())) {
             // Convert to SingleLike
             SingleLike singleLike = new SingleLike();
             setCommonPara(req, singleLike);
-            singleLike.setPhotoUrls(req.getPhotoUrls());  // Specific to SingleLike
+            singleLike.setPhotoUrls(req.getPhotoUrls());
             like = singleLike;
+        } else {
+            throw new IllegalArgumentException("Invalid type: " + req.getType());
         }
 
         return like;
@@ -46,9 +39,9 @@ public class ConvertAddLikeReqToLike {
         like.setType(req.getType());
         like.setUserId(req.getUserId());
         like.setItemId(req.getItemId());
-        like.setFavoriteDate(new Date());  // Set current date
-        like.setItemName(req.getItemName());
-        like.setItemStatus(req.getItemStatus());
+        like.setWantedAt(new Date());  // Set current date
+        like.setName(req.getName());
+        like.setStatus(req.getStatus());
         like.setPrice(req.getPrice());
         like.setSeller(req.getSeller());  // Set seller info
     }
