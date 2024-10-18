@@ -1,4 +1,4 @@
-import { SingleItemDetailsCard } from "@/components/item/details";
+import { SingleItemDetails } from "@/components/item/details";
 import {
   prefetchItem,
   prefetchMe,
@@ -50,8 +50,8 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard
-        item={item}
+      <SingleItemDetails
+        initialItem={item}
         wishlistStatistics={wishlistStatistics}
         me={me}
       />
