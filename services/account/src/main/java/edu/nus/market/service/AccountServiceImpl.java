@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 import edu.nus.market.pojo.ReqEntity.*;
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
@@ -68,7 +69,7 @@ public class AccountServiceImpl implements AccountService{
         account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
         account = accountDao.registerNewAccount(account);
 
-        String accessToken = jwtTokenManager.generateAccessToken(new ResAccount(account));
+        String accessToken = jwtTokenManager.generateAccessToken(new JWTPayload(account));
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
         // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
@@ -87,7 +88,7 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         if (passwordEncoder.matches(loginReq.getPassword() + account.getPasswordSalt(), account.getPasswordHash())){
-            String accessToken = jwtTokenManager.generateAccessToken(new ResAccount(account));
+            String accessToken = jwtTokenManager.generateAccessToken(new JWTPayload(account));
             ResponseCookie cookie = cookieManager.generateCookie(accessToken);
             // generate the JWTaccesstoken and send it to the frontend
             return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));

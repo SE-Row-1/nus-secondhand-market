@@ -1,11 +1,14 @@
 package edu.nus.market.SecurityTests;
 
-import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.security.JwtTokenManager;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -16,60 +19,55 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 public class JwtTokenManagerTest {
 
+    @InjectMocks
     private JwtTokenManager jwtTokenManager;
 
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    private ResAccount resAccount;
+    private JWTPayload jwtPayload;
 
     @BeforeEach
-    void setUp() {
-        jwtTokenManager = new JwtTokenManager(secretKey);
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
 
-        resAccount = new ResAccount();
-        resAccount.setId(1);
-        resAccount.setEmail("e1351826@u.nus.edu");
-        resAccount.setNickname("John Doe");
-        resAccount.setAvatarUrl("http://example.com/avatar");
-        resAccount.setDepartmentId(123);
-        resAccount.setPhoneCode("65");
-        resAccount.setPhoneNumber("12345678");
-        resAccount.setPreferredCurrency("SGD");
-        resAccount.setCreatedAt("2024-01-01");
-        resAccount.setDeletedAt(null);
+        jwtPayload = new JWTPayload();
+        jwtPayload.setId(1);
+        jwtPayload.setNickname("JohnDoe");
+        jwtPayload.setAvatarUrl("http://example.com/avatar");
     }
 
     @Test
-    void testGenerateAccessToken() {
-        String token = JwtTokenManager.generateAccessToken(resAccount);
+    public void testGenerateAccessToken() {
+        String token = JwtTokenManager.generateAccessToken(jwtPayload);
         assertNotNull(token);
 
-        assertTrue(JwtTokenManager.validateToken(token));
+        // Verify token structure
+        Claims claims = Jwts.parser()
+            .setSigningKey(secretKey)
+            .parseClaimsJws(token)
+            .getBody();
 
-        ResAccount decodedAccount = JwtTokenManager.decodeAccessToken(token);
-        assertEquals(resAccount.getId(), decodedAccount.getId());
-        assertEquals(resAccount.getEmail(), decodedAccount.getEmail());
-        assertEquals(resAccount.getNickname(), decodedAccount.getNickname());
-        assertEquals(resAccount.getAvatarUrl(), decodedAccount.getAvatarUrl());
-        assertEquals(resAccount.getDepartmentId(), decodedAccount.getDepartmentId());
-        assertEquals(resAccount.getPhoneCode(), decodedAccount.getPhoneCode());
-        assertEquals(resAccount.getPhoneNumber(), decodedAccount.getPhoneNumber());
-        assertEquals(resAccount.getPreferredCurrency(), decodedAccount.getPreferredCurrency());
-        assertEquals(resAccount.getCreatedAt(), decodedAccount.getCreatedAt());
-        assertNull(decodedAccount.getDeletedAt());
+        assertEquals(1, claims.get("id"));
+        assertEquals("JohnDoe", claims.get("nickname"));
+        assertEquals("http://example.com/avatar", claims.get("avatar_url"));
+        assertNotNull(claims.getExpiration());
     }
 
     @Test
-    void testValidateToken() {
-        String token = JwtTokenManager.generateAccessToken(resAccount);
-
+    public void testValidateToken_ValidToken() {
+        String token = JwtTokenManager.generateAccessToken(jwtPayload);
         assertTrue(JwtTokenManager.validateToken(token));
+    }
 
+    @Test
+    public void testValidateToken_ExpiredToken() {
         String expiredToken = Jwts.builder()
-            .setSubject(String.valueOf(resAccount.getId()))
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(new Date().getTime() - 1000)) // make the time expired
+            .setSubject("1")
+            .claim("nickname", "JohnDoe")
+            .claim("avatar_url", "http://example.com/avatar")
+            .setIssuedAt(new Date(System.currentTimeMillis() - 1000))  // 1 second before
+            .setExpiration(new Date(System.currentTimeMillis() - 500))  // Already expired
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .compact();
 
@@ -77,24 +75,40 @@ public class JwtTokenManagerTest {
     }
 
     @Test
-    void testDecodeAccessToken() {
-        String token = JwtTokenManager.generateAccessToken(resAccount);
+    public void testDecodeAccessToken() {
+        String token = JwtTokenManager.generateAccessToken(jwtPayload);
+        JWTPayload decodedPayload = JwtTokenManager.decodeAccessToken(token);
 
-        ResAccount decodedAccount = JwtTokenManager.decodeAccessToken(token);
-
-        assertEquals(resAccount.getId(), decodedAccount.getId());
-        assertEquals(resAccount.getEmail(), decodedAccount.getEmail());
-        assertEquals(resAccount.getNickname(), decodedAccount.getNickname());
+        assertEquals(jwtPayload.getId(), decodedPayload.getId());
+        assertEquals(jwtPayload.getNickname(), decodedPayload.getNickname());
+        assertEquals(jwtPayload.getAvatarUrl(), decodedPayload.getAvatarUrl());
     }
 
     @Test
-    void testDecodeCookie() {
-        String token = JwtTokenManager.generateAccessToken(resAccount);
-
+    public void testDecodeCookie_ValidCookie() {
+        String token = JwtTokenManager.generateAccessToken(jwtPayload);
         String cookie = "access_token=" + token + "; Path=/; HttpOnly";
 
-        ResAccount decodedAccount = JwtTokenManager.decodeCookie(cookie);
-        assertEquals(resAccount.getId(), decodedAccount.getId());
-        assertEquals(resAccount.getEmail(), decodedAccount.getEmail());
+        JWTPayload decodedPayload = JwtTokenManager.decodeCookie(cookie);
+
+        assertEquals(jwtPayload.getId(), decodedPayload.getId());
+        assertEquals(jwtPayload.getNickname(), decodedPayload.getNickname());
+        assertEquals(jwtPayload.getAvatarUrl(), decodedPayload.getAvatarUrl());
+    }
+
+    @Test
+    public void testDecodeCookie_InvalidCookie() {
+        String invalidCookie = "invalid_token; Path=/; HttpOnly";
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            JwtTokenManager.decodeCookie(invalidCookie);
+        });
+    }
+
+    @Test
+    public void testGenerateSecretKey() {
+        String secretKey = JwtTokenManager.generateSecretKey();
+        assertNotNull(secretKey);
+        assertEquals(44, secretKey.length());  // Base64 encoded string length
     }
 }
