@@ -9,6 +9,8 @@ import {
   takeDownParamSchema,
   updateFormSchema,
   updateParamSchema,
+  updateStatusJsonSchema,
+  updateStatusParamSchema,
 } from "./schema";
 import * as itemsService from "./service";
 
@@ -63,6 +65,23 @@ itemsController.patch(
     const { id } = c.req.valid("param");
     const form = c.req.valid("form");
     const result = await itemsService.update({ id, ...form, user: c.var.user });
+    return c.json(result, 200);
+  },
+);
+
+itemsController.put(
+  "/:id/status",
+  auth(true),
+  validator("param", updateStatusParamSchema),
+  validator("json", updateStatusJsonSchema),
+  async (c) => {
+    const { id } = c.req.valid("param");
+    const { status } = c.req.valid("json");
+    const result = await itemsService.updateStatus({
+      id,
+      status,
+      user: c.var.user,
+    });
     return c.json(result, 200);
   },
 );
