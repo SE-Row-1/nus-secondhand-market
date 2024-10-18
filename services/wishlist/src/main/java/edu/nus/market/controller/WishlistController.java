@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/wishlists")
 
 public class WishlistController {
 
@@ -35,7 +35,6 @@ public class WishlistController {
 
     // Register and Delete
     @GetMapping("/{user_id}")
-//    public ResponseEntity<Object> getFavorlist(@PathVariable("user_id") int userId){
     public ResponseEntity<Object> getWishlist(@PathVariable("user_id") int userId, @RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
@@ -50,7 +49,6 @@ public class WishlistController {
     }
 
     @PostMapping("/{user_id}/items/{item_id}")
-//    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @RequestBody AddLikeReq req){
     public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @Valid @RequestBody AddLikeReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
@@ -92,8 +90,8 @@ public class WishlistController {
 
         return wishlistService.deleteLikeService(userId, itemId);
     }
+    @GetMapping("/statistics/{item_id}")
 
-    @GetMapping("/items/{item_id}")
     public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.nus.market.pojo.Seller;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,9 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 public class AddLikeReq {
 
-    @NotBlank
-    private String type;  //  "SINGLE" or "PACK"
-
 
     private int userId;  // add manually from path variable
 
@@ -26,13 +24,20 @@ public class AddLikeReq {
     private String itemId;
 
     @NotBlank
-    private String itemName;
+    @Pattern(regexp = "single|pack")
+    private String type;  //  only "single" or "pack"
 
     @NotNull
-    private int itemStatus;
+    private Seller seller;  //
+
+    @NotBlank
+    private String name;
 
     @NotNull
     private Double price;
+
+    @NotNull
+    private int status;
 
     // for SINGLE Item
     private String[] photoUrls;
@@ -42,8 +47,6 @@ public class AddLikeReq {
 
     private Double discount;
 
-    @NotNull
-    private Seller seller;  // 卖家的 ID、昵称和头像
 
 
 }

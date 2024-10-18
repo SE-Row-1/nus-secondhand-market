@@ -40,16 +40,15 @@ class WishlistServiceImplTest {
     private void prepareTestData() {
         mockLike = new SingleLike();
         mockLike.setUserId(1);
-        mockLike.setItemId("item001");
-        mockLike.setItemName("iPhone 12");
-        mockLike.setItemStatus(1);
-        mockLike.setFavoriteDate(new Date());
+        mockLike.setName("iPhone 12");
+        mockLike.setStatus(1);
+        mockLike.setWantedAt(new Date());
     }
 
     @Test
     void testGetWishlistService_Success() {
         List<Like> mockLikes = List.of(mockLike);
-        when(wishlistDao.findByUserId(anyInt())).thenReturn(mockLikes);
+        when(wishlistDao.findByUserIdOrderByWantedAtDesc(anyInt())).thenReturn(mockLikes);
 
         ResponseEntity<Object> response = wishlistService.getWishlistService(1);
 
@@ -59,8 +58,7 @@ class WishlistServiceImplTest {
 
     @Test
     void testGetWishlistService_EmptyList() {
-        when(wishlistDao.findByUserId(anyInt())).thenReturn(List.of());
-
+        when(wishlistDao.findByUserIdOrderByWantedAtDesc(anyInt())).thenReturn(List.of());
         ResponseEntity<Object> response = wishlistService.getWishlistService(1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -73,11 +71,11 @@ class WishlistServiceImplTest {
         req.setUserId(1);
         req.setItemId("item001");
         req.setPrice(99.0);
-        req.setItemName("iPhone 12");
-        req.setItemStatus(1);
+        req.setName("iPhone 12");
+        req.setStatus(1);
         req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
-        req.setType("SINGLE");
+        req.setType("single");
 
         when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.empty());
 
@@ -93,8 +91,8 @@ class WishlistServiceImplTest {
         req.setUserId(1);
         req.setItemId("item001");
         req.setPrice(99.0);
-        req.setItemName("iPhone 12");
-        req.setItemStatus(1);
+        req.setName("iPhone 12");
+        req.setStatus(1);
         req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
@@ -132,7 +130,7 @@ class WishlistServiceImplTest {
     @Test
     void testGetItemLikeInfo_Success() {
         when(wishlistDao.countByItemId(anyString())).thenReturn(1);
-        when(wishlistDao.findTopFavoriteDateByItemId(anyString())).thenReturn(new Date());
+        when(wishlistDao.findTopWantedAtByItemId(anyString())).thenReturn(new Date());
 
         ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001");
 
