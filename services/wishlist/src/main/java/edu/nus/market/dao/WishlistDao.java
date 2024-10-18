@@ -15,6 +15,7 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     // 自定义查询方法
     List<Like> findByUserIdOrderByWantedAtDesc(int userId);
 
+
     //insert one Like just use save()
 
     //get Like by userid and item id

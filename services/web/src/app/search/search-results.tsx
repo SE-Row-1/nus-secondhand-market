@@ -1,9 +1,9 @@
 "use client";
 
-import { SingleItemCard } from "@/components/item/card";
+import { ItemGrid } from "@/components/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { SingleItem } from "@/types";
+import type { PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
@@ -16,22 +16,17 @@ export function SearchResults() {
   const { data, fetchNextPage, hasNextPage, isPending, isFetching } =
     useInfiniteQuery({
       queryKey: ["search", q],
-      queryFn: async ({ pageParam }) => {
-        const nextSearchParams = new URLSearchParams({ q, limit: "8" });
+      queryFn: async ({ pageParam: { cursor, threshold } }) => {
+        const searchParams = new URLSearchParams({
+          q,
+          limit: "8",
+          ...(cursor && { cursor }),
+          ...(threshold && { threshold: String(threshold) }),
+        });
 
-        if (pageParam.cursor) {
-          nextSearchParams.set("cursor", pageParam.cursor);
-        }
-
-        if (pageParam.threshold) {
-          nextSearchParams.set("threshold", pageParam.threshold.toString());
-        }
-
-        return await clientRequester.get<{
-          items: SingleItem[];
-          next_cursor: string | null;
-          next_threshold: number;
-        }>(`/items/search?${nextSearchParams.toString()}`);
+        return await clientRequester.get<
+          PaginatedItems & { next_threshold: number }
+        >(`/items/search?${searchParams.toString()}`);
       },
       initialPageParam: {} as { cursor?: string | null; threshold?: number },
       getNextPageParam: (lastPage) => {
@@ -65,20 +60,16 @@ export function SearchResults() {
 
   return (
     <>
-      <ul className="grid min-[480px]:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-4 gap-y-6">
-        {data?.pages
-          .flatMap((page) => page.items)
-          .map((item) => <SingleItemCard key={item.id} item={item} />)}
-      </ul>
+      <ItemGrid items={data?.pages.flatMap((page) => page.items) ?? []} />
       <div ref={bottomRef}></div>
       {!q || hasNextPage || (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          - That&apos;s all we got for now! -
+          - You have come to an end :) -
         </p>
       )}
       {isFetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more items...
+          Loading more for you...
         </p>
       )}
     </>

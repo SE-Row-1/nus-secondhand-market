@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
@@ -26,10 +26,11 @@ const formSchema = v.object({
 });
 
 type Props = {
+  id: number;
   initialEmail: string;
 };
 
-export function UpdateEmailCard({ initialEmail }: Props) {
+export function UpdateEmailCard({ id, initialEmail }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -43,7 +44,9 @@ export function UpdateEmailCard({ initialEmail }: Props) {
 
       const { email } = v.parse(formSchema, formData);
 
-      return await clientRequester.patch<Account>("/auth/me", { email });
+      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
+        email,
+      });
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);

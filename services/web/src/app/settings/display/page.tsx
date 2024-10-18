@@ -1,14 +1,13 @@
-import type { Account } from "@/types";
-import { serverRequester } from "@/utils/requester/server";
+import { prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { UpdateNicknameCard } from "../cards/update-nickname-card";
 
 export default async function DisplaySettingsPage() {
-  const { data: me, error } = await serverRequester.get<Account>("/auth/me");
+  const { data: me, error } = await prefetchMe();
 
   if (error && error.status === 401) {
-    redirect("/login?next=/settings/display");
+    redirect("/login");
   }
 
   if (error) {
@@ -17,7 +16,7 @@ export default async function DisplaySettingsPage() {
 
   return (
     <div className="grid gap-6">
-      <UpdateNicknameCard initialNickname={me.nickname} />
+      <UpdateNicknameCard id={me.id} initialNickname={me.nickname} />
     </div>
   );
 }

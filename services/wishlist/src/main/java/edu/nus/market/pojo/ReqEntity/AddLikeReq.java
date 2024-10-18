@@ -39,7 +39,6 @@ public class AddLikeReq {
     @NotNull
     private int status;
 
-
     // for SINGLE Item
     private String[] photoUrls;
 
@@ -47,7 +46,6 @@ public class AddLikeReq {
     private List<AddLikeReq> children;
 
     private Double discount;
-
 
 
 

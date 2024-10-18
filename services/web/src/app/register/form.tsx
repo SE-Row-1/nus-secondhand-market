@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
@@ -50,7 +50,7 @@ export function RegisterForm() {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await clientRequester.post<Account>("/auth/me", {
+      return await clientRequester.post<DetailedAccount>("/accounts", {
         email,
         password,
       });

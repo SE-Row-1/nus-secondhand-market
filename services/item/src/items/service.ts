@@ -1,9 +1,11 @@
 import { ItemStatus, ItemType, type Account, type SingleItem } from "@/types";
+import { publishItemEvent } from "@/utils/mq";
 import { photoManager } from "@/utils/photo-manager";
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
 import * as itemsRepository from "./repository";
+import { StatefulItem } from "./states";
 
 type GetAllServiceDto = {
   type?: ItemType;
@@ -149,7 +151,7 @@ export async function update(dto: UpdateServiceDto) {
     (url) => !dto.removedPhotoUrls.includes(url),
   );
 
-  return await itemsRepository.updateOne(
+  const newItem = await itemsRepository.updateOne(
     { id: dto.id },
     {
       ...(dto.name ? { name: dto.name } : {}),
@@ -158,6 +160,37 @@ export async function update(dto: UpdateServiceDto) {
       photoUrls: newPhotoUrls,
     },
   );
+
+  publishItemEvent("updated", newItem!);
+
+  return newItem;
+}
+
+type UpdateStatusServiceDto = {
+  id: string;
+  status: ItemStatus;
+  user: Account;
+};
+
+export async function updateStatus(dto: UpdateStatusServiceDto) {
+  const item = await itemsRepository.findOne({ id: dto.id, deletedAt: null });
+
+  if (!item) {
+    throw new HTTPException(404, { message: "This item does not exist." });
+  }
+
+  const statefulItem = new StatefulItem(item);
+  statefulItem.transitionTo(dto.status, dto.user);
+  const newStatefulItem = statefulItem.getRepresentation();
+
+  const newItem = await itemsRepository.updateOne(
+    { id: dto.id },
+    { status: newStatefulItem.status },
+  );
+
+  publishItemEvent("updated", newItem!);
+
+  return newItem;
 }
 
 type TakeDownServiceDto = {
@@ -179,6 +212,8 @@ export async function takeDown(dto: TakeDownServiceDto) {
   }
 
   await itemsRepository.deleteOne({ id: dto.id });
+
+  publishItemEvent("deleted", dto.id);
 }
 
 type SearchServiceDto = {

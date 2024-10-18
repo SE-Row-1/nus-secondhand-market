@@ -16,7 +16,7 @@ public class CookieManager {
         return cookie;
     }
     public static ResponseCookie deleteCookie(){
-        ResponseCookie cookie = ResponseCookie.from("access_token", null)
+        ResponseCookie cookie = ResponseCookie.from("access_token", "")
             .httpOnly(true)
             .path("/")
             .maxAge(0)

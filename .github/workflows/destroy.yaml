@@ -7,14 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       destroy:
-        description: 'Input to trigger the destroy process'
+        description: 'Are you sure you want to destroy all?'
         required: true
-        default: 'false'
         type: boolean
 
 jobs:
   destroy:
-    if: ${{ github.event.inputs.destroy == 'true' }}  # Only runs if input 'destroy' is true
+    if: ${{ github.event.inputs.destroy }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -36,4 +35,6 @@ jobs:
         run: |
           cd terraform/
           terraform init
+          terraform validate
+          terraform plan -destroy
           terraform destroy -auto-approve

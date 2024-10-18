@@ -4,19 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { type FormEvent } from "react";
 import * as v from "valibot";
-
-export const metadata: Metadata = {
-  title: "Log in",
-};
 
 const formSchema = v.object({
   email: v.pipe(
@@ -34,9 +29,6 @@ const formSchema = v.object({
 export function LogInForm() {
   const router = useRouter();
 
-  const searchParams = useSearchParams();
-  const nextUrl = searchParams.get("next") ?? "/";
-
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -50,7 +42,7 @@ export function LogInForm() {
 
       const { email, password } = v.parse(formSchema, formData);
 
-      return await clientRequester.post<Account>("/auth/token", {
+      return await clientRequester.post<DetailedAccount>("/auth/token", {
         email,
         password,
       });
@@ -63,7 +55,7 @@ export function LogInForm() {
         description: `Welcome back, ${account.nickname ?? account.email}!`,
       });
 
-      router.push(nextUrl);
+      router.push("/");
       router.refresh();
     },
     onError: (error) => {

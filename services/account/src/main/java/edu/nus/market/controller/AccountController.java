@@ -3,6 +3,7 @@ package edu.nus.market.controller;
 import edu.nus.market.dao.AccountDao;
 
 import edu.nus.market.pojo.*;
+import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
@@ -13,7 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/accounts")
 
 public class AccountController {
 
@@ -24,63 +25,30 @@ public class AccountController {
     AccountService accountService;
 
     // Register and Delete
-    @PostMapping("/me")
+    @PostMapping("")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterReq registerReq, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
         return accountService.registerService(registerReq);
     }
-    @DeleteMapping("/me")
-    public ResponseEntity<Object> deleteAccount(@RequestHeader(value = "Cookie", required = false) String token){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteAccount(@PathVariable int id, @RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
         if (!JwtTokenManager.validateCookie(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.deleteAccountService(JwtTokenManager.decodeCookie(token).getId());
-    }
-
-    // Get Account Info
-    @GetMapping("/me")
-    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Cookie", required = false) String token){
-        if (token == null || token.isEmpty())
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        int userId = JwtTokenManager.decodeCookie(token).getId();
+        if (userId != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
-        return accountService.getAccountService(JwtTokenManager.decodeCookie(token).getId());
+        return accountService.deleteAccountService(id);
     }
 
-
-    // Login and Logout
-    @PostMapping("/token")
-    public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.loginService(loginReq);
-    }
-    @DeleteMapping("/token")
-    public ResponseEntity<Object> logout(@RequestHeader(value = "Cookie") String token){
-        return accountService.logoutService();
-    }
-
-    //Forgot password and reset without Login
-    @PatchMapping("/reset-password")
-    public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgotPasswordReq forgotPasswordReq, BindingResult bindingResult){
-        //forget password and reset
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.forgotPasswordService(forgotPasswordReq);
-    }
-
-
-    //Updating Account
-    @PutMapping("/me/password")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updateProfile(@PathVariable int id, @Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
@@ -90,34 +58,16 @@ public class AccountController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token).getId());
-    }
-
-
-    @PatchMapping("/me")
-    public ResponseEntity<Object> updateProfile(@Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
-        if (token == null || token.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        int userId = JwtTokenManager.decodeCookie(token).getId();
+        if (userId != id){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
-        if (!JwtTokenManager.validateCookie(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
-        }
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.updateProfileService(req, JwtTokenManager.decodeCookie(token).getId());
+        return accountService.updateProfileService(req, id);
     }
 
     // get account info automatically
-    @GetMapping("/account/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Object> getSpecificAccount(@PathVariable int id){
         return accountService.getAccountService(id);
     }
-
-
-    @GetMapping("/healthz")
-    public String checkHealth(){
-        return "ok";
-    }
-
 }

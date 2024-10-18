@@ -87,25 +87,14 @@ export function createRequester<Fetcher extends ClientFetch | ServerFetch>(
         method: "DELETE",
       })) as Result<Fetcher, Expectation>;
     },
-    postForm: async <Expectation>(
+    form: async <Expectation>(
       endpoint: Endpoint,
       body: FormData,
       init: RequestInit = {},
     ) => {
       return (await fetcher<Expectation>(endpoint, {
-        ...init,
         method: "POST",
-        body,
-      })) as Result<Fetcher, Expectation>;
-    },
-    patchForm: async <Expectation>(
-      endpoint: Endpoint,
-      body: FormData,
-      init: RequestInit = {},
-    ) => {
-      return (await fetcher<Expectation>(endpoint, {
         ...init,
-        method: "PATCH",
         body,
       })) as Result<Fetcher, Expectation>;
     },

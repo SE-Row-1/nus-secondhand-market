@@ -1,8 +1,8 @@
-import type { Account } from "@/types";
+import type { DetailedAccount } from "@/types";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-const mockAccount: Account = {
+const mockAccount: DetailedAccount = {
   id: 1,
   email: "e1351826@u.nus.edu",
   nickname: "mrcaidev",
