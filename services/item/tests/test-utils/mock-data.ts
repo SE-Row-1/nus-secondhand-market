@@ -18,7 +18,7 @@ export const me = {
 };
 
 export const myJwt = await Jwt.sign(
-  camelToSnake(me),
+  camelToSnake({ id: me.id, nickname: me.nickname, avatar_url: me.avatarUrl }),
   process.env.JWT_SECRET_KEY,
 );
 
@@ -39,6 +39,10 @@ export const someoneElse = {
 };
 
 export const someoneElseJwt = await Jwt.sign(
-  camelToSnake(someoneElse),
+  camelToSnake({
+    id: someoneElse.id,
+    nickname: someoneElse.nickname,
+    avatar_url: someoneElse.avatarUrl,
+  }),
   process.env.JWT_SECRET_KEY,
 );

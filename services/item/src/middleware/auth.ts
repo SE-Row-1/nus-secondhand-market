@@ -12,30 +12,8 @@ import * as v from "valibot";
 // so here we only do some basic validation on data types.
 const accountSchema = v.object({
   id: v.number(),
-  email: v.string(),
   nickname: v.nullable(v.string()),
   avatarUrl: v.nullable(v.string()),
-  phoneCode: v.nullable(v.string()),
-  phoneNumber: v.nullable(v.string()),
-  department: v.nullable(
-    v.object({
-      id: v.number(),
-      acronym: v.string(),
-      name: v.string(),
-    }),
-  ),
-  createdAt: v.pipe(
-    v.string(),
-    v.transform((value) => new Date(value)),
-    v.date(),
-  ),
-  deletedAt: v.nullable(
-    v.pipe(
-      v.string(),
-      v.transform((value) => new Date(value)),
-      v.date(),
-    ),
-  ),
 });
 
 /**
