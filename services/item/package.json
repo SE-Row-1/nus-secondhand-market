@@ -14,6 +14,7 @@
     "bun-compression": "^0.0.4",
     "hono": "^4.6.3",
     "hono-rate-limiter": "^0.4.0",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.9.0",
     "valibot": "^1.0.0-beta.0"
   },
@@ -23,6 +24,7 @@
     "@types/bun": "^1.1.10",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__js": "^8.42.3",
+    "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "lint-staged": "^15.2.10",

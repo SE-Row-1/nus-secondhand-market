@@ -3,7 +3,7 @@ import { snakeToCamel } from "@/utils/case";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import { verify } from "hono/jwt";
+import { verify } from "jsonwebtoken";
 import * as v from "valibot";
 
 // JWT payload should contain the user's account information.
@@ -20,18 +20,33 @@ const accountSchema = v.object({
  * Verify and decode a JWT token.
  */
 async function verifyJwt(token: string) {
-  try {
-    return await verify(token, process.env.JWT_SECRET_KEY);
-  } catch (error) {
-    if (error instanceof Error) {
-      throw new HTTPException(401, { message: error.message, cause: error });
-    }
+  return await new Promise((resolve, reject) => {
+    verify(
+      token,
+      Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
+      (error, payload) => {
+        if (!error) {
+          resolve(payload);
+        }
 
-    throw new HTTPException(500, {
-      message: "Unknown error during identity verification.",
-      cause: error,
-    });
-  }
+        if (error instanceof Error) {
+          reject(
+            new HTTPException(401, {
+              message: error.message,
+              cause: error,
+            }),
+          );
+        }
+
+        reject(
+          new HTTPException(500, {
+            message: "Unknown error during identity verification.",
+            cause: error,
+          }),
+        );
+      },
+    );
+  });
 }
 
 /**
