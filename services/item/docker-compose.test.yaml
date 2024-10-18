@@ -6,13 +6,15 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
-      - JWT_SECRET_KEY=nshm-item-service
       - MONGO_URL=mongodb://mongo:27017
       - MONGO_DB_NAME=nshm
-    depends_on:
-      - mongo
+      - JWT_SECRET_KEY=test
     networks:
       - bridge
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: always
 
   mongo:
     image: mongo
@@ -22,6 +24,13 @@ services:
       - ./database/test:/docker-entrypoint-initdb.d
     networks:
       - bridge
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/nshm --quiet
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
+    restart: always
 
 networks:
   bridge:
