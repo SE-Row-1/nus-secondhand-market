@@ -32,7 +32,7 @@ public class JwtTokenManager {
 
     public static String generateAccessToken(JWTPayload jwtPayload){
         return Jwts.builder()
-            .setSubject(String.valueOf(jwtPayload.getId()))
+            .claim("id", jwtPayload.getId())
             .claim("nickname", jwtPayload.getNickname())
             .claim("avatar_url", jwtPayload.getAvatarUrl())
 
@@ -74,7 +74,7 @@ public class JwtTokenManager {
                 .parseClaimsJws(token)
                 .getBody();
 
-            JWTPayload jwtPayload = new JWTPayload(Integer.parseInt(claims.getSubject()), (String)claims.get("nickname"),
+            JWTPayload jwtPayload = new JWTPayload((int) claims.get("id"), (String)claims.get("nickname"),
                 (String)claims.get("avatar_url"));
 
             return jwtPayload;

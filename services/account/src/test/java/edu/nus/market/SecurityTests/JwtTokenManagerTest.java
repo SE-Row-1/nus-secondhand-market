@@ -48,7 +48,7 @@ public class JwtTokenManagerTest {
             .parseClaimsJws(token)
             .getBody();
 
-        assertEquals("1", claims.getSubject());
+        assertEquals(1, claims.get("id"));
         assertEquals("JohnDoe", claims.get("nickname"));
         assertEquals("http://example.com/avatar", claims.get("avatar_url"));
         assertNotNull(claims.getExpiration());
