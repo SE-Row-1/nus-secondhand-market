@@ -1,4 +1,4 @@
-import { SingleItemDetailsCard } from "@/components/item/details";
+import { SingleItemDetails } from "@/components/item/details";
 import {
   prefetchItem,
   prefetchMe,
@@ -17,7 +17,7 @@ type Props = {
 export default async function Page({ params: { id } }: Props) {
   const [
     { data: item, error: itemError },
-    { data: wishlistStatistics, error: wishlistStatisticsError },
+    { data: wishlistStatistics },
     { data: me, error: meError },
   ] = await Promise.all([
     prefetchItem(id),
@@ -33,13 +33,14 @@ export default async function Page({ params: { id } }: Props) {
     redirect(`/error?message=${itemError.message}`);
   }
 
-  if (wishlistStatisticsError) {
-    redirect(`/error?message=${wishlistStatisticsError.message}`);
-  }
-
   if (meError && meError.status !== 401) {
     redirect(`/error?message=${meError.message}`);
   }
+
+  const safeWishlistStatistics = wishlistStatistics ?? {
+    count: 0,
+    last_wanted_at: null,
+  };
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -50,9 +51,9 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard
-        item={item}
-        wishlistStatistics={wishlistStatistics}
+      <SingleItemDetails
+        initialItem={item}
+        wishlistStatistics={safeWishlistStatistics}
         me={me}
       />
     </div>

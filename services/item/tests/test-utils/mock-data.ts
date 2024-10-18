@@ -1,5 +1,5 @@
 import { camelToSnake } from "@/utils/case";
-import { Jwt } from "hono/utils/jwt";
+import { sign } from "jsonwebtoken";
 
 export const me = {
   id: 1,
@@ -17,9 +17,9 @@ export const me = {
   deletedAt: null,
 };
 
-export const myJwt = await Jwt.sign(
-  camelToSnake(me),
-  process.env.JWT_SECRET_KEY,
+export const myJwt = sign(
+  camelToSnake({ id: me.id, nickname: me.nickname, avatar_url: me.avatarUrl }),
+  Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
 );
 
 export const someoneElse = {
@@ -38,7 +38,11 @@ export const someoneElse = {
   deletedAt: null,
 };
 
-export const someoneElseJwt = await Jwt.sign(
-  camelToSnake(someoneElse),
-  process.env.JWT_SECRET_KEY,
+export const someoneElseJwt = sign(
+  camelToSnake({
+    id: someoneElse.id,
+    nickname: someoneElse.nickname,
+    avatar_url: someoneElse.avatarUrl,
+  }),
+  Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
 );

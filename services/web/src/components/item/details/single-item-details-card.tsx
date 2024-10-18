@@ -1,6 +1,14 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import type { DetailedAccount, SingleItem, WishlistStatistics } from "@/types";
+import { useItem } from "@/hooks/use-item";
+import {
+  ItemStatus,
+  type DetailedAccount,
+  type SingleItem,
+  type WishlistStatistics,
+} from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge } from "../card/status-badge";
@@ -8,14 +16,24 @@ import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { PhotoCarousel } from "./photo-carousel";
+import {
+  UpdateStatusAction,
+  UpdateStatusDropdownMenu,
+} from "./update-status-dropdown-menu";
 
 type Props = {
-  item: SingleItem<DetailedAccount>;
+  initialItem: SingleItem<DetailedAccount>;
   wishlistStatistics: WishlistStatistics;
   me: DetailedAccount | null;
 };
 
-export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
+export function SingleItemDetails({
+  initialItem,
+  wishlistStatistics,
+  me,
+}: Props) {
+  const { data: item } = useItem(initialItem.id, initialItem);
+
   return (
     <div>
       <div className="max-w-xl mx-auto">
@@ -62,9 +80,22 @@ export function SingleItemDetailsCard({ item, wishlistStatistics, me }: Props) {
             <FromNow date={wishlistStatistics.last_wanted_at} />.
           </p>
         ) : null}
-        <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2 pt-5">
           {me?.id === item.seller.id ? (
             <>
+              {item.status === ItemStatus.FOR_SALE ? (
+                <UpdateStatusDropdownMenu>
+                  <UpdateStatusAction itemId={item.id} to={ItemStatus.DEALT} />
+                </UpdateStatusDropdownMenu>
+              ) : item.status === ItemStatus.DEALT ? (
+                <UpdateStatusDropdownMenu>
+                  <UpdateStatusAction
+                    itemId={item.id}
+                    to={ItemStatus.FOR_SALE}
+                  />
+                  <UpdateStatusAction itemId={item.id} to={ItemStatus.SOLD} />
+                </UpdateStatusDropdownMenu>
+              ) : null}
               <Button variant="secondary" asChild>
                 <Link href={`/items/${item.id}/edit`}>
                   <EditIcon className="size-4 mr-2" />

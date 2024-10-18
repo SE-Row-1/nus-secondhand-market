@@ -1,1 +1,1 @@
-export { SingleItemDetailsCard } from "./single-item-details-card";
+export { SingleItemDetails } from "./single-item-details-card";
