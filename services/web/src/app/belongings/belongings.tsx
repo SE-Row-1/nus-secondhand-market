@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function Belongings({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage, isRefetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["items", "belongings"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
@@ -45,16 +45,6 @@ export function Belongings({ firstPage, me }: Props) {
     <>
       <ItemGrid items={data.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
-      {hasNextPage || (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          - You have come to an end :) -
-        </p>
-      )}
-      {isRefetching && (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more for you...
-        </p>
-      )}
     </>
   );
 }

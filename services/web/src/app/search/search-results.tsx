@@ -13,33 +13,32 @@ export function SearchResults() {
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
 
-  const { data, fetchNextPage, hasNextPage, isPending, isRefetching } =
-    useInfiniteQuery({
-      queryKey: ["search", q],
-      queryFn: async ({ pageParam: { cursor, threshold } }) => {
-        const searchParams = new URLSearchParams({
-          q,
-          limit: "8",
-          ...(cursor && { cursor }),
-          ...(threshold && { threshold: String(threshold) }),
-        });
+  const { data, fetchNextPage, hasNextPage, isPending } = useInfiniteQuery({
+    queryKey: ["search", q],
+    queryFn: async ({ pageParam: { cursor, threshold } }) => {
+      const searchParams = new URLSearchParams({
+        q,
+        limit: "8",
+        ...(cursor && { cursor }),
+        ...(threshold && { threshold: String(threshold) }),
+      });
 
-        return await clientRequester.get<
-          PaginatedItems & { next_threshold: number }
-        >(`/items/search?${searchParams.toString()}`);
-      },
-      initialPageParam: {} as { cursor?: string | null; threshold?: number },
-      getNextPageParam: (lastPage) => {
-        const { next_cursor, next_threshold } = lastPage;
+      return await clientRequester.get<
+        PaginatedItems & { next_threshold: number }
+      >(`/items/search?${searchParams.toString()}`);
+    },
+    initialPageParam: {} as { cursor?: string | null; threshold?: number },
+    getNextPageParam: (lastPage) => {
+      const { next_cursor, next_threshold } = lastPage;
 
-        if (next_cursor === null || next_threshold === 0) {
-          return null;
-        }
+      if (next_cursor === null || next_threshold === 0) {
+        return null;
+      }
 
-        return { cursor: next_cursor, threshold: next_threshold };
-      },
-      enabled: !!q,
-    });
+      return { cursor: next_cursor, threshold: next_threshold };
+    },
+    enabled: !!q,
+  });
 
   const bottomRef = useRef<HTMLDivElement>(null);
   useInfiniteScroll(bottomRef, () => {
@@ -62,16 +61,6 @@ export function SearchResults() {
     <>
       <ItemGrid items={data?.pages.flatMap((page) => page.items) ?? []} />
       <div ref={bottomRef}></div>
-      {!q || hasNextPage || (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          - You have come to an end :) -
-        </p>
-      )}
-      {isRefetching && (
-        <p className="my-8 text-sm text-muted-foreground text-center">
-          Loading more for you...
-        </p>
-      )}
     </>
   );
 }
