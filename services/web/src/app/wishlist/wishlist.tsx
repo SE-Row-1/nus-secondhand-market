@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function WishList({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isRefetching } = useInfiniteQuery({
     queryKey: ["wishlist"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
@@ -49,7 +49,7 @@ export function WishList({ firstPage, me }: Props) {
           - You have come to an end :) -
         </p>
       )}
-      {isFetching && (
+      {isRefetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
           Loading more for you...
         </p>

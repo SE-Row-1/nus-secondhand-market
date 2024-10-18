@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function Belongings({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage, isFetching } = useInfiniteQuery({
+  const { data, fetchNextPage, hasNextPage, isRefetching } = useInfiniteQuery({
     queryKey: ["items"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
@@ -50,7 +50,7 @@ export function Belongings({ firstPage, me }: Props) {
           - You have come to an end :) -
         </p>
       )}
-      {isFetching && (
+      {isRefetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
           Loading more for you...
         </p>

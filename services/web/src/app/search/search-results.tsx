@@ -13,7 +13,7 @@ export function SearchResults() {
   const searchParams = useSearchParams();
   const q = searchParams.get("q") ?? "";
 
-  const { data, fetchNextPage, hasNextPage, isPending, isFetching } =
+  const { data, fetchNextPage, hasNextPage, isPending, isRefetching } =
     useInfiniteQuery({
       queryKey: ["search", q],
       queryFn: async ({ pageParam: { cursor, threshold } }) => {
@@ -67,7 +67,7 @@ export function SearchResults() {
           - You have come to an end :) -
         </p>
       )}
-      {isFetching && (
+      {isRefetching && (
         <p className="my-8 text-sm text-muted-foreground text-center">
           Loading more for you...
         </p>
