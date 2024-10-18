@@ -1,5 +1,7 @@
+import { compress } from "bun-compression";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
+import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
@@ -7,16 +9,6 @@ import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
-
-const compress =
-  process.env.NODE_ENV === "test"
-    ? await import("bun-compression").then((m) => m.compress)
-    : await import("hono/compress").then((m) => m.compress);
-
-const getConnInfo =
-  process.env.NODE_ENV === "test"
-    ? await import("hono/bun").then((m) => m.getConnInfo)
-    : await import("@hono/node-server/conninfo").then((m) => m.getConnInfo);
 
 // Entry point of the application.
 const app = new Hono();
@@ -72,14 +64,5 @@ app.route("/items", itemsController);
 // Register global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
-
-if (process.env.NODE_ENV !== "test") {
-  const serve = await import("@hono/node-server").then((m) => m.serve);
-
-  serve({
-    fetch: app.fetch,
-    port: process.env.PORT ?? 3000,
-  });
-}
 
 export default app;
