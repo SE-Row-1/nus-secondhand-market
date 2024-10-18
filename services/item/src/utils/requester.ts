@@ -1,7 +1,7 @@
 import { HTTPException } from "hono/http-exception";
 
 const serviceRegistry = {
-  account: Bun.env.ACCOUNT_SERVICE_BASE_URL,
+  account: process.env.ACCOUNT_SERVICE_BASE_URL,
 };
 
 export function createRequester(service: keyof typeof serviceRegistry) {

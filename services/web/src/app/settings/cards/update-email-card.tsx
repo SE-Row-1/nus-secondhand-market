@@ -26,10 +26,11 @@ const formSchema = v.object({
 });
 
 type Props = {
+  id: number;
   initialEmail: string;
 };
 
-export function UpdateEmailCard({ initialEmail }: Props) {
+export function UpdateEmailCard({ id, initialEmail }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ export function UpdateEmailCard({ initialEmail }: Props) {
 
       const { email } = v.parse(formSchema, formData);
 
-      return await clientRequester.patch<DetailedAccount>("/auth/me", {
+      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         email,
       });
     },
