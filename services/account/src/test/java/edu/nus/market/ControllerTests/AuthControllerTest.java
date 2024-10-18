@@ -7,6 +7,7 @@ import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.ForgetPasswordReq;
 import edu.nus.market.pojo.ReqEntity.LoginReq;
 import edu.nus.market.pojo.ReqEntity.UpdPswReq;
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
@@ -30,6 +31,8 @@ public class AuthControllerTest {
 
     private ResAccount resAccount;
 
+    private JWTPayload jwtPayload;
+
     @Mock
     private AccountService accountService;
 
@@ -44,6 +47,8 @@ public class AuthControllerTest {
         resAccount = new ResAccount(1, "test@u.nus.edu", "test",
             "https://example.com/avatar.jpg", 1, "65",
             "1234567890", "SGD", "2023-05-01", null);
+
+        jwtPayload = new JWTPayload(1, "test", "https://example.com/avatar.jpg");
     }
 
     @Test
@@ -114,7 +119,7 @@ public class AuthControllerTest {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
             mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(resAccount);
+            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(get("/auth/me")
@@ -218,7 +223,7 @@ public class AuthControllerTest {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
             mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(resAccount);
+            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
@@ -248,7 +253,7 @@ public class AuthControllerTest {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
             mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(resAccount);
+            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
@@ -270,7 +275,7 @@ public class AuthControllerTest {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
             mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(resAccount);
+            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
@@ -289,7 +294,7 @@ public class AuthControllerTest {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
             mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(false);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(resAccount);
+            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
