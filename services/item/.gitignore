@@ -3,4 +3,3 @@ node_modules/
 resources/
 uploads/
 *.tsbuildinfo
-.env
