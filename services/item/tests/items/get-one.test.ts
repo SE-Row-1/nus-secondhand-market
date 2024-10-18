@@ -5,7 +5,7 @@ import { me } from "../test-utils/mock-data";
 import { GET } from "../test-utils/request";
 
 mock.module("@/utils/requester", () => ({
-  createRequester: () => () => me,
+  createRequester: () => () => me.detailedAccount,
 }));
 
 it("returns the item with the given ID", async () => {
@@ -18,11 +18,7 @@ it("returns the item with the given ID", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -34,7 +30,7 @@ it("returns the item with the given ID", async () => {
   expect(res.status).toEqual(200);
   expect(body).toMatchObject({
     id: insertedId,
-    seller: expect.objectContaining({ id: me.id, email: me.email }),
+    seller: me.detailed_account,
   });
   expect(body).not.toContainKey("_id");
 
@@ -51,11 +47,7 @@ it("ignores deleted items", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: new Date(),

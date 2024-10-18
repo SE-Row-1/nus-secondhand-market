@@ -4,7 +4,7 @@ import { publishItemEvent } from "@/utils/mq";
 import { expect, it, mock } from "bun:test";
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
-import { me, myJwt, someoneElse } from "../test-utils/mock-data";
+import { me, someone } from "../test-utils/mock-data";
 import { PATCH_FORM } from "../test-utils/request";
 
 it("updates an item", async () => {
@@ -23,11 +23,7 @@ it("updates an item", async () => {
     description: "test",
     price: 100,
     photoUrls: ["uploads/before-update.png"],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -46,7 +42,7 @@ it("updates an item", async () => {
 
   const res = await PATCH_FORM(`/items/${insertedId}`, formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -59,11 +55,7 @@ it("updates an item", async () => {
     description: "update",
     price: 200,
     photo_urls: ["uploads/after-update.png"],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatar_url: me.avatarUrl,
-    },
+    seller: me.simplified_account,
     status: ItemStatus.ForSale,
     created_at: expect.any(String),
     deleted_at: null,
@@ -83,7 +75,7 @@ it("updates an item", async () => {
 it("returns 400 if the item ID is invalid", async () => {
   const res = await PATCH_FORM("/items/foo", new FormData(), {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -103,7 +95,7 @@ it("returns 400 if the request body is invalid", async () => {
     formData,
     {
       headers: {
-        Cookie: `access_token=${myJwt}`,
+        Cookie: `access_token=${me.jwt}`,
       },
     },
   );
@@ -129,11 +121,7 @@ it("returns 400 if photo number exceeds the limit", async () => {
       "uploads/4.png",
       "uploads/5.png",
     ],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -151,7 +139,7 @@ it("returns 400 if photo number exceeds the limit", async () => {
 
   const res = await PATCH_FORM(`/items/${insertedId}`, formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -172,11 +160,7 @@ it("returns 400 if the removed photo URL does not exist", async () => {
     description: "test",
     price: 100,
     photoUrls: ["uploads/1.png"],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -187,7 +171,7 @@ it("returns 400 if the removed photo URL does not exist", async () => {
 
   const res = await PATCH_FORM(`/items/${insertedId}`, formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -219,11 +203,7 @@ it("returns 403 if the user is not the seller of the item", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: {
-      id: someoneElse.id,
-      nickname: someoneElse.nickname,
-      avatarUrl: someoneElse.avatarUrl,
-    },
+    seller: someone.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -231,7 +211,7 @@ it("returns 403 if the user is not the seller of the item", async () => {
 
   const res = await PATCH_FORM(`/items/${insertedId}`, new FormData(), {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -248,7 +228,7 @@ it("returns 404 if the item does not exist", async () => {
     new FormData(),
     {
       headers: {
-        Cookie: `access_token=${myJwt}`,
+        Cookie: `access_token=${me.jwt}`,
       },
     },
   );
@@ -266,11 +246,7 @@ it("returns 422 if the item is not a single item", async () => {
     type: ItemType.Pack,
     name: "test",
     description: "test",
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     discount: 0,
     children: [],
     status: ItemStatus.ForSale,
@@ -280,7 +256,7 @@ it("returns 422 if the item is not a single item", async () => {
 
   const res = await PATCH_FORM(`/items/${insertedId}`, new FormData(), {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();

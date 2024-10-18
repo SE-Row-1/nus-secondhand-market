@@ -31,11 +31,7 @@ describe("Default behavior", () => {
       description: "test",
       price: 100,
       photoUrls: [],
-      seller: {
-        id: me.id,
-        nickname: me.nickname,
-        avatarUrl: me.avatarUrl,
-      },
+      seller: me.simplifiedAccount,
       status: ItemStatus.ForSale,
       createdAt: new Date(),
       deletedAt: new Date(),

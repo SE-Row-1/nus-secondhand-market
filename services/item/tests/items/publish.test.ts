@@ -1,7 +1,7 @@
 import { type Item } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { expect, it } from "bun:test";
-import { myJwt } from "../test-utils/mock-data";
+import { me } from "../test-utils/mock-data";
 import { FORM } from "../test-utils/request";
 
 type ExpectedResponse = Item;
@@ -14,7 +14,7 @@ it("creates an item without photo", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = (await res.json()) as ExpectedResponse;
@@ -47,7 +47,7 @@ it("creates an item with exactly 1 photo", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = (await res.json()) as ExpectedResponse;
@@ -85,7 +85,7 @@ it("creates an item with multiple photos", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = (await res.json()) as ExpectedResponse;
@@ -113,7 +113,7 @@ it("returns 400 if name is less than 1 character long", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -130,7 +130,7 @@ it("returns 400 if name is more than 50 characters long", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -147,7 +147,7 @@ it("returns 400 if description is less than 1 character long", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -164,7 +164,7 @@ it("returns 400 if description is more than 500 characters long", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -181,7 +181,7 @@ it("returns 400 if price is not a number", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -198,7 +198,7 @@ it("returns 400 if price is less than 0", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -216,7 +216,7 @@ it("returns 400 if photo is not file", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -238,7 +238,7 @@ it("returns 400 if photo MIME type is unsupported", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();
@@ -260,7 +260,7 @@ it("returns 400 if photo size is too large", async () => {
 
   const res = await FORM("/items", formData, {
     headers: {
-      Cookie: `access_token=${myJwt}`,
+      Cookie: `access_token=${me.jwt}`,
     },
   });
   const body = await res.json();

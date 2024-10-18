@@ -2,7 +2,7 @@ import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { publishItemEvent } from "@/utils/mq";
 import { expect, it, mock } from "bun:test";
-import { me, myJwt, someoneElseJwt } from "../test-utils/mock-data";
+import { me, someone } from "../test-utils/mock-data";
 import { PUT } from "../test-utils/request";
 
 it("succeeds if the actor is the seller", async () => {
@@ -19,11 +19,7 @@ it("succeeds if the actor is the seller", async () => {
     description: "test",
     price: 100,
     photoUrls: ["uploads/before-update.png"],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -34,7 +30,7 @@ it("succeeds if the actor is the seller", async () => {
     { status: ItemStatus.Dealt },
     {
       headers: {
-        Cookie: `access_token=${myJwt}`,
+        Cookie: `access_token=${me.jwt}`,
       },
     },
   );
@@ -64,11 +60,7 @@ it("fails if the actor is not the seller", async () => {
     description: "test",
     price: 100,
     photoUrls: ["uploads/before-update.png"],
-    seller: {
-      id: me.id,
-      nickname: me.nickname,
-      avatarUrl: me.avatarUrl,
-    },
+    seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -79,7 +71,7 @@ it("fails if the actor is not the seller", async () => {
     { status: ItemStatus.Dealt },
     {
       headers: {
-        Cookie: `access_token=${someoneElseJwt}`,
+        Cookie: `access_token=${someone.jwt}`,
       },
     },
   );
