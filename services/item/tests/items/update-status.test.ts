@@ -14,7 +14,7 @@ it("succeeds if the actor is the seller", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -24,14 +24,14 @@ it("succeeds if the actor is the seller", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
 
   const res = await PUT(
     `/items/${insertedId}/status`,
-    { status: ItemStatus.DEALT },
+    { status: ItemStatus.Dealt },
     {
       headers: {
         Cookie: `access_token=${myJwt}`,
@@ -41,12 +41,12 @@ it("succeeds if the actor is the seller", async () => {
   const body = await res.json();
 
   expect(res.status).toEqual(200);
-  expect(body).toMatchObject({ id: insertedId, status: ItemStatus.DEALT });
+  expect(body).toMatchObject({ id: insertedId, status: ItemStatus.Dealt });
   expect(body).not.toContainKey("_id");
   expect(
     await itemsCollection.countDocuments({
       id: insertedId,
-      status: ItemStatus.DEALT,
+      status: ItemStatus.Dealt,
     }),
   ).toEqual(1);
   expect(publishItemEvent).toHaveBeenCalledTimes(1);
@@ -59,7 +59,7 @@ it("fails if the actor is not the seller", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -69,14 +69,14 @@ it("fails if the actor is not the seller", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
 
   const res = await PUT(
     `/items/${insertedId}/status`,
-    { status: ItemStatus.DEALT },
+    { status: ItemStatus.Dealt },
     {
       headers: {
         Cookie: `access_token=${someoneElseJwt}`,
@@ -90,7 +90,7 @@ it("fails if the actor is not the seller", async () => {
   expect(
     await itemsCollection.countDocuments({
       id: insertedId,
-      status: ItemStatus.FOR_SALE,
+      status: ItemStatus.ForSale,
     }),
   ).toEqual(1);
 

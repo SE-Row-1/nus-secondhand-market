@@ -14,7 +14,7 @@ it("takes down an item", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -24,7 +24,7 @@ it("takes down an item", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -83,7 +83,7 @@ it("returns 403 if user is not the seller", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -93,7 +93,7 @@ it("returns 403 if user is not the seller", async () => {
       nickname: someoneElse.nickname,
       avatarUrl: someoneElse.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });

@@ -1,4 +1,4 @@
-import { ItemStatus, type Account, type Item } from "@/types";
+import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
 import { HTTPException } from "hono/http-exception";
 
 export class StatefulItem {
@@ -14,15 +14,15 @@ export class StatefulItem {
     this.state.setContext(this);
   }
 
-  public transitionTo(status: ItemStatus, actor: Account) {
+  public transitionTo(status: ItemStatus, actor: SimplifiedAccount) {
     switch (status) {
-      case ItemStatus.FOR_SALE:
+      case ItemStatus.ForSale:
         this.state.toForSale(actor);
         break;
-      case ItemStatus.DEALT:
+      case ItemStatus.Dealt:
         this.state.toDealt(actor);
         break;
-      case ItemStatus.SOLD:
+      case ItemStatus.Sold:
         this.state.toSold(actor);
         break;
     }
@@ -34,11 +34,11 @@ export class StatefulItem {
 
   private static createStateFromItem(item: Item) {
     switch (item.status) {
-      case ItemStatus.FOR_SALE:
+      case ItemStatus.ForSale:
         return new ForSaleState();
-      case ItemStatus.DEALT:
+      case ItemStatus.Dealt:
         return new DealtState();
-      case ItemStatus.SOLD:
+      case ItemStatus.Sold:
         return new SoldState();
     }
   }
@@ -54,25 +54,25 @@ abstract class State {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toForSale(_: Account) {
+  public toForSale(_: SimplifiedAccount) {
     throw new HTTPException(422, { message: "Transition not allowed" });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toDealt(_: Account) {
+  public toDealt(_: SimplifiedAccount) {
     throw new HTTPException(422, { message: "Transition not allowed" });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toSold(_: Account) {
+  public toSold(_: SimplifiedAccount) {
     throw new HTTPException(422, { message: "Transition not allowed" });
   }
 }
 
 class ForSaleState extends State {
-  public override representation = ItemStatus.FOR_SALE;
+  public override representation = ItemStatus.ForSale;
 
-  public override toDealt(actor: Account) {
+  public override toDealt(actor: SimplifiedAccount) {
     if (actor.id !== this.context.item.seller.id) {
       throw new HTTPException(403, { message: "You are not the seller" });
     }
@@ -82,9 +82,9 @@ class ForSaleState extends State {
 }
 
 class DealtState extends State {
-  public override representation = ItemStatus.DEALT;
+  public override representation = ItemStatus.Dealt;
 
-  public override toForSale(actor: Account) {
+  public override toForSale(actor: SimplifiedAccount) {
     if (actor.id !== this.context.item.seller.id) {
       throw new HTTPException(403, { message: "You are not the seller" });
     }
@@ -92,7 +92,7 @@ class DealtState extends State {
     this.context.setState(new ForSaleState());
   }
 
-  public override toSold(account: Account) {
+  public override toSold(account: SimplifiedAccount) {
     if (account.id !== this.context.item.seller.id) {
       throw new HTTPException(403, { message: "You are not the seller" });
     }
@@ -102,5 +102,5 @@ class DealtState extends State {
 }
 
 class SoldState extends State {
-  public override representation = ItemStatus.SOLD;
+  public override representation = ItemStatus.Sold;
 }

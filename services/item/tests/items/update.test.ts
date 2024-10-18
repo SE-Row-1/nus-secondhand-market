@@ -18,7 +18,7 @@ it("updates an item", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -28,7 +28,7 @@ it("updates an item", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -54,7 +54,7 @@ it("updates an item", async () => {
   expect(res.status).toEqual(200);
   expect(body).toMatchObject({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "update",
     description: "update",
     price: 200,
@@ -64,7 +64,7 @@ it("updates an item", async () => {
       nickname: me.nickname,
       avatar_url: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     created_at: expect.any(String),
     deleted_at: null,
   });
@@ -118,7 +118,7 @@ it("returns 400 if photo number exceeds the limit", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -134,7 +134,7 @@ it("returns 400 if photo number exceeds the limit", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -167,7 +167,7 @@ it("returns 400 if the removed photo URL does not exist", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -177,7 +177,7 @@ it("returns 400 if the removed photo URL does not exist", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -214,7 +214,7 @@ it("returns 403 if the user is not the seller of the item", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -224,7 +224,7 @@ it("returns 403 if the user is not the seller of the item", async () => {
       nickname: someoneElse.nickname,
       avatarUrl: someoneElse.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -263,7 +263,7 @@ it("returns 422 if the item is not a single item", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.PACK,
+    type: ItemType.Pack,
     name: "test",
     description: "test",
     seller: {
@@ -273,7 +273,7 @@ it("returns 422 if the item is not a single item", async () => {
     },
     discount: 0,
     children: [],
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });

@@ -19,7 +19,7 @@ export const me = {
 
 export const myJwt = sign(
   camelToSnake({ id: me.id, nickname: me.nickname, avatar_url: me.avatarUrl }),
-  Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
+  Buffer.from(Bun.env.JWT_SECRET_KEY, "base64"),
 );
 
 export const someoneElse = {
@@ -44,5 +44,5 @@ export const someoneElseJwt = sign(
     nickname: someoneElse.nickname,
     avatar_url: someoneElse.avatarUrl,
   }),
-  Buffer.from(process.env.JWT_SECRET_KEY, "base64"),
+  Buffer.from(Bun.env.JWT_SECRET_KEY, "base64"),
 );

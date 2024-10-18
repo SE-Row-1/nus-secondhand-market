@@ -13,7 +13,7 @@ it("returns the item with the given ID", async () => {
 
   await itemsCollection.insertOne({
     id: insertedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -23,7 +23,7 @@ it("returns the item with the given ID", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
@@ -46,7 +46,7 @@ it("ignores deleted items", async () => {
 
   await itemsCollection.insertOne({
     id: deletedId,
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     name: "test",
     description: "test",
     price: 100,
@@ -56,7 +56,7 @@ it("ignores deleted items", async () => {
       nickname: me.nickname,
       avatarUrl: me.avatarUrl,
     },
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: new Date(),
   });

@@ -41,7 +41,7 @@ app.use(
   // In testing environment, the rate limit is lifted to 10000 req/min.
   rateLimiter({
     windowMs: 1000 * 60,
-    limit: process.env.NODE_ENV === "test" ? 10000 : 100,
+    limit: Bun.env.NODE_ENV === "test" ? 10000 : 100,
     keyGenerator: (c) =>
       getConnInfo(c).remote.address ??
       getCookie(c, "access_token") ??
@@ -51,14 +51,14 @@ app.use(
   // Add security-related headers to the response.
   secureHeaders(),
 
-  // Transform the JSON response from camel case to snake case.
+  // Transform JSON response from camel case to snake case.
   transformCase(),
 );
 
 // Health check endpoint.
 app.get("/healthz", (c) => c.text("ok"));
 
-// Register API controllers.
+// Register controllers.
 app.route("/items", itemsController);
 
 // Register global handlers.

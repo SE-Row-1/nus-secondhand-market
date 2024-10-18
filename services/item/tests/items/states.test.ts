@@ -6,12 +6,12 @@ import { me, someoneElse } from "../test-utils/mock-data";
 
 const item: Item = {
   id: "0",
-  type: ItemType.SINGLE,
+  type: ItemType.Single,
   name: "test",
   description: "test",
   price: 100,
   photoUrls: [],
-  status: ItemStatus.FOR_SALE,
+  status: ItemStatus.ForSale,
   seller: {
     id: me.id,
     nickname: me.nickname,
@@ -24,33 +24,29 @@ const item: Item = {
 describe("FOR SALE -> DEALT", () => {
   it("succeeds if the actor is the seller", () => {
     const statefulItem = new StatefulItem(item);
-    statefulItem.transitionTo(ItemStatus.DEALT, me);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.DEALT);
+    statefulItem.transitionTo(ItemStatus.Dealt, me);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Dealt);
   });
 
   it("fails if the actor is not the seller", () => {
     const statefulItem = new StatefulItem(item);
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.DEALT, someoneElse),
+      statefulItem.transitionTo(ItemStatus.Dealt, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(
-      ItemStatus.FOR_SALE,
-    );
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.ForSale);
   });
 });
 
 describe("FOR SALE -> SOLD", () => {
   it("always fails", () => {
     const statefulItem = new StatefulItem(item);
-    expect(() => statefulItem.transitionTo(ItemStatus.SOLD, me)).toThrow(
+    expect(() => statefulItem.transitionTo(ItemStatus.Sold, me)).toThrow(
       HTTPException,
     );
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.SOLD, someoneElse),
+      statefulItem.transitionTo(ItemStatus.Sold, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(
-      ItemStatus.FOR_SALE,
-    );
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.ForSale);
   });
 });
 
@@ -58,23 +54,21 @@ describe("DEALT -> FOR SALE", () => {
   it("succeeds if the actor is the seller", () => {
     const statefulItem = new StatefulItem({
       ...item,
-      status: ItemStatus.DEALT,
+      status: ItemStatus.Dealt,
     });
-    statefulItem.transitionTo(ItemStatus.FOR_SALE, me);
-    expect(statefulItem.getRepresentation().status).toEqual(
-      ItemStatus.FOR_SALE,
-    );
+    statefulItem.transitionTo(ItemStatus.ForSale, me);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.ForSale);
   });
 
   it("fails if the actor is not the seller", () => {
     const statefulItem = new StatefulItem({
       ...item,
-      status: ItemStatus.DEALT,
+      status: ItemStatus.Dealt,
     });
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.FOR_SALE, someoneElse),
+      statefulItem.transitionTo(ItemStatus.ForSale, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.DEALT);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Dealt);
   });
 });
 
@@ -82,46 +76,46 @@ describe("DEALT -> SOLD", () => {
   it("succeeds if the actor is the seller", () => {
     const statefulItem = new StatefulItem({
       ...item,
-      status: ItemStatus.DEALT,
+      status: ItemStatus.Dealt,
     });
-    statefulItem.transitionTo(ItemStatus.SOLD, me);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.SOLD);
+    statefulItem.transitionTo(ItemStatus.Sold, me);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Sold);
   });
 
   it("fails if the actor is not the seller", () => {
     const statefulItem = new StatefulItem({
       ...item,
-      status: ItemStatus.DEALT,
+      status: ItemStatus.Dealt,
     });
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.SOLD, someoneElse),
+      statefulItem.transitionTo(ItemStatus.Sold, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.DEALT);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Dealt);
   });
 });
 
 describe("SOLD -> FOR SALE", () => {
   it("always fails", () => {
-    const statefulItem = new StatefulItem({ ...item, status: ItemStatus.SOLD });
-    expect(() => statefulItem.transitionTo(ItemStatus.FOR_SALE, me)).toThrow(
+    const statefulItem = new StatefulItem({ ...item, status: ItemStatus.Sold });
+    expect(() => statefulItem.transitionTo(ItemStatus.ForSale, me)).toThrow(
       HTTPException,
     );
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.FOR_SALE, someoneElse),
+      statefulItem.transitionTo(ItemStatus.ForSale, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.SOLD);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Sold);
   });
 });
 
 describe("SOLD -> DEALT", () => {
   it("always fails", () => {
-    const statefulItem = new StatefulItem({ ...item, status: ItemStatus.SOLD });
-    expect(() => statefulItem.transitionTo(ItemStatus.DEALT, me)).toThrow(
+    const statefulItem = new StatefulItem({ ...item, status: ItemStatus.Sold });
+    expect(() => statefulItem.transitionTo(ItemStatus.Dealt, me)).toThrow(
       HTTPException,
     );
     expect(() =>
-      statefulItem.transitionTo(ItemStatus.DEALT, someoneElse),
+      statefulItem.transitionTo(ItemStatus.Dealt, someoneElse),
     ).toThrow(HTTPException);
-    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.SOLD);
+    expect(statefulItem.getRepresentation().status).toEqual(ItemStatus.Sold);
   });
 });
