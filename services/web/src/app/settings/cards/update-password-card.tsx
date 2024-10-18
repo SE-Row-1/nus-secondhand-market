@@ -10,42 +10,114 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { SaveIcon } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/utils/requester/client";
+import { useMutation } from "@tanstack/react-query";
+import { Loader2Icon, SaveIcon } from "lucide-react";
+import type { FormEvent } from "react";
+import * as v from "valibot";
+
+const formSchema = v.object({
+  oldPassword: v.pipe(
+    v.string("Old password should be a string"),
+    v.minLength(8, "Old password should be at least 8 characters"),
+    v.maxLength(20, "Old password should be at most 20 characters"),
+  ),
+  newPassword: v.pipe(
+    v.string("New password should be a string"),
+    v.minLength(8, "New password should be at least 8 characters"),
+    v.maxLength(20, "New password should be at most 20 characters"),
+  ),
+  confirmPassword: v.pipe(
+    v.string("Password confirmation should be a string"),
+    v.minLength(8, "Password confirmation should be at least 8 characters"),
+    v.maxLength(20, "Password confirmation should be at most 20 characters"),
+  ),
+});
 
 export function UpdatePasswordCard() {
+  const { toast } = useToast();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const { oldPassword, newPassword, confirmPassword } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+      );
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("Passwords do not match. Please double check.");
+      }
+
+      return await clientRequester.put("/auth/me/password", {
+        old_password: oldPassword,
+        new_password: newPassword,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully updated.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Failed to update password",
+        description: error.message,
+      });
+    },
+  });
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Password</CardTitle>
         <CardDescription>Your login credentials.</CardDescription>
       </CardHeader>
-      <form>
+      <form onSubmit={mutate}>
         <CardContent className="space-y-4">
-          <Input
-            type="password"
-            name="old_password"
-            required
-            placeholder="Old password"
-            id="old-password"
-          />
-          <Input
-            type="password"
-            name="new_password"
-            required
-            placeholder="New password (8-20 characters)"
-            id="new-password"
-          />
-          <Input
-            type="password"
-            name="confirm_password"
-            required
-            placeholder="Confirm new password"
-            id="confirm-password"
-          />
+          <div className="grid gap-2">
+            <Label htmlFor="old-password">Old password</Label>
+            <Input
+              type="password"
+              name="oldPassword"
+              required
+              placeholder="Your current password"
+              id="old-password"
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="new-password">New password</Label>
+            <Input
+              type="password"
+              name="newPassword"
+              required
+              placeholder="8-20 characters"
+              id="new-password"
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="confirm-password">Confirm new password</Label>
+            <Input
+              type="password"
+              name="confirmPassword"
+              required
+              placeholder="Type new password again"
+              id="confirm-password"
+            />
+          </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit">
-            <SaveIcon className="size-4 mr-2" />
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
+              <Loader2Icon className="size-4 mr-2" />
+            ) : (
+              <SaveIcon className="size-4 mr-2" />
+            )}
             Save
           </Button>
         </CardFooter>
