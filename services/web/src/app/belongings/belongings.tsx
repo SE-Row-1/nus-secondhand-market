@@ -14,7 +14,7 @@ type Props = {
 
 export function Belongings({ firstPage, me }: Props) {
   const { data, fetchNextPage, hasNextPage, isRefetching } = useInfiniteQuery({
-    queryKey: ["items"],
+    queryKey: ["items", "belongings"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
         seller_id: String(me.id),

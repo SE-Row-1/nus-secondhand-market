@@ -13,7 +13,7 @@ type Props = {
 
 export function Marketplace({ firstPage }: Props) {
   const { data, fetchNextPage, hasNextPage, isRefetching } = useInfiniteQuery({
-    queryKey: ["items"],
+    queryKey: ["items", "marketplace"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
         status: String(ItemStatus.FOR_SALE),
