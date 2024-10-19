@@ -21,8 +21,9 @@ jobs:
         env:
           MONGO_INITDB_ROOT_USERNAME: test_user
           MONGO_INITDB_ROOT_PASSWORD: test_password
+          MONGO_INITDB_DATABASE: test_nshm_wishlist
         volumes:
-          - ./database/test:/docker-entrypoint-initdb.d
+          - ${GITHUB_WORKSPACE}/services/wishlist/database/test:/docker-entrypoint-initdb.d
 
     steps:
       - name: Check out repository
