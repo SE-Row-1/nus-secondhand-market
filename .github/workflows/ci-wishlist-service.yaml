@@ -9,6 +9,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: services/wishlist
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -63,4 +67,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: jacoco-report
-          path: services/wishlist/target/site/jacoco/jacoco.xml
+          path: target/site/jacoco/jacoco.xml
