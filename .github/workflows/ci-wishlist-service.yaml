@@ -13,13 +13,6 @@ on:
 #   paths:
 #     - services/wishlist/**
 
-name: CI for wishlist service
-
-on:
-  push:
-    branches:
-      - NSHM-9-Set-up-environment
-
 jobs:
   test:
     runs-on: ubuntu-latest
