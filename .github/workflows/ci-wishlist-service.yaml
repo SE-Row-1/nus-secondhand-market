@@ -39,6 +39,8 @@ jobs:
             echo "Waiting for test report to be generated..."
             sleep 5
           done
+          pwd
+          ls -lart
 
       - name: Upload Test Reports
         uses: actions/upload-artifact@v3
