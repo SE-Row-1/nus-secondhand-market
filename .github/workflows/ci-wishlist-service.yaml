@@ -4,14 +4,6 @@ on:
   push:
     branches:
       - NSHM-9-Set-up-environment
-#     - main
-#   paths:
-#     - services/wishlist/**
-# pull_request:
-#   branches:
-#     - main
-#   paths:
-#     - services/wishlist/**
 
 jobs:
   test:
@@ -39,36 +31,49 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Create Docker network
+        run: docker network create wishlist-network
+
       - name: Start MongoDB using Docker with Volumes
         run: |
           docker run -d \
             --name mongo \
+            --network wishlist-network \
             -p 27017:27017 \
             -e MONGO_INITDB_ROOT_USERNAME=test_user \
             -e MONGO_INITDB_ROOT_PASSWORD=test_password \
-            -v ./database/test:/docker-entrypoint-initdb.d \
+            -v ${{ github.workspace }}/database/test:/docker-entrypoint-initdb.d \
             mongo:latest
 
           echo "Waiting for MongoDB to start..."
-          sleep 10
+          sleep 20  # Increase wait time to ensure MongoDB is ready
           docker logs mongo
 
       - name: Run tests and generate coverage report
-        run: mvn clean test jacoco:report
-        env:
-          MONGO_HOST: mongo
-          MONGO_PORT: 27017
-          MONGO_DB: test_nshm_wishlist
-          MONGO_USERNAME: test_user
-          MONGO_PASSWORD: test_password
-          WISHLIST_PORT: 8083
-          JWT_SECRET_KEY: test_jwt_secret_key
+        run: |
+          docker run --rm \
+            --network wishlist-network \
+            -v ${{ github.workspace }}:/app \
+            -w /app \
+            -e MONGO_HOST=mongo \
+            -e MONGO_PORT=27017 \
+            -e MONGO_DB=test_nshm_wishlist \
+            -e MONGO_USERNAME=test_user \
+            -e MONGO_PASSWORD=test_password \
+            -e WISHLIST_PORT=8083 \
+            -e JWT_SECRET_KEY=test_jwt_secret_key \
+            maven:3.8.5-openjdk-17-slim \
+            mvn clean test jacoco:report
 
       - name: Stop and remove MongoDB container
         run: docker stop mongo && docker rm mongo
+
+      - name: Remove Docker network
+        run: docker network rm wishlist-network
 
       - name: Upload Test Coverage Report
         uses: actions/upload-artifact@v3
         with:
           name: jacoco-report
-          path: target/site/jacoco/jacoco.xml
+          path: services/wishlist/target/site/jacoco/jacoco.xml
+
