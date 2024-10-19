@@ -12,6 +12,14 @@ on:
 #     - main
 #   paths:
 #     - services/wishlist/**
+
+name: CI for wishlist service
+
+on:
+  push:
+    branches:
+      - NSHM-9-Set-up-environment
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -47,19 +55,38 @@ jobs:
             -e MONGO_INITDB_ROOT_PASSWORD=test_password \
             -v ./database/test:/docker-entrypoint-initdb.d \
             mongo:latest
+
           echo "Waiting for MongoDB to start..."
-          sleep 10
+
+          # Health check for MongoDB
+          until nc -z mongo 27017; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 1
+          done
+
+          echo "MongoDB is up and running!"
           docker logs mongo
+
+      - name: Check MongoDB Database and Collection
+        run: |
+          echo "Waiting for MongoDB to be ready for checking the database..."
+          until nc -z mongo 27017; do
+            echo "Waiting for MongoDB to be ready..."
+            sleep 5
+          done
+
+          mongo --username test_user --password test_password --authenticationDatabase admin --host mongo --port 27017 --eval 'db = db.getMongo().getDB("test_nshm_wishlist"); if (db.getCollectionNames().length > 0) { print("Database exists and has collections:", db.getCollectionNames()); } else { print("Database exists but has no collections."); }'
+
 
       - name: Run tests and generate coverage report
         run: mvn clean test jacoco:report
         env:
-          MONGO_HOST: localhost
+          MONGO_HOST: mongo
           MONGO_PORT: 27017
           MONGO_DB: test_nshm_wishlist
           MONGO_USERNAME: test_user
           MONGO_PASSWORD: test_password
-          WISHLIST_PORT: 8082
+          WISHLIST_PORT: 8083
           JWT_SECRET_KEY: test_jwt_secret_key
 
       - name: Stop and remove MongoDB container
