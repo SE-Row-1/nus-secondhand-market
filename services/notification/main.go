@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -33,6 +34,8 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
+	startHealthCheck()
 
 	log.Print("service started")
 
@@ -79,4 +82,17 @@ func startQueue[Payload interface{ Process() error }](ch *amqp.Channel, topic st
 	}()
 
 	return nil
+}
+
+func startHealthCheck() {
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
+
+	go func() {
+		err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}()
 }
