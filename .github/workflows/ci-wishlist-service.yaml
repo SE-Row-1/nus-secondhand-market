@@ -51,12 +51,7 @@ jobs:
 
           echo "Waiting for MongoDB to start..."
           sleep 10
-
-          echo "MongoDB is up and running!"
           docker logs mongo
-
-          mongo --username test_user --password test_password --authenticationDatabase admin --host mongo --port 27017 --eval 'db = db.getMongo().getDB("test_nshm_wishlist"); if (db.getCollectionNames().length > 0) { print("Database exists and has collections:", db.getCollectionNames()); } else { print("Database exists but has no collections."); }'
-
 
       - name: Run tests and generate coverage report
         run: mvn clean test jacoco:report
