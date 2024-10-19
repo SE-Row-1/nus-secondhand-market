@@ -22,7 +22,7 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: test_user
           MONGO_INITDB_ROOT_PASSWORD: test_password
         volumes:
-          - ${{ github.workspace }}/database/test:/docker-entrypoint-initdb.d  # Mount local directory to MongoDB container
+          - ./database/test:/docker-entrypoint-initdb.d
 
     steps:
       - name: Check out repository
@@ -59,4 +59,3 @@ jobs:
         with:
           name: jacoco-report
           path: services/wishlist/target/site/jacoco/jacoco.xml
-
