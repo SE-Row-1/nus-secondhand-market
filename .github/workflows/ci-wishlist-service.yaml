@@ -42,9 +42,8 @@ jobs:
         run: |
           docker run -d --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test_user -e MONGO_INITDB_ROOT_PASSWORD=test_password mongo:latest
           echo "Waiting for MongoDB to start..."
-          until nc -z mongo 27017; do
-            sleep 1
-          done
+          sleep 10
+          docker logs mongo
 
       - name: Run tests and generate coverage report
         run: mvn clean test jacoco:report
