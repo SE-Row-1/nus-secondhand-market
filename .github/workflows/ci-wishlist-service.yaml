@@ -19,10 +19,10 @@ jobs:
         ports:
           - 27017:27017
         options: >
-          --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo localhost/test --quiet"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd="echo 'db.runCommand({ ping: 1 })' | mongo localhost/test --quiet" \
+          --health-interval=10s \
+          --health-timeout=5s \
+          --health-retries=5  # Ensure no newline after this
         env:
           MONGO_INITDB_ROOT_USERNAME: test_user
           MONGO_INITDB_ROOT_PASSWORD: test_password
