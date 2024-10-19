@@ -3,14 +3,15 @@ name: CI for wishlist service
 on:
   push:
     branches:
-      - main
-    paths:
-      - services/wishlist/**
-  pull_request:
-    branches:
-      - main
-    paths:
-      - services/wishlist/**
+      - NSHM-9-Set-up-environment
+#     - main
+#   paths:
+#     - services/wishlist/**
+# pull_request:
+#   branches:
+#     - main
+#   paths:
+#     - services/wishlist/**
 
 jobs:
   build:
@@ -31,7 +32,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Maven (without Checkstyle)
-        run: mvn clean package -Dcheckstyle.skip=true
+        run: mvn clean package -DskipTests
 
   test:
     runs-on: ubuntu-latest
@@ -58,3 +59,10 @@ jobs:
 
       - name: Stop and clean containers
         run: docker compose -f docker-compose.test.yaml down
+
+      - name: Upload Test Reports
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-reports
+          path: services/wishlist/target/surefire-reports/*
