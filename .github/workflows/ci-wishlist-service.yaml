@@ -39,8 +39,7 @@ jobs:
             echo "Waiting for test report to be generated..."
             sleep 5
           done
-          pwd
-          ls -lart
+          sudo chown -R $(id -u):$(id -g) reports
           ls -lart reports
 
       - name: Upload Test Reports
