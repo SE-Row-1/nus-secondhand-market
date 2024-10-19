@@ -37,6 +37,9 @@ jobs:
           for i in {1..10}; do
             if docker exec mongo mongosh --eval "printjson(db.runCommand({ ping: 1 }))" | grep -q "ok"; then
               echo "MongoDB is ready!"
+              # Check for users in the test_nshm_wishlist database
+              echo "Listing users in the test_nshm_wishlist database:"
+              docker exec mongo mongosh -u test_user -p test_password --authenticationDatabase admin --eval "use test_nshm_wishlist; db.getUsers()"
               break
             fi
             echo "Waiting for MongoDB to be ready..."
