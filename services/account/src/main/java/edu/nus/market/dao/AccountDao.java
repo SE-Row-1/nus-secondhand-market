@@ -14,6 +14,10 @@ public interface AccountDao {
     Account getAccountById(int id);
 
     @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
+        "created_at, deleted_at FROM account WHERE email = #{email}")
+    Account getAccountByEmailAll(String email);
+
+    @Select("SELECT id, email, nickname, avatar_url, department_id, password_hash, password_salt, phone_code, phone_number, preferred_currency, " +
         "created_at, deleted_at FROM account WHERE email = #{email} AND deleted_at IS NULL")
     Account getAccountByEmail(String email);
 
@@ -28,7 +32,7 @@ public interface AccountDao {
     void hardDeleteAccount(int id);
 
     @Update("UPDATE account SET deleted_at = now() WHERE id = #{id}")
-    void deleteAccount(int id);
+    void softDeleteAccount(int id);
 
     @Update("UPDATE account SET password_hash = #{passwordHash}, password_salt = #{passwordSalt} WHERE id = #{id} AND deleted_at IS NULL " +
         "RETURNING id")
@@ -55,6 +59,9 @@ public interface AccountDao {
 
     // delete account by email
     @Delete("DELETE FROM account WHERE email = #{email}")
-    void deleteAccountByEmail(String email);
+    void hardDeleteAccountByEmail(String email);
+
+    @Update("UPDATE account SET deleted_at = now() WHERE email = #{email}")
+    void softDeleteAccountByEmail(String email);
 }
 

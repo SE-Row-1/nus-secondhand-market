@@ -118,10 +118,34 @@ public class UpdateProfileServiceTest {
         assertEquals("98765432", updatedAccount.getPhoneNumber());
     }
 
+    @Test
+    @Order(6)
+    void updateProfileWithDeletedEmailTest() {
+        // if u only want to run this test, please uncomment this code
+        accountService.registerService(new RegisterReq("e1351827@u.nus.edu", "87654321"));
+
+        int oldId = accountDao.getAccountByEmail("e1351827@u.nus.edu").getId();
+
+        accountDao.softDeleteAccountByEmail("e1351827@u.nus.edu");
+
+        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
+        updateProfileReq.setEmail("e1351827@u.nus.edu");
+
+        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Account updatedAccount = accountDao.getAccountById(ID);
+        assertEquals("New Nickname", updatedAccount.getNickname());
+        assertEquals("https://new-avatar.com/avatar.png", updatedAccount.getAvatarUrl());
+        assertEquals("65", updatedAccount.getPhoneCode());
+        assertEquals("98765432", updatedAccount.getPhoneNumber());
+        assertEquals(1, updatedAccount.getDepartmentId());
+        assertEquals("SGD", updatedAccount.getPreferredCurrency());
+        assertNotEquals(oldId, updatedAccount.getId());
+    }
+
     @AfterAll
     void cleanup() {
-        accountDao.deleteAccountByEmail(EMAIL);
-        accountDao.deleteAccountByEmail("e1351827@u.nus.edu");
-        accountDao.deleteAccountByEmail("e1351826@u.nus.edu");
+        accountDao.cleanTable();
     }
 }
