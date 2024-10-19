@@ -9,22 +9,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: services/wishlist
-
-    services:
-      mongo:
-        image: mongo:latest
-        ports:
-          - 27017:27017
-        env:
-          MONGO_INITDB_ROOT_USERNAME: test_user
-          MONGO_INITDB_ROOT_PASSWORD: test_password
-          MONGO_INITDB_DATABASE: test_nshm_wishlist
-        volumes:
-          - ${GITHUB_WORKSPACE}/services/wishlist/database/test:/docker-entrypoint-initdb.d
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -34,6 +18,26 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+
+      - name: Start MongoDB service
+        run: |
+          docker run -d --name mongo \
+            -e MONGO_INITDB_ROOT_USERNAME=test_user \
+            -e MONGO_INITDB_ROOT_PASSWORD=test_password \
+            -e MONGO_INITDB_DATABASE=test_nshm_wishlist \
+            -v ${GITHUB_WORKSPACE}/services/wishlist/database/test:/docker-entrypoint-initdb.d \
+            -p 27017:27017 mongo:latest
+
+      - name: Wait for MongoDB to be ready
+        run: |
+          for i in {1..10}; do
+            if docker exec mongo mongosh --eval "printjson(db.runCommand({ ping: 1 }))" | grep -q "ok"; then
+              echo "MongoDB is ready!"
+              break
+            fi
+            echo "Waiting for MongoDB to be ready..."
+            sleep 5
+          done
 
       - name: Cache Maven packages
         uses: actions/cache@v3
