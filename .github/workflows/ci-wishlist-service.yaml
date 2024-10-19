@@ -12,10 +12,13 @@ on:
 #     - main
 #   paths:
 #     - services/wishlist/**
-
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/wishlist
 
     steps:
       - name: Check out repository
@@ -31,7 +34,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('services/wishlist/pom.xml') }}
+          key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
 
@@ -39,7 +42,9 @@ jobs:
         run: |
           docker run -d --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test_user -e MONGO_INITDB_ROOT_PASSWORD=test_password mongo:latest
           echo "Waiting for MongoDB to start..."
-          sleep 10  # wait for MongoDB to be ready
+          until nc -z mongo 27017; do
+            sleep 1
+          done
 
       - name: Run tests and generate coverage report
         run: mvn clean test jacoco:report
