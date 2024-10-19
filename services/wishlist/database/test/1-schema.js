@@ -1,3 +1,16 @@
+db = db.getSiblingDB('admin');
+
+// Create the user for the test_nshm_wishlist database (if it doesn't exist yet)
+db.createUser({
+    user: "test_user",
+    pwd: "test_password",  // Use the same password as the root user
+    roles: [
+        { role: "readWrite", db: "test_nshm_wishlist" }  // Assign appropriate role
+    ]
+});
+
+// Switch to the target database
+db = db.getSiblingDB('test_nshm_wishlist');
 // Create 'wishlist' collection (if it doesn't exist yet)
 db.createCollection("wishlist");
 
