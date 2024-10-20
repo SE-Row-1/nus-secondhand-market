@@ -1,4 +1,4 @@
-import type { Item } from "@/types";
+import { type Item, type ItemPack } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import type { Document, Filter, FindOptions, WithId } from "mongodb";
 
@@ -98,4 +98,21 @@ export async function search(dto: SearchRepositoryDto) {
   const items = withIdItems.map(({ _id, score, ...item }) => item);
 
   return { items, nextThreshold, nextCursor };
+}
+
+export async function compose(pack: ItemPack) {
+  return await itemsCollection.bulkWrite([
+    {
+      insertOne: {
+        document: { ...pack },
+      },
+    },
+    {
+      deleteMany: {
+        filter: {
+          id: { $in: pack.children.map((child) => child.id) },
+        },
+      },
+    },
+  ]);
 }
