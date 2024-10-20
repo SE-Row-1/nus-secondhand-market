@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - NSHM-9-Set-up-environment
   workflow_dispatch:
     inputs:
       destroy:

@@ -4,7 +4,6 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/backend-protocol: HTTP
@@ -12,6 +11,7 @@ metadata:
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:985539788320:certificate/87ec1614-b12a-48f2-b8b2-5532c47684b7
 spec:
+  ingressClassName: alb
   rules:
     - host: www.nshm.store
       http:
@@ -57,4 +57,4 @@ spec:
               service:
                 name: rabbitmq
                 port:
-                number: 15672
+                  number: 15672
