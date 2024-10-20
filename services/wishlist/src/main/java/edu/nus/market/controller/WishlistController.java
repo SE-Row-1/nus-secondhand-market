@@ -90,8 +90,8 @@ public class WishlistController {
 
         return wishlistService.deleteLikeService(userId, itemId);
     }
-    @GetMapping("/statistics/{item_id}")
 
+    @GetMapping("/statistics/{item_id}")
     public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())

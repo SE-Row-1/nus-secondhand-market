@@ -42,6 +42,7 @@ public class WishlistDAOTest {
 
         // Act: 读取该用户的收藏
         List<Like> likes = wishlistDao.findByUserIdOrderByWantedAtDesc(1);
+
         // Assert: 验证添加和读取成功
         assertEquals(1, likes.size());
         assertEquals(ITEM_ID, likes.get(0).getItemId());
