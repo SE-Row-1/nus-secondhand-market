@@ -247,6 +247,7 @@ it("returns 422 if the item is not a single item", async () => {
     name: "test",
     description: "test",
     seller: me.simplifiedAccount,
+    price: 0,
     discount: 0,
     children: [],
     status: ItemStatus.ForSale,
