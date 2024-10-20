@@ -1,1 +1,1 @@
-export { SingleItemDetails } from "./single-item-details";
+export { ItemDetails } from "./item-details";

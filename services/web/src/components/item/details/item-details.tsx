@@ -6,8 +6,9 @@ import { cn } from "@/components/ui/utils";
 import { useItem } from "@/hooks/use-item";
 import {
   ItemStatus,
+  ItemType,
   type DetailedAccount,
-  type SingleItem,
+  type Item,
   type WishlistStatistics,
 } from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
@@ -15,6 +16,8 @@ import Link from "next/link";
 import { StatusBadge } from "../card/status-badge";
 import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
+import { ChildrenGrid } from "./children-grid";
+import { DecomposePackDialog } from "./decompose-pack-dialog";
 import { DeleteItemDialog } from "./delete-item-dialog";
 import { PhotoCarousel } from "./photo-carousel";
 import {
@@ -23,22 +26,22 @@ import {
 } from "./update-status-dropdown-menu";
 
 type Props = {
-  initialItem: SingleItem<DetailedAccount>;
+  initialItem: Item<DetailedAccount>;
   wishlistStatistics: WishlistStatistics;
   me: DetailedAccount | null;
 };
 
-export function SingleItemDetails({
-  initialItem,
-  wishlistStatistics,
-  me,
-}: Props) {
+export function ItemDetails({ initialItem, wishlistStatistics, me }: Props) {
   const { data: item } = useItem(initialItem.id, initialItem);
 
   return (
     <div>
       <div className="max-w-xl mx-auto">
-        <PhotoCarousel photoUrls={item.photo_urls} />
+        {item.type === ItemType.SINGLE ? (
+          <PhotoCarousel photoUrls={item.photo_urls} />
+        ) : (
+          <ChildrenGrid items={item.children} />
+        )}
       </div>
       <div className="max-w-xl mx-auto">
         <div className="flex justify-between items-center gap-x-8 gap-y-3 flex-wrap pt-12">
@@ -108,7 +111,11 @@ export function SingleItemDetails({
                   Edit
                 </Link>
               </Button>
-              <DeleteItemDialog item={item} />
+              {item.type === ItemType.SINGLE ? (
+                <DeleteItemDialog item={item} />
+              ) : (
+                <DecomposePackDialog item={item} />
+              )}
             </>
           ) : (
             <>

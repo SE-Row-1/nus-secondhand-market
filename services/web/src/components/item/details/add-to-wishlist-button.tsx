@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useMe } from "@/hooks/use-me";
-import type { SimplifiedAccount, SingleItem } from "@/types";
+import type { Item, SimplifiedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { HeartIcon, HeartOffIcon, Loader2Icon } from "lucide-react";
@@ -11,7 +11,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type MouseEvent } from "react";
 
 type Props = {
-  item: SingleItem<SimplifiedAccount>;
+  item: Item<SimplifiedAccount>;
   initialIsInWishlist: boolean;
 };
 
