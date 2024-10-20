@@ -30,7 +30,7 @@ export function ItemCard({ item }: Props) {
           <p className="font-medium text-primary">
             {item.type === ItemType.SINGLE
               ? `${item.price} SGD`
-              : `-${item.discount}%`}
+              : `-${item.discount * 100}%`}
           </p>
         </div>
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1 text-muted-foreground group-hover:text-foreground transition-colors">
