@@ -64,7 +64,7 @@ public class GetAccountServiceTest {
 
     @Test
     void getAccountDeletedTest() {
-        accountDao.deleteAccount(userId);
+        accountDao.softDeleteAccount(userId);
 
         ResponseEntity<Object> responseEntity = accountService.getAccountService(userId);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());

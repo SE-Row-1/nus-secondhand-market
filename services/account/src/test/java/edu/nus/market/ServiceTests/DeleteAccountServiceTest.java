@@ -61,6 +61,6 @@ public class DeleteAccountServiceTest {
 
     @AfterAll
     void cleanup() {
-        accountDao.deleteAccountByEmail(EMAIL);
+        accountDao.cleanTable();
     }
 }
