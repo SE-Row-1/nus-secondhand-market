@@ -13,8 +13,7 @@ import java.util.Optional;
 
 public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     // 自定义查询方法
-    List<Like> findByUserIdOrderByWantedAtDesc(int userId);
-
+    List<Like> findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(int userId, Date before);
 
     //insert one Like just use save()
 
