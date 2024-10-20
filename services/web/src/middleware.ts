@@ -1,8 +1,10 @@
 import type { MiddlewareConfig, NextRequest } from "next/server";
 import { AuthGuard } from "./middleware/auth-guard";
+import { Logger } from "./middleware/logger";
 
 export async function middleware(req: NextRequest) {
   const authGuard = new AuthGuard();
+  authGuard.setNext(new Logger());
 
   return authGuard.handle(req);
 }
