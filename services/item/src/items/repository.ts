@@ -116,3 +116,25 @@ export async function compose(pack: ItemPack) {
     },
   ]);
 }
+
+export async function decompose(pack: ItemPack) {
+  return await itemsCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: {
+          id: pack.id,
+        },
+        update: {
+          $set: {
+            deletedAt: new Date(),
+          },
+        },
+      },
+    },
+    ...pack.children.map((child) => ({
+      insertOne: {
+        document: child,
+      },
+    })),
+  ]);
+}

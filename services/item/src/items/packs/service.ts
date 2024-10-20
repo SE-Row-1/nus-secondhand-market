@@ -1,4 +1,5 @@
-import { ItemType, type SimplifiedAccount } from "@/types";
+import { ItemType, type ItemPack, type SimplifiedAccount } from "@/types";
+import { publishItemEvent } from "@/utils/mq";
 import { HTTPException } from "hono/http-exception";
 import * as itemsRepository from "../repository";
 import { CompositeItemPack } from "./composite";
@@ -45,4 +46,33 @@ export async function compose(dto: ComposeServiceDto) {
   await itemsRepository.compose(pack);
 
   return pack;
+}
+
+type DecomposeServiceDto = {
+  id: string;
+  user: SimplifiedAccount;
+};
+
+export async function decompose(dto: DecomposeServiceDto) {
+  const pack = await itemsRepository.findOne({
+    id: dto.id,
+    type: ItemType.Pack,
+    deletedAt: null,
+  });
+
+  if (!pack) {
+    throw new HTTPException(404, { message: "Pack does not exist" });
+  }
+
+  if (pack.seller.id !== dto.user.id) {
+    throw new HTTPException(403, {
+      message: "You can only decompose your own pack",
+    });
+  }
+
+  await itemsRepository.decompose(pack as ItemPack);
+
+  publishItemEvent("deleted", pack.id);
+
+  return;
 }

@@ -17,7 +17,7 @@ import { useMe } from "@/hooks/use-me";
 import type { Item } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
+import { CheckIcon, Loader2Icon, UnplugIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
 
@@ -25,7 +25,7 @@ type Props = {
   item: Item;
 };
 
-export function DeleteItemDialog({ item }: Props) {
+export function DecomposePackDialog({ item }: Props) {
   const { data: me } = useMe();
 
   if (!me || me.id !== item.seller.id) {
@@ -36,16 +36,16 @@ export function DeleteItemDialog({ item }: Props) {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive">
-          <TrashIcon className="size-4 mr-2" />
-          Take down
+          <UnplugIcon className="size-4 mr-2" />
+          Decompose
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Your item will be deleted</AlertDialogTitle>
+          <AlertDialogTitle>Decompose item pack</AlertDialogTitle>
           <AlertDialogDescription>
-            This item will be removed from your belongings and others&apos;
-            wishlists.
+            The items in this pack will go back to your belongings, but this
+            pack itself will be lost forever.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -53,18 +53,18 @@ export function DeleteItemDialog({ item }: Props) {
             <XIcon className="size-4 mr-2" />
             Cancel
           </AlertDialogCancel>
-          <DeleteItemDialogAction itemId={item.id} />
+          <DecomposePackConfirmation itemId={item.id} />
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );
 }
 
-type DeleteItemDialogActionProps = {
+type DecomposePackConfirmationProps = {
   itemId: string;
 };
 
-function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
+function DecomposePackConfirmation({ itemId }: DecomposePackConfirmationProps) {
   const router = useRouter();
 
   const { toast } = useToast();
@@ -74,14 +74,14 @@ function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
-      return await clientRequester.delete<undefined>(`/items/${itemId}`);
+      return await clientRequester.delete<undefined>(`/items/packs/${itemId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
 
       toast({
-        title: "Item taken down",
-        description: "Your item has been taken down successfully.",
+        title: "Item pack decomposed",
+        description: "Your item pack has been decomposed successfully.",
       });
 
       router.push("/");
@@ -89,7 +89,7 @@ function DeleteItemDialogAction({ itemId }: DeleteItemDialogActionProps) {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Failed to take down item",
+        title: "Failed to decompose the pack",
         description: error.message,
       });
     },
