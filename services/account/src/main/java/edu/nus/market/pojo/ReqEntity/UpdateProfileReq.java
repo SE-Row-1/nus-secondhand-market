@@ -1,6 +1,5 @@
 package edu.nus.market.pojo.ReqEntity;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProfileReq {
-    @NotBlank
     @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
     private String email;
 
