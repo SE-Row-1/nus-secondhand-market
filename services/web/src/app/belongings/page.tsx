@@ -1,4 +1,4 @@
-import { PageTitle } from "@/components/framework";
+import { PageTitle } from "@/components/layout";
 import { prefetchBelongings, prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";

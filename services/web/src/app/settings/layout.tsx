@@ -1,4 +1,4 @@
-import { PageTitle } from "@/components/framework/page-title";
+import { PageTitle } from "@/components/layout/page-title";
 import type { PropsWithChildren } from "react";
 import { NavLink } from "./nav-link";
 

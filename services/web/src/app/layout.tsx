@@ -1,4 +1,4 @@
-import { Header, Sidebar } from "@/components/framework";
+import { Header, Sidebar } from "@/components/layout";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/contexts/query-provider";
 import type { Metadata } from "next";

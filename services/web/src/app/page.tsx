@@ -1,5 +1,5 @@
-import { PageTitle } from "@/components/framework";
 import { PublishItemDialog } from "@/components/item/publish";
+import { PageTitle } from "@/components/layout";
 import { prefetchMarketplace } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";

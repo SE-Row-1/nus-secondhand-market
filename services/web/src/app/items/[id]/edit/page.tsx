@@ -1,5 +1,5 @@
-import { PageTitle } from "@/components/framework/page-title";
 import { EditItem } from "@/components/item/edit/edit-item";
+import { PageTitle } from "@/components/layout/page-title";
 import { prefetchItem, prefetchMe } from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
