@@ -32,3 +32,7 @@ export const composeJsonSchema = v.object({
     v.minLength(2, "Compose at least 2 items"),
   ),
 });
+
+export const deleteParamSchema = v.object({
+  id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
+});
