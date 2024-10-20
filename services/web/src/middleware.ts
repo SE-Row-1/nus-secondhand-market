@@ -1,4 +1,4 @@
-import { type MiddlewareConfig, type NextRequest } from "next/server";
+import type { MiddlewareConfig, NextRequest } from "next/server";
 import { AuthGuard } from "./middleware/auth-guard";
 
 export async function middleware(req: NextRequest) {
