@@ -1,6 +1,7 @@
 package edu.nus.market;
 
 import edu.nus.market.controller.WishlistController;
+import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 
+import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -70,7 +72,7 @@ class WishlistControllerTest {
 
     @Test
     void testGetWishlist_Unauthorized() {
-        ResponseEntity<Object> response = wishlistController.getWishlist(1, "");
+        ResponseEntity<Object> response = wishlistController.getWishlist(1, "", ConvertDateToISO.convert(new Date()));
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -109,9 +111,9 @@ class WishlistControllerTest {
 
     @Test
     void testGetWishlist_Success() {
-        when(wishlistService.getWishlistService(anyInt())).thenReturn(ResponseEntity.ok(mockLikes));
+        when(wishlistService.getWishlistService(anyInt(),any())).thenReturn(ResponseEntity.ok(mockLikes));
 
-        ResponseEntity<Object> response = wishlistController.getWishlist(1, cookie);
+        ResponseEntity<Object> response = wishlistController.getWishlist(1, cookie, ConvertDateToISO.convert(new Date()));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockLikes, response.getBody());
