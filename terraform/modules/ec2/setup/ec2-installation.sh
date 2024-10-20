@@ -74,8 +74,9 @@ curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/r
 chmod +x /tmp/argocd-${ARGOCD_VERSION}
 sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
 kubectl create ns nshm
-kubectl apply -f argocd-project.yaml -n argocd
-kubectl apply -f argocd-app.yaml -n argocd
+kubectl apply -f argocd-app.yaml
+kubectl apply -f argocd-rabbitmq.yaml
+kubectl apply -f argocd-prometheus.yaml
 
 bash cloudflare-adddns.sh
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode > argocd-admin-secret.txt

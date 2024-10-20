@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rabbitmq-cluster-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
+    targetRevision: NSHM-9-Set-up-environment
+    path: helm/charts/rabbitmq-cluster-operator
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: rabbitmq
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
