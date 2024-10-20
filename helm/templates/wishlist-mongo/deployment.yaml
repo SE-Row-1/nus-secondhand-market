@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishlist-mongo
+  namespace: nshm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wishlist-mongo
+  template:
+    metadata:
+      labels:
+        app: wishlist-mongo
+    spec:
+      containers:
+      - name: wishlist-mongo
+        image: bitnami/mongodb:latest
+        ports:
+        - containerPort: 27017
+        envFrom:
+          - secretRef:
+              name: wishlist-mongo-secret

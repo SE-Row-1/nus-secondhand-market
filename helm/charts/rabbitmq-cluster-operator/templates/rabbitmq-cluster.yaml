@@ -1,0 +1,17 @@
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+  namespace: nshm
+spec:
+  replicas: 3
+  auth:
+    username:
+      existingSecret: rabbitmq-secret
+      key: RABBITMQ_DEFAULT_USER
+    password:
+      existingSecret: rabbitmq-secret
+      key: RABBITMQ_DEFAULT_PASS
+  management:
+    enabled: true

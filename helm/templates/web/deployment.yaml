@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: web
+  namespace: nshm
 spec:
   replicas: {{ .Values.web.replicas }}
   selector:
@@ -22,4 +23,6 @@ spec:
           limits:
             memory: {{ .Values.web.resources.limits.memory }}
             cpu: {{ .Values.web.resources.limits.cpu }}
-
+        envFrom:
+          - secretRef:
+              name: web-secret

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: wishlist
+  namespace: nshm
 spec:
   replicas: {{ .Values.wishlist.replicas }}
   selector:
@@ -22,4 +23,6 @@ spec:
           limits:
             memory: {{ .Values.wishlist.resources.limits.memory }}
             cpu: {{ .Values.wishlist.resources.limits.cpu }}
-
+        envFrom:
+          - secretRef:
+              name: wishlist-secret

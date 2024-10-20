@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: account
+  namespace: nshm
 spec:
   replicas: {{ .Values.account.replicas }}
   selector:
@@ -22,4 +23,6 @@ spec:
           limits:
             memory: {{ .Values.account.resources.limits.memory }}
             cpu: {{ .Values.account.resources.limits.cpu }}
-
+        envFrom:
+          - secretRef:
+              name: account-secret

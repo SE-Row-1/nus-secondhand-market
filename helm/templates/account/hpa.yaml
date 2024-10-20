@@ -2,6 +2,7 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: account-hpa
+  namespace: nshm
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -16,4 +17,3 @@ spec:
       target:
         type: Utilization
         averageUtilization: 80
-
