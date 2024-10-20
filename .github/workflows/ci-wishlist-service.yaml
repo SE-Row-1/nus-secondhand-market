@@ -3,15 +3,14 @@ name: CI for Wishlist Service
 on:
   push:
     branches:
-      - NSHM-9-Set-up-environment
-#     - main
-#   paths:
-#     - services/wishlist/**
-# pull_request:
-#   branches:
-#     - main
-#   paths:
-#     - services/wishlist/**
+      - main
+    paths:
+      - services/wishlist/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/wishlist/**
 
 jobs:
   test:
