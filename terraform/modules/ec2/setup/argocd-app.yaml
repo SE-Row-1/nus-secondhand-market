@@ -4,10 +4,10 @@ metadata:
   name: nshm
   namespace: argocd
 spec:
-  project: nshm-project
+  project: default
   source:
     repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
-    targetRevision: setup-infra
+    targetRevision: NSHM-9-Set-up-environment
     path: helm
   destination:
     server: 'https://kubernetes.default.svc'

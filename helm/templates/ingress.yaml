@@ -51,3 +51,10 @@ spec:
                 name: wishlist
                 port:
                   number: 8083
+          - path: /rabbitmq
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                number: 15672
