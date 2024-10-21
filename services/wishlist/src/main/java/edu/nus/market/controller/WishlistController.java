@@ -1,7 +1,5 @@
 package edu.nus.market.controller;
 
-
-
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 
@@ -15,10 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
+
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/wishlists")
 
 public class WishlistController {
 
@@ -35,8 +37,8 @@ public class WishlistController {
 
     // Register and Delete
     @GetMapping("/{user_id}")
-//    public ResponseEntity<Object> getFavorlist(@PathVariable("user_id") int userId){
-    public ResponseEntity<Object> getWishlist(@PathVariable("user_id") int userId, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> getWishlist(@PathVariable("user_id") int userId, @RequestHeader(value = "Cookie", required = false) String token,
+                                              @RequestParam(value = "before", required = false) String beforeString) {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
@@ -46,11 +48,21 @@ public class WishlistController {
         if (userId != JwtTokenManager.decodeCookie(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return wishlistService.getWishlistService(userId);
+        Date before = new Date();
+        if (beforeString != null && !beforeString.isEmpty()) {
+            try{
+                beforeString = beforeString.replace(" ", "+");
+                before = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(beforeString);
+            }
+            catch (ParseException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA.ErrorMsg));
+            }
+        }
+
+        return wishlistService.getWishlistService(userId, before);
     }
 
     @PostMapping("/{user_id}/items/{item_id}")
-//    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @RequestBody AddLikeReq req){
     public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @Valid @RequestBody AddLikeReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
@@ -93,7 +105,7 @@ public class WishlistController {
         return wishlistService.deleteLikeService(userId, itemId);
     }
 
-    @GetMapping("/items/{item_id}")
+    @GetMapping("/statistics/{item_id}")
     public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())

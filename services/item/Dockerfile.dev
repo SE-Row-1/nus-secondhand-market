@@ -1,19 +1,11 @@
-FROM oven/bun AS build
+FROM oven/bun:alpine
 
 WORKDIR /app
+
+RUN apk add --no-cache curl
 
 COPY package.json bun.lockb ./
 
 RUN bun install --frozen-lockfile
 
-COPY . .
-
-RUN bun build --outdir=dist --target=node --entry-naming="[dir]/[name].mjs" ./src/index.ts
-
-FROM node:lts-alpine AS production
-
-WORKDIR /app
-
-COPY --from=build /app/dist/index.mjs .
-
-CMD ["node", "index.mjs"]
+CMD ["bun", "run", "dev"]

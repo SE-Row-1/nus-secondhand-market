@@ -1,11 +1,6 @@
-import { type Item, type SingleItem } from "@/types";
+import { type Item, type ItemPack } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import {
-  type Document,
-  type Filter,
-  type FindOptions,
-  type WithId,
-} from "mongodb";
+import type { Document, Filter, FindOptions, WithId } from "mongodb";
 
 export async function find(filter: Filter<Item>, options?: FindOptions<Item>) {
   return await itemsCollection.find(filter, options).toArray();
@@ -18,7 +13,8 @@ export async function findOne(
   return await itemsCollection.findOne(filter, options);
 }
 
-export async function insertOne(item: SingleItem) {
+export async function insertOne(item: Item) {
+  // `item` is destructured here because MongoDB will try to modify the object.
   return await itemsCollection.insertOne({ ...item });
 }
 
@@ -102,4 +98,43 @@ export async function search(dto: SearchRepositoryDto) {
   const items = withIdItems.map(({ _id, score, ...item }) => item);
 
   return { items, nextThreshold, nextCursor };
+}
+
+export async function compose(pack: ItemPack) {
+  return await itemsCollection.bulkWrite([
+    {
+      insertOne: {
+        document: { ...pack },
+      },
+    },
+    {
+      deleteMany: {
+        filter: {
+          id: { $in: pack.children.map((child) => child.id) },
+        },
+      },
+    },
+  ]);
+}
+
+export async function decompose(pack: ItemPack) {
+  return await itemsCollection.bulkWrite([
+    {
+      updateOne: {
+        filter: {
+          id: pack.id,
+        },
+        update: {
+          $set: {
+            deletedAt: new Date(),
+          },
+        },
+      },
+    },
+    ...pack.children.map((child) => ({
+      insertOne: {
+        document: child,
+      },
+    })),
+  ]);
 }

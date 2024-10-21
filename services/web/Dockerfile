@@ -21,6 +21,8 @@ FROM node:lts-alpine AS production
 
 WORKDIR /app
 
+RUN apk add --no-cache curl
+
 COPY --from=build /app/.next/standalone .
 
 ENV HOSTNAME=0.0.0.0

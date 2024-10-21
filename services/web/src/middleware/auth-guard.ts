@@ -1,11 +1,20 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { BaseMiddleware } from "./base";
+import { Middleware } from "./base";
 
-export class AuthGuard extends BaseMiddleware {
-  private static NO_AUTH_ROUTES = /^\/login|^\/register|^\/forgot-password/;
-
+/**
+ * Protect certain routes based on the user's authentication status.
+ */
+export class AuthGuard extends Middleware {
+  /**
+   * These routes are accessible only if the user IS authenticated.
+   */
   private static AUTH_ROUTES = /^\/belongings|^\/wishlist|^\/settings/;
+
+  /**
+   * These routes are accessible only if the user IS NOT authenticated.
+   */
+  private static NO_AUTH_ROUTES = /^\/login|^\/register|^\/forgot-password/;
 
   public override async handle(req: NextRequest) {
     const isAuthenticated = cookies().has("access_token");
@@ -14,7 +23,6 @@ export class AuthGuard extends BaseMiddleware {
 
     if (isAuthRoute && !isAuthenticated) {
       const redirectUrl = req.nextUrl.clone();
-      redirectUrl.searchParams.set("next", req.nextUrl.pathname);
       redirectUrl.pathname = "/login";
       return NextResponse.redirect(redirectUrl);
     }

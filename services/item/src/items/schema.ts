@@ -130,6 +130,18 @@ export const updateFormSchema = v.object({
   ),
 });
 
+export const updateStatusParamSchema = v.object({
+  id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
+});
+
+export const updateStatusJsonSchema = v.object({
+  status: v.pipe(
+    v.unknown(),
+    v.transform(Number),
+    v.enum(ItemStatus, "Invalid item status"),
+  ),
+});
+
 export const takeDownParamSchema = v.object({
   id: v.pipe(v.string("ID should be a string"), v.uuid("ID should be a UUID")),
 });

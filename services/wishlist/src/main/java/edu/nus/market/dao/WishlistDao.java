@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     // 自定义查询方法
-    List<Like> findByUserId(int userId);
+    List<Like> findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(int userId, Date before);
 
     //insert one Like just use save()
 
@@ -22,11 +22,11 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
 
     @Aggregation(pipeline = {
         "{ $match: { 'itemId': ?0 } }",
-        "{ $sort: { 'favoriteDate': -1 } }",
+        "{ $sort: { 'wantedAt': -1 } }",
         "{ $limit: 1 }",
-        "{ $project: { 'favoriteDate': 1, '_id': 0 } }"
+        "{ $project: { 'wantedAt': 1, '_id': 0 } }"
     })
-    Date findTopFavoriteDateByItemId(String itemId);
+    Date findTopWantedAtByItemId(String itemId);
 
     int countByItemId(String itemId);
 

@@ -27,7 +27,6 @@ public class RegisterServiceTest {
     private static final String EMAIL = "e1351827@u.nus.edu";
     private static final String PASSWORD = "12345678";
 
-
     @BeforeAll
     void setup(){
         accountDao.cleanTable();
@@ -55,9 +54,24 @@ public class RegisterServiceTest {
         assertEquals(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg), conflictResponse.getBody());
     }
 
+    @Test
+    @Order(3)
+    void registerDeletedAccountTest(){
+        RegisterReq registerReq = createRegisterReq();
+
+        int id = accountDao.getAccountByEmail(EMAIL).getId();
+        accountDao.softDeleteAccountByEmail(EMAIL);
+
+        ResponseEntity<Object> registerResponse = accountService.registerService(registerReq);
+        assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
+        assertNotNull(accountDao.getAccountByEmail(EMAIL));
+        assertInstanceOf (ResAccount.class, registerResponse.getBody());
+        assertNotEquals(id, accountDao.getAccountByEmail(EMAIL).getId());
+    }
+
     @AfterAll
     void cleanup(){
-        accountDao.deleteAccountByEmail(EMAIL);
+        accountDao.cleanTable();
     }
 
     private RegisterReq createRegisterReq() {

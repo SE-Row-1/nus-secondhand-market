@@ -53,6 +53,7 @@ export type ItemPack<
   type: ItemType.PACK;
   name: string;
   description: string;
+  price: number;
   discount: number;
   children: Item[];
   status: ItemStatus;

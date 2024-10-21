@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 
+import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.dao.WishlistDao;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ErrorMsg;
@@ -9,6 +10,7 @@ import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
 import jakarta.annotation.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,10 +26,22 @@ public class WishlistServiceImpl implements WishlistService {
     private WishlistDao wishlistDao;
 
 
+
+
     @Override
-    public ResponseEntity<Object> getWishlistService(int id) {
-        List<Like> likes = wishlistDao.findByUserId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(likes);
+    public ResponseEntity<Object> getWishlistService(int id, Date before) {
+        List<Like> likes = wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(id, before);
+        //find the nextBefore date
+        Date nextBefore = before;
+        HttpHeaders headers = new HttpHeaders();
+        if (!likes.isEmpty()) {
+            nextBefore = likes.get(likes.size() - 1).getWantedAt();
+        }
+        headers.add("Next-Before", ConvertDateToISO.convert(nextBefore));
+
+
+
+        return ResponseEntity.ok().headers(headers).body(likes);
     }
 
     @Override
@@ -55,7 +69,7 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public ResponseEntity<Object> getItemLikeInfo(String itemId) {
         int count = wishlistDao.countByItemId(itemId);
-        Date favoriteDate = wishlistDao.findTopFavoriteDateByItemId(itemId);
+        Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
 
 
         ResItemLikeInfo response = new ResItemLikeInfo(count, favoriteDate);

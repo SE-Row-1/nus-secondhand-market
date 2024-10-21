@@ -1,33 +1,33 @@
 /**
- * A brief preview of account information.
+ * A simplified version of account information.
  *
  * This is used when we only need to provide part of the account information.
  * For example, when a user requests a list of items, it is totally enough to
  * just show them the seller's nickname and avatar. We don't need to show them
  * the seller's email, phone number, etc.
  *
- * This preview information will be stored in this microservice's own database
+ * This part of information will be stored in this microservice's own database
  * as a redundancy of account microservice's database.
  * By doing this, we can save some time of consulting the account microservice,
  * for example, in the scenario mentioned above.
  */
-export type AccountPreview = {
+export type SimplifiedAccount = {
   id: number;
   nickname: string | null;
   avatarUrl: string | null;
 };
 
 /**
- * The full version of account information.
+ * The detailed version of account information.
  *
  * This is used when we have to provide more account details,
- * which are not included in the preview information.
+ * which are not included in the simplified version.
  * For example, when a user requests the details of an item, they may well also
  * want to know more about the seller, such as his/her email, phone number, etc.
  *
  * We have to consult the account microservice to retrieve these information.
  */
-export type Account = AccountPreview & {
+export type DetailedAccount = SimplifiedAccount & {
   email: string;
   department: {
     id: number;
@@ -36,6 +36,7 @@ export type Account = AccountPreview & {
   } | null;
   phoneCode: string | null;
   phoneNumber: string | null;
+  preferredCurrency: string | null;
   createdAt: Date;
   deletedAt: Date | null;
 };
@@ -44,19 +45,19 @@ export type Account = AccountPreview & {
  * An item can be either a single item, or an item pack.
  */
 export enum ItemType {
-  SINGLE = "single",
-  PACK = "pack",
+  Single = "single",
+  Pack = "pack",
 }
 
 /**
- * An item can be in one of the following statuses.
+ * An item can be in one of these statuses.
  *
  * State machine: FOR_SALE <-> DEALT -> SOLD
  */
 export enum ItemStatus {
-  FOR_SALE,
-  DEALT,
-  SOLD,
+  ForSale,
+  Dealt,
+  Sold,
 }
 
 /**
@@ -66,8 +67,8 @@ export enum ItemStatus {
  */
 export type SingleItem = {
   id: string;
-  type: ItemType.SINGLE;
-  seller: AccountPreview;
+  type: ItemType.Single;
+  seller: SimplifiedAccount;
   name: string;
   description: string;
   price: number;
@@ -84,18 +85,19 @@ export type SingleItem = {
  */
 export type ItemPack = {
   id: string;
-  type: ItemType.PACK;
-  seller: AccountPreview;
+  type: ItemType.Pack;
+  seller: SimplifiedAccount;
   name: string;
   description: string;
+  price: number;
   discount: number;
-  status: ItemStatus;
   children: Item[];
+  status: ItemStatus;
   createdAt: Date;
   deletedAt: Date | null;
 };
 
 /**
- * The term "item" refers to either a single item or an item pack.
+ * An item can be either a single item, or an item pack.
  */
 export type Item = SingleItem | ItemPack;

@@ -1,4 +1,3 @@
-import { SingleItemDetailsCard } from "@/components/item/details";
 import {
   prefetchItem,
   prefetchMe,
@@ -7,6 +6,7 @@ import {
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ItemDetails } from "./item-details";
 
 type Props = {
   params: {
@@ -17,7 +17,7 @@ type Props = {
 export default async function Page({ params: { id } }: Props) {
   const [
     { data: item, error: itemError },
-    { data: wishlistStatistics, error: wishlistStatisticsError },
+    { data: wishlistStatistics },
     { data: me, error: meError },
   ] = await Promise.all([
     prefetchItem(id),
@@ -37,9 +37,10 @@ export default async function Page({ params: { id } }: Props) {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const safeWishlistStatistics = wishlistStatisticsError
-    ? { count: 0, last_wanted_at: null }
-    : wishlistStatistics;
+  const safeWishlistStatistics = wishlistStatistics ?? {
+    count: 0,
+    last_wanted_at: null,
+  };
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -50,8 +51,8 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetailsCard
-        item={item}
+      <ItemDetails
+        initialItem={item}
         wishlistStatistics={safeWishlistStatistics}
         me={me}
       />

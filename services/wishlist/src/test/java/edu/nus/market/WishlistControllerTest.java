@@ -1,7 +1,9 @@
 package edu.nus.market;
 
 import edu.nus.market.controller.WishlistController;
+import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.pojo.*;
 import edu.nus.market.security.CookieManager;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 
+import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +45,7 @@ class WishlistControllerTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         prepareTestData();
-        JwtTokenManager.setSecretKey("9lRZUYgnElr2PnI9K/yAxIyX+kR31vGRCuGFfRs5ZVE="); // 设置静态密钥
+        JwtTokenManager.setSecretKey(JwtTokenManager.generateSecretKey()); // 设置静态密钥
         generateValidToken();
     }
 
@@ -51,27 +54,25 @@ class WishlistControllerTest {
 
         SingleLike singleLike = new SingleLike();
         singleLike.setItemId("item001");
-        singleLike.setItemName("iPhone 12");
-        singleLike.setItemStatus(1);
+        singleLike.setName("iPhone 12");
+        singleLike.setStatus(1);
         singleLike.setPrice(999.99);
         singleLike.setPhotoUrls(new String[]{"http://example.com/iphone12_front.jpg"});
         singleLike.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
-        singleLike.setFavoriteDate(new Date());
+        singleLike.setWantedAt(new Date());
 
         mockLikes.add(singleLike);
     }
 
     private void generateValidToken() {
-        ResAccount resAccount = new ResAccount(
-            1, "user@example.com", "testuser", "http://example.com/avatar.jpg",
-            123, "+65", "12345678", "SGD", "2024-01-01", null
-        );
-        cookie = cookieManager.generateCookie(JwtTokenManager.generateAccessToken(resAccount)).toString();
+        JWTPayload jwtPayload = new JWTPayload(
+            1,  "testuser", "http://example.com/avatar.jpg");
+        cookie = cookieManager.generateCookie(JwtTokenManager.generateAccessToken(jwtPayload)).toString();
     }
 
     @Test
     void testGetWishlist_Unauthorized() {
-        ResponseEntity<Object> response = wishlistController.getWishlist(1, "");
+        ResponseEntity<Object> response = wishlistController.getWishlist(1, "", ConvertDateToISO.convert(new Date()));
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
     }
@@ -79,9 +80,9 @@ class WishlistControllerTest {
     @Test
     void testAddLike_Conflict() {
         AddLikeReq req = new AddLikeReq();
-        req.setItemStatus(1);
+        req.setStatus(1);
         req.setItemId("item001");
-        req.setItemName("iPhone 13");
+        req.setName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
         req.setDiscount(0.0);
@@ -110,9 +111,9 @@ class WishlistControllerTest {
 
     @Test
     void testGetWishlist_Success() {
-        when(wishlistService.getWishlistService(anyInt())).thenReturn(ResponseEntity.ok(mockLikes));
+        when(wishlistService.getWishlistService(anyInt(),any())).thenReturn(ResponseEntity.ok(mockLikes));
 
-        ResponseEntity<Object> response = wishlistController.getWishlist(1, cookie);
+        ResponseEntity<Object> response = wishlistController.getWishlist(1, cookie, ConvertDateToISO.convert(new Date()));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockLikes, response.getBody());
@@ -121,9 +122,9 @@ class WishlistControllerTest {
     @Test
     void testAddLike_Success() {
         AddLikeReq req = new AddLikeReq();
-        req.setItemStatus(1);
+        req.setStatus(1);
         req.setItemId("item001");
-        req.setItemName("iPhone 13");
+        req.setName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
         req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
