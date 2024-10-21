@@ -1,1 +1,1 @@
-export { MeCardServer as MeCard } from "./me-card-server";
+export { MeCardServer as MeCard } from "./me-card.server";

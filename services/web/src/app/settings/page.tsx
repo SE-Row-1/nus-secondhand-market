@@ -17,7 +17,7 @@ export default async function AccountSettingsPage() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid md:grid-cols-2 gap-6">
       <UpdateEmailCard id={me.id} initialEmail={me.email} />
       <UpdatePasswordCard />
       <DeleteAccountCard id={me.id} />

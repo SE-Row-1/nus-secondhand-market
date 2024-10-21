@@ -1,31 +1,72 @@
 "use client";
 
+import { Collapsible } from "@radix-ui/react-collapsible";
+import { ChevronRightIcon } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { PropsWithChildren } from "react";
-import { cn } from "../ui/utils";
+import type { ReactNode } from "react";
+import { CollapsibleContent, CollapsibleTrigger } from "../ui/collapsible";
+import {
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "../ui/sidebar";
 
-type Props = PropsWithChildren<{
-  href: Route;
-}>;
+type Props = {
+  icon: ReactNode;
+  title: string;
+  to: Route;
+  subLinks?: {
+    title: string;
+    to: Route;
+  }[];
+};
 
-export function NavLink({ children, href }: Props) {
+export function NavLink({ icon, title, to, subLinks }: Props) {
   const pathname = usePathname();
 
-  const isActive = href === "/" ? pathname === href : pathname.startsWith(href);
+  const isActive = to === "/" ? pathname === to : pathname.startsWith(to);
+
+  if (!subLinks) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton isActive={isActive} tooltip={title} asChild>
+          <Link href={to}>
+            {icon}
+            <span>{title}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
   return (
-    <Link
-      href={href}
-      className={cn(
-        "flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm transition-colors",
-        isActive
-          ? "bg-muted text-primary"
-          : "text-muted-foreground hover:text-primary",
-      )}
-    >
-      {children}
-    </Link>
+    <Collapsible defaultOpen={isActive} asChild>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton tooltip={title}>
+            {icon}
+            <span>{title}</span>
+            <ChevronRightIcon className="absolute right-1 size-4 group-data-[state=open]/menu-item:rotate-90 transition-transform" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub>
+            {subLinks.map(({ title, to }) => (
+              <SidebarMenuSubItem key={to}>
+                <SidebarMenuSubButton isActive={to === pathname} asChild>
+                  <Link href={to}>
+                    <span>{title}</span>
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }

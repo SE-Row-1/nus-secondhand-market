@@ -1,3 +1,3 @@
 export { Header } from "./header";
 export { PageTitle } from "./page-title";
-export { Sidebar } from "./sidebar";
+export { AppSidebar as Sidebar } from "./sidebar";

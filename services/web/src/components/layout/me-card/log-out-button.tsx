@@ -6,7 +6,6 @@ import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogOutIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { MouseEvent } from "react";
 
 export function LogOutButton() {
   const router = useRouter();
@@ -16,17 +15,13 @@ export function LogOutButton() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
+    mutationFn: async () => {
       return await clientRequester.delete<undefined>("/auth/token");
     },
     onSuccess: () => {
       queryClient.setQueryData(["auth", "me"], null);
 
-      toast({
-        title: "Logged out successfully",
-        description: "Hope to see you again soon! 👋",
-      });
+      toast({ description: "Hope to see you again soon! 👋" });
 
       router.push("/login");
       router.refresh();
@@ -34,7 +29,6 @@ export function LogOutButton() {
     onError: (error) => {
       toast({
         variant: "destructive",
-        title: "Failed to log out",
         description: error.message,
       });
     },
@@ -45,7 +39,7 @@ export function LogOutButton() {
       <button
         type="button"
         disabled={isPending}
-        onClick={mutate}
+        onClick={() => mutate()}
         className="w-full"
       >
         {isPending ? (

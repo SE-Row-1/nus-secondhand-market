@@ -1,25 +1,24 @@
 "use client";
 
 import { MoonIcon, SunIcon } from "lucide-react";
+import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 
 export function ThemeToggle() {
   return (
-    <button
-      type="button"
-      onClick={toggleTheme}
-      className="flex items-center gap-3 px-3 py-2 rounded-lg font-medium text-sm text-muted-foreground hover:text-primary transition-colors"
-    >
-      <SunIcon className="hidden dark:block size-4" />
-      <MoonIcon className="dark:hidden size-4" />
-      <span>Toggle theme</span>
-    </button>
+    <SidebarMenuItem>
+      <SidebarMenuButton onClick={handleClick}>
+        <SunIcon className="hidden dark:block" />
+        <MoonIcon className="dark:hidden" />
+        <span>Toggle theme</span>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
   );
 }
 
-function toggleTheme() {
-  const isNowDark = document.documentElement.classList.toggle("dark");
+function handleClick() {
+  const isDark = document.documentElement.classList.toggle("dark");
 
-  localStorage.setItem("theme", isNowDark ? "dark" : "light");
+  localStorage.setItem("theme", isDark ? "dark" : "light");
 
   document.documentElement.classList.add("disable-transitions");
   setTimeout(() => {

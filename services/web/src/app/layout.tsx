@@ -1,4 +1,5 @@
 import { Header, Sidebar } from "@/components/layout";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/contexts/query-provider";
 import type { Metadata } from "next";
@@ -29,17 +30,13 @@ export default function RootLayout({ children }: PropsWithChildren) {
       </head>
       <body className="bg-background font-sans text-foreground antialiased scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
         <QueryProvider>
-          <div className="hidden md:block">
+          <SidebarProvider>
             <Sidebar />
-          </div>
-          <div className="md:hidden">
-            <Header />
-          </div>
-          <div className="md:pl-56 lg:pl-72 pt-14 md:pt-0">
-            <main className="flex flex-col min-h-[calc(100vh-56px)] md:min-h-screen px-6 md:px-12 lg:px-24 py-8 md:py-16">
-              {children}
-            </main>
-          </div>
+            <SidebarInset>
+              <Header />
+              <div className="grow flex flex-col px-8">{children}</div>
+            </SidebarInset>
+          </SidebarProvider>
         </QueryProvider>
         <Toaster />
       </body>

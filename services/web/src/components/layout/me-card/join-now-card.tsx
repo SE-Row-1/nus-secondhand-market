@@ -11,14 +11,14 @@ import Link from "next/link";
 
 export function JoinNowCard() {
   return (
-    <Card className="md:mt-4">
-      <CardHeader>
-        <CardTitle>Join now 🤝</CardTitle>
+    <Card>
+      <CardHeader className="space-y-1 p-4">
+        <CardTitle className="text-lg">🤝 Join us now!</CardTitle>
         <CardDescription>
           Find your counterparty, and communicate efficiently.
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2 p-4 pt-0">
         <Button variant="secondary" size="sm" className="w-full" asChild>
           <Link href="/login">
             <LogInIcon className="size-4 mr-2" />

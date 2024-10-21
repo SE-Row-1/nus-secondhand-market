@@ -15,7 +15,7 @@ export default async function ContactsSettingsPage() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid md:grid-cols-2 gap-6">
       <UpdateWhatsappCard
         id={me.id}
         initialPhoneCode={me.phone_code}
