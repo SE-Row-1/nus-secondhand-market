@@ -1,5 +1,6 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,8 +8,9 @@ import { useToast } from "@/components/ui/use-toast";
 import type { SingleItem } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, PlusIcon, XIcon } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { Loader2Icon, PlusIcon, UndoIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useRef, useState, type FormEvent } from "react";
 import * as v from "valibot";
 import { PhotoSelector } from "./photo-selector";
 
@@ -44,14 +46,12 @@ const formSchema = v.object({
   ),
 });
 
-type Props = {
-  closeDialog: () => void;
-};
-
-export function PublishItemForm({ closeDialog }: Props) {
+export function PublishItemForm() {
   const [photoObjects, setPhotoObjects] = useState<
     { id: number; file: File; previewUrl: string }[]
   >([]);
+
+  const router = useRouter();
 
   const { toast } = useToast();
 
@@ -78,7 +78,6 @@ export function PublishItemForm({ closeDialog }: Props) {
       return await clientRequester.form<SingleItem>("/items", data);
     },
     onSuccess: () => {
-      closeDialog();
       setPhotoObjects([]);
 
       queryClient.invalidateQueries({ queryKey: ["items"] });
@@ -87,6 +86,8 @@ export function PublishItemForm({ closeDialog }: Props) {
         title: "Item published",
         description: "Your item has been published successfully.",
       });
+
+      router.push("/belongings");
     },
     onError: (error) => {
       toast({
@@ -97,8 +98,18 @@ export function PublishItemForm({ closeDialog }: Props) {
     },
   });
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const reset = () => {
+    formRef.current?.reset();
+    setPhotoObjects([]);
+  };
+
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form
+      ref={formRef}
+      onSubmit={mutate}
+      className="grow flex flex-col justify-center items-stretch gap-4 w-full max-w-lg mx-auto"
+    >
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="name">
           Name
@@ -152,13 +163,11 @@ export function PublishItemForm({ closeDialog }: Props) {
         photoObjects={photoObjects}
         setPhotoObjects={setPhotoObjects}
       />
-      <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="secondary">
-            <XIcon className="size-4 mr-2" />
-            Close
-          </Button>
-        </DialogClose>
+      <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2">
+        <Button variant="secondary" onClick={reset}>
+          <UndoIcon className="size-4 mr-2" />
+          Reset
+        </Button>
         <Button type="submit" disabled={isPending}>
           {isPending ? (
             <Loader2Icon className="size-4 mr-2 animate-spin" />
@@ -167,7 +176,7 @@ export function PublishItemForm({ closeDialog }: Props) {
           )}
           Publish
         </Button>
-      </DialogFooter>
+      </div>
     </form>
   );
 }

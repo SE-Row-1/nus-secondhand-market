@@ -1,4 +1,3 @@
-import { PublishItemDialog } from "@/components/item/publish";
 import { prefetchMarketplace } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -11,14 +10,7 @@ export default async function MarketplacePage() {
     redirect(`/error?message=${error.message}`);
   }
 
-  return (
-    <>
-      <div className="mb-8">
-        <PublishItemDialog />
-      </div>
-      <Marketplace firstPage={page} />
-    </>
-  );
+  return <Marketplace firstPage={page} />;
 }
 
 export const metadata: Metadata = {

@@ -49,12 +49,16 @@ export function AppSidebar() {
             <SidebarMenu>
               <NavLink icon={<ShoppingBagIcon />} title="Marketplace" to="/" />
               <NavLink icon={<SearchIcon />} title="Search" to="/search" />
+              <NavLink icon={<HeartIcon />} title="Wishlist" to="/wishlist" />
               <NavLink
                 icon={<PackageIcon />}
                 title="Belongings"
                 to="/belongings"
+                subLinks={[
+                  { title: "My Items", to: "/belongings" },
+                  { title: "Publish New Item", to: "/belongings/publish" },
+                ]}
               />
-              <NavLink icon={<HeartIcon />} title="Wishlist" to="/wishlist" />
               <NavLink
                 icon={<SettingsIcon />}
                 title="Settings"
