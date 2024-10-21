@@ -18,7 +18,7 @@ export function SearchResults() {
     queryFn: async ({ pageParam: { cursor, threshold } }) => {
       const searchParams = new URLSearchParams({
         q,
-        limit: "8",
+        limit: "10",
         ...(cursor && { cursor }),
         ...(threshold && { threshold: String(threshold) }),
       });

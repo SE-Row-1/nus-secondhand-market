@@ -1,4 +1,3 @@
-import { ItemDetails } from "@/components/item/details";
 import {
   prefetchItem,
   prefetchMe,
@@ -7,6 +6,7 @@ import {
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ItemDetails } from "./item-details";
 
 type Props = {
   params: {

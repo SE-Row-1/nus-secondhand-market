@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 /**
  * Fetch the current user.
  */
-export function useMe() {
+export function useMe(initialMe?: DetailedAccount) {
   return useQuery({
     queryKey: ["auth", "me"],
     queryFn: async () => {
@@ -19,5 +19,6 @@ export function useMe() {
         throw error;
       }
     },
+    initialData: initialMe,
   });
 }

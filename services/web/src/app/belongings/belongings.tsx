@@ -2,21 +2,22 @@
 
 import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import { ItemStatus, type PaginatedItems } from "@/types";
+import type { DetailedAccount, PaginatedItems } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 
 type Props = {
   firstPage: PaginatedItems;
+  me: DetailedAccount;
 };
 
-export function Marketplace({ firstPage }: Props) {
+export function Belongings({ firstPage, me }: Props) {
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["items", "marketplace"],
+    queryKey: ["items", "belongings"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
-        status: String(ItemStatus.FOR_SALE),
+        seller_id: String(me.id),
         limit: "10",
         ...(cursor && { cursor }),
       });
