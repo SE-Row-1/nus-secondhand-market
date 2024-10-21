@@ -17,7 +17,7 @@ export function WishList({ firstPage, me }: Props) {
     queryKey: ["wishlist"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
-        limit: "8",
+        limit: "10",
         ...(cursor && { cursor }),
       });
 

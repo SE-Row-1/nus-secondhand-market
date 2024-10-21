@@ -1,4 +1,3 @@
-import { SingleItemDetails } from "@/components/item/details";
 import {
   prefetchItem,
   prefetchMe,
@@ -7,6 +6,7 @@ import {
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { ItemDetails } from "./item-details";
 
 type Props = {
   params: {
@@ -51,7 +51,7 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to marketplace
       </Link>
-      <SingleItemDetails
+      <ItemDetails
         initialItem={item}
         wishlistStatistics={safeWishlistStatistics}
         me={me}

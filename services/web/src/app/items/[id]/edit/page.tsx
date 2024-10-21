@@ -1,10 +1,9 @@
-import { PageTitle } from "@/components/framework/page-title";
-import { EditItem } from "@/components/item/edit/edit-item";
 import { prefetchItem, prefetchMe } from "@/prefetchers";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { EditItemForm } from "./form";
 
 type Props = {
   params: {
@@ -45,12 +44,7 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
       </Link>
-      <PageTitle
-        title="Edit item"
-        description="Update the details of your item"
-        className="mb-8"
-      />
-      <EditItem id={id} initialItem={item} />
+      <EditItemForm id={id} initialItem={item} />
     </div>
   );
 }

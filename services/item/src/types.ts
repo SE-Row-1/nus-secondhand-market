@@ -89,6 +89,7 @@ export type ItemPack = {
   seller: SimplifiedAccount;
   name: string;
   description: string;
+  price: number;
   discount: number;
   children: Item[];
   status: ItemStatus;

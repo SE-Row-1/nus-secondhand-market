@@ -288,7 +288,7 @@ public class ValidationTest {
         Set<ConstraintViolation<UpdateProfileReq>> violations = validator.validate(req);
 
         assertFalse(violations.isEmpty()); // There should be violations
-        assertEquals(3, violations.size()); // Expecting 2 violations for email and nickname
+        assertEquals(2, violations.size()); // Expecting 2 violations for email and nickname
 
         for (ConstraintViolation<UpdateProfileReq> violation : violations) {
             System.out.println(violation.getMessage());

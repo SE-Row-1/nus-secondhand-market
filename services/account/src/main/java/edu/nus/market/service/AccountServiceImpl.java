@@ -58,9 +58,15 @@ public class AccountServiceImpl implements AccountService{
      */
     @Override
     public ResponseEntity<Object> registerService(RegisterReq registerReq){
-        if(accountDao.getAccountByEmail(registerReq.getEmail()) != null) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+        // we should check all the emails in this case, no matter if it is deleted or not
+        Account checkAccount = accountDao.getAccountByEmailAll(registerReq.getEmail());
+        if(checkAccount != null) {
+            if (checkAccount.getDeletedAt() == null)
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+            // if the account is soft-deleted, we need to hard-delete it and register a new one
+            accountDao.hardDeleteAccount(checkAccount.getId());
         }
+
         byte[] salt = saltGenerator.generateSalt();
         String passwordHash = passwordHasher.hashPassword(registerReq.getPassword(),salt);
         // generate salt and hash the password
@@ -117,8 +123,15 @@ public class AccountServiceImpl implements AccountService{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
-        if (updateProfileReq.getEmail() != null && accountDao.getAccountByEmail(updateProfileReq.getEmail()) != null){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+        if (updateProfileReq.getEmail() != null){
+            // we should check all the emails in this case, no matter if it is deleted or not
+            Account checkAccount = accountDao.getAccountByEmailAll(updateProfileReq.getEmail());
+            if(checkAccount != null) {
+                if (checkAccount.getDeletedAt() == null)
+                    return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+                // if the account is soft-deleted, we need to hard-delete it and register a new one
+                accountDao.hardDeleteAccount(checkAccount.getId());
+            }
         }
 
         account = accountDao.updateProfile(updateProfileReq, id);
@@ -133,7 +146,7 @@ public class AccountServiceImpl implements AccountService{
         if(accountDao.getAccountById(id) == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         //delete account
-        accountDao.deleteAccount(id);
+        accountDao.softDeleteAccount(id);
         ResponseCookie cookie = cookieManager.deleteCookie();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }

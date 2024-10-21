@@ -72,7 +72,7 @@ public class LoginServiceTest {
 
     @AfterAll
     void cleanup() {
-        accountDao.deleteAccountByEmail(EMAIL);
+        accountDao.cleanTable();
     }
 
     private LoginReq createLoginReq(String email, String password) {
