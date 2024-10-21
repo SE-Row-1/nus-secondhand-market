@@ -14,13 +14,13 @@ public class MQServiceImpl implements MQservice{
 
     // 发送订单相关的消息，使用路由键 `order.created`
     public void sendUpdateMessage(UpdateMessage message) {
-        rabbitTemplate.convertAndSend("topicExchange", "update.success", message);
-        System.out.println("Sent order message: " + message);
+        rabbitTemplate.convertAndSend("account", "account.updated.success", message);
+        System.out.println("Sent update message: " + message);
     }
 
     // 发送支付相关的消息，使用路由键 `payment.success`
     public void sendDeleteMessage(String message) {
-        rabbitTemplate.convertAndSend("topicExchange", "delete.success", message);
+        rabbitTemplate.convertAndSend("account", "account.deleted.success", message);
         System.out.println("Sent payment message: " + message);
     }
 }

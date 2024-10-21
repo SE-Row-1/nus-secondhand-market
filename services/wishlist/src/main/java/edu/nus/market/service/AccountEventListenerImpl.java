@@ -10,10 +10,10 @@ public class AccountEventListenerImpl implements AccountEventListener{
     @Resource
     WishlistService wishlistService;
 
-
     @Override
     @RabbitListener(queues = "account.deleted")
     public void handleAccountDeleted(String userId) {
+        System.out.println("Received delete message: " + userId);
         wishlistService.deleteAccountService(Integer.parseInt(userId));
     }
 }

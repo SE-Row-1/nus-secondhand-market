@@ -32,25 +32,25 @@ public class RabbitMQConfig {
     // 定义 Topic 类型的队列
     @Bean
     public Queue updateQueue() {
-        return new Queue("updateQueue", true);
+        return new Queue("updated", true);
     }
 
     // 定义 Topic 类型的队列
     @Bean
     public Queue deleteQueue() {
-        return new Queue("deleteQueue", true);
+        return new Queue("deleted", true);
     }
 
     // bind updateQueue to topic exchange with routing key "update.#"
     @Bean
     public Binding updateBinding(Queue updateQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(updateQueue).to(topicExchange).with("update.#");
+        return BindingBuilder.bind(updateQueue).to(topicExchange).with("account.updated.#");
     }
 
 
     // bind deleteQueue to topic exchange with routing key "delete.#"
     @Bean
     public Binding deleteBinding(Queue deleteQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(deleteQueue).to(topicExchange).with("delete.#");
+        return BindingBuilder.bind(deleteQueue).to(topicExchange).with("account.deleted.#");
     }
 }
