@@ -35,6 +35,21 @@ public class AuthController {
         return accountService.getAccountService(JwtTokenManager.decodeCookie(token).getId());
     }
 
+    //Updating Account password
+    @PutMapping("/me/password")
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+        if (token == null || token.isEmpty()){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        }
+        if (!JwtTokenManager.validateCookie(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token).getId());
+    }
+
     // Login and Logout
     @PostMapping("/token")
     public ResponseEntity<Object> login(@Valid @RequestBody LoginReq loginReq, BindingResult bindingResult){
@@ -58,22 +73,12 @@ public class AuthController {
         return accountService.forgetPasswordService(forgotPasswordReq);
     }
 
-
-    //Updating Account
-    @PutMapping("/me/password")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
-        if (token == null || token.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        }
-        if (!JwtTokenManager.validateCookie(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
-        }
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
-        }
-        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token).getId());
+    @RequestMapping("/otp")
+    public ResponseEntity<Object> sendOtp(@RequestParam String email){
+        return accountService.sendOtp(email);
     }
 
+    // Health Check
     @GetMapping("/healthz")
     public String checkHealth(){
         return "ok";
