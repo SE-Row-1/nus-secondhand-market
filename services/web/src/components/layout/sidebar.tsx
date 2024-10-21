@@ -63,11 +63,6 @@ export function AppSidebar() {
                 icon={<SettingsIcon />}
                 title="Settings"
                 to="/settings"
-                subLinks={[
-                  { title: "Account", to: "/settings" },
-                  { title: "Display", to: "/settings/display" },
-                  { title: "Contacts", to: "/settings/contacts" },
-                ]}
               />
             </SidebarMenu>
           </SidebarGroupContent>

@@ -1,9 +1,11 @@
 import { prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { DeleteAccountCard } from "./cards/delete-account-card";
-import { UpdateEmailCard } from "./cards/update-email-card";
-import { UpdatePasswordCard } from "./cards/update-password-card";
+import { DeleteAccountCard } from "./delete-account-card";
+import { UpdateEmailCard } from "./update-email-card";
+import { UpdateNicknameCard } from "./update-nickname-card";
+import { UpdatePasswordCard } from "./update-password-card";
+import { UpdateWhatsappCard } from "./update-whatsapp-card";
 
 export default async function AccountSettingsPage() {
   const { data: me, error } = await prefetchMe();
@@ -17,14 +19,20 @@ export default async function AccountSettingsPage() {
   }
 
   return (
-    <div className="grid md:grid-cols-2 gap-6">
+    <div className="grid gap-6 w-full max-w-xl mx-auto">
       <UpdateEmailCard id={me.id} initialEmail={me.email} />
       <UpdatePasswordCard />
+      <UpdateNicknameCard id={me.id} initialNickname={me.nickname} />
+      <UpdateWhatsappCard
+        id={me.id}
+        initialPhoneCode={me.phone_code}
+        initialPhoneNumber={me.phone_number}
+      />
       <DeleteAccountCard id={me.id} />
     </div>
   );
 }
 
 export const metadata: Metadata = {
-  title: "Account Settings",
+  title: "Settings",
 };
