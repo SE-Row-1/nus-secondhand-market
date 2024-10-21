@@ -1,5 +1,5 @@
 import { ItemStatus } from "@/types";
-import { Badge } from "../../ui/badge";
+import { Badge } from "../ui/badge";
 
 type Props = {
   status: ItemStatus;

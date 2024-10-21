@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { ItemType, type Item } from "@/types";
 import { BoxesIcon } from "lucide-react";
 import Link from "next/link";
-import { FromNow } from "../from-now";
+import { FromNow } from "./from-now";
 import { Cover } from "./cover";
 import { StatusBadge } from "./status-badge";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { StatusBadge } from "@/components/item/card/status-badge";
 import { FromNow } from "@/components/item/from-now";
+import { StatusBadge } from "@/components/item/status-badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";

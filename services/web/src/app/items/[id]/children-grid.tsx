@@ -1,4 +1,4 @@
-import { ItemCard } from "@/components/item/card";
+import { ItemCard } from "@/components/item";
 import type { Item } from "@/types";
 
 type Props = {
