@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, SendIcon } from "lucide-react";
+import { Loader2Icon, SaveIcon } from "lucide-react";
 import type { FormEvent } from "react";
 import * as v from "valibot";
 
@@ -106,9 +106,9 @@ export function UpdateWhatsappCard({
             {isPending ? (
               <Loader2Icon className="size-4 mr-2 animate-spin" />
             ) : (
-              <SendIcon className="size-4 mr-2" />
+              <SaveIcon className="size-4 mr-2" />
             )}
-            Send verification code
+            Save
           </Button>
         </CardFooter>
       </form>
