@@ -18,7 +18,7 @@ export function Belongings({ firstPage, me }: Props) {
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
         seller_id: String(me.id),
-        limit: "8",
+        limit: "10",
         ...(cursor && { cursor }),
       });
 
