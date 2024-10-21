@@ -1,8 +1,8 @@
 import { prefetchBelongings, prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Belongings } from "./components/belongings";
-import { ComposePackDialog } from "./components/compose-pack-dialog";
+import { Belongings } from "./belongings";
+import { ComposePackDialog } from "./compose-pack-dialog";
 
 export default async function BelongingsPage() {
   const { data: me, error: meError } = await prefetchMe();
