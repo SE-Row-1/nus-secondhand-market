@@ -26,3 +26,18 @@ spec:
         envFrom:
           - secretRef:
               name: wishlist-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
