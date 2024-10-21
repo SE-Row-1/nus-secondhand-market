@@ -87,7 +87,9 @@ export function ItemDetails({ initialItem, wishlistStatistics, me }: Props) {
         <div
           className={cn(
             "grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5",
-            me?.id === item.seller.id && "lg:grid-cols-3",
+            me?.id === item.seller.id &&
+              item.type === ItemType.SINGLE &&
+              "lg:grid-cols-3",
           )}
         >
           {me?.id === item.seller.id ? (
@@ -105,14 +107,16 @@ export function ItemDetails({ initialItem, wishlistStatistics, me }: Props) {
                   <UpdateStatusAction itemId={item.id} to={ItemStatus.SOLD} />
                 </UpdateStatusDropdownMenu>
               ) : null}
-              <Button variant="secondary" asChild>
-                <Link href={`/items/${item.id}/edit`}>
-                  <EditIcon className="size-4 mr-2" />
-                  Edit
-                </Link>
-              </Button>
               {item.type === ItemType.SINGLE ? (
-                <DeleteItemDialog item={item} />
+                <>
+                  <Button variant="secondary" asChild>
+                    <Link href={`/items/${item.id}/edit`}>
+                      <EditIcon className="size-4 mr-2" />
+                      Edit
+                    </Link>
+                  </Button>
+                  <DeleteItemDialog item={item} />
+                </>
               ) : (
                 <DecomposePackDialog item={item} />
               )}
