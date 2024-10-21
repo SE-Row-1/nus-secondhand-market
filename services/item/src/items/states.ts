@@ -1,106 +1,100 @@
+import * as transactionsRepository from "@/transactions/repository";
 import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
 import { HTTPException } from "hono/http-exception";
 
-export class StatefulItem {
-  private state!: State;
+type Transition = (dto: {
+  item: Item;
+  actor: SimplifiedAccount;
+  counterparty?: SimplifiedAccount;
+}) => Promise<void>;
 
-  public constructor(public item: Item) {
-    const currentState = StatefulItem.createStateFromItem(item);
-    this.setState(currentState);
+export function createTransition(from: ItemStatus, to: ItemStatus) {
+  if (from === ItemStatus.ForSale && to === ItemStatus.Dealt) {
+    return forSaleToDealt;
   }
 
-  public setState(state: State) {
-    this.state = state;
-    this.state.setContext(this);
+  if (from === ItemStatus.Dealt && to === ItemStatus.Sold) {
+    return dealtToSold;
   }
 
-  public transitionTo(status: ItemStatus, actor: SimplifiedAccount) {
-    switch (status) {
-      case ItemStatus.ForSale:
-        this.state.toForSale(actor);
-        break;
-      case ItemStatus.Dealt:
-        this.state.toDealt(actor);
-        break;
-      case ItemStatus.Sold:
-        this.state.toSold(actor);
-        break;
-    }
+  if (from === ItemStatus.Dealt && to === ItemStatus.ForSale) {
+    return dealtToForSale;
   }
 
-  public getRepresentation(): Item {
-    return { ...this.item, status: this.state.representation };
-  }
-
-  private static createStateFromItem(item: Item) {
-    switch (item.status) {
-      case ItemStatus.ForSale:
-        return new ForSaleState();
-      case ItemStatus.Dealt:
-        return new DealtState();
-      case ItemStatus.Sold:
-        return new SoldState();
-    }
-  }
+  throw new HTTPException(400, {
+    message: `Invalid transition from ${from} to ${to}`,
+  });
 }
 
-abstract class State {
-  protected context!: StatefulItem;
-
-  public representation!: ItemStatus;
-
-  public setContext(context: StatefulItem) {
-    this.context = context;
+const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
+  if (actor.id !== item.seller.id) {
+    throw new HTTPException(403, {
+      message: "You are not the seller of this item",
+    });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toForSale(_: SimplifiedAccount) {
-    throw new HTTPException(422, { message: "Transition not allowed" });
+  if (!counterparty) {
+    throw new HTTPException(400, { message: "Counterparty not given" });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toDealt(_: SimplifiedAccount) {
-    throw new HTTPException(422, { message: "Transition not allowed" });
+  const conflictedTransaction = await transactionsRepository.findOne({
+    itemId: item.id,
+    cancelledAt: null,
+  });
+
+  if (conflictedTransaction) {
+    throw new HTTPException(409, { message: "Transaction already exists" });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public toSold(_: SimplifiedAccount) {
-    throw new HTTPException(422, { message: "Transition not allowed" });
-  }
-}
+  await transactionsRepository.create({
+    itemId: item.id,
+    seller: item.seller,
+    buyer: counterparty,
+  });
+};
 
-class ForSaleState extends State {
-  public override representation = ItemStatus.ForSale;
+const dealtToSold: Transition = async ({ item, actor }) => {
+  const transaction = await transactionsRepository.findOne({
+    itemId: item.id,
+    "buyer.id": actor.id,
+  });
 
-  public override toDealt(actor: SimplifiedAccount) {
-    if (actor.id !== this.context.item.seller.id) {
-      throw new HTTPException(403, { message: "You are not the seller" });
-    }
-
-    this.context.setState(new DealtState());
-  }
-}
-
-class DealtState extends State {
-  public override representation = ItemStatus.Dealt;
-
-  public override toForSale(actor: SimplifiedAccount) {
-    if (actor.id !== this.context.item.seller.id) {
-      throw new HTTPException(403, { message: "You are not the seller" });
-    }
-
-    this.context.setState(new ForSaleState());
+  if (!transaction) {
+    throw new HTTPException(403, {
+      message: "The seller didn't make the deal with you",
+    });
   }
 
-  public override toSold(account: SimplifiedAccount) {
-    if (account.id !== this.context.item.seller.id) {
-      throw new HTTPException(403, { message: "You are not the seller" });
-    }
-
-    this.context.setState(new SoldState());
+  if (transaction.completedAt) {
+    throw new HTTPException(409, { message: "Transaction already completed" });
   }
-}
 
-class SoldState extends State {
-  public override representation = ItemStatus.Sold;
-}
+  if (transaction.cancelledAt) {
+    throw new HTTPException(409, { message: "Transaction already cancelled" });
+  }
+
+  await transactionsRepository.complete(transaction.id);
+};
+
+const dealtToForSale: Transition = async ({ item, actor }) => {
+  const transaction = await transactionsRepository.findOne({
+    itemId: item.id,
+    "seller.id": actor.id,
+  });
+
+  if (!transaction) {
+    throw new HTTPException(403, {
+      message: "You didn't make the deal with the buyer",
+    });
+  }
+
+  if (transaction.completedAt) {
+    throw new HTTPException(409, { message: "Transaction already completed" });
+  }
+
+  if (transaction.cancelledAt) {
+    throw new HTTPException(409, { message: "Transaction already cancelled" });
+  }
+
+  await transactionsRepository.cancel(transaction.id);
+};

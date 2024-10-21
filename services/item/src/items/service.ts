@@ -11,7 +11,7 @@ import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
 import * as itemsRepository from "./repository";
-import { StatefulItem } from "./states";
+import { createTransition } from "./states";
 
 type GetAllServiceDto = {
   type?: ItemType;
@@ -175,6 +175,7 @@ export async function update(dto: UpdateServiceDto) {
 type UpdateStatusServiceDto = {
   id: string;
   status: ItemStatus;
+  counterparty?: SimplifiedAccount;
   user: SimplifiedAccount;
 };
 
@@ -185,13 +186,16 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
     throw new HTTPException(404, { message: "This item does not exist" });
   }
 
-  const statefulItem = new StatefulItem(item);
-  statefulItem.transitionTo(dto.status, dto.user);
-  const newStatefulItem = statefulItem.getRepresentation();
+  const transition = createTransition(item.status, dto.status);
+  await transition({
+    item,
+    actor: dto.user,
+    ...(dto.counterparty && { counterparty: dto.counterparty }),
+  });
 
   const newItem = await itemsRepository.updateOne(
     { id: dto.id },
-    { status: newStatefulItem.status },
+    { status: dto.status },
   );
 
   publishItemEvent("updated", newItem!);

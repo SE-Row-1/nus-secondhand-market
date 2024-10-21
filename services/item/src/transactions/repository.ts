@@ -1,11 +1,16 @@
-import { type SimplifiedAccount } from "@/types";
+import { type SimplifiedAccount, type Transaction } from "@/types";
 import { transactionsCollection } from "@/utils/db";
+import type { Filter } from "mongodb";
 
 type CreateTransactionRepositoryDto = {
   buyer: SimplifiedAccount;
   seller: SimplifiedAccount;
   itemId: string;
 };
+
+export async function findOne(filter: Filter<Transaction>) {
+  return transactionsCollection.findOne(filter);
+}
 
 export async function create(dto: CreateTransactionRepositoryDto) {
   await transactionsCollection.insertOne({
