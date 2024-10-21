@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageConsumer {
     // 监听 Update 队列
-    @RabbitListener(queues = "updated")
+    @RabbitListener(queues = "account.updated")
     public void receiveUpdateMessage(UpdateMessage message) {
         System.out.println("Received update message: " + message);
     }
 
     // listen to delete queue
-    @RabbitListener(queues = "deleted")
+    @RabbitListener(queues = "account.deleted")
     public void receiveDeleteMessage(String message) {
         System.out.println("Received delete message: " + message);
     }

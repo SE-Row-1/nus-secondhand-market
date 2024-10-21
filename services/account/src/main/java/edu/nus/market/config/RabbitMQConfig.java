@@ -32,13 +32,13 @@ public class RabbitMQConfig {
     // 定义 Topic 类型的队列
     @Bean
     public Queue updateQueue() {
-        return new Queue("updated", true);
+        return new Queue("account.updated", true);
     }
 
     // 定义 Topic 类型的队列
     @Bean
     public Queue deleteQueue() {
-        return new Queue("deleted", true);
+        return new Queue("account.deleted", true);
     }
 
     // bind updateQueue to topic exchange with routing key "update.#"
