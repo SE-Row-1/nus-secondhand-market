@@ -40,6 +40,7 @@ class WishlistServiceImplTest {
     private void prepareTestData() {
         mockLike = new SingleLike();
         mockLike.setUserId(1);
+        mockLike.setItemId("item001");
         mockLike.setName("iPhone 12");
         mockLike.setStatus(1);
         mockLike.setWantedAt(new Date());
@@ -48,9 +49,9 @@ class WishlistServiceImplTest {
     @Test
     void testGetWishlistService_Success() {
         List<Like> mockLikes = List.of(mockLike);
-        when(wishlistDao.findByUserIdOrderByWantedAtDesc(anyInt())).thenReturn(mockLikes);
+        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(),any())).thenReturn(mockLikes);
 
-        ResponseEntity<Object> response = wishlistService.getWishlistService(1);
+        ResponseEntity<Object> response = wishlistService.getWishlistService(1, new Date());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockLikes, response.getBody());
@@ -58,8 +59,9 @@ class WishlistServiceImplTest {
 
     @Test
     void testGetWishlistService_EmptyList() {
-        when(wishlistDao.findByUserIdOrderByWantedAtDesc(anyInt())).thenReturn(List.of());
-        ResponseEntity<Object> response = wishlistService.getWishlistService(1);
+        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(),any())).thenReturn(List.of());
+
+        ResponseEntity<Object> response = wishlistService.getWishlistService(1, new Date());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0, ((List<?>) response.getBody()).size());

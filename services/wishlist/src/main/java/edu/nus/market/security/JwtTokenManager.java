@@ -1,36 +1,45 @@
 package edu.nus.market.security;
 
-import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.net.HttpCookie;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenManager {
 
+    //set secret key
+    @Setter
     private static String secretKey;
 
     private static final long expirationTime = 7 * 24 * 60 * 60 * 1000; // 1 week in milliseconds
 
-    public static String generateAccessToken(ResAccount resAccount){
+    @Value("${jwt.secretKey}")
+    private String injectedSecretKey;
+
+    @PostConstruct
+    public void init() {
+        JwtTokenManager.secretKey = injectedSecretKey;
+    }
+
+    public static String generateAccessToken(JWTPayload jwtPayload){
         return Jwts.builder()
-            .setSubject(String.valueOf(resAccount.getId()))
-            .claim("email", resAccount.getEmail())
-            .claim("nickname", resAccount.getNickname())
-            .claim("avatarUrl", resAccount.getAvatarUrl())
-            .claim("departmentId", resAccount.getDepartmentId())
-            .claim("phoneCode", resAccount.getPhoneCode())
-            .claim("phoneNumber", resAccount.getPhoneNumber())
-            .claim("preferredCurrency", resAccount.getPreferredCurrency())
-            .claim("createdAt", resAccount.getCreatedAt())
-            .claim("deletedAt", resAccount.getDeletedAt())
-            .setIssuedAt(new Date())//登录时间
+            .claim("id", jwtPayload.getId())
+            .claim("nickname", jwtPayload.getNickname())
+            .claim("avatar_url", jwtPayload.getAvatarUrl())
+
+            .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, secretKey)
             .setExpiration(new Date(new Date().getTime() + expirationTime))
             .compact();
@@ -47,12 +56,20 @@ public class JwtTokenManager {
 
     public static boolean validateCookie(String Cookie) {
         // extract the access token from the cookie and validate it using validateToken method
-        String token = Cookie.split("; ")[0].split("=")[1];
+        String token = Arrays.stream(Cookie.split("; "))
+            .filter(part -> part.startsWith("access_token="))
+            .map(part -> part.split("=")[1])
+            .findFirst()
+            .orElse(null);
+
+        if (token == null) {
+            return false;
+        }
 
         return validateToken(token);
     }
 
-    public static ResAccount decodeAccessToken(String token) {
+    public static JWTPayload decodeAccessToken(String token) {
         try {
             // decode JWT
             Claims claims = Jwts.parser()
@@ -60,19 +77,29 @@ public class JwtTokenManager {
                 .parseClaimsJws(token)
                 .getBody();
 
-            ResAccount resAccount = new ResAccount(Integer.parseInt(claims.getSubject()), (String)claims.get("email"), (String)claims.get("nickname"),
-                (String)claims.get("avatarUrl"), (int)claims.get("departmentId"), (String)claims.get("phoneCode"), (String)claims.get("phoneNumber"),
-                (String)claims.get("preferredCurrency"), (String)claims.get("createdAt"), (String)claims.get("deletedAt"));
+            JWTPayload jwtPayload = new JWTPayload((int) claims.get("id"), (String)claims.get("nickname"),
+                (String)claims.get("avatar_url"));
 
-            return resAccount;
+            return jwtPayload;
 
         } catch (Exception e) {
             throw new RuntimeException("Token decoding failed", e);
         }
     }
 
-    public static ResAccount decodeCookie(String cookie) {
-        String token = cookie.split("; ")[0].split("=")[1];
+    public static JWTPayload decodeCookie(String cookie) {
+        if (cookie == null || cookie.isEmpty()) {
+            throw new IllegalArgumentException("Cookie cannot be null or empty");
+        }
+
+        List<HttpCookie> cookies = HttpCookie.parse(cookie);
+
+        String token = cookies.stream()
+            .filter(c -> "access_token".equals(c.getName()))
+            .map(HttpCookie::getValue)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Missing access_token in the provided cookie"));
+
         return decodeAccessToken(token);
     }
 
@@ -83,12 +110,4 @@ public class JwtTokenManager {
         return Base64.getEncoder().encodeToString(randomBytes);
     }
 
-    // set secret key
-    public static void setSecretKey(String secretKey){
-        JwtTokenManager.secretKey = secretKey;
-    }
-
-    public JwtTokenManager(@Value("${jwt.secretKey}")String secretKey){
-        this.secretKey = secretKey;
-    }
 }

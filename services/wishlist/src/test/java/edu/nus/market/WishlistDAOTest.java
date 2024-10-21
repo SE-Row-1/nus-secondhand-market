@@ -41,7 +41,8 @@ public class WishlistDAOTest {
         wishlistDao.save(like);
 
         // Act: 读取该用户的收藏
-        List<Like> likes = wishlistDao.findByUserIdOrderByWantedAtDesc(1);
+        List<Like> likes = wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(1,new Date());
+
         // Assert: 验证添加和读取成功
         assertEquals(1, likes.size());
         assertEquals(ITEM_ID, likes.get(0).getItemId());
@@ -114,7 +115,7 @@ public class WishlistDAOTest {
         // Act: 验证每个用户的收藏读取是否隔离
         for (int i = 1; i <= USER_COUNT; i++) {
             final int userId = i;
-            List<Like> likes = wishlistDao.findByUserIdOrderByWantedAtDesc(userId);
+            List<Like> likes = wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(userId, new Date());
             assertEquals(1, likes.size());
             assertEquals(userId, likes.get(0).getUserId());
         }
