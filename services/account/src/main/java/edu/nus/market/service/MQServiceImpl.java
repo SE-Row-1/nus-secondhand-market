@@ -2,6 +2,8 @@ package edu.nus.market.service;
 
 import edu.nus.market.pojo.ResEntity.UpdateMessage;
 import org.apache.ibatis.annotations.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +14,18 @@ public class MQServiceImpl implements MQservice{
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    // 发送订单相关的消息，使用路由键 `order.created`
+    private static final Logger logger = LoggerFactory.getLogger(MQServiceImpl.class);
+
+    // send updated message，use `account.updated.success`
     public void sendUpdateMessage(UpdateMessage message) {
         rabbitTemplate.convertAndSend("account", "account.updated.success", message);
-        System.out.println("Sent update message: " + message);
+        logger.info("Sent update message: " + message);
     }
 
-    // 发送支付相关的消息，使用路由键 `payment.success`
+    // send deleted message, `account.deleted.success`
     public void sendDeleteMessage(String message) {
         rabbitTemplate.convertAndSend("account", "account.deleted.success", message);
-        System.out.println("Sent payment message: " + message);
+        logger.info("Sent delete message: " + message);
     }
 }
 

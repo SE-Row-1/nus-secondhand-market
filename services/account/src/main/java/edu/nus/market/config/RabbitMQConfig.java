@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    // 使用 Jackson2JsonMessageConverter 将消息序列化为 JSON 格式
+    // use Jackson2JsonMessageConverter to transfer the message JSON format
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
@@ -23,34 +23,9 @@ public class RabbitMQConfig {
         return template;
     }
 
-    // 定义 Topic 交换机
-
+    // define account Topic exchange
     @Bean
     public TopicExchange topicExchange() {
         return new TopicExchange("account");
-    }
-    // 定义 Topic 类型的队列
-    @Bean
-    public Queue updateQueue() {
-        return new Queue("account.updated", true);
-    }
-
-    // 定义 Topic 类型的队列
-    @Bean
-    public Queue deleteQueue() {
-        return new Queue("account.deleted", true);
-    }
-
-    // bind updateQueue to topic exchange with routing key "update.#"
-    @Bean
-    public Binding updateBinding(Queue updateQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(updateQueue).to(topicExchange).with("account.updated.#");
-    }
-
-
-    // bind deleteQueue to topic exchange with routing key "delete.#"
-    @Bean
-    public Binding deleteBinding(Queue deleteQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(deleteQueue).to(topicExchange).with("account.deleted.#");
     }
 }

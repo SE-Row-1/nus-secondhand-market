@@ -31,10 +31,8 @@ services:
     networks:
       - bridge
     depends_on:
-      account-postgres:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - account-postgres
+      - rabbitmq
     restart: always
 
   account-postgres:
@@ -94,10 +92,8 @@ services:
     networks:
       - bridge
     depends_on:
-      wishlist-mongo:
-        condition: service_started
-      rabbitmq:
-        condition: service_healthy
+      - wishlist-mongo
+      - rabbitmq
     restart: always
 
   wishlist-mongo:

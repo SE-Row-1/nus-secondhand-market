@@ -50,7 +50,7 @@ public class WishlistServiceImpl implements WishlistService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.WISHLIST_CONFLICT.ErrorMsg));
         }
         wishlistDao.save(ConvertAddLikeReqToLike.convert(req));
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class WishlistServiceImpl implements WishlistService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.LIKE_NOT_FOUND.ErrorMsg));
         }
         wishlistDao.delete(existingLike.get());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @Override
@@ -87,9 +87,6 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Override
     public void deleteAccountService(int userId) {
-        System.out.println(userId);
-        System.out.println(getWishlistService(userId,new Date()));
         wishlistDao.deleteAllByUserId(userId);
-        System.out.println(getWishlistService(userId,new Date()));
     }
 }
