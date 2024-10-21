@@ -168,7 +168,7 @@ class WishlistControllerTest {
         mockResponse.put("count", 1);
         mockResponse.put("favoriteDate", new Date());
 
-        when(wishlistService.getItemLikeInfo(anyString())).thenReturn(ResponseEntity.ok(mockResponse));
+        when(wishlistService.getItemLikeInfo(anyString(), anyInt())).thenReturn(ResponseEntity.ok(mockResponse));
 
         // Act
         ResponseEntity<Object> response = wishlistController.getItemLikeInfo("item001", cookie);

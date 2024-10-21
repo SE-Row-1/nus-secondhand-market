@@ -2,6 +2,7 @@ package edu.nus.market.service;
 
 import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.dao.WishlistDao;
+import edu.nus.market.pojo.Item;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
@@ -24,9 +25,6 @@ public class WishlistServiceImpl implements WishlistService {
 
     @Resource
     private WishlistDao wishlistDao;
-
-
-
 
     @Override
     public ResponseEntity<Object> getWishlistService(int id, Date before) {
@@ -67,7 +65,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    public ResponseEntity<Object> getItemLikeInfo(String itemId) {
+    public ResponseEntity<Object> getItemLikeInfo(String itemId, int userId) {
         int count = wishlistDao.countByItemId(itemId);
         Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
 
@@ -75,5 +73,20 @@ public class WishlistServiceImpl implements WishlistService {
         ResItemLikeInfo response = new ResItemLikeInfo(count, favoriteDate);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public void updateItem(Item updatedItem) {
+
+    }
+
+    @Override
+    public void deleteItemService(String itemId) {
+
+    }
+
+    @Override
+    public void deleteAccountService(int userId) {
+        wishlistDao.deleteAllByUserId(userId);
     }
 }

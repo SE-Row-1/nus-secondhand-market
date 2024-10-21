@@ -1,9 +1,7 @@
 #!/bin/bash
-
 DOCKER_COMPOSE_FILE=docker-compose.dev.yaml
 ENVS_DIR="./envs"
 PASSPHRASE_FILE="nshm.passphrase"
-
 # Check if the passphrase file exists, if not, download it from S3
 if [[ ! -f "$PASSPHRASE_FILE" ]]; then
   echo "Passphrase file not found. Downloading from S3..."
@@ -13,7 +11,6 @@ if [[ ! -f "$PASSPHRASE_FILE" ]]; then
     exit 1
   fi
 fi
-
 # Decrypt each .env.gpg file inside the envs directory
 for env_file_gpg in "$ENVS_DIR"/*.env.gpg; do
   if [[ -f "$env_file_gpg" ]]; then
@@ -47,15 +44,12 @@ for env_file_gpg in "$ENVS_DIR"/*.env.gpg; do
     fi
   fi
 done
-
 # Check if the rabbitmq container is running, stop all containers if necessary
 if [[ "$(docker ps -q -f name=rabbitmq)" ]]; then
   echo "Stopping running containers..."
   docker compose -f "$DOCKER_COMPOSE_FILE" down
 fi
-
 # Start the Docker Compose services
 echo "Starting Docker Compose services..."
 docker compose -f "$DOCKER_COMPOSE_FILE" up --build -d
-
 echo "Docker Compose services started."

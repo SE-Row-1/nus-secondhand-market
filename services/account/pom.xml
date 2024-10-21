@@ -109,6 +109,10 @@
       <version>4.0.0</version> <!-- 根据最新版本调整 -->
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>org.springframework.amqp</groupId>
+          <artifactId>spring-amqp</artifactId>
+      </dependency>
 
 
   </dependencies>
