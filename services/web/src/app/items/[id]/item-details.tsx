@@ -1,5 +1,7 @@
 "use client";
 
+import { StatusBadge } from "@/components/item/card/status-badge";
+import { FromNow } from "@/components/item/from-now";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
@@ -13,8 +15,6 @@ import {
 } from "@/types";
 import { EditIcon, MailIcon } from "lucide-react";
 import Link from "next/link";
-import { StatusBadge } from "../card/status-badge";
-import { FromNow } from "../from-now";
 import { AddToWishListButton } from "./add-to-wishlist-button";
 import { ChildrenGrid } from "./children-grid";
 import { DecomposePackDialog } from "./decompose-pack-dialog";

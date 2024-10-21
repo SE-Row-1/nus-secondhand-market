@@ -1,5 +1,5 @@
+import { ItemCard } from "@/components/item/card";
 import type { Item } from "@/types";
-import { ItemCard } from "../card";
 
 type Props = {
   items: Item[];
