@@ -21,7 +21,7 @@ export function Cover({ photoUrls }: Props) {
         src={photoUrls[0]}
         alt="A preview photo of this second-hand item"
         fill
-        sizes="100vw, (min-width: 480px) 50vw, (min-width: 1280px) 33vw, (min-width: 1536px) 25vw"
+        sizes="100vw, (min-width: 540px) 50vw, (min-width: 720px) 33vw, (min-width: 768px) 50vw, (min-width: 1024px) 33vw, (min-width: 1280px) 25vw, (min-width: 1536px) 20vw"
         className="object-contain"
       />
       {photoUrls.length >= 2 && (
