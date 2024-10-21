@@ -1,4 +1,3 @@
-import { PageTitle } from "@/components/layout";
 import { prefetchMe, prefetchWishlist } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -21,16 +20,7 @@ export default async function WishlistPage() {
     redirect(`/error?message=${pageError.message}`);
   }
 
-  return (
-    <>
-      <PageTitle
-        title="My Wishlist"
-        description="Here are the items you wanted"
-        className="mb-8"
-      />
-      <WishList firstPage={page} me={me} />
-    </>
-  );
+  return <WishList firstPage={page} me={me} />;
 }
 
 export const metadata: Metadata = {

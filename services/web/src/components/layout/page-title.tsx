@@ -1,16 +1,16 @@
-import { cn } from "../ui/utils";
+"use client";
 
-type Props = {
-  title: string;
-  description?: string;
-  className?: string;
-};
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export function PageTitle({ title, description, className }: Props) {
-  return (
-    <div className={cn("space-y-4", className)}>
-      <h1 className="font-bold text-3xl">{title}</h1>
-      {description && <p className="text-muted-foreground">{description}</p>}
-    </div>
-  );
+export function PageTitle() {
+  const pathname = usePathname();
+
+  const [title, setTitle] = useState("");
+
+  useEffect(() => {
+    setTitle(document.title.replace(" | NUS Second-Hand Market", ""));
+  }, [pathname]);
+
+  return <h1>{title}</h1>;
 }

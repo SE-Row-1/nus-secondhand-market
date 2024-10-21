@@ -1,4 +1,3 @@
-import { PageTitle } from "@/components/layout";
 import { prefetchBelongings, prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -24,11 +23,7 @@ export default async function BelongingsPage() {
 
   return (
     <>
-      <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
-        <PageTitle
-          title="My belongings"
-          description="Here are the items you have listed"
-        />
+      <div className="mb-8">
         <ComposePackDialog />
       </div>
       <Belongings firstPage={page} me={me} />
