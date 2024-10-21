@@ -58,7 +58,7 @@ type Props = {
 
 type Photo = { url: string; file?: File };
 
-export function EditItem({ id, initialItem }: Props) {
+export function EditItemForm({ id, initialItem }: Props) {
   const { data: item } = useQuery({
     queryKey: ["items", id],
     queryFn: async () => {
