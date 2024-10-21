@@ -1,9 +1,8 @@
-import { PageTitle } from "@/components/framework";
 import { prefetchBelongings, prefetchMe } from "@/prefetchers";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { Belongings } from "./components/belongings";
-import { ComposePackDialog } from "./components/compose-pack-dialog";
+import { Belongings } from "./belongings";
+import { ComposePackDialog } from "./compose-pack-dialog";
 
 export default async function BelongingsPage() {
   const { data: me, error: meError } = await prefetchMe();
@@ -24,11 +23,7 @@ export default async function BelongingsPage() {
 
   return (
     <>
-      <div className="flex justify-between items-center flex-wrap gap-4 mb-8">
-        <PageTitle
-          title="My belongings"
-          description="Here are the items you have listed"
-        />
+      <div className="mb-8">
         <ComposePackDialog />
       </div>
       <Belongings firstPage={page} me={me} />

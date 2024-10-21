@@ -1,10 +1,12 @@
-import { type MiddlewareConfig, type NextRequest } from "next/server";
+import type { MiddlewareConfig, NextRequest } from "next/server";
 import { AuthGuard } from "./middleware/auth-guard";
+import { Logger } from "./middleware/logger";
 
 export async function middleware(req: NextRequest) {
-  const authGuard = new AuthGuard();
+  const logger = new Logger();
+  logger.setNext(new AuthGuard());
 
-  return authGuard.handle(req);
+  return logger.handle(req);
 }
 
 export const config: MiddlewareConfig = {

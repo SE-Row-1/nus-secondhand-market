@@ -16,18 +16,18 @@ export const prefetchItem = cache(async (id: string) => {
 });
 
 export const prefetchMarketplace = cache(async () => {
-  return await serverRequester.get<PaginatedItems>("/items?status=0&limit=8");
+  return await serverRequester.get<PaginatedItems>("/items?status=0&limit=10");
 });
 
 export const prefetchBelongings = cache(async (userId: number) => {
   return await serverRequester.get<PaginatedItems>(
-    `/items?seller_id=${userId}&limit=8`,
+    `/items?seller_id=${userId}&limit=10`,
   );
 });
 
 export const prefetchWishlist = cache(async (userId: number) => {
   return await serverRequester.get<PaginatedItems>(
-    `/wishlists/${userId}?limit=8`,
+    `/wishlists/${userId}?limit=10`,
   );
 });
 

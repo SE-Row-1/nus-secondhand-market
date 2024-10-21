@@ -17,7 +17,7 @@ export function Marketplace({ firstPage }: Props) {
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
         status: String(ItemStatus.FOR_SALE),
-        limit: "8",
+        limit: "10",
         ...(cursor && { cursor }),
       });
 

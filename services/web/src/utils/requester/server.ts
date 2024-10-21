@@ -1,8 +1,11 @@
 import { cookies } from "next/headers";
+import { logger } from "../logger";
 import { HttpError } from "./http-error";
 import { createRequester } from "./requester";
 
 async function serverFetch<T>(endpoint: string, init: RequestInit = {}) {
+  logger.http(`server request to ${endpoint}`);
+
   try {
     const url = process.env.API_BASE_URL + endpoint;
 
@@ -12,7 +15,7 @@ async function serverFetch<T>(endpoint: string, init: RequestInit = {}) {
         ...init.headers,
         Cookie: cookies().toString(),
       },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(3000),
     });
 
     if (res.status === 204) {
@@ -27,12 +30,17 @@ async function serverFetch<T>(endpoint: string, init: RequestInit = {}) {
 
     return { data: json as T, error: null };
   } catch (error) {
-    console.error("Error when requesting for endpoint:", endpoint);
+    if (error instanceof DOMException && error.name === "TimeoutError") {
+      logger.error(`server request to ${endpoint} timed out`);
+      return { data: null, error: new HttpError(504, "Request timed out") };
+    }
 
     if (error instanceof Error) {
+      logger.error(`server request to ${endpoint} failed: ${error.message}`);
       return { data: null, error: new HttpError(500, error.message) };
     }
 
+    logger.error(`server request to ${endpoint} failed: ${error}`);
     return { data: null, error: new HttpError(500, "Unknown error") };
   }
 }
