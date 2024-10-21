@@ -114,6 +114,6 @@ public class WishlistController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
 
-        return wishlistService.getItemLikeInfo(itemId);
+        return wishlistService.getItemLikeInfo(itemId, JwtTokenManager.decodeCookie(token).getId());
     }
 }

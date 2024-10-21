@@ -134,7 +134,7 @@ class WishlistServiceImplTest {
         when(wishlistDao.countByItemId(anyString())).thenReturn(1);
         when(wishlistDao.findTopWantedAtByItemId(anyString())).thenReturn(new Date());
 
-        ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001");
+        ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001", 1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ResItemLikeInfo.class, response.getBody().getClass());

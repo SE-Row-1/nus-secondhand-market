@@ -24,11 +24,11 @@ public class RabbitMQConfig {
     }
 
     // 定义 Topic 交换机
+
     @Bean
     public TopicExchange topicExchange() {
         return new TopicExchange("account");
     }
-
     // 定义 Topic 类型的队列
     @Bean
     public Queue updateQueue() {
@@ -46,6 +46,7 @@ public class RabbitMQConfig {
     public Binding updateBinding(Queue updateQueue, TopicExchange topicExchange) {
         return BindingBuilder.bind(updateQueue).to(topicExchange).with("update.#");
     }
+
 
     // bind deleteQueue to topic exchange with routing key "delete.#"
     @Bean
