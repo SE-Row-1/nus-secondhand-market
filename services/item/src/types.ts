@@ -102,6 +102,9 @@ export type ItemPack = {
  */
 export type Item = SingleItem | ItemPack;
 
+/**
+ * A transaction between a seller and a buyer, regarding an item.
+ */
 export type Transaction = {
   id: string;
   seller: SimplifiedAccount;
