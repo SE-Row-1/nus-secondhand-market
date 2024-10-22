@@ -52,6 +52,14 @@ export function WishlistStatisticsClient({
     );
   }
 
+  if (!wishlistStatistics.wanters || wishlistStatistics.wanters.length === 0) {
+    return (
+      <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md">
+        🤔 No one has wanted this item yet.
+      </p>
+    );
+  }
+
   return (
     <Wanters itemId={item.id} wanters={wishlistStatistics.wanters ?? []} />
   );
