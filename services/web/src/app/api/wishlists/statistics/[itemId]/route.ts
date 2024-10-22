@@ -12,17 +12,9 @@ type RouteSegments = {
 export async function GET(_: NextRequest, { params }: RouteSegments) {
   const accessToken = cookies().get("access_token")?.value;
 
-  if (!accessToken) {
-    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
-  }
-
-  const account = mockAccounts.find(
-    (account) => account.id === Number(accessToken),
-  );
-
-  if (!account) {
-    return NextResponse.json({ error: "Account not found" }, { status: 404 });
-  }
+  const account = accessToken
+    ? mockAccounts.find((account) => account.id === Number(accessToken))
+    : undefined;
 
   const records = mockWishlists
     .filter((entry) => entry.item.id === params.itemId)
@@ -36,7 +28,7 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
   const last_wanted_at = records[0]?.wanted_at ?? null;
   const wanters = records.map((record) => record.wanter);
 
-  if (account.id === records[0]?.item.seller.id) {
+  if (account?.id === records[0]?.item.seller.id) {
     return NextResponse.json({ count, last_wanted_at, wanters });
   }
 
