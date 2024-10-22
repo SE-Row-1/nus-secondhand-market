@@ -85,7 +85,7 @@ export type WishlistStatistics = {
 
 export type Transaction = {
   id: string;
-  item_id: string;
+  item: Pick<Item, "id" | "name" | "price">;
   buyer: SimplifiedAccount;
   seller: SimplifiedAccount;
   created_at: string;

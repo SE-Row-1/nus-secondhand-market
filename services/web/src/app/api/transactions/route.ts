@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
         return false;
       }
 
-      if (item_id && transaction.item_id !== item_id) {
+      if (item_id && transaction.item.id !== item_id) {
         return false;
       }
 

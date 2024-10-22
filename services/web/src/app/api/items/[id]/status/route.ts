@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
 
     const pendingTransaction = mockTransactions.find(
       (transaction) =>
-        transaction.item_id === item.id &&
+        transaction.item.id === item.id &&
         transaction.completed_at === null &&
         transaction.cancelled_at === null,
     );
@@ -58,7 +58,11 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
 
     mockTransactions.push({
       id: crypto.randomUUID(),
-      item_id: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       buyer: buyer,
       seller: item.seller,
       created_at: new Date().toISOString(),
@@ -80,7 +84,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
 
     const pendingTransaction = mockTransactions.find(
       (transaction) =>
-        transaction.item_id === item.id &&
+        transaction.item.id === item.id &&
         transaction.completed_at === null &&
         transaction.cancelled_at === null,
     );
@@ -113,7 +117,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
   if (item.status === ItemStatus.DEALT && status === ItemStatus.SOLD) {
     const pendingTransaction = mockTransactions.find(
       (transaction) =>
-        transaction.item_id === item.id &&
+        transaction.item.id === item.id &&
         transaction.completed_at === null &&
         transaction.cancelled_at === null,
     );

@@ -47,6 +47,10 @@ export const prefetchWishlistStatistics = cache(async (itemId: string) => {
   );
 });
 
+export const prefetchTransactions = cache(async () => {
+  return await serverRequester.get<Transaction[]>("/transactions");
+});
+
 export const prefetchItemTransaction = cache(async (itemId: string) => {
   return await serverRequester.get<Transaction[]>(
     `/transactions?item_id=${itemId}&exclude_cancelled=true`,
