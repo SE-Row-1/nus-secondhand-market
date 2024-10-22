@@ -1,31 +1,20 @@
-import type { DetailedAccount } from "@/types";
 import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { mockAccounts } from "../../mock-db";
 
-const mockAccount: DetailedAccount = {
-  id: 1,
-  email: "e1351826@u.nus.edu",
-  nickname: "mrcaidev",
-  avatar_url: "https://avatars.githubusercontent.com/u/78269445?v=4",
-  department: {
-    id: 0,
-    acronym: "ISS",
-    name: "Institute of System Science",
-  },
-  phone_code: "65",
-  phone_number: "80843976",
-  preferred_currency: "CNY",
-  created_at: "2024-09-23 12:19:10.415264+00",
-  deleted_at: null,
-};
+// Log in.
+export async function POST(req: NextRequest) {
+  const { email } = await req.json();
 
-const mockJwt =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzI3MjY1NTY3fQ.dsSDeoQ1Nwxi4tNWyyhM8KFiKaVxnpemMkNkLe7_Y60";
+  const account = mockAccounts.find((account) => account.email === email);
 
-export async function POST() {
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
   cookies().set({
     name: "access_token",
-    value: mockJwt,
+    value: String(account.id),
     path: "/",
     domain: "localhost",
     maxAge: 60 * 60 * 24 * 7,
@@ -35,9 +24,10 @@ export async function POST() {
     sameSite: "lax",
   });
 
-  return NextResponse.json({ ...mockAccount }, { status: 201 });
+  return NextResponse.json(account, { status: 201 });
 }
 
+// Log out.
 export async function DELETE() {
   cookies().delete("access_token");
 

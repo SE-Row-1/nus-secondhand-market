@@ -1,25 +1,44 @@
-import { NextResponse } from "next/server";
+import { mockAccounts, mockWishlists } from "@/app/api/mock-db";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  return NextResponse.json({
-    count: 3,
-    last_wanted_at: new Date().toISOString(),
-    wanters: [
-      {
-        id: 2,
-        nickname: "JaneS",
-        avatar_url: "https://avatars.githubusercontent.com/u/69978374?v=4",
-      },
-      {
-        id: 3,
-        nickname: "AlexL",
-        avatar_url: "https://avatars.githubusercontent.com/u/13389461?v=4",
-      },
-      {
-        id: 4,
-        nickname: "MikeB",
-        avatar_url: "https://avatars.githubusercontent.com/u/60336739?v=4",
-      },
-    ],
-  });
+type RouteSegments = {
+  params: {
+    itemId: string;
+  };
+};
+
+// Get an item's wishlist statistics.
+export async function GET(_: NextRequest, { params }: RouteSegments) {
+  const accessToken = cookies().get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
+  }
+
+  const account = mockAccounts.find(
+    (account) => account.id === Number(accessToken),
+  );
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  const records = mockWishlists
+    .filter((entry) => entry.item.id === params.itemId)
+    .toSorted(
+      (a, b) =>
+        new Date(b.item.created_at).getTime() -
+        new Date(a.item.created_at).getTime(),
+    );
+
+  const count = records.length;
+  const last_wanted_at = records[0]?.wanted_at ?? null;
+  const wanters = records.map((record) => record.wanter);
+
+  if (account.id === records[0]?.item.seller.id) {
+    return NextResponse.json({ count, last_wanted_at, wanters });
+  }
+
+  return NextResponse.json({ count, last_wanted_at });
 }

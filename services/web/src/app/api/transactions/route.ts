@@ -1,21 +1,50 @@
-import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { mockAccounts, mockTransactions } from "../mock-db";
 
-export async function GET() {
-  return NextResponse.json([
-    {
-      id: "d4310345-5ae4-4d68-b472-e37701bf757f",
-      itemId: "bdaa2269-cd63-40f0-9c2d-b00327c9a941",
-      buyer: {
-        id: 1,
-        nickname: "Johnny",
-        avatar_url: "https://avatars.githubusercontent.com/u/78269445?v=4",
-      },
-      seller: {
-        id: 2,
-        nickname: "JaneS",
-        avatar_url: "https://avatars.githubusercontent.com/u/69978374?v=4",
-      },
-      createdAt: new Date().toISOString(),
-    },
-  ]);
+// Get transactions.
+export async function GET(req: NextRequest) {
+  const accessToken = cookies().get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
+  }
+
+  const account = mockAccounts.find(
+    (account) => account.id === Number(accessToken),
+  );
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  const { item_id, exclude_cancelled } = Object.fromEntries(
+    req.nextUrl.searchParams,
+  );
+
+  const transactions = mockTransactions
+    .filter((transaction) => {
+      if (
+        transaction.buyer.id !== account.id &&
+        transaction.seller.id !== account.id
+      ) {
+        return false;
+      }
+
+      if (item_id && transaction.item_id !== item_id) {
+        return false;
+      }
+
+      if (exclude_cancelled === "true" && transaction.cancelled_at !== null) {
+        return false;
+      }
+
+      return true;
+    })
+    .toSorted(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+    );
+
+  return NextResponse.json(transactions, { status: 200 });
 }

@@ -1,13 +1,115 @@
-import { NextResponse } from "next/server";
+import { mockAccounts, mockWishlists } from "@/app/api/mock-db";
+import { cookies } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  return NextResponse.json({ error: "not found" }, { status: 404 });
+type RouteSegments = {
+  params: {
+    userId: string;
+    itemId: string;
+  };
+};
+
+// Get the wanted situation of a user towards an item.
+export async function GET(_: NextRequest, { params }: RouteSegments) {
+  const accessToken = cookies().get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
+  }
+
+  const account = mockAccounts.find(
+    (account) => account.id === Number(accessToken),
+  );
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  if (account.id !== Number(params.userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const target = mockWishlists.find(
+    (entry) =>
+      entry.item.id === params.itemId &&
+      entry.wanter.id === Number(params.userId),
+  );
+
+  if (!target) {
+    return NextResponse.json({ error: "Item not found" }, { status: 404 });
+  }
+
+  return NextResponse.json({ ...target.item, wanted_at: target.wanted_at });
 }
 
-export async function POST() {
-  return new Response(null, { status: 204 });
+// Want item.
+export async function POST(req: NextRequest, { params }: RouteSegments) {
+  const accessToken = cookies().get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
+  }
+
+  const account = mockAccounts.find(
+    (account) => account.id === Number(accessToken),
+  );
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  if (account.id !== Number(params.userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const json = await req.json();
+
+  const newWishlistEntry = {
+    item: json,
+    wanter: {
+      id: account.id,
+      nickname: account.nickname,
+      avatar_url: account.avatar_url,
+    },
+    wanted_at: new Date().toISOString(),
+  };
+
+  mockWishlists.push(newWishlistEntry);
+
+  return new NextResponse(null, { status: 204 });
 }
 
-export async function DELETE() {
-  return new Response(null, { status: 204 });
+// Unwant item.
+export async function DELETE(_: NextRequest, { params }: RouteSegments) {
+  const accessToken = cookies().get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ error: "Please log in first" }, { status: 401 });
+  }
+
+  const account = mockAccounts.find(
+    (account) => account.id === Number(accessToken),
+  );
+
+  if (!account) {
+    return NextResponse.json({ error: "Account not found" }, { status: 404 });
+  }
+
+  if (account.id !== Number(params.userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const target = mockWishlists.find(
+    (entry) =>
+      entry.item.id === params.itemId &&
+      entry.wanter.id === Number(params.userId),
+  );
+
+  if (!target) {
+    return NextResponse.json({ error: "Item not found" }, { status: 404 });
+  }
+
+  mockWishlists.splice(mockWishlists.indexOf(target), 1);
+
+  return new NextResponse(null, { status: 204 });
 }

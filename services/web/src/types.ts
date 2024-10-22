@@ -85,10 +85,10 @@ export type WishlistStatistics = {
 
 export type Transaction = {
   id: string;
-  itemId: string;
+  item_id: string;
   buyer: SimplifiedAccount;
   seller: SimplifiedAccount;
   created_at: string;
   completed_at: string | null;
-  deleted_at: string | null;
+  cancelled_at: string | null;
 };
