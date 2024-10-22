@@ -37,13 +37,18 @@ export default async function Page({ params: { id } }: Props) {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const isSeller = me?.id === item?.seller.id;
-  const isBuyer = me?.id === itemTransaction?.[0]?.buyer.id;
+  const identity = !me
+    ? "passer-by"
+    : me.id === item.seller.id
+      ? "seller"
+      : me.id === itemTransaction?.[0]?.buyer.id
+        ? "buyer"
+        : "passer-by";
 
   return (
     <ItemDetailsClient
       initialItem={item}
-      identity={isSeller ? "seller" : isBuyer ? "buyer" : "passer-by"}
+      identity={identity}
       wishlistStatistics={<WishlistStatisticsServer item={item} me={me} />}
       wishlistButton={<WishlistButtonServer item={item} />}
     />
