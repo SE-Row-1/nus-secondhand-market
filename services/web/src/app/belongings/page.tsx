@@ -24,7 +24,7 @@ export default async function BelongingsPage() {
   return (
     <>
       <div className="mb-8">
-        <ComposePackDialog />
+        <ComposePackDialog me={me} />
       </div>
       <Belongings firstPage={page} me={me} />
     </>

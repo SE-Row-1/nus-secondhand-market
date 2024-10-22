@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import type { ItemPack } from "@/types";
+import type { DetailedAccount, ItemPack } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BoxesIcon, Loader2Icon, XIcon } from "lucide-react";
@@ -43,10 +43,11 @@ const formSchema = v.object({
 });
 
 type Props = {
+  me: DetailedAccount;
   closeDialog: () => void;
 };
 
-export function ComposePackForm({ closeDialog }: Props) {
+export function ComposePackForm({ me, closeDialog }: Props) {
   const [childrenIds, setChildrenIds] = useState<string[]>([]);
 
   const { toast } = useToast();
@@ -131,7 +132,7 @@ export function ComposePackForm({ closeDialog }: Props) {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="childrenIds">Contained items</Label>
-        <BelongingsSelect onValueChange={setChildrenIds} />
+        <BelongingsSelect me={me} onValueChange={setChildrenIds} />
       </div>
       <DialogFooter>
         <DialogClose asChild>

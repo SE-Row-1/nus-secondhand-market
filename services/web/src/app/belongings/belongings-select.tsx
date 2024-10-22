@@ -7,18 +7,16 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMe } from "@/hooks/use-me";
-import type { Item } from "@/types";
+import type { DetailedAccount, Item } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useQuery } from "@tanstack/react-query";
 
 type Props = {
+  me: DetailedAccount;
   onValueChange: (value: string[]) => void;
 };
 
-export function BelongingsSelect({ onValueChange }: Props) {
-  const { data: me } = useMe();
-
+export function BelongingsSelect({ me, onValueChange }: Props) {
   const { data: belongings, error } = useQuery({
     queryKey: ["items", "all-belongings"],
     queryFn: async () => {
