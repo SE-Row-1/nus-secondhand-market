@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Seller {
     @NotBlank
-    private String id;
+    private int id;
     @NotBlank
     private String nickname;
     @NotBlank

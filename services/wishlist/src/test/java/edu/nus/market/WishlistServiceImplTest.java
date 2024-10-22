@@ -76,7 +76,7 @@ class WishlistServiceImplTest {
         req.setName("iPhone 12");
         req.setStatus(1);
         req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("single");
 
         when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.empty());
@@ -96,7 +96,7 @@ class WishlistServiceImplTest {
         req.setName("iPhone 12");
         req.setStatus(1);
         req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
         when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.of(mockLike));

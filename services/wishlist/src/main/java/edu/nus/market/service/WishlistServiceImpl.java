@@ -10,6 +10,7 @@ import edu.nus.market.pojo.Like;
 import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
+import edu.nus.market.pojo.ResEntity.ResLike;
 import jakarta.annotation.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,17 +30,16 @@ public class WishlistServiceImpl implements WishlistService {
     @Override
     public ResponseEntity<Object> getWishlistService(int id, Date before) {
         List<Like> likes = wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(id, before);
-        //find the nextBefore date
-        Date nextBefore = before;
-        HttpHeaders headers = new HttpHeaders();
+        // Find the nextBefore date
+        String nextCursor = null;
         if (!likes.isEmpty()) {
-            nextBefore = likes.get(likes.size() - 1).getWantedAt();
+            Date nextBefore = likes.get(likes.size() - 1).getWantedAt();
+            nextCursor = ConvertDateToISO.convert(nextBefore);
         }
-        headers.add("Next-Before", ConvertDateToISO.convert(nextBefore));
 
+        ResLike response = new ResLike(nextCursor, likes);
 
-
-        return ResponseEntity.ok().headers(headers).body(likes);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class WishlistServiceImpl implements WishlistService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.WISHLIST_CONFLICT.ErrorMsg));
         }
         wishlistDao.save(ConvertAddLikeReqToLike.convert(req));
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override
@@ -61,7 +61,7 @@ public class WishlistServiceImpl implements WishlistService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.LIKE_NOT_FOUND.ErrorMsg));
         }
         wishlistDao.delete(existingLike.get());
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @Override

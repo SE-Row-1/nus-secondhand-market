@@ -37,15 +37,15 @@ public class WishlistController {
 
     // Register and Delete
     @GetMapping("/{user_id}")
-    public ResponseEntity<Object> getWishlist(@PathVariable("user_id") int userId, @RequestHeader(value = "Cookie", required = false) String token,
-                                              @RequestParam(value = "before", required = false) String beforeString) {
+    public ResponseEntity<Object> getWishlist(@PathVariable("user_id") int userId, @CookieValue(value = "access_token", required = false) String token,
+                                              @RequestParam(value = "cursor", required = false) String beforeString) {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
+        if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         Date before = new Date();
@@ -63,11 +63,13 @@ public class WishlistController {
     }
 
     @PostMapping("/{user_id}/items/{item_id}")
-    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @Valid @RequestBody AddLikeReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> addLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId,
+                                          @Valid @RequestBody AddLikeReq req, BindingResult bindingResult,
+                                          @CookieValue(value = "access_token", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         if (bindingResult.hasErrors()) {
@@ -75,7 +77,7 @@ public class WishlistController {
         }
 
         // check userId
-        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
+        if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         // check req.userId
@@ -88,16 +90,17 @@ public class WishlistController {
     }
 
     @DeleteMapping("/{user_id}/items/{item_id}")
-    public ResponseEntity<Object> deleteLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> deleteLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId,
+                                             @CookieValue(value = "access_token", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
 
         // check userId
-        if (userId != JwtTokenManager.decodeCookie(token).getId()) {
+        if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         // check req.userId
@@ -106,14 +109,15 @@ public class WishlistController {
     }
 
     @GetMapping("/statistics/{item_id}")
-    public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId,
+                                                  @CookieValue(value = "access_token", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
 
-        return wishlistService.getItemLikeInfo(itemId, JwtTokenManager.decodeCookie(token).getId());
+        return wishlistService.getItemLikeInfo(itemId, JwtTokenManager.decodeAccessToken(token).getId());
     }
 }

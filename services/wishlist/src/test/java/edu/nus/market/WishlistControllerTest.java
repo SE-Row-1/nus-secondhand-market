@@ -58,7 +58,7 @@ class WishlistControllerTest {
         singleLike.setStatus(1);
         singleLike.setPrice(999.99);
         singleLike.setPhotoUrls(new String[]{"http://example.com/iphone12_front.jpg"});
-        singleLike.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        singleLike.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         singleLike.setWantedAt(new Date());
 
         mockLikes.add(singleLike);
@@ -67,7 +67,7 @@ class WishlistControllerTest {
     private void generateValidToken() {
         JWTPayload jwtPayload = new JWTPayload(
             1,  "testuser", "http://example.com/avatar.jpg");
-        cookie = cookieManager.generateCookie(JwtTokenManager.generateAccessToken(jwtPayload)).toString();
+        cookie = JwtTokenManager.generateAccessToken(jwtPayload);
     }
 
     @Test
@@ -86,7 +86,7 @@ class WishlistControllerTest {
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
         req.setDiscount(0.0);
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
         BindingResult bindingResult = new MapBindingResult(new HashMap<>(), "req");
@@ -127,7 +127,7 @@ class WishlistControllerTest {
         req.setName("iPhone 13");
         req.setPrice(999.99);
         req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
         BindingResult bindingResult = new MapBindingResult(new HashMap<>(), "req");

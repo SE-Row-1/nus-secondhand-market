@@ -7,7 +7,7 @@ db.wishlist.insertMany([
     photoUrls: ["https://example.com/iphone12.jpg"],
     price: 999.99,
     seller: {
-      _id: "110",
+      _id: 110,
       nickname: "Johnny",
       avatarUrl: "https://example.com/avatar.png"
     },
@@ -22,7 +22,7 @@ db.wishlist.insertMany([
     name: "Apple Device Bundle",
     price: 1999.99,
     seller: {
-      _id: "seller001",
+      _id: 110,
       nickname: "John's Store",
       avatarUrl: "http://example.com/avatar.jpg"
     },
@@ -39,7 +39,7 @@ db.wishlist.insertMany([
     photoUrls: ["https://example.com/galaxys21.jpg"],
     price: 799.99,
     seller: {
-      _id: "seller002",
+      _id: 2,
       nickname: "Galaxy Shop",
       avatarUrl: "https://example.com/galaxyshop.jpg"
     },
@@ -54,7 +54,7 @@ db.wishlist.insertMany([
     name: "Smart Home Bundle",
     price: 499.99,
     seller: {
-      _id: "seller003",
+      _id: 3,
       nickname: "Smart Home Store",
       avatarUrl: "https://example.com/smarthome.jpg"
     },
@@ -71,7 +71,7 @@ db.wishlist.insertMany([
     photoUrls: ["https://example.com/ps5.jpg"],
     price: 499.99,
     seller: {
-      _id: "seller004",
+      _id: 4,
       nickname: "Game World",
       avatarUrl: "https://example.com/gameworld.jpg"
     },
@@ -86,7 +86,7 @@ db.wishlist.insertMany([
     name: "Gamer Bundle",
     price: 1499.99,
     seller: {
-      _id: "seller005",
+      _id: 5,
       nickname: "Gamer's Paradise",
       avatarUrl: "https://example.com/gamersparadise.jpg"
     },
