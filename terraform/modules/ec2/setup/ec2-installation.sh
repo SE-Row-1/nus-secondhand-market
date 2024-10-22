@@ -2,31 +2,14 @@
 
 aws s3 cp s3://nus-backend-terraform/setup . --recursive
 aws s3 cp s3://nus-backend-terraform/envs envs --recursive
-source ec2
-bash update-envs.sh
-
-# Install eksctl
-ARCH=amd64
-PLATFORM=$(uname -s)_$ARCH
-curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
-sudo mv /tmp/eksctl /usr/local/bin
-
-# Install AWS CLI
-# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-# unzip awscliv2.zip
-# sudo ./aws/install
-
-# Install kubectl
-curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-chmod +x ./kubectl
-sudo mv ./kubectl /usr/local/bin
-
-# Install Helm
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
+#
 # Update kubeconfig for EKS
 aws eks --region ap-southeast-1 update-kubeconfig --name nshm-eks
+
+# Update envs and create secrets for nshm namespace
+bash update-envs.sh
+bash create-secrets.sh
+source envs/ec2
 
 # Deploy autoscaler
 helm repo add autoscaler https://kubernetes.github.io/autoscaler
@@ -61,25 +44,21 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 --set vpcId=$(aws ec2 describe-instances  --filters "Name=tag:Name,Values=nshm-bastion" --query "Reservations[*].Instances[*].VpcId" --output text)
 kubectl get deployment -n kube-system aws-load-balancer-controller
 
-
 # Deploy ArgoCD with ALB Ingress
+cd argocd
 kubectl create namespace argocd
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install argocd argo/argo-cd -n argocd --create-namespace -f argo-values.yaml
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 
-# Deploy ArgoCD Applicaiton
-ARGOCD_VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64
-chmod +x /tmp/argocd-${ARGOCD_VERSION}
-sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
-kubectl create ns nshm
-kubectl apply -f argocd-app.yaml
-kubectl apply -f argocd-rabbitmq.yaml
-kubectl apply -f argocd-prometheus.yaml
-
+# Add argocd.nshm.store record in cloudflare
 bash cloudflare-adddns.sh
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode > argocd-admin-secret.txt
 
-# Create secrets for nshm namespace
-bash create-secrets.sh
+# Deploy ArgoCD Applicaiton
+kubectl create ns nshm rabbitmq prometheus locust
+kubectl apply -f argo-rabbitmq-app.yaml
+kubectl apply -f argo-prometheus-app.yam
+kubectl apply -f argo-nshm-app.yaml
+kubectl apply -f argo-locust-app.yaml
+
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 --decode > argocd-admin-secret.txt

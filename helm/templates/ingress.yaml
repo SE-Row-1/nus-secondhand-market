@@ -58,3 +58,10 @@ spec:
                 name: rabbitmq
                 port:
                   number: 15672
+          - path: /locust
+            pathType: Prefix
+            backend:
+              service:
+                name: locust-master
+                port:
+                  number: 8089

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-master
+  namespace: locust
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust:latest
+          args:
+            - "-f"
+            - "/mnt/locust/locust.py"
+            - "--master"
+            - "--host=http://www.nshm.store"
+          ports:
+            - containerPort: 8089
+          volumeMounts:
+            - name: locust
+              mountPath: /mnt/locust
+      volumes:
+        - name: locust
+          configMap:
+            name: locust-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: locust-master
+  namespace: locust
+spec:
+  type: ClusterIP
+  selector:
+    app: locust-master
+  ports:
+    - protocol: TCP
+      port: 8089
+      targetPort: 8089

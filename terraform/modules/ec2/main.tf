@@ -77,9 +77,34 @@ resource "aws_instance" "nshm_bastion" {
     #!/bin/bash
     sudo apt-get update
     sudo apt-get install -y curl unzip gnupg
+
+    # Install AWS CLI
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
     sudo ./aws/install
+
+    # Install eksctl
+    ARCH=amd64
+    PLATFORM=$(uname -s)_$ARCH
+    curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+    tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+    sudo mv /tmp/eksctl /usr/local/bin
+
+    # Install kubectl
+    curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+    chmod +x ./kubectl
+    sudo mv ./kubectl /usr/local/bin
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+
+    # Install Helm
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    # Deploy ArgoCD Applicaiton
+    ARGOCD_VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
+    curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64
+    chmod +x /tmp/argocd-${ARGOCD_VERSION}
+    sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
+
 
     aws s3 cp s3://nus-backend-terraform/setup/ec2-installation.sh .
     bash ec2-installation.sh
