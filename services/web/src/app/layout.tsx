@@ -34,7 +34,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
             <Sidebar />
             <SidebarInset>
               <Header />
-              <div className="grow flex flex-col px-8 pb-16">{children}</div>
+              <div className="grow flex flex-col px-6 pb-16">{children}</div>
             </SidebarInset>
           </SidebarProvider>
         </QueryProvider>

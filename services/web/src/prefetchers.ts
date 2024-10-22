@@ -1,7 +1,8 @@
 import type {
   DetailedAccount,
+  Item,
   PaginatedItems,
-  SingleItem,
+  WishlistItem,
   WishlistStatistics,
 } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
@@ -12,7 +13,7 @@ export const prefetchMe = cache(async () => {
 });
 
 export const prefetchItem = cache(async (id: string) => {
-  return await serverRequester.get<SingleItem<DetailedAccount>>(`/items/${id}`);
+  return await serverRequester.get<Item<DetailedAccount>>(`/items/${id}`);
 });
 
 export const prefetchMarketplace = cache(async () => {
@@ -30,6 +31,14 @@ export const prefetchWishlist = cache(async (userId: number) => {
     `/wishlists/${userId}?limit=10`,
   );
 });
+
+export const prefetchWishlistItem = cache(
+  async (userId: number, itemId: string) => {
+    return await serverRequester.get<WishlistItem>(
+      `/wishlists/${userId}/items/${itemId}`,
+    );
+  },
+);
 
 export const prefetchWishlistStatistics = cache(async (itemId: string) => {
   return await serverRequester.get<WishlistStatistics>(

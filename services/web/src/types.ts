@@ -73,6 +73,10 @@ export type PaginatedItems<
   next_cursor: string;
 };
 
+export type WishlistItem = Item<SimplifiedAccount> & {
+  wanted_at: string;
+};
+
 export type WishlistStatistics = {
   count: number;
   last_wanted_at: string | null;

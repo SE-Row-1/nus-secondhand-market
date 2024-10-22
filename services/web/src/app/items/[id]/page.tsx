@@ -1,12 +1,17 @@
-import {
-  prefetchItem,
-  prefetchMe,
-  prefetchWishlistStatistics,
-} from "@/prefetchers";
-import { ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
+import { StatusBadge } from "@/components/item/status-badge";
+import { cn } from "@/components/ui/utils";
+import { prefetchItem, prefetchMe } from "@/prefetchers";
+import { ItemType } from "@/types";
 import { notFound, redirect } from "next/navigation";
-import { ItemDetails } from "./item-details";
+import { ChildrenGrid } from "./children-grid";
+import { ContactSellerButton } from "./contact-seller-button";
+import { DecomposePackButton } from "./decompose-pack-button";
+import { DeleteItemButton } from "./delete-item-button";
+import { EditItemLink } from "./edit-item-link";
+import { PhotoCarousel } from "./photo-carousel";
+import { Seller } from "./seller";
+import { WishlistButtonServer } from "./wishlist-button.server";
+import { WishlistStatisticsServer } from "./wishlist-statistics.server";
 
 type Props = {
   params: {
@@ -15,15 +20,8 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const [
-    { data: item, error: itemError },
-    { data: wishlistStatistics },
-    { data: me, error: meError },
-  ] = await Promise.all([
-    prefetchItem(id),
-    prefetchWishlistStatistics(id),
-    prefetchMe(),
-  ]);
+  const [{ data: item, error: itemError }, { data: me, error: meError }] =
+    await Promise.all([prefetchItem(id), prefetchMe()]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -37,25 +35,57 @@ export default async function Page({ params: { id } }: Props) {
     redirect(`/error?message=${meError.message}`);
   }
 
-  const safeWishlistStatistics = wishlistStatistics ?? {
-    count: 0,
-    last_wanted_at: null,
-  };
-
   return (
-    <div className="w-full max-w-xl mx-auto">
-      <Link
-        href="/"
-        className="flex items-center mb-8 text-sm text-muted-foreground hover:text-primary transition-colors"
+    <div className="w-full max-w-xl m-auto">
+      {item.type === ItemType.SINGLE ? (
+        <PhotoCarousel photoUrls={item.photo_urls} />
+      ) : (
+        <ChildrenGrid items={item.children} />
+      )}
+      <div className="flex justify-between items-center gap-x-8 gap-y-3 flex-wrap mt-12">
+        <div className="grow flex items-center gap-3 sm:gap-4">
+          <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
+            {item.name}
+          </h1>
+          <StatusBadge status={item.status} />
+        </div>
+        <span className="font-medium text-lg lg:text-xl text-primary">
+          {item.price} SGD
+        </span>
+      </div>
+      <p className="mt-4 text-muted-foreground">{item.description}</p>
+      <div className="mt-6">
+        <Seller seller={item.seller} />
+      </div>
+      <div className="mt-5">
+        <WishlistStatisticsServer itemId={id} />
+      </div>
+      <div
+        className={cn(
+          "grid sm:grid-cols-2 gap-x-4 gap-y-2 mt-5",
+          me?.id === item.seller.id &&
+            item.type === ItemType.SINGLE &&
+            "lg:grid-cols-3",
+        )}
       >
-        <ChevronLeftIcon className="size-4 mr-2" />
-        Back to marketplace
-      </Link>
-      <ItemDetails
-        initialItem={item}
-        wishlistStatistics={safeWishlistStatistics}
-        me={me}
-      />
+        {me?.id === item.seller.id ? (
+          <>
+            {item.type === ItemType.SINGLE ? (
+              <>
+                <EditItemLink itemId={item.id} />
+                <DeleteItemButton itemId={item.id} />
+              </>
+            ) : (
+              <DecomposePackButton itemId={item.id} />
+            )}
+          </>
+        ) : (
+          <>
+            <ContactSellerButton seller={item.seller} itemName={item.name} />
+            <WishlistButtonServer item={item} />
+          </>
+        )}
+      </div>
     </div>
   );
 }
