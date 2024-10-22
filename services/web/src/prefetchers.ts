@@ -2,6 +2,7 @@ import type {
   DetailedAccount,
   Item,
   PaginatedItems,
+  Transaction,
   WishlistItem,
   WishlistStatistics,
 } from "@/types";
@@ -43,5 +44,11 @@ export const prefetchWishlistItem = cache(
 export const prefetchWishlistStatistics = cache(async (itemId: string) => {
   return await serverRequester.get<WishlistStatistics>(
     `/wishlists/statistics/${itemId}`,
+  );
+});
+
+export const prefetchItemTransaction = cache(async (itemId: string) => {
+  return await serverRequester.get<Transaction[]>(
+    `/transactions?item_id=${itemId}&exclude_cancelled=true`,
   );
 });

@@ -81,3 +81,13 @@ export type WishlistStatistics = {
   count: number;
   last_wanted_at: string | null;
 };
+
+export type Transaction = {
+  id: string;
+  itemId: string;
+  buyer: SimplifiedAccount;
+  seller: SimplifiedAccount;
+  created_at: string;
+  completed_at: string | null;
+  deleted_at: string | null;
+};

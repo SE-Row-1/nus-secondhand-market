@@ -1,13 +1,20 @@
 import { StatusBadge } from "@/components/item/status-badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/components/ui/utils";
-import { prefetchItem, prefetchMe } from "@/prefetchers";
-import { ItemType } from "@/types";
+import {
+  prefetchItem,
+  prefetchItemTransaction,
+  prefetchMe,
+} from "@/prefetchers";
+import { ItemStatus, ItemType } from "@/types";
+import { CheckCheckIcon, CheckIcon } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { ChildrenGrid } from "./children-grid";
 import { ContactSellerButton } from "./contact-seller-button";
 import { DecomposePackButton } from "./decompose-pack-button";
 import { DeleteItemButton } from "./delete-item-button";
 import { EditItemLink } from "./edit-item-link";
+import { MarkAsSoldButton } from "./mark-as-sold-button";
 import { PhotoCarousel } from "./photo-carousel";
 import { Seller } from "./seller";
 import { WishlistButtonServer } from "./wishlist-button.server";
@@ -20,8 +27,15 @@ type Props = {
 };
 
 export default async function Page({ params: { id } }: Props) {
-  const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([prefetchItem(id), prefetchMe()]);
+  const [
+    { data: item, error: itemError },
+    { data: me, error: meError },
+    { data: itemTransaction },
+  ] = await Promise.all([
+    prefetchItem(id),
+    prefetchMe(),
+    prefetchItemTransaction(id),
+  ]);
 
   if (itemError && itemError.status === 404) {
     notFound();
@@ -34,6 +48,9 @@ export default async function Page({ params: { id } }: Props) {
   if (meError && meError.status !== 401) {
     redirect(`/error?message=${meError.message}`);
   }
+
+  const isSeller = me?.id === item?.seller.id;
+  const isBuyer = me?.id === itemTransaction?.[0]?.buyer.id;
 
   return (
     <div className="w-full max-w-xl m-auto">
@@ -68,7 +85,7 @@ export default async function Page({ params: { id } }: Props) {
             "lg:grid-cols-3",
         )}
       >
-        {me?.id === item.seller.id ? (
+        {isSeller ? (
           <>
             {item.type === ItemType.SINGLE ? (
               <>
@@ -82,7 +99,21 @@ export default async function Page({ params: { id } }: Props) {
         ) : (
           <>
             <ContactSellerButton seller={item.seller} itemName={item.name} />
-            <WishlistButtonServer item={item} />
+            {item.status === ItemStatus.FOR_SALE ? (
+              <WishlistButtonServer item={item} />
+            ) : item.status === ItemStatus.DEALT && isBuyer ? (
+              <MarkAsSoldButton itemId={item.id} />
+            ) : item.status === ItemStatus.DEALT ? (
+              <Button variant="outline" disabled>
+                <CheckIcon className="size-4 mr-2" />
+                Dealt
+              </Button>
+            ) : (
+              <Button variant="outline" disabled>
+                <CheckCheckIcon className="size-4 mr-2" />
+                Sold
+              </Button>
+            )}
           </>
         )}
       </div>
