@@ -2,16 +2,15 @@ package edu.nus.market.service;
 
 import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.dao.WishlistDao;
-import edu.nus.market.pojo.Item;
+import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
-import edu.nus.market.pojo.ErrorMsg;
-import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.Like;
 import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
 import edu.nus.market.pojo.ResEntity.ResLike;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +19,11 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 @Service
 public class WishlistServiceImpl implements WishlistService {
@@ -65,7 +69,7 @@ public class WishlistServiceImpl implements WishlistService {
     }
 
     @Override
-    public ResponseEntity<Object> getItemLikeInfo(String itemId, int userId) {
+    public ResponseEntity<Object> getItemLikeInfoService(String itemId, int userId) {
         int count = wishlistDao.countByItemId(itemId);
         Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
 
@@ -75,18 +79,44 @@ public class WishlistServiceImpl implements WishlistService {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @Override
-    public void updateItem(Item updatedItem) {
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
+    public void updateItemService(Like updatedLike) {
+        String itemId = updatedLike.getItemId();
+
+        // Search by itemId
+        Query query = new Query(Criteria.where("itemId").is(itemId));
+
+        // new Update
+        Update update = new Update();
+
+        // Public fields
+        update.set("name", updatedLike.getName());
+        update.set("price", updatedLike.getPrice());
+        update.set("status", updatedLike.getStatus());
+        update.set("seller", updatedLike.getSeller());
+
+        // Update specific fields
+        if (updatedLike instanceof SingleLike) {
+            SingleLike singleLike = (SingleLike) updatedLike;
+            update.set("photoUrls", singleLike.getPhotoUrls());
+        } else if (updatedLike instanceof PackLike) {
+            PackLike packLike = (PackLike) updatedLike;
+            update.set("discount", packLike.getDiscount());
+        }
+
+        // Execute
+        mongoTemplate.updateMulti(query, update, Like.class);
     }
-
     @Override
     public void deleteItemService(String itemId) {
-
+        wishlistDao.deleteByItemId(itemId);
     }
 
     @Override
     public void deleteAccountService(int userId) {
         wishlistDao.deleteAllByUserId(userId);
+        wishlistDao.deleteBySellerId(userId);
     }
 }

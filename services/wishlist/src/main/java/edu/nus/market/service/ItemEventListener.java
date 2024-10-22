@@ -1,8 +1,9 @@
 package edu.nus.market.service;
 
-import edu.nus.market.pojo.Item;
+
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 
 public interface ItemEventListener {
-    void handleItemUpdated(Item updatedItem);
+    void handleItemUpdated(AddLikeReq updatedLikeReq);
     void handleItemDeleted(String itemId);
 }

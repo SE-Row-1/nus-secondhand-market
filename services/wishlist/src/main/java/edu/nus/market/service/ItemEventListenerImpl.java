@@ -1,6 +1,8 @@
 package edu.nus.market.service;
 
-import edu.nus.market.pojo.Item;
+
+import edu.nus.market.converter.ConvertAddLikeReqToLike;
+import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.service.WishlistService;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -15,8 +17,9 @@ public class ItemEventListenerImpl implements ItemEventListener {
     // 监听item.updated队列，处理更新的商品
     @Override
     @RabbitListener(queues = "item.updated")
-    public void handleItemUpdated(Item updatedItem) {
-        wishlistService.updateItem(updatedItem);
+    public void handleItemUpdated(AddLikeReq updatedLikeReq) {
+        System.out.println(updatedLikeReq);
+        wishlistService.updateItemService(ConvertAddLikeReqToLike.convert(updatedLikeReq));
     }
 
 
@@ -24,6 +27,7 @@ public class ItemEventListenerImpl implements ItemEventListener {
     @Override
     @RabbitListener(queues = "item.deleted")
     public void handleItemDeleted(String itemId) {
+        System.out.println(itemId);
         wishlistService.deleteItemService(itemId);
     }
 }

@@ -4,7 +4,6 @@ import edu.nus.market.controller.WishlistController;
 import edu.nus.market.converter.ConvertDateToISO;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
-import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.pojo.*;
 import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.MapBindingResult;
 
-import java.text.ParseException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -57,7 +55,7 @@ class WishlistControllerTest {
         singleLike.setName("iPhone 12");
         singleLike.setStatus(1);
         singleLike.setPrice(999.99);
-        singleLike.setPhotoUrls(new String[]{"http://example.com/iphone12_front.jpg"});
+        singleLike.setPhotoUrls(Arrays.asList("http://example.com/iphone12_front.jpg"));
         singleLike.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         singleLike.setWantedAt(new Date());
 
@@ -84,7 +82,7 @@ class WishlistControllerTest {
         req.setItemId("item001");
         req.setName("iPhone 13");
         req.setPrice(999.99);
-        req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
+        req.setPhotoUrls(Arrays.asList("http://example.com/iphone12_front.jpg"));
         req.setDiscount(0.0);
         req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
@@ -126,7 +124,7 @@ class WishlistControllerTest {
         req.setItemId("item001");
         req.setName("iPhone 13");
         req.setPrice(999.99);
-        req.setPhotoUrls(new String[]{"http://example.com/iphone13_front.jpg"});
+        req.setPhotoUrls(Arrays.asList("http://example.com/iphone12_front.jpg"));
         req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
@@ -168,7 +166,7 @@ class WishlistControllerTest {
         mockResponse.put("count", 1);
         mockResponse.put("favoriteDate", new Date());
 
-        when(wishlistService.getItemLikeInfo(anyString(), anyInt())).thenReturn(ResponseEntity.ok(mockResponse));
+        when(wishlistService.getItemLikeInfoService(anyString(), anyInt())).thenReturn(ResponseEntity.ok(mockResponse));
 
         // Act
         ResponseEntity<Object> response = wishlistController.getItemLikeInfo("item001", cookie);

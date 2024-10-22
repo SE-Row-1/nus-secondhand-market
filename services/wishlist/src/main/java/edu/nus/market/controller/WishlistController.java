@@ -118,6 +118,6 @@ public class WishlistController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
 
-        return wishlistService.getItemLikeInfo(itemId, JwtTokenManager.decodeAccessToken(token).getId());
+        return wishlistService.getItemLikeInfoService(itemId, JwtTokenManager.decodeAccessToken(token).getId());
     }
 }

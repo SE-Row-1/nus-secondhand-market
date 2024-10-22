@@ -41,7 +41,7 @@ public class AddLikeReq {
 
 
     // for SINGLE Item
-    private String[] photoUrls;
+    private List<String> photoUrls;
 
     // for PACK Item
     private List<AddLikeReq> children;

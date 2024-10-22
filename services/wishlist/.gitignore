@@ -1,8 +1,8 @@
-item.env.gpg
-currency.env.gpg
-notification.env.gpg
-web.env.gpg
-account.env.gpg
+envs/item.env.gpg
+envs/currency.env.gpg
+envs/notification.env.gpg
+envs/web.env.gpg
+envs/account.env.gpg
 
 HELP.md
 target/
