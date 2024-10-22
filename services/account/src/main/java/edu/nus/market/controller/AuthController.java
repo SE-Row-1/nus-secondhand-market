@@ -6,6 +6,7 @@ import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
+import edu.nus.market.service.EmailValidationService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ public class AuthController {
 
     @Resource
     AccountService accountService;
+
+    @Resource
+    EmailValidationService emailValidationService;
 
     // Get Account Info
     @GetMapping("/me")
@@ -73,9 +77,15 @@ public class AuthController {
         return accountService.forgetPasswordService(forgotPasswordReq);
     }
 
-    @RequestMapping("/otp")
-    public ResponseEntity<Object> sendOtp(@RequestParam String email){
-        return accountService.sendOtp(email);
+    // otp sending and validation
+    @PostMapping("/otp")
+    public ResponseEntity<Object> sendOtp(@Valid @RequestBody EmailOTPReq emailOTPReq, BindingResult bindingResult){
+        System.out.println("U have successfully get to OTP!");
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+
+        return emailValidationService.sendOTP(emailOTPReq.getEmail());
     }
 
     // Health Check
