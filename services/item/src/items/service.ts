@@ -7,7 +7,7 @@ import {
   type Item,
   type SimplifiedAccount,
 } from "@/types";
-import { photoManager } from "@/utils/photo-manager";
+import { createPhotoStorageGateway } from "@/utils/photo-storage-gateway";
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
@@ -78,7 +78,9 @@ type PublishServiceDto = {
 };
 
 export async function publish(dto: PublishServiceDto) {
-  const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
+  const photoStorageGateway = createPhotoStorageGateway();
+
+  const photoUrls = await Promise.all(dto.photos.map(photoStorageGateway.save));
 
   const item: Item = {
     id: crypto.randomUUID(),
@@ -148,10 +150,12 @@ export async function update(dto: UpdateServiceDto) {
     }
   }
 
-  await Promise.all(dto.removedPhotoUrls.map(photoManager.remove));
+  const photoStorageGateway = createPhotoStorageGateway();
+
+  await Promise.all(dto.removedPhotoUrls.map(photoStorageGateway.remove));
 
   const addedPhotoUrls = await Promise.all(
-    dto.addedPhotos.map(photoManager.save),
+    dto.addedPhotos.map(photoStorageGateway.save),
   );
 
   const newPhotoUrls = [...item.photoUrls, ...addedPhotoUrls].filter(

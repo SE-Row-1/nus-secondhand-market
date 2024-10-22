@@ -4,12 +4,12 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import { extname } from "path";
-import type { PhotoManager } from "./photo-manager";
+import type { PhotoStorageGateway } from "./types";
 
 /**
  * Store photos in AWS S3.
  */
-export class S3PhotoManager implements PhotoManager {
+export class S3PhotoStorageGateway implements PhotoStorageGateway {
   private static client = new S3Client({
     credentials: {
       accessKeyId: Bun.env.AWS_ACCESS_KEY_ID,
@@ -23,9 +23,9 @@ export class S3PhotoManager implements PhotoManager {
   private static UPLOADS_DIR = "item-photos";
 
   public async save(photo: File) {
-    const key = `${S3PhotoManager.UPLOADS_DIR}/${crypto.randomUUID()}${extname(photo.name)}`;
+    const key = `${S3PhotoStorageGateway.UPLOADS_DIR}/${crypto.randomUUID()}${extname(photo.name)}`;
 
-    await S3PhotoManager.client.send(
+    await S3PhotoStorageGateway.client.send(
       new PutObjectCommand({
         Bucket: Bun.env.S3_BUCKET_NAME,
         Key: key,
@@ -33,14 +33,14 @@ export class S3PhotoManager implements PhotoManager {
       }),
     );
 
-    return `${S3PhotoManager.BASE_URL}/${key}`;
+    return `${S3PhotoStorageGateway.BASE_URL}/${key}`;
   }
 
   public async remove(photoUrl: string) {
-    await S3PhotoManager.client.send(
+    await S3PhotoStorageGateway.client.send(
       new DeleteObjectCommand({
         Bucket: Bun.env.S3_BUCKET_NAME,
-        Key: photoUrl.replace(`${S3PhotoManager.BASE_URL}/`, ""),
+        Key: photoUrl.replace(`${S3PhotoStorageGateway.BASE_URL}/`, ""),
       }),
     );
   }
