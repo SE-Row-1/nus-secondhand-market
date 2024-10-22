@@ -57,6 +57,7 @@ const dealtToSold: Transition = async ({ item, actor }) => {
   const transaction = await transactionsRepository.findOne({
     itemId: item.id,
     "buyer.id": actor.id,
+    cancelledAt: null,
   });
 
   if (!transaction) {
@@ -69,10 +70,6 @@ const dealtToSold: Transition = async ({ item, actor }) => {
     throw new HTTPException(409, { message: "Transaction already completed" });
   }
 
-  if (transaction.cancelledAt) {
-    throw new HTTPException(409, { message: "Transaction already cancelled" });
-  }
-
   await transactionsRepository.complete(transaction.id);
 };
 
@@ -80,6 +77,7 @@ const dealtToForSale: Transition = async ({ item, actor }) => {
   const transaction = await transactionsRepository.findOne({
     itemId: item.id,
     "seller.id": actor.id,
+    cancelledAt: null,
   });
 
   if (!transaction) {
@@ -90,10 +88,6 @@ const dealtToForSale: Transition = async ({ item, actor }) => {
 
   if (transaction.completedAt) {
     throw new HTTPException(409, { message: "Transaction already completed" });
-  }
-
-  if (transaction.cancelledAt) {
-    throw new HTTPException(409, { message: "Transaction already cancelled" });
   }
 
   await transactionsRepository.cancel(transaction.id);

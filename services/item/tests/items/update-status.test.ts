@@ -570,7 +570,7 @@ describe("dealt -> sold", () => {
     );
     const body = await res.json();
 
-    expect(res.status).toEqual(409);
+    expect(res.status).toEqual(403);
     expect(body).toEqual({ error: expect.any(String) });
     expect(
       await itemsCollection.countDocuments({
@@ -873,7 +873,7 @@ describe("dealt -> for sale", () => {
     );
     const body = await res.json();
 
-    expect(res.status).toEqual(409);
+    expect(res.status).toEqual(403);
     expect(body).toEqual({ error: expect.any(String) });
     expect(
       await itemsCollection.countDocuments({
