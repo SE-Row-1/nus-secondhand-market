@@ -69,7 +69,7 @@ export function ItemDetailsClient({
           <>
             <ContactSellerButton seller={item.seller} itemName={item.name} />
             {item.status === ItemStatus.FOR_SALE ? (
-              { wishlistButton }
+              wishlistButton
             ) : item.status === ItemStatus.DEALT && identity === "buyer" ? (
               <MarkAsSoldButton itemId={item.id} />
             ) : item.status === ItemStatus.DEALT ? (
