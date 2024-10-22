@@ -47,7 +47,7 @@ create table account (
   deleted_at timestamptz default null
 );
 
-create table validation_transaction (
+create table email_transaction (
   -- Transaction's ID.
   id int generated always as identity primary key,
 

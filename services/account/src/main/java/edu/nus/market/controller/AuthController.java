@@ -80,12 +80,10 @@ public class AuthController {
     // otp sending and validation
     @PostMapping("/otp")
     public ResponseEntity<Object> sendOtp(@Valid @RequestBody EmailOTPReq emailOTPReq, BindingResult bindingResult){
-        System.out.println("U have successfully get to OTP!");
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-
-        return emailValidationService.sendOTP(emailOTPReq.getEmail());
+        return emailValidationService.sendOTP(emailOTPReq);
     }
 
     // Health Check

@@ -17,21 +17,11 @@ spring:
   availableDomain:
     frontendUrl: http://localhost:3000
 
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: jyforever108@gmail.com
-    password: gjma ehyi thjf wrja
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
 mybatis:
   configuration:
