@@ -11,10 +11,12 @@ import { MarkAsForSaleButton } from "./mark-as-for-sale-button";
 type Props = {
   itemId: string;
   wanters: SimplifiedAccount[];
+  buyer: SimplifiedAccount | undefined;
 };
 
-export function Wanters({ itemId, wanters }: Props) {
-  const [dealtWithId, setDealtWithId] = useState(-1);
+export function WantersClient({ itemId, wanters, buyer }: Props) {
+  console.log(buyer?.id);
+  const [dealtWithId, setDealtWithId] = useState(buyer?.id ?? -1);
 
   return (
     <ul className="space-y-2 px-4 py-3 border rounded-md">

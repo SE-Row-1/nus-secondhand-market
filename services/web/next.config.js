@@ -8,6 +8,11 @@ const config = {
       },
     ],
   },
+  experimental: {
+    staleTimes: {
+      dynamic: 0,
+    },
+  },
 };
 
 export default config;

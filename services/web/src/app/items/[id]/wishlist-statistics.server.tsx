@@ -1,5 +1,6 @@
 import { prefetchWishlistStatistics } from "@/prefetchers";
 import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
+import { WantersServer } from "./wanters.server";
 import { WishlistStatisticsClient } from "./wishlist-statistics.client";
 
 type Props = {
@@ -24,6 +25,12 @@ export async function WishlistStatisticsServer({ item, me }: Props) {
       item={item}
       me={me}
       initialWishlistStatistics={initialWishlistStatistics}
+      wantersList={
+        <WantersServer
+          itemId={item.id}
+          wanters={initialWishlistStatistics.wanters ?? []}
+        />
+      }
     />
   );
 }

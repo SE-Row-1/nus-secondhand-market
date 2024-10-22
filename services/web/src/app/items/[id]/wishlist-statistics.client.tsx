@@ -4,18 +4,20 @@ import { FromNow } from "@/components/item/from-now";
 import type { Item, SimplifiedAccount, WishlistStatistics } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useQuery } from "@tanstack/react-query";
-import { Wanters } from "./wanters";
+import type { ReactNode } from "react";
 
 type Props = {
   item: Item;
   me: SimplifiedAccount | null;
   initialWishlistStatistics: WishlistStatistics;
+  wantersList: ReactNode;
 };
 
 export function WishlistStatisticsClient({
   item,
   me,
   initialWishlistStatistics,
+  wantersList,
 }: Props) {
   const { data: wishlistStatistics } = useQuery({
     queryKey: ["wishlists", "statistics", item.id],
@@ -60,7 +62,5 @@ export function WishlistStatisticsClient({
     );
   }
 
-  return (
-    <Wanters itemId={item.id} wanters={wishlistStatistics.wanters ?? []} />
-  );
+  return wantersList;
 }

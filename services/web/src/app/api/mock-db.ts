@@ -111,7 +111,7 @@ export const mockItems: Item[] = [
       "A beautiful vintage lamp from the 1950s, in perfect condition.",
     price: 150.0,
     photo_urls: ["https://picsum.photos/200?random=1"],
-    status: 0,
+    status: 1,
     created_at: new Date("2023-01-15T10:30:00Z").toISOString(),
     deleted_at: null,
   },
@@ -312,7 +312,7 @@ export const mockTransactions: Transaction[] = [
       price: 150.0,
     },
     created_at: new Date("2023-01-20T11:30:00Z").toISOString(),
-    completed_at: new Date("2023-01-20T11:45:00Z").toISOString(),
+    completed_at: null,
     cancelled_at: null,
   },
   {
