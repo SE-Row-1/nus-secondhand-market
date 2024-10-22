@@ -1,5 +1,5 @@
 server:
-  port: ${PORT}
+  port: ${ACCOUNT_PORT}
 
 spring:
   application:
@@ -17,6 +17,12 @@ spring:
   availableDomain:
     frontendUrl: http://localhost:3000
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
@@ -28,3 +34,7 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
+
+app:
+  queue:
+    name: account_queue

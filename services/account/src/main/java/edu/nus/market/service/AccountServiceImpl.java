@@ -2,6 +2,7 @@ package edu.nus.market.service;
 import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.ResEntity.UpdateMessage;
 import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.PasswordHasher;
@@ -34,6 +35,9 @@ public class AccountServiceImpl implements AccountService{
 
     @Resource
     CookieManager cookieManager;
+
+    @Resource
+    MQService mqService;
 
     /**
      *
@@ -135,7 +139,7 @@ public class AccountServiceImpl implements AccountService{
         }
 
         account = accountDao.updateProfile(updateProfileReq, id);
-
+        mqService.sendUpdateMessage(new UpdateMessage(account));
         return ResponseEntity.status(HttpStatus.OK).body(new ResAccount(account));
 
     }
@@ -148,6 +152,7 @@ public class AccountServiceImpl implements AccountService{
         //delete account
         accountDao.softDeleteAccount(id);
         ResponseCookie cookie = cookieManager.deleteCookie();
+        mqService.sendDeleteMessage(String.valueOf(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }
 

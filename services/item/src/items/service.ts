@@ -167,7 +167,7 @@ export async function update(dto: UpdateServiceDto) {
     },
   );
 
-  publishItemEvent("updated", newItem!);
+  publishItemEvent("item.updated", newItem!);
 
   return newItem;
 }
@@ -198,7 +198,7 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
     { status: dto.status },
   );
 
-  publishItemEvent("updated", newItem!);
+  publishItemEvent("item.updated", newItem!);
 
   return newItem;
 }
@@ -223,7 +223,7 @@ export async function takeDown(dto: TakeDownServiceDto) {
 
   await itemsRepository.deleteOne({ id: dto.id });
 
-  publishItemEvent("deleted", dto.id);
+  publishItemEvent("item.deleted", dto.id);
 }
 
 type SearchServiceDto = {

@@ -33,14 +33,14 @@ public class AccountController {
         return accountService.registerService(registerReq);
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteAccount(@PathVariable int id, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> deleteAccount(@PathVariable int id, @CookieValue(value = "access_token", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        int userId = JwtTokenManager.decodeCookie(token).getId();
+        int userId = JwtTokenManager.decodeAccessToken(token).getId();
         if (userId != id){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
@@ -48,17 +48,17 @@ public class AccountController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateProfile(@PathVariable int id, @Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> updateProfile(@PathVariable int id, @Valid @RequestBody UpdateProfileReq req, BindingResult bindingResult, @CookieValue(value = "access_token", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        }
-        if (!JwtTokenManager.validateCookie(token)) {
+    }
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        int userId = JwtTokenManager.decodeCookie(token).getId();
+        int userId = JwtTokenManager.decodeAccessToken(token).getId();
         if (userId != id){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorMsg(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
         }
