@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MQServiceImpl implements MQservice{
+public class MQServiceImpl implements MQService{
 
     @Autowired
     private RabbitTemplate rabbitTemplate;

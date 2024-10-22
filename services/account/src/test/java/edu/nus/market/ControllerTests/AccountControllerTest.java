@@ -8,6 +8,7 @@ import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -103,12 +104,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(delete("/accounts/1")
-                    .header("Cookie", "Valid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isNoContent())
                 .andExpect(header().string("Set-Cookie", "access_token="));
 
@@ -131,12 +132,12 @@ public class AccountControllerTest {
     public void deleteAccountInvalidToken() throws Exception {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(false);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(null);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(false);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(null);
 
             // Perform the mock request
             mockMvc.perform(delete("/accounts/1")
-                    .header("Cookie", "Invalid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
@@ -149,12 +150,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(delete("/accounts/1")
-                    .header("Cookie", "Valid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error").value(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
 
@@ -171,12 +172,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(delete("/accounts/2")
-                    .header("Cookie", "Valid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error").value(ErrorMsgEnum.ACCESS_FORBIDDEN.ErrorMsg));
 
@@ -187,19 +188,25 @@ public class AccountControllerTest {
 
     @Test
     public void updateProfileValidRequest() throws Exception {
-        when(accountService.updateProfileService(any(UpdateProfileReq.class), anyInt())).thenReturn(ResponseEntity.ok().body(resAccount));
+        // Mock the updateProfileService to return a valid ResponseEntity with the resAccount object
+        when(accountService.updateProfileService(any(UpdateProfileReq.class), anyInt()))
+            .thenReturn(ResponseEntity.ok().body(resAccount));
 
-        // Mock static method using mockStatic from Mockito-inline
+        // Mock static methods in JwtTokenManager using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            // Mock token validation to return true
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
 
-            // Perform the mock request
+            // Mock token decoding to return a valid payload (mocking jwtPayload)
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
+
+            // Perform the mock request, ensuring a valid token is passed in the Cookie header
             mockMvc.perform(patch("/accounts/1")
-                    .header("Cookie", "Valid Token")
+                    // Use correct Cookie header format: "access_token=ValidToken"
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
-                .andExpect(status().isOk())
+                .andExpect(status().isOk())  // Expecting 200 OK response
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value("test@u.nus.edu"))
                 .andExpect(jsonPath("$.nickname").value("test"))
@@ -214,19 +221,18 @@ public class AccountControllerTest {
             // Verify that the mocked accountService method was called
             Mockito.verify(accountService, Mockito.times(1)).updateProfileService(any(UpdateProfileReq.class), anyInt());
         }
-
     }
 
     @Test
     public void updateProfileInvalidRequest() throws Exception {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(patch("/accounts/1")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"nickname\":\"nickname\",\"email\":\"Invalid Email\"}"))
                 .andExpect(status().isBadRequest())
@@ -243,12 +249,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(patch("/accounts/1")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
                 .andExpect(status().isNotFound())
@@ -262,12 +268,12 @@ public class AccountControllerTest {
     public void updateProfileInvalidToken() throws Exception {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(false);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(false);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(patch("/accounts/1")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
                 .andExpect(status().isUnauthorized())
@@ -294,12 +300,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(patch("/accounts/1")
-                    .header("Cookie", "Valid Token")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
                 .andExpect(status().isConflict())
@@ -317,12 +323,12 @@ public class AccountControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(patch("/accounts/2")
-                .header("Cookie", "Valid Token")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"nickname\":\"nickname\",\"email\":\"example@u.nus.edu\"}"))
                 .andExpect(status().isForbidden())
