@@ -1,4 +1,5 @@
 import { prefetchItem, prefetchMe } from "@/prefetchers";
+import { ItemType } from "@/types";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -44,7 +45,9 @@ export default async function Page({ params: { id } }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
       </Link>
-      <EditItemForm id={id} initialItem={item} />
+      {item.type === ItemType.SINGLE && (
+        <EditItemForm id={id} initialItem={item} />
+      )}
     </div>
   );
 }
