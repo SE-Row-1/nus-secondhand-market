@@ -38,7 +38,7 @@ const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
   }
 
   const conflictedTransaction = await transactionsRepository.findOne({
-    itemId: item.id,
+    "item.id": item.id,
     cancelledAt: null,
   });
 
@@ -47,7 +47,11 @@ const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
   }
 
   await transactionsRepository.create({
-    itemId: item.id,
+    item: {
+      id: item.id,
+      name: item.name,
+      price: item.price,
+    },
     seller: item.seller,
     buyer: counterparty,
   });
@@ -55,7 +59,7 @@ const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
 
 const dealtToSold: Transition = async ({ item, actor }) => {
   const transaction = await transactionsRepository.findOne({
-    itemId: item.id,
+    "item.id": item.id,
     "buyer.id": actor.id,
     cancelledAt: null,
   });
@@ -75,7 +79,7 @@ const dealtToSold: Transition = async ({ item, actor }) => {
 
 const dealtToForSale: Transition = async ({ item, actor }) => {
   const transaction = await transactionsRepository.findOne({
-    itemId: item.id,
+    "item.id": item.id,
     "seller.id": actor.id,
     cancelledAt: null,
   });

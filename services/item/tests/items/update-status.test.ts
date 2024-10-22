@@ -60,7 +60,7 @@ describe("for sale -> dealt", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -111,7 +111,7 @@ describe("for sale -> dealt", () => {
       }),
     ).toEqual(1);
     expect(
-      await transactionsCollection.countDocuments({ itemId: item.id }),
+      await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(0);
     expect(publishItemEvent).toHaveBeenCalledTimes(0);
   });
@@ -158,7 +158,7 @@ describe("for sale -> dealt", () => {
       }),
     ).toEqual(1);
     expect(
-      await transactionsCollection.countDocuments({ itemId: item.id }),
+      await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(0);
     expect(publishItemEvent).toHaveBeenCalledTimes(0);
   });
@@ -185,7 +185,11 @@ describe("for sale -> dealt", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: null,
@@ -214,7 +218,7 @@ describe("for sale -> dealt", () => {
       }),
     ).toEqual(1);
     expect(
-      await transactionsCollection.countDocuments({ itemId: item.id }),
+      await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(1);
     expect(publishItemEvent).toHaveBeenCalledTimes(0);
   });
@@ -242,7 +246,11 @@ describe("for sale -> dealt", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: new Date(),
@@ -277,7 +285,7 @@ describe("for sale -> dealt", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -311,7 +319,11 @@ describe("dealt -> sold", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: null,
@@ -345,7 +357,7 @@ describe("dealt -> sold", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: { $ne: null },
@@ -377,7 +389,11 @@ describe("dealt -> sold", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: null,
@@ -406,7 +422,7 @@ describe("dealt -> sold", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -458,7 +474,7 @@ describe("dealt -> sold", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -490,7 +506,11 @@ describe("dealt -> sold", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: new Date(),
       cancelledAt: null,
@@ -519,7 +539,7 @@ describe("dealt -> sold", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: { $ne: null },
@@ -551,7 +571,11 @@ describe("dealt -> sold", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: new Date(),
@@ -580,7 +604,7 @@ describe("dealt -> sold", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -614,7 +638,11 @@ describe("dealt -> for sale", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: null,
@@ -648,7 +676,7 @@ describe("dealt -> for sale", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -680,7 +708,11 @@ describe("dealt -> for sale", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: null,
@@ -709,7 +741,7 @@ describe("dealt -> for sale", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -761,7 +793,7 @@ describe("dealt -> for sale", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,
@@ -793,7 +825,11 @@ describe("dealt -> for sale", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: new Date(),
       cancelledAt: null,
@@ -822,7 +858,7 @@ describe("dealt -> for sale", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: { $ne: null },
@@ -854,7 +890,11 @@ describe("dealt -> for sale", () => {
       id: crypto.randomUUID(),
       buyer: someone.simplifiedAccount,
       seller: me.simplifiedAccount,
-      itemId: item.id,
+      item: {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+      },
       createdAt: new Date(),
       completedAt: null,
       cancelledAt: new Date(),
@@ -883,7 +923,7 @@ describe("dealt -> for sale", () => {
     ).toEqual(1);
     expect(
       await transactionsCollection.countDocuments({
-        itemId: item.id,
+        "item.id": item.id,
         seller: me.simplifiedAccount,
         buyer: someone.simplifiedAccount,
         completedAt: null,

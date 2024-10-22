@@ -102,17 +102,11 @@ export type ItemPack = {
  */
 export type Item = SingleItem | ItemPack;
 
-export enum TransactionStatus {
-  Pending,
-  Completed,
-  Cancelled,
-}
-
 export type Transaction = {
   id: string;
-  buyer: SimplifiedAccount;
   seller: SimplifiedAccount;
-  itemId: string;
+  buyer: SimplifiedAccount;
+  item: Pick<Item, "id" | "name" | "price">;
   createdAt: Date;
   completedAt: Date | null;
   cancelledAt: Date | null;

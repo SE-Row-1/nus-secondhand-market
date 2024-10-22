@@ -42,7 +42,7 @@ it("filters transactions if given item id", async () => {
     const isSeller = me.simplifiedAccount.id === transaction.seller.id;
     const isBuyer = me.simplifiedAccount.id === transaction.buyer.id;
     expect(isSeller || isBuyer).toEqual(true);
-    expect(transaction.item_id).toEqual("9ab42141-580e-44dd-af63-f29efb593740");
+    expect(transaction.item.id).toEqual("9ab42141-580e-44dd-af63-f29efb593740");
   }
 });
 
