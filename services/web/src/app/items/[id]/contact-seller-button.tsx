@@ -25,23 +25,21 @@ export function ContactSellerButton({ seller, itemName }: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem asChild>
-          <Link href={`mailto:${seller.email}`}>
+          <Link href={`mailto:${seller.email}`} target="_blank">
             <MailIcon className="size-4 mr-2" />
-            Email:&nbsp;
-            <span className="text-muted-foreground">{seller.email}</span>
+            Email:&nbsp;{seller.email}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem disabled={!seller.phone_number} asChild>
           <Link
             href={`https://wa.me/${seller.phone_code}${seller.phone_number}?text=Hi! I'm interested in your "${itemName}" published on NUS Second-Hand market.`}
+            target="_blank"
           >
             <SendIcon className="size-4 mr-2" />
             WhatsApp:&nbsp;
-            <span className="text-muted-foreground">
-              {seller.phone_number
-                ? `+${seller.phone_code} ${seller.phone_number}`
-                : "Not provided"}
-            </span>
+            {seller.phone_number
+              ? `+${seller.phone_code} ${seller.phone_number}`
+              : "Not provided"}
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
