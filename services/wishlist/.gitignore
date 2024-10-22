@@ -1,3 +1,9 @@
+envs/item.env.gpg
+envs/currency.env.gpg
+envs/notification.env.gpg
+envs/web.env.gpg
+envs/account.env.gpg
+
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar

@@ -11,6 +11,7 @@ import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.AccountService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -118,13 +119,13 @@ public class AuthControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(get("/auth/me")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .header("Cookie", "Valid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value("test@u.nus.edu"))
@@ -153,7 +154,7 @@ public class AuthControllerTest {
 
             // Perform the mock request
             mockMvc.perform(get("/auth/me")
-                    .header("Cookie", "Invalid Token"))
+                    .cookie(new Cookie("access_token", "ValidToken")))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.error").value(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
@@ -172,7 +173,7 @@ public class AuthControllerTest {
             .header("Set-Cookie", "access_token=").build());
 
         mockMvc.perform(delete("/auth/token")
-                .header("Cookie", "validToken"))
+                .cookie(new Cookie("access_token", "ValidToken")))
             .andExpect(status().isNoContent())
             .andExpect(header().string("Set-Cookie", "access_token="));
 
@@ -222,12 +223,12 @@ public class AuthControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
-                    .header("Cookie", "Valid Token")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"oldPassword\":\"password\",\"newPassword\":\"newPassword\"}"))
                 .andExpect(status().isOk())
@@ -252,12 +253,12 @@ public class AuthControllerTest {
     public void updateAccountPswInvalidRequest() throws Exception {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"oldPassword\":\"\",\"newPassword\":\"\"}"))
                 .andExpect(status().isBadRequest())
@@ -274,12 +275,12 @@ public class AuthControllerTest {
 
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(true);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(true);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"oldPassword\":\"oldPassword\",\"newPassword\":\"newPassword\"}"))
                 .andExpect(status().isNotFound())
@@ -293,12 +294,12 @@ public class AuthControllerTest {
     public void updateAccountPswInvalidToken() throws Exception {
         // Mock static method using mockStatic from Mockito-inline
         try (MockedStatic<JwtTokenManager> mockedJwt = mockStatic(JwtTokenManager.class)) {
-            mockedJwt.when(() -> JwtTokenManager.validateCookie(anyString())).thenReturn(false);
-            mockedJwt.when(() -> JwtTokenManager.decodeCookie(anyString())).thenReturn(jwtPayload);
+            mockedJwt.when(() -> JwtTokenManager.validateToken(anyString())).thenReturn(false);
+            mockedJwt.when(() -> JwtTokenManager.decodeAccessToken(anyString())).thenReturn(jwtPayload);
 
             // Perform the mock request
             mockMvc.perform(put("/auth/me/password")
-                    .header("Cookie", "validToken")
+                    .cookie(new Cookie("access_token", "ValidToken"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content("{\"oldPassword\":\"\",\"newPassword\":\"\"}"))
                 .andExpect(status().isUnauthorized())

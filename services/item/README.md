@@ -10,7 +10,7 @@ Item service is responsible for item-related operations, such as regular CRUD, k
 - Type: topic
 - Durable: true
 
-### Topic: updated
+### Topic: item.updated
 
 - Description: An item has been updated with new information.
 - Message format: JSON-serialized item.
@@ -36,7 +36,7 @@ Item service is responsible for item-related operations, such as regular CRUD, k
 }
 ```
 
-### Topic: deleted
+### Topic: item.deleted
 
 - Description: An item has been soft-deleted.
 - Message format: Item ID.
