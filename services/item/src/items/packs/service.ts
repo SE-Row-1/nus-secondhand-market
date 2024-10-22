@@ -1,5 +1,5 @@
+import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
 import { ItemType, type ItemPack, type SimplifiedAccount } from "@/types";
-import { publishItemEvent } from "@/utils/mq";
 import { HTTPException } from "hono/http-exception";
 import * as itemsRepository from "../repository";
 import { CompositeItemPack } from "./composite";
@@ -72,7 +72,7 @@ export async function decompose(dto: DecomposeServiceDto) {
 
   await itemsRepository.decompose(pack as ItemPack);
 
-  publishItemEvent("item.deleted", pack.id);
+  publishItemDeletedEvent(pack.id);
 
   return;
 }

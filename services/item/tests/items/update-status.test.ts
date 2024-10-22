@@ -1,6 +1,6 @@
+import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
 import { ItemStatus, ItemType, type Item } from "@/types";
 import { itemsCollection, transactionsCollection } from "@/utils/db";
-import { publishItemEvent } from "@/utils/mq";
 import { afterAll, describe, expect, it, mock } from "bun:test";
 import { me, someone } from "../test-utils/mock-data";
 import { PUT } from "../test-utils/request";
@@ -13,8 +13,8 @@ afterAll(async () => {
 
 describe("for sale -> dealt", () => {
   it("succeeds if the actor is the seller", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -67,12 +67,12 @@ describe("for sale -> dealt", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(1);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
   });
 
   it("fails if counterparty is not given", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -113,12 +113,12 @@ describe("for sale -> dealt", () => {
     expect(
       await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(0);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the actor is not the seller", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -160,12 +160,12 @@ describe("for sale -> dealt", () => {
     expect(
       await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(0);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction already exists", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -220,12 +220,12 @@ describe("for sale -> dealt", () => {
     expect(
       await transactionsCollection.countDocuments({ "item.id": item.id }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("succeeds if a previous transaction is cancelled", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -292,14 +292,14 @@ describe("for sale -> dealt", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(1);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
   });
 });
 
 describe("dealt -> sold", () => {
   it("succeeds if the actor is the buyer", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -364,12 +364,12 @@ describe("dealt -> sold", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(1);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
   });
 
   it("fails if the actor is not the buyer", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -429,12 +429,12 @@ describe("dealt -> sold", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction does not exist", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -481,12 +481,12 @@ describe("dealt -> sold", () => {
         cancelledAt: null,
       }),
     ).toEqual(0);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction is already completed", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -546,12 +546,12 @@ describe("dealt -> sold", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction is cancelled", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -611,14 +611,14 @@ describe("dealt -> sold", () => {
         cancelledAt: { $ne: null },
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 });
 
 describe("dealt -> for sale", () => {
   it("succeeds if the actor is the seller", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -683,12 +683,12 @@ describe("dealt -> for sale", () => {
         cancelledAt: null,
       }),
     ).toEqual(0);
-    expect(publishItemEvent).toHaveBeenCalledTimes(1);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
   });
 
   it("fails if the actor is not the seller", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -748,12 +748,12 @@ describe("dealt -> for sale", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction does not exist", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -800,12 +800,12 @@ describe("dealt -> for sale", () => {
         cancelledAt: null,
       }),
     ).toEqual(0);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction is already completed", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -865,12 +865,12 @@ describe("dealt -> for sale", () => {
         cancelledAt: null,
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 
   it("fails if the transaction is cancelled", async () => {
-    mock.module("@/utils/mq", () => ({
-      publishItemEvent: mock(),
+    mock.module("@/events/publish-item-updated-event", () => ({
+      publishItemUpdatedEvent: mock(),
     }));
 
     const item: Item = {
@@ -930,6 +930,6 @@ describe("dealt -> for sale", () => {
         cancelledAt: { $ne: null },
       }),
     ).toEqual(1);
-    expect(publishItemEvent).toHaveBeenCalledTimes(0);
+    expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(0);
   });
 });

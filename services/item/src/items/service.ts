@@ -1,3 +1,5 @@
+import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
+import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
 import {
   ItemStatus,
   ItemType,
@@ -5,7 +7,6 @@ import {
   type Item,
   type SimplifiedAccount,
 } from "@/types";
-import { publishItemEvent } from "@/utils/mq";
 import { photoManager } from "@/utils/photo-manager";
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
@@ -167,7 +168,7 @@ export async function update(dto: UpdateServiceDto) {
     },
   );
 
-  publishItemEvent("item.updated", newItem!);
+  publishItemUpdatedEvent(newItem!);
 
   return newItem;
 }
@@ -198,7 +199,7 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
     { status: dto.status },
   );
 
-  publishItemEvent("item.updated", newItem!);
+  publishItemUpdatedEvent(newItem!);
 
   return newItem;
 }
@@ -223,7 +224,7 @@ export async function takeDown(dto: TakeDownServiceDto) {
 
   await itemsRepository.deleteOne({ id: dto.id });
 
-  publishItemEvent("item.deleted", dto.id);
+  publishItemDeletedEvent(dto.id);
 }
 
 type SearchServiceDto = {

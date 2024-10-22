@@ -1,6 +1,6 @@
+import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { publishItemEvent } from "@/utils/mq";
 import { expect, it, mock } from "bun:test";
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
@@ -8,8 +8,8 @@ import { me, someone } from "../test-utils/mock-data";
 import { PATCH_FORM } from "../test-utils/request";
 
 it("updates an item", async () => {
-  mock.module("@/utils/mq", () => ({
-    publishItemEvent: mock(),
+  mock.module("@/events/publish-item-updated-event", () => ({
+    publishItemUpdatedEvent: mock(),
   }));
 
   await Bun.write("uploads/before-update.png", "");
@@ -66,7 +66,7 @@ it("updates an item", async () => {
   expect(
     await itemsCollection.countDocuments({ id: insertedId, name: "update" }),
   ).toEqual(1);
-  expect(publishItemEvent).toHaveBeenCalledTimes(1);
+  expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
 
   await rm("uploads/after-update.png");
   await itemsCollection.deleteOne({ id: insertedId });
