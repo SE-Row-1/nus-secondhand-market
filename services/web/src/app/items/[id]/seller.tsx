@@ -26,7 +26,7 @@ export function Seller({ seller }: Props) {
       <span>{seller.nickname ?? "Seller " + seller.id}</span>
       {seller.department && (
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger>
             <Badge variant="outline" className="rounded-lg">
               {seller.department?.acronym}
             </Badge>
