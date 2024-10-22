@@ -139,7 +139,7 @@ public class AccountServiceImpl implements AccountService{
         }
 
         account = accountDao.updateProfile(updateProfileReq, id);
-//        mqService.sendUpdateMessage(new UpdateMessage(account));
+        mqService.sendUpdateMessage(new UpdateMessage(account));
         return ResponseEntity.status(HttpStatus.OK).body(new ResAccount(account));
 
     }
@@ -152,7 +152,7 @@ public class AccountServiceImpl implements AccountService{
         //delete account
         accountDao.softDeleteAccount(id);
         ResponseCookie cookie = cookieManager.deleteCookie();
-//        mqService.sendDeleteMessage(String.valueOf(id));
+        mqService.sendDeleteMessage(String.valueOf(id));
         return ResponseEntity.status(HttpStatus.NO_CONTENT).header("Set-Cookie", cookie.toString()).build();
     }
 
