@@ -1,6 +1,6 @@
 package edu.nus.market.dao;
 
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;

@@ -1,7 +1,7 @@
 package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.ForgetPasswordReq;

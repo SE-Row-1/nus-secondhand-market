@@ -1,4 +1,4 @@
-package edu.nus.market.pojo;
+package edu.nus.market.pojo.data;
 
 import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import lombok.AllArgsConstructor;

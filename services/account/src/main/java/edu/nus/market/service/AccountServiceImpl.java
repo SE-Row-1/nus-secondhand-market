@@ -2,6 +2,7 @@ package edu.nus.market.service;
 import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.PasswordHasher;

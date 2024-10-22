@@ -1,6 +1,6 @@
 package edu.nus.market.pojo.ResEntity;
 
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.data.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
