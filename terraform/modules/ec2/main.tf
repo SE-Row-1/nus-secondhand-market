@@ -99,13 +99,6 @@ resource "aws_instance" "nshm_bastion" {
     # Install Helm
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Deploy ArgoCD Applicaiton
-    ARGOCD_VERSION=$(curl --silent "https://api.github.com/repos/argoproj/argo-cd/releases/latest" | grep '"tag_name"' | sed -E 's/.*"([^"]+)".*/\1/')
-    curl -sSL -o /tmp/argocd-${ARGOCD_VERSION} https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_VERSION}/argocd-linux-amd64
-    chmod +x /tmp/argocd-${ARGOCD_VERSION}
-    sudo mv /tmp/argocd-${ARGOCD_VERSION} /usr/local/bin/argocd
-
-
     aws s3 cp s3://nus-backend-terraform/setup/ec2-installation.sh .
     bash ec2-installation.sh
     EOF
