@@ -1,18 +1,22 @@
 import { type SimplifiedAccount, type Transaction } from "@/types";
 import { transactionsCollection } from "@/utils/db";
-import type { Filter } from "mongodb";
+import type { Filter, FindOptions } from "mongodb";
 
-type CreateTransactionRepositoryDto = {
-  buyer: SimplifiedAccount;
-  seller: SimplifiedAccount;
-  itemId: string;
-};
+export async function find(filter: Filter<Transaction>, options?: FindOptions) {
+  return transactionsCollection.find(filter, options).toArray();
+}
 
 export async function findOne(filter: Filter<Transaction>) {
   return transactionsCollection.findOne(filter);
 }
 
-export async function create(dto: CreateTransactionRepositoryDto) {
+type CreateDto = {
+  buyer: SimplifiedAccount;
+  seller: SimplifiedAccount;
+  itemId: string;
+};
+
+export async function create(dto: CreateDto) {
   await transactionsCollection.insertOne({
     id: crypto.randomUUID(),
     buyer: dto.buyer,
