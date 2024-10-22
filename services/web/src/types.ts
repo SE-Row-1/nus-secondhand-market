@@ -80,6 +80,7 @@ export type WishlistItem = Item<SimplifiedAccount> & {
 export type WishlistStatistics = {
   count: number;
   last_wanted_at: string | null;
+  wanters?: SimplifiedAccount[];
 };
 
 export type Transaction = {

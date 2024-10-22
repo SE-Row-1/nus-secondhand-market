@@ -1,13 +1,15 @@
 import { prefetchWishlistStatistics } from "@/prefetchers";
+import type { Item, SimplifiedAccount } from "@/types";
 import { WishlistStatisticsClient } from "./wishlist-statistics.client";
 
 type Props = {
-  itemId: string;
+  item: Item;
+  me: SimplifiedAccount | null;
 };
 
-export async function WishlistStatisticsServer({ itemId }: Props) {
+export async function WishlistStatisticsServer({ item, me }: Props) {
   const { data: initialWishlistStatistics, error } =
-    await prefetchWishlistStatistics(itemId);
+    await prefetchWishlistStatistics(item.id);
 
   if (error) {
     return null;
@@ -15,7 +17,8 @@ export async function WishlistStatisticsServer({ itemId }: Props) {
 
   return (
     <WishlistStatisticsClient
-      itemId={itemId}
+      item={item}
+      me={me}
       initialWishlistStatistics={initialWishlistStatistics}
     />
   );
