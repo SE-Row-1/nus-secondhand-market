@@ -12,8 +12,14 @@ import * as v from "valibot";
 // so here we only do some basic validation on data types.
 const payloadSchema = v.object({
   id: v.number("ID should be a number"),
-  nickname: v.nullable(v.string("Nickname should be a string")),
-  avatarUrl: v.nullable(v.string("Avatar URL should be a string")),
+  nickname: v.optional(
+    v.nullable(v.string("Nickname should be a string")),
+    null,
+  ),
+  avatarUrl: v.optional(
+    v.nullable(v.string("Avatar URL should be a string")),
+    null,
+  ),
 });
 
 const decodedSecretKey = Buffer.from(Bun.env.JWT_SECRET_KEY, "base64");
