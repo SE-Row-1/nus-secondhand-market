@@ -54,7 +54,7 @@ resource "aws_eks_cluster" "nshm_cluster" {
   capacity_type   = "SPOT"
 
   scaling_config {
-    desired_size = 5
+    desired_size = 10
     max_size     = 30
     min_size     = 0
   }
