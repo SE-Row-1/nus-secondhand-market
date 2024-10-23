@@ -81,7 +81,7 @@ jobs:
         run: |
           chart_dir="helm/nshm"
           new_image_tag=${{ github.sha }}
-          sed -i "/z1yoon\/nshm-${{ matrix.service }}/{n;s/tag: .*/tag: $new_image_tag/;}" values.yaml
+          sed -i "/z1yoon\/nshm-${{ matrix.service }}/{n;s/tag: .*/tag: $new_image_tag/;}" $chart_dir/values.yaml
           cat $chart_dir/values.yaml
 
       - name: Commit the changes
