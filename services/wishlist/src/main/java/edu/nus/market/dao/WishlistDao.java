@@ -30,4 +30,11 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
 
     int countByItemId(String itemId);
 
+    void deleteAllByUserId(int userId);
+
+    @Query(value = "{ 'seller.id': ?0 }", delete = true)
+    void deleteBySellerId(int userId);
+
+    @Query(value = "{ 'itemId': ?0 }", delete = true)
+    void deleteByItemId(String itemId);
 }

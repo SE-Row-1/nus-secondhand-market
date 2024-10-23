@@ -58,4 +58,15 @@ public class Account {
         this.preferredCurrency = null;
     }
 
+    public Account(int id, String email){
+        this.id = id;
+        this.email = email;
+        this.nickname = null;
+        this.avatarUrl = null;
+        this.departmentId = 0;
+        this.phoneCode = null;
+        this.phoneNumber = null;
+        this.preferredCurrency = null;
+    }
+
 }

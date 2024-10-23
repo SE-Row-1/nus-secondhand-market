@@ -4,6 +4,7 @@ import edu.nus.market.dao.WishlistDao;
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
+import edu.nus.market.pojo.ResEntity.ResLike;
 import edu.nus.market.service.WishlistServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,23 +50,38 @@ class WishlistServiceImplTest {
     @Test
     void testGetWishlistService_Success() {
         List<Like> mockLikes = List.of(mockLike);
-        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(),any())).thenReturn(mockLikes);
+        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(), any())).thenReturn(mockLikes);
 
         ResponseEntity<Object> response = wishlistService.getWishlistService(1, new Date());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockLikes, response.getBody());
+
+        // 确认返回体是 ResLike 类型
+        ResLike resLike = (ResLike) response.getBody();
+
+        // 验证 items 和 nextCursor
+        assertEquals(mockLikes, resLike.getItems());
     }
+
 
     @Test
     void testGetWishlistService_EmptyList() {
-        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(),any())).thenReturn(List.of());
+        when(wishlistDao.findTop10ByUserIdAndWantedAtBeforeOrderByWantedAtDesc(anyInt(), any())).thenReturn(List.of());
 
         ResponseEntity<Object> response = wishlistService.getWishlistService(1, new Date());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(0, ((List<?>) response.getBody()).size());
+
+        // 确认返回体是 ResLike 类型
+        ResLike resLike = (ResLike) response.getBody();
+
+        // 验证 items 列表为空
+        assertEquals(0, resLike.getItems().size());
+
+        // nextCursor 应该为 null（根据逻辑）
+        assertEquals(null, resLike.getNextCursor());
     }
+
 
     @Test
     void testAddLikeService_Success() {
@@ -75,15 +91,15 @@ class WishlistServiceImplTest {
         req.setPrice(99.0);
         req.setName("iPhone 12");
         req.setStatus(1);
-        req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setPhotoUrls(Arrays.asList("http://example.com/iphone12_front.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("single");
 
         when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.empty());
 
         ResponseEntity<Object> response = wishlistService.addLikeService(req);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(wishlistDao, times(1)).save(any(Like.class));
     }
 
@@ -95,8 +111,8 @@ class WishlistServiceImplTest {
         req.setPrice(99.0);
         req.setName("iPhone 12");
         req.setStatus(1);
-        req.setPhotoUrls(new String[]{"https://example.com/image.jpg"});
-        req.setSeller(new Seller("seller001", "John's Store", "http://example.com/avatar.jpg"));
+        req.setPhotoUrls(Arrays.asList("http://example.com/iphone12_front.jpg"));
+        req.setSeller(new Seller(1, "John's Store", "http://example.com/avatar.jpg"));
         req.setType("SINGLE");
 
         when(wishlistDao.findByUserIdAndItemId(anyInt(), anyString())).thenReturn(Optional.of(mockLike));
@@ -114,7 +130,7 @@ class WishlistServiceImplTest {
 
         ResponseEntity<Object> response = wishlistService.deleteLikeService(1, "item001");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(wishlistDao, times(1)).delete(mockLike);
     }
 
@@ -130,11 +146,11 @@ class WishlistServiceImplTest {
     }
 
     @Test
-    void testGetItemLikeInfo_Success() {
+    void testGetItemLikeInfo_Service_Success() {
         when(wishlistDao.countByItemId(anyString())).thenReturn(1);
         when(wishlistDao.findTopWantedAtByItemId(anyString())).thenReturn(new Date());
 
-        ResponseEntity<Object> response = wishlistService.getItemLikeInfo("item001");
+        ResponseEntity<Object> response = wishlistService.getItemLikeInfoService("item001", 1);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(ResItemLikeInfo.class, response.getBody().getClass());

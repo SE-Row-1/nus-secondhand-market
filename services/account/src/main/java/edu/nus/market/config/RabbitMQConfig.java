@@ -1,5 +1,6 @@
 package edu.nus.market.config;
 
+import jakarta.annotation.Resource;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -23,8 +24,11 @@ public class RabbitMQConfig {
     }
 
     // define account Topic exchange: email
+    // define account Topic exchange
     @Bean
     public TopicExchange EmailExchange() {
         return new TopicExchange("email");
+    public TopicExchange topicExchange() {
+        return new TopicExchange("account");
     }
 }

@@ -34,3 +34,7 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
+
+app:
+  queue:
+    name: account_queue
