@@ -23,11 +23,17 @@ const formSchema = v.object({
     v.minLength(8, "Password should be at least 8 characters long"),
     v.maxLength(20, "Password should be at most 20 characters long"),
   ),
-  nickname: v.pipe(
-    v.string("Nickname should be a string"),
-    v.minLength(2, "Nickname should be at least 2 characters long"),
-    v.maxLength(20, "Nickname should be at most 20 characters long"),
-  ),
+  nickname: v.union([
+    v.pipe(
+      v.literal(""),
+      v.transform(() => null),
+    ),
+    v.pipe(
+      v.string("Nickname should be a string"),
+      v.minLength(2, "Nickname should be at least 2 characters long"),
+      v.maxLength(20, "Nickname should be at most 20 characters long"),
+    ),
+  ]),
 });
 
 type Props = {
