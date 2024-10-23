@@ -7,9 +7,10 @@ import { useToast } from "@/components/ui/use-toast";
 import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
-import type { FormEvent } from "react";
+import { FlagIcon, Loader2Icon } from "lucide-react";
+import type { Dispatch, FormEvent } from "react";
 import * as v from "valibot";
+import type { RegistrationAction, RegistrationState } from "./reducer";
 
 const formSchema = v.object({
   password: v.pipe(
@@ -30,11 +31,11 @@ const formSchema = v.object({
 });
 
 type Props = {
-  email: string;
-  progressToNextStep: () => void;
+  state: RegistrationState;
+  dispatch: Dispatch<RegistrationAction>;
 };
 
-export function InfoForm({ email, progressToNextStep }: Props) {
+export function FillInfoForm({ state, dispatch }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
@@ -53,7 +54,7 @@ export function InfoForm({ email, progressToNextStep }: Props) {
       }
 
       return await clientRequester.post<DetailedAccount>("/accounts", {
-        email,
+        id: state.transactionId,
         password,
         nickname,
       });
@@ -61,14 +62,10 @@ export function InfoForm({ email, progressToNextStep }: Props) {
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
 
-      progressToNextStep();
+      dispatch({ type: "COMPLETE" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to register",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 
@@ -111,7 +108,7 @@ export function InfoForm({ email, progressToNextStep }: Props) {
         {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
-          <UserRoundPlusIcon className="size-4 mr-2" />
+          <FlagIcon className="size-4 mr-2" />
         )}
         Finish
       </Button>

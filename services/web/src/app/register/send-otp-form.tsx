@@ -7,13 +7,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon, MailIcon } from "lucide-react";
-import { type FormEvent } from "react";
+import { useState, type Dispatch, type FormEvent } from "react";
 import * as v from "valibot";
+import type { RegistrationAction } from "./reducer";
 
 const formSchema = v.object({
   email: v.pipe(
     v.string("Email should be a string"),
-    v.email("Invalid email address format"),
+    v.email("Invalid email address"),
     v.endsWith(
       "@u.nus.edu",
       'Email should be a NUS email that ends with "@u.nus.edu"',
@@ -22,11 +23,12 @@ const formSchema = v.object({
 });
 
 type Props = {
-  progressToNextStep: () => void;
-  storeEmail: (email: string) => void;
+  dispatch: Dispatch<RegistrationAction>;
 };
 
-export function EmailForm({ progressToNextStep, storeEmail }: Props) {
+export function SendOtpForm({ dispatch }: Props) {
+  const [email, setEmail] = useState("");
+
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
@@ -38,25 +40,23 @@ export function EmailForm({ progressToNextStep, storeEmail }: Props) {
         Object.fromEntries(new FormData(event.target as HTMLFormElement)),
       );
 
-      storeEmail(email);
+      setEmail(email);
 
-      return await clientRequester.post<undefined>("/auth/otp", { email });
+      return await clientRequester.post<number>("/auth/otp", {
+        type: "register",
+        email,
+      });
     },
-    onSuccess: () => {
+    onSuccess: (transactionId) => {
       toast({
-        title: "Sent OTP",
         description:
-          "We have sent an OTP to your email. Please check your inbox.",
+          "We have sent a 6-digit OTP to your email. Please check your inbox.",
       });
 
-      progressToNextStep();
+      dispatch({ type: "SEND_OTP_TO_VERIFY_OTP", email, transactionId });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to send OTP",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 

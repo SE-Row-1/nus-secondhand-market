@@ -9,22 +9,23 @@ import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon, ShieldCheckIcon } from "lucide-react";
-import type { FormEvent } from "react";
+import type { Dispatch, FormEvent } from "react";
 import * as v from "valibot";
+import type { RegistrationAction, RegistrationState } from "./reducer";
 
 const formSchema = v.object({
   otp: v.pipe(
     v.string("OTP should be a string"),
-    v.digits("OTP should only contain digits"),
     v.length(6, "OTP should be 6 characters long"),
   ),
 });
 
 type Props = {
-  progressToNextStep: () => void;
+  state: RegistrationState;
+  dispatch: Dispatch<RegistrationAction>;
 };
 
-export function OtpForm({ progressToNextStep }: Props) {
+export function VerifyOtpForm({ state, dispatch }: Props) {
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
@@ -37,23 +38,21 @@ export function OtpForm({ progressToNextStep }: Props) {
       );
 
       return await clientRequester.post<undefined>("/auth/otp/verification", {
+        id: state.transactionId,
+        email: state.email,
         otp,
       });
     },
     onSuccess: () => {
       toast({
-        title: "OTP verified",
-        description: "Hello, my NUS friend! Just one more step to go!",
+        description:
+          "You have been successfully verified as a NUS student! Now just one more step to go...",
       });
 
-      progressToNextStep();
+      dispatch({ type: "VERIFY_OTP_TO_FILL_INFO" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to verify OTP",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 
@@ -78,7 +77,7 @@ export function OtpForm({ progressToNextStep }: Props) {
         ) : (
           <ShieldCheckIcon className="size-4 mr-2" />
         )}
-        Verify
+        Verify OTP
       </Button>
     </form>
   );
