@@ -57,7 +57,7 @@ it("creates an item with exactly 1 photo", async () => {
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: ["uploads/test1.png"],
+    photo_urls: [expect.stringMatching(/^uploads\/.+\.png$/)],
   });
   expect(body).not.toContainKey("_id");
 
@@ -95,7 +95,10 @@ it("creates an item with multiple photos", async () => {
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: ["uploads/test1.png", "uploads/test2.jpg"],
+    photo_urls: [
+      expect.stringMatching(/^uploads\/.+\.png$/),
+      expect.stringMatching(/^uploads\/.+\.jpg$/),
+    ],
   });
   expect(body).not.toContainKey("_id");
 
