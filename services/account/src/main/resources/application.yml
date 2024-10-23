@@ -28,3 +28,17 @@ logging:
   level:
     org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
+
+
+management:
+  health:
+    probes:
+      enabled: true
+    group:
+      liveness:
+        include: livenessState
+      readiness:
+        include: readinessState
+  endpoint:
+    health:
+      show-details: always

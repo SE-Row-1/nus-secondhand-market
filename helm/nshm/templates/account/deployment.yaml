@@ -28,7 +28,7 @@ spec:
               name: account-secret
         livenessProbe:
           httpGet:
-            path: /healthz
+            path: /actuator/health/liveness
             port: 8081
           initialDelaySeconds: 30
           periodSeconds: 30
@@ -36,7 +36,7 @@ spec:
 
         readinessProbe:
           httpGet:
-            path: /ready
+            path: /actuator/health/readiness
             port: 8081
           initialDelaySeconds: 30
           periodSeconds: 30

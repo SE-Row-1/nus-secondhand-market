@@ -23,6 +23,7 @@ spec:
             - "--host=http://www.nshm.store"
           ports:
             - containerPort: 8089
+            - containerPort: 5557
           volumeMounts:
             - name: locust
               mountPath: /mnt/locust
@@ -41,6 +42,11 @@ spec:
   selector:
     app: locust-master
   ports:
-    - protocol: TCP
+    - name: web-ui
+      protocol: TCP
       port: 8089
       targetPort: 8089
+    - name: master-port
+      protocol: TCP
+      port: 5557
+      targetPort: 5557
