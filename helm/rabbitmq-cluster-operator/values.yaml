@@ -1,8 +1,3 @@
-persistence:
-  enabled: true
-  storageClassName: "gp2"  # This should match the StorageClass created in step 1
-  accessMode: ReadWriteOnce
-  size: 8Gi  # Size of the Persistent Volume
 # Copyright Broadcom, Inc. All Rights Reserved.
 # SPDX-License-Identifier: APACHE-2.0
 
@@ -24,8 +19,8 @@ global:
   ##   - myRegistryKeySecretName
   ##
   imagePullSecrets: []
-  defaultStorageClass: ""
-  storageClass: ""
+  defaultStorageClass: "gp2"
+  storageClass: "gp2"
   ## Compatibility adaptations for Kubernetes platforms
   ##
   compatibility:
