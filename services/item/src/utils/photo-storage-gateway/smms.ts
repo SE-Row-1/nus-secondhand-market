@@ -7,7 +7,7 @@ import type { PhotoStorageGateway } from "./types";
 export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
   private static BASE_URL = "https://sm.ms/api/v2";
 
-  private registry: Record<string, string> = {};
+  private static registry: Record<string, string> = {};
 
   public async save(photo: File) {
     const formData = new FormData();
@@ -31,13 +31,13 @@ export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
       data: { hash, url },
     } = (await res.json()) as { data: { hash: string; url: string } };
 
-    this.registry[url] = hash;
+    SmmsPhotoStorageGateway.registry[url] = hash;
 
     return url;
   }
 
   public async remove(photoUrl: string) {
-    const hash = this.registry[photoUrl];
+    const hash = SmmsPhotoStorageGateway.registry[photoUrl];
 
     // It could be that the photo URL was never uploaded to SM.MS,
     // or the registry cache was cleared.
@@ -62,6 +62,6 @@ export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
       });
     }
 
-    delete this.registry[photoUrl];
+    delete SmmsPhotoStorageGateway.registry[photoUrl];
   }
 }
