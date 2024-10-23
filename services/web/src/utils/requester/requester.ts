@@ -1,102 +1,79 @@
-import type { HttpError } from "./http-error";
+import type { Endpoint, Fetcher } from "./types";
 
-type Endpoint = `/${string}`;
+export class Requester {
+  constructor(private fetcher: Fetcher) {}
 
-type ClientResult<Expectation> = Expectation;
+  public async get<T>(endpoint: Endpoint, init: RequestInit = {}) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      method: "GET",
+      ...init,
+    });
+  }
 
-type ServerResult<Expectation> =
-  | { data: Expectation; error: null }
-  | { data: null; error: HttpError };
+  public async post<T>(
+    endpoint: Endpoint,
+    body: Record<string, unknown> = {},
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      method: "POST",
+      body: JSON.stringify(body),
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...init.headers,
+      },
+    });
+  }
 
-type ClientFetch = <Expectation>(
-  endpoint: Endpoint,
-  init?: RequestInit,
-) => Promise<ClientResult<Expectation>>;
+  public async put<T>(
+    endpoint: Endpoint,
+    body: Record<string, unknown> = {},
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      method: "PUT",
+      body: JSON.stringify(body),
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...init.headers,
+      },
+    });
+  }
 
-type ServerFetch = <Expectation>(
-  endpoint: Endpoint,
-  init?: RequestInit,
-) => Promise<ServerResult<Expectation>>;
+  public async patch<T>(
+    endpoint: Endpoint,
+    body: Record<string, unknown> = {},
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        ...init.headers,
+      },
+    });
+  }
 
-type Result<Fetcher, Expectation> = Promise<
-  Fetcher extends ClientFetch
-    ? ClientResult<Expectation>
-    : Fetcher extends ServerFetch
-      ? ServerResult<Expectation>
-      : never
->;
+  public async delete<T>(endpoint: Endpoint, init: RequestInit = {}) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      ...init,
+      method: "DELETE",
+    });
+  }
 
-export function createRequester<Fetcher extends ClientFetch | ServerFetch>(
-  fetcher: Fetcher,
-) {
-  return {
-    get: async <Expectation>(endpoint: Endpoint, init: RequestInit = {}) => {
-      return (await fetcher<Expectation>(endpoint, {
-        ...init,
-        method: "GET",
-      })) as Result<Fetcher, Expectation>;
-    },
-    post: async <Expectation>(
-      endpoint: Endpoint,
-      body: Record<string, unknown> = {},
-      init: RequestInit = {},
-    ) => {
-      return (await fetcher<Expectation>(endpoint, {
-        ...init,
-        method: "POST",
-        body: JSON.stringify(body),
-        headers: {
-          ...init.headers,
-          "Content-Type": "application/json",
-        },
-      })) as Result<Fetcher, Expectation>;
-    },
-    put: async <Expectation>(
-      endpoint: Endpoint,
-      body: Record<string, unknown> = {},
-      init: RequestInit = {},
-    ) => {
-      return (await fetcher<Expectation>(endpoint, {
-        ...init,
-        method: "PUT",
-        body: JSON.stringify(body),
-        headers: {
-          ...init.headers,
-          "Content-Type": "application/json",
-        },
-      })) as Result<Fetcher, Expectation>;
-    },
-    patch: async <Expectation>(
-      endpoint: Endpoint,
-      body: Record<string, unknown> = {},
-      init: RequestInit = {},
-    ) => {
-      return (await fetcher<Expectation>(endpoint, {
-        ...init,
-        method: "PATCH",
-        body: JSON.stringify(body),
-        headers: {
-          ...init.headers,
-          "Content-Type": "application/json",
-        },
-      })) as Result<Fetcher, Expectation>;
-    },
-    delete: async <Expectation>(endpoint: Endpoint, init: RequestInit = {}) => {
-      return (await fetcher<Expectation>(endpoint, {
-        ...init,
-        method: "DELETE",
-      })) as Result<Fetcher, Expectation>;
-    },
-    form: async <Expectation>(
-      endpoint: Endpoint,
-      body: FormData,
-      init: RequestInit = {},
-    ) => {
-      return (await fetcher<Expectation>(endpoint, {
-        method: "POST",
-        ...init,
-        body,
-      })) as Result<Fetcher, Expectation>;
-    },
-  };
+  public async form<T>(
+    endpoint: Endpoint,
+    body: FormData,
+    init: RequestInit = {},
+  ) {
+    return await this.fetcher.fetch<T>(endpoint, {
+      method: "POST",
+      body,
+      ...init,
+    });
+  }
 }
