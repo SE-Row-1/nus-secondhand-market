@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProfileReq {
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
-    private String email;
+    private String Id;
 
     @Size(min = 2, max = 20)
     private String nickname;

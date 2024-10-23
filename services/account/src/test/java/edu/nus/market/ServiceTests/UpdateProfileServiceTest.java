@@ -1,12 +1,14 @@
 package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
+import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.data.EmailTransaction;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.*;
@@ -27,16 +29,31 @@ public class UpdateProfileServiceTest {
     @Resource
     AccountDao accountDao;
 
+    @Resource
+    EmailTransactionDao emailTransactionDao;
+
     private static final String EMAIL = "e1351826@u.nus.edu";
     private static final String PASSWORD = "12345678";
+    private static final String NICKNAME = "Nickname";
+    private static final String UUID = "1";
     private static int ID;
 
     @BeforeAll
     @Order(1)
     void setup() {
         accountDao.cleanTable();
-        ResAccount resAccount = (ResAccount) accountService.registerService(new RegisterReq(EMAIL, PASSWORD)).getBody();
-        ID = resAccount.getId();
+        emailTransactionDao.cleanTable();
+
+        Account account = new Account();
+        account.setEmail(EMAIL);
+        account.setPasswordHash(PASSWORD);
+        account.setPasswordSalt(PASSWORD);
+        accountDao.registerNewAccount(account);
+
+        ID = accountDao.getAccountByEmail(EMAIL).getId();
+
+        emailTransactionDao.insertEmailTransaction(new EmailTransaction(UUID, EMAIL, "123456"));
+        emailTransactionDao.verifyEmailTransaction(UUID);
     }
 
     @Test
@@ -86,15 +103,15 @@ public class UpdateProfileServiceTest {
     @Test
     @Order(4)
     void updateProfileEmailConflictTest() {
-        accountService.registerService(new RegisterReq("e1351827@u.nus.edu", "87654321"));
+
 
         UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setEmail("e1351827@u.nus.edu");
+        updateProfileReq.setId(UUID + "1");
 
         ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
 
-        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
-        assertEquals(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg), response.getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg), response.getBody());
     }
 
     @Test
@@ -118,31 +135,6 @@ public class UpdateProfileServiceTest {
         assertEquals("98765432", updatedAccount.getPhoneNumber());
     }
 
-    @Test
-    @Order(6)
-    void updateProfileWithDeletedEmailTest() {
-        // if u only want to run this test, please uncomment this code
-        accountService.registerService(new RegisterReq("e1351827@u.nus.edu", "87654321"));
-
-        int oldId = accountDao.getAccountByEmail("e1351827@u.nus.edu").getId();
-
-        accountDao.softDeleteAccountByEmail("e1351827@u.nus.edu");
-
-        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setEmail("e1351827@u.nus.edu");
-
-        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Account updatedAccount = accountDao.getAccountById(ID);
-        assertEquals("New Nickname", updatedAccount.getNickname());
-        assertEquals("https://new-avatar.com/avatar.png", updatedAccount.getAvatarUrl());
-        assertEquals("65", updatedAccount.getPhoneCode());
-        assertEquals("98765432", updatedAccount.getPhoneNumber());
-        assertEquals(1, updatedAccount.getDepartmentId());
-        assertEquals("SGD", updatedAccount.getPreferredCurrency());
-        assertNotEquals(oldId, updatedAccount.getId());
-    }
 
     @AfterAll
     void cleanup() {

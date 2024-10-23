@@ -137,13 +137,18 @@ public class AccountServiceImpl implements AccountService{
         // Business logic to update nickname, avatar, phone in the database
         // Use repository or DAO to interact with the database.
         Account account = accountDao.getAccountById(id);
+        EmailTransaction emailTransaction = new EmailTransaction();
         if (account == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
-        if (updateProfileReq.getEmail() != null){
+        if (updateProfileReq.getId() != null){
+            emailTransaction = emailTransactionDao.getEmailTransactionById(updateProfileReq.getId());
+            if(emailTransaction == null || emailTransaction.getVerifiedAt() == null)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
+
             // we should check all the emails in this case, no matter if it is deleted or not
-            Account checkAccount = accountDao.getAccountByEmailAll(updateProfileReq.getEmail());
+            Account checkAccount = accountDao.getAccountByEmailAll(emailTransaction.getEmail());
             if(checkAccount != null) {
                 if (checkAccount.getDeletedAt() == null)
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
@@ -151,10 +156,14 @@ public class AccountServiceImpl implements AccountService{
                 accountDao.hardDeleteAccount(checkAccount.getId());
             }
         }
+        account = new Account(updateProfileReq);
+        if (emailTransaction != null)
+            account.setEmail(emailTransaction.getEmail());
 
-        account = accountDao.updateProfile(updateProfileReq, id);
+        ResAccount resAccount = new ResAccount(accountDao.updateProfile(account, id));
+
         mqService.sendUpdateMessage(new UpdateMessage(account));
-        return ResponseEntity.status(HttpStatus.OK).body(new ResAccount(account));
+        return ResponseEntity.status(HttpStatus.OK).body(resAccount);
 
     }
 

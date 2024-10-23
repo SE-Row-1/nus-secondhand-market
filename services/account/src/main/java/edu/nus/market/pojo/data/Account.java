@@ -1,6 +1,7 @@
 package edu.nus.market.pojo.data;
 
 import edu.nus.market.pojo.ReqEntity.RegisterReq;
+import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,7 +32,7 @@ public class Account {
     String avatarUrl;
 
     @Column(name = "department_id")
-    int departmentId;
+    Integer departmentId;
 
     @Column(name = "phone_code")
     String phoneCode;
@@ -55,6 +56,16 @@ public class Account {
         this.phoneCode = null;
         this.phoneNumber = null;
         this.preferredCurrency = null;
+    }
+
+    public Account(UpdateProfileReq updateProfileReq){
+        this.nickname = updateProfileReq.getNickname();
+        this.avatarUrl = updateProfileReq.getAvatarUrl();
+        this.departmentId = updateProfileReq.getDepartmentId();
+        this.phoneCode = updateProfileReq.getPhoneCode();
+        this.phoneNumber = updateProfileReq.getPhoneNumber();
+        this.preferredCurrency = updateProfileReq.getPreferredCurrency();
+        this.email = null;
     }
 
     public Account(int id, String email){

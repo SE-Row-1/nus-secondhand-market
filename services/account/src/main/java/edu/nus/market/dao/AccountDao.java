@@ -39,19 +39,19 @@ public interface AccountDao {
     int updatePassword(int id, String passwordHash, String passwordSalt);
 
     @Select("UPDATE account SET " +
-        "email = COALESCE(#{updateProfileReq.email}, email), " +
-        "nickname = COALESCE(#{updateProfileReq.nickname}, nickname), " +
-        "avatar_url = COALESCE(#{updateProfileReq.avatarUrl}, avatar_url), " +
-        "phone_code = COALESCE(#{updateProfileReq.phoneCode}, phone_code), " +
-        "phone_number = COALESCE(#{updateProfileReq.phoneNumber}, phone_number), " +
-        "preferred_currency = COALESCE(#{updateProfileReq.preferredCurrency}, preferred_currency), " +
-        "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
+        "email = COALESCE(#{account.email}, email), " +
+        "nickname = COALESCE(#{account.nickname}, nickname), " +
+        "avatar_url = COALESCE(#{account.avatarUrl}, avatar_url), " +
+        "phone_code = COALESCE(#{account.phoneCode}, phone_code), " +
+        "phone_number = COALESCE(#{account.phoneNumber}, phone_number), " +
+        "preferred_currency = COALESCE(#{account.preferredCurrency}, preferred_currency), " +
+        "department_id = COALESCE(#{account.departmentId}, department_id) " +
         "WHERE id = #{id} " +
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
         "created_at AS createdAt, deleted_at AS deletedAt"
     )
-    Account updateProfile(UpdateProfileReq updateProfileReq, int id);
+    Account updateProfile(Account account, int id);
 
     // clean table everytime before and after test
     @Delete("Delete FROM account")
