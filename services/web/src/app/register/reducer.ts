@@ -7,14 +7,14 @@ export enum RegistrationStep {
 
 export type RegistrationState = {
   step: RegistrationStep;
-  transactionId: number;
+  transactionId: string;
   email: string;
 };
 
 export type RegistrationAction =
   | {
       type: "SEND_OTP_TO_VERIFY_OTP";
-      transactionId: number;
+      transactionId: string;
       email: string;
     }
   | {

@@ -11,7 +11,7 @@ import { VerifyOtpForm } from "./verify-otp-form";
 export function Form() {
   const [state, dispatch] = useReducer(reducer, {
     step: RegistrationStep.SendOtp,
-    transactionId: 0,
+    transactionId: "",
     email: "",
   });
 

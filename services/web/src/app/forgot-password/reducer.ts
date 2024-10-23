@@ -7,14 +7,14 @@ export enum PasswordResetStep {
 
 export type PasswordResetState = {
   step: PasswordResetStep;
-  transactionId: number;
+  transactionId: string;
   email: string;
 };
 
 export type PasswordResetAction =
   | {
       type: "SEND_OTP_TO_VERIFY_OTP";
-      transactionId: number;
+      transactionId: string;
       email: string;
     }
   | {

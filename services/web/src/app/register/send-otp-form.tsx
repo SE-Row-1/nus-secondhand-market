@@ -42,7 +42,7 @@ export function SendOtpForm({ dispatch }: Props) {
 
       setEmail(email);
 
-      return await clientRequester.post<number>("/auth/otp", {
+      return await clientRequester.post<string>("/auth/otp", {
         type: "register",
         email,
       });
