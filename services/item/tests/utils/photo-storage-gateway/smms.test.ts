@@ -22,12 +22,12 @@ it("saves and removes photo", async () => {
   const gateway = new SmmsPhotoStorageGateway();
   const photo = new File(["test"], "test.png") as unknown as File;
   mockSmmsResponse(200, {
-    data: { hash: "abc", url: "https://sm.ms/test.png" },
+    data: { hash: "abc", url: "https://s2.loli.net/test.png" },
   });
 
   const photoUrl = await gateway.save(photo);
 
-  expect(photoUrl).toEqual("https://sm.ms/test.png");
+  expect(photoUrl).toEqual("https://s2.loli.net/test.png");
   expect(mockFetch).toHaveBeenLastCalledWith("https://sm.ms/api/v2/upload", {
     method: "POST",
     body: expect.any(FormData),
@@ -65,7 +65,7 @@ it("throws HTTPException if SM.MS delete fails", async () => {
   const gateway = new SmmsPhotoStorageGateway();
   const photo = new File(["test"], "test.png") as unknown as File;
   mockSmmsResponse(200, {
-    data: { hash: "abc", url: "https://sm.ms/test.png" },
+    data: { hash: "abc", url: "https://s2.loli.net/test.png" },
   });
   const photoUrl = await gateway.save(photo);
   mockSmmsResponse(400, {});
