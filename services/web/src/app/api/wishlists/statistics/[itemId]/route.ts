@@ -30,11 +30,10 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
 
   const count = records.length;
   const last_wanted_at = records[0]?.wanted_at ?? null;
-  const wanters = records.map((record) => record.wanter);
+  const wanters =
+    account?.id === records[0]?.item.seller.id
+      ? records.map((record) => record.wanter)
+      : [];
 
-  if (account?.id === records[0]?.item.seller.id) {
-    return NextResponse.json({ count, last_wanted_at, wanters });
-  }
-
-  return NextResponse.json({ count, last_wanted_at });
+  return NextResponse.json({ count, last_wanted_at, wanters });
 }

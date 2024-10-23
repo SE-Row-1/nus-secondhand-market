@@ -85,7 +85,7 @@ export type WishlistEntry =
 export type WishlistStatistics = {
   count: number;
   last_wanted_at: string | null;
-  wanters?: SimplifiedAccount[];
+  wanters: SimplifiedAccount[];
 };
 
 export type Transaction = {

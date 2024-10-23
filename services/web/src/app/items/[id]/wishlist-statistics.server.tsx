@@ -28,7 +28,7 @@ export async function WishlistStatisticsServer({ item, me }: Props) {
       wantersList={
         <WantersServer
           itemId={item.id}
-          wanters={initialWishlistStatistics.wanters ?? []}
+          wanters={initialWishlistStatistics.wanters}
         />
       }
     />
