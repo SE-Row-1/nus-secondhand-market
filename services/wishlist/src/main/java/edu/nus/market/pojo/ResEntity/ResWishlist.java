@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ResLike{
+public class ResWishlist {
     private String nextCursor;
     private List<Like> items;
 

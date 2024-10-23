@@ -22,6 +22,10 @@ public abstract class Like {
 
     @JsonIgnore
     private int userId;
+    @JsonIgnore
+    private String nickname;
+    @JsonIgnore
+    private String avatarUrl;
 
     private String type;  // "SINGLE" or "PACK"
     @JsonProperty("id")

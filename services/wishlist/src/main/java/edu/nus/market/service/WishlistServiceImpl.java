@@ -7,11 +7,10 @@ import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
-import edu.nus.market.pojo.ResEntity.ResLike;
+import edu.nus.market.pojo.ResEntity.ResWishlist;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -41,7 +39,7 @@ public class WishlistServiceImpl implements WishlistService {
             nextCursor = ConvertDateToISO.convert(nextBefore);
         }
 
-        ResLike response = new ResLike(nextCursor, likes);
+        ResWishlist response = new ResWishlist(nextCursor, likes);
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -72,11 +70,16 @@ public class WishlistServiceImpl implements WishlistService {
     public ResponseEntity<Object> getItemLikeInfoService(String itemId, int userId) {
         int count = wishlistDao.countByItemId(itemId);
         Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
+        ResItemLikeInfo itemLikeInfoResponse = null;
+        Optional<Like> itemSeller = wishlistDao.findFirstByItemId(itemId);
 
+        if (itemSeller.isPresent() && userId == itemSeller.get().getSeller().getSellerId()) {
+            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, wishlistDao.findUserInfoByItemId(itemId));
+        } else {
+            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, null);
+        }
 
-        ResItemLikeInfo response = new ResItemLikeInfo(count, favoriteDate);
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(itemLikeInfoResponse);
     }
 
     @Autowired
@@ -118,5 +121,14 @@ public class WishlistServiceImpl implements WishlistService {
     public void deleteAccountService(int userId) {
         wishlistDao.deleteAllByUserId(userId);
         wishlistDao.deleteBySellerId(userId);
+    }
+
+    @Override
+    public ResponseEntity<Object> checkLikeService(String itemId, int userId) {
+        Optional<Like> existingLike = wishlistDao.findByUserIdAndItemId(userId, itemId);
+        if (existingLike.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(existingLike);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }
