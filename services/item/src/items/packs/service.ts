@@ -72,7 +72,7 @@ export async function decompose(dto: DecomposeServiceDto) {
 
   await itemsRepository.decompose(pack as ItemPack);
 
-  publishItemEvent("deleted", pack.id);
+  publishItemEvent("item.deleted", pack.id);
 
   return;
 }

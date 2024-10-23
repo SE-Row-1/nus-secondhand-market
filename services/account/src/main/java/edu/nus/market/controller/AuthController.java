@@ -26,13 +26,13 @@ public class AuthController {
 
     // Get Account Info
     @GetMapping("/me")
-    public ResponseEntity<Object> getAccount(@RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> getAccount(@CookieValue(value = "access_token", required = false) String token){
         if (token == null || token.isEmpty())
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        return accountService.getAccountService(JwtTokenManager.decodeCookie(token).getId());
+        return accountService.getAccountService(JwtTokenManager.decodeAccessToken(token).getId());
     }
 
     // Login and Logout
@@ -61,17 +61,17 @@ public class AuthController {
 
     //Updating Account
     @PutMapping("/me/password")
-    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @RequestHeader(value = "Cookie", required = false) String token){
+    public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @CookieValue(value = "access_token", required = false) String token){
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
-        if (!JwtTokenManager.validateCookie(token)) {
+        if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-        return accountService.updatePasswordService(req, JwtTokenManager.decodeCookie(token).getId());
+        return accountService.updatePasswordService(req, JwtTokenManager.decodeAccessToken(token).getId());
     }
 
     @GetMapping("/healthz")
@@ -80,3 +80,4 @@ public class AuthController {
     }
 
 }
+

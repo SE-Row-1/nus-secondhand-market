@@ -79,7 +79,7 @@ jobs:
 
       - name: Update Image Tag Values
         run: |
-          chart_dir="helm"
+          chart_dir="helm/nshm"
           new_image_tag=${{ github.sha }}
           sed -i -E "s|(repository: z1yoon/nshm-${{ matrix.service }}[[:space:]]+tag: )[^\"]*|\1$new_image_tag|g" "$chart_dir/values.yaml"
 

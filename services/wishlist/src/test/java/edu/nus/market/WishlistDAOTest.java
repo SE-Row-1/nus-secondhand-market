@@ -143,7 +143,7 @@ public class WishlistDAOTest {
         like.setWantedAt(new Date());
         like.setName("Test Item");
         like.setStatus(1);
-        like.setSeller(new Seller("seller001", "Test Store", "http://example.com/avatar.jpg"));
+        like.setSeller(new Seller(1, "Test Store", "http://example.com/avatar.jpg"));
         return like;
     }
 }

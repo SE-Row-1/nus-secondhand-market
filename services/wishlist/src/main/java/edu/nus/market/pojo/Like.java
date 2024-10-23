@@ -18,6 +18,8 @@ public abstract class Like {
 
     @JsonIgnore  //
     private ObjectId id;  // for MongoDB
+
+
     @JsonIgnore
     private int userId;
 
