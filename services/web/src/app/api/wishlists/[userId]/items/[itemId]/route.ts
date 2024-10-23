@@ -3,15 +3,17 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     userId: string;
     itemId: string;
-  };
+  }>;
 };
 
 // Get the wanted situation of a user towards an item.
 export async function GET(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -25,14 +27,14 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  if (account.id !== Number(params.userId)) {
+  const { userId, itemId } = await params;
+
+  if (account.id !== Number(userId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const target = mockWishlists.find(
-    (entry) =>
-      entry.item.id === params.itemId &&
-      entry.wanter.id === Number(params.userId),
+    (entry) => entry.item.id === itemId && entry.wanter.id === Number(userId),
   );
 
   if (!target) {
@@ -44,7 +46,9 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
 
 // Want item.
 export async function POST(req: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -58,7 +62,9 @@ export async function POST(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  if (account.id !== Number(params.userId)) {
+  const { userId } = await params;
+
+  if (account.id !== Number(userId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -81,7 +87,9 @@ export async function POST(req: NextRequest, { params }: RouteSegments) {
 
 // Unwant item.
 export async function DELETE(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -95,14 +103,14 @@ export async function DELETE(_: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  if (account.id !== Number(params.userId)) {
+  const { userId, itemId } = await params;
+
+  if (account.id !== Number(userId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const target = mockWishlists.find(
-    (entry) =>
-      entry.item.id === params.itemId &&
-      entry.wanter.id === Number(params.userId),
+    (entry) => entry.item.id === itemId && entry.wanter.id === Number(userId),
   );
 
   if (!target) {

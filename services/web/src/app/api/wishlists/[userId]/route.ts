@@ -3,14 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { mockAccounts, mockWishlists } from "../../mock-db";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     userId: string;
-  };
+  }>;
 };
 
 // Get user's wishlist.
 export async function GET(req: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -24,7 +26,9 @@ export async function GET(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  if (account.id !== Number(params.userId)) {
+  const { userId } = await params;
+
+  if (account.id !== Number(userId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -33,7 +37,7 @@ export async function GET(req: NextRequest, { params }: RouteSegments) {
   );
 
   const wishlistItems = mockWishlists
-    .filter((wishlist) => wishlist.wanter.id === Number(params.userId))
+    .filter((wishlist) => wishlist.wanter.id === Number(userId))
     .toSorted(
       (a, b) =>
         new Date(b.item.created_at).getTime() -

@@ -9,11 +9,13 @@ async function serverFetch<T>(endpoint: string, init: RequestInit = {}) {
   try {
     const url = process.env.API_BASE_URL + endpoint;
 
+    const cookieStore = await cookies();
+
     const res = await fetch(url, {
       ...init,
       headers: {
         ...init.headers,
-        Cookie: cookies().toString(),
+        Cookie: cookieStore.toString(),
       },
       signal: AbortSignal.timeout(3000),
     });

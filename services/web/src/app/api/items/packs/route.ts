@@ -5,7 +5,9 @@ import { mockAccounts, mockItems } from "../../mock-db";
 
 // Compose item pack.
 export async function POST(req: NextRequest) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

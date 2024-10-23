@@ -3,21 +3,25 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     itemId: string;
-  };
+  }>;
 };
 
 // Get an item's wishlist statistics.
 export async function GET(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   const account = accessToken
     ? mockAccounts.find((account) => account.id === Number(accessToken))
     : undefined;
 
+  const { itemId } = await params;
+
   const records = mockWishlists
-    .filter((entry) => entry.item.id === params.itemId)
+    .filter((entry) => entry.item.id === itemId)
     .toSorted(
       (a, b) =>
         new Date(b.item.created_at).getTime() -

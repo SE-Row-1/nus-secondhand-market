@@ -4,7 +4,9 @@ import { mockAccounts, mockTransactions } from "../mock-db";
 
 // Get transactions.
 export async function GET(req: NextRequest) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });

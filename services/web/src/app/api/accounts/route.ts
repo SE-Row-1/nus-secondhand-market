@@ -5,7 +5,9 @@ import { mockAccounts } from "../mock-db";
 // Create account.
 // Not actually creating, just returning the first account from the mock database.
 export async function POST() {
-  cookies().set({
+  const cookieStore = await cookies();
+
+  cookieStore.set({
     name: "access_token",
     value: "1",
     path: "/",

@@ -3,14 +3,16 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 // Decompose item pack.
-export function DELETE(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+export async function DELETE(_: NextRequest, { params }: RouteSegments) {
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -24,7 +26,9 @@ export function DELETE(_: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const pack = mockItems.find((item) => item.id === params.id);
+  const { id } = await params;
+
+  const pack = mockItems.find((item) => item.id === id);
 
   if (!pack) {
     return NextResponse.json({ error: "Pack not found" }, { status: 404 });

@@ -4,12 +4,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 type Props = {
-  searchParams: {
+  searchParams: Promise<{
     message: string;
-  };
+  }>;
 };
 
-export default function ErrorPage({ searchParams: { message } }: Props) {
+export default async function ErrorPage({ searchParams }: Props) {
+  const { message } = await searchParams;
+
   return (
     <div className="grow flex flex-col justify-center items-center gap-4">
       <CircleXIcon className="size-20" />

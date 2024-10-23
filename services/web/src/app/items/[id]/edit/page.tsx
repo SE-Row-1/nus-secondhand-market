@@ -7,12 +7,14 @@ import { notFound, redirect } from "next/navigation";
 import { EditItemForm } from "./form";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default async function Page({ params: { id } }: Props) {
+export default async function Page({ params }: Props) {
+  const { id } = await params;
+
   const [{ data: item, error: itemError }, { data: me, error: meError }] =
     await Promise.all([prefetchItem(id), prefetchMe()]);
 

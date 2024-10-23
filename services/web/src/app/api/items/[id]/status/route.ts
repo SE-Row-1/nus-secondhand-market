@@ -4,14 +4,16 @@ import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 // Update item status.
 export async function PUT(req: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -25,7 +27,9 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const item = mockItems.find((item) => item.id === params.id);
+  const { id } = await params;
+
+  const item = mockItems.find((item) => item.id === id);
 
   if (!item) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });

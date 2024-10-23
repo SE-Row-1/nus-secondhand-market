@@ -12,7 +12,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  cookies().set({
+  const cookieStore = await cookies();
+
+  cookieStore.set({
     name: "access_token",
     value: String(account.id),
     path: "/",
@@ -29,7 +31,9 @@ export async function POST(req: NextRequest) {
 
 // Log out.
 export async function DELETE() {
-  cookies().delete("access_token");
+  const cookieStore = await cookies();
+
+  cookieStore.delete("access_token");
 
   return new NextResponse(null, { status: 204 });
 }

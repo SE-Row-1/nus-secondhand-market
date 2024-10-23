@@ -3,14 +3,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { mockAccounts, mockItems } from "../../mock-db";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 // Get item.
 export async function GET(_: NextRequest, { params }: RouteSegments) {
-  const item = mockItems.find((item) => item.id === params.id);
+  const { id } = await params;
+
+  const item = mockItems.find((item) => item.id === id);
 
   if (!item) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
@@ -27,7 +29,9 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
 
 // Update item.
 export async function PATCH(req: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -41,7 +45,9 @@ export async function PATCH(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const item = mockItems.find((item) => item.id === params.id);
+  const { id } = await params;
+
+  const item = mockItems.find((item) => item.id === id);
 
   if (!item) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });
@@ -61,7 +67,9 @@ export async function PATCH(req: NextRequest, { params }: RouteSegments) {
 }
 
 export async function DELETE(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
@@ -75,7 +83,9 @@ export async function DELETE(_: NextRequest, { params }: RouteSegments) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const item = mockItems.find((item) => item.id === params.id);
+  const { id } = await params;
+
+  const item = mockItems.find((item) => item.id === id);
 
   if (!item) {
     return NextResponse.json({ error: "Item not found" }, { status: 404 });

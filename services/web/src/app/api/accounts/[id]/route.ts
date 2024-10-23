@@ -3,16 +3,16 @@ import { NextResponse, type NextRequest } from "next/server";
 import { mockAccounts } from "../../mock-db";
 
 type RouteSegments = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 // Get account.
 export async function GET(_: NextRequest, { params }: RouteSegments) {
-  const account = mockAccounts.find(
-    (account) => account.id === Number(params.id),
-  );
+  const { id } = await params;
+
+  const account = mockAccounts.find((account) => account.id === Number(id));
 
   if (!account) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
@@ -23,13 +23,17 @@ export async function GET(_: NextRequest, { params }: RouteSegments) {
 
 // Update account.
 export async function PATCH(req: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
   }
 
-  if (Number(accessToken) !== Number(params.id)) {
+  const { id } = await params;
+
+  if (Number(accessToken) !== Number(id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -52,13 +56,17 @@ export async function PATCH(req: NextRequest, { params }: RouteSegments) {
 
 // Delete account.
 export async function DELETE(_: NextRequest, { params }: RouteSegments) {
-  const accessToken = cookies().get("access_token")?.value;
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get("access_token")?.value;
 
   if (!accessToken) {
     return NextResponse.json({ error: "Please log in first" }, { status: 401 });
   }
 
-  if (Number(accessToken) !== Number(params.id)) {
+  const { id } = await params;
+
+  if (Number(accessToken) !== Number(id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -74,7 +82,7 @@ export async function DELETE(_: NextRequest, { params }: RouteSegments) {
 
   mockAccounts.splice(mockAccounts.indexOf(account), 1, newAccount);
 
-  cookies().delete("access_token");
+  cookieStore.delete("access_token");
 
   return new NextResponse(null, { status: 204 });
 }

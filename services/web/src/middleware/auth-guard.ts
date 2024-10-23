@@ -18,7 +18,9 @@ export class AuthGuard extends Middleware {
   private static NO_AUTH_ROUTES = /^\/login|^\/register|^\/forgot-password/;
 
   public override async handle(req: NextRequest) {
-    const isAuthenticated = cookies().has("access_token");
+    const cookieStore = await cookies();
+
+    const isAuthenticated = cookieStore.has("access_token");
 
     const isAuthRoute = AuthGuard.AUTH_ROUTES.test(req.nextUrl.pathname);
 

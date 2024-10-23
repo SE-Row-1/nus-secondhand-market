@@ -9,12 +9,14 @@ import { WishlistButtonServer } from "./wishlist-button.server";
 import { WishlistStatisticsServer } from "./wishlist-statistics.server";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default async function Page({ params: { id } }: Props) {
+export default async function Page({ params }: Props) {
+  const { id } = await params;
+
   const [
     { data: item, error: itemError },
     { data: me, error: meError },
@@ -55,7 +57,9 @@ export default async function Page({ params: { id } }: Props) {
   );
 }
 
-export async function generateMetadata({ params: { id } }: Props) {
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params;
+
   const { data: item } = await prefetchItem(id);
 
   return {

@@ -1,5 +1,6 @@
-/** @type {import("next").NextConfig} */
-const config = {
+import type { NextConfig } from "next";
+
+const config: NextConfig = {
   output: "standalone",
   images: {
     remotePatterns: [
@@ -7,11 +8,6 @@ const config = {
         hostname: "picsum.photos",
       },
     ],
-  },
-  experimental: {
-    staleTimes: {
-      dynamic: 0,
-    },
   },
 };
 
