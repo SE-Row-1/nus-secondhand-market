@@ -18,15 +18,15 @@ public interface EmailTransactionDao {
 //    EmailTransaction getEmailTransactionById(int id);
     @Select("SELECT id, email, otp, to_char(created_at, 'YYYY-MM-DD\" \"HH24:MI:SS.USOF') AS created_at, " +
         "to_char(verified_at, 'YYYY-MM-DD\" \"HH24:MI:SS.USOF') AS verified_at " +
-        "FROM email_transaction WHERE id = #{id}")
+        "FROM email_transaction WHERE id = #{id}::uuid")
     EmailTransaction getEmailTransactionById(UUID id);
 
 
-    @Select("UPDATE email_transaction SET verified_at = now() WHERE id = #{id}")
+    @Select("UPDATE email_transaction SET verified_at = now() WHERE id = #{id}::uuid")
     void verifyEmailTransaction(UUID id);
 
     // Update the created_at column of the email_transaction table
-    @Select("UPDATE email_transaction SET created_at = #{time} WHERE id = #{id}")
+    @Select("UPDATE email_transaction SET created_at = #{time} WHERE id = #{id}::uuid")
     void updateCreatedAt(String time, UUID id);
 
     // clean table

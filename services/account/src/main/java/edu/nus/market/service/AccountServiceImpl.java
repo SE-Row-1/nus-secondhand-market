@@ -13,6 +13,8 @@ import edu.nus.market.security.SaltGenerator;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +47,8 @@ public class AccountServiceImpl implements AccountService{
     @Resource
     MQService mqService;
 
+    private static Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
+
     /**
      *
      * @param id
@@ -69,20 +73,24 @@ public class AccountServiceImpl implements AccountService{
     @Override
     public ResponseEntity<Object> registerService(RegisterReq registerReq){
         EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(registerReq.getId());
-        if (emailTransaction == null || emailTransaction.getVerifiedAt() == null)
+        if (emailTransaction == null || emailTransaction.getVerifiedAt() == null) {
+            logger.warn("Email transaction not found");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
-
+        }
         String email = emailTransaction.getEmail();
 
         // we should check all the emails in this case, no matter if it is deleted or not
         Account checkAccount = accountDao.getAccountByEmailAll(email);
         if(checkAccount != null) {
-            if (checkAccount.getDeletedAt() == null)
+            if (checkAccount.getDeletedAt() == null) {
+                logger.warn("Account is not deleted");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+            }
             // if the account is soft-deleted, we need to hard-delete it and register a new one
             accountDao.hardDeleteAccount(checkAccount.getId());
         }
 
+        logger.info("Registering new account");
         byte[] salt = saltGenerator.generateSalt();
         String passwordHash = passwordHasher.hashPassword(registerReq.getPassword(),salt);
         // generate salt and hash the password
@@ -95,6 +103,8 @@ public class AccountServiceImpl implements AccountService{
 
         String accessToken = jwtTokenManager.generateAccessToken(new JWTPayload(account));
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
+
+        logger.info("Create new account successfully.");
         // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
     }
