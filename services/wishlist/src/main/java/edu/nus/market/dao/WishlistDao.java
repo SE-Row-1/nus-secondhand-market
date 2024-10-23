@@ -1,6 +1,9 @@
 package edu.nus.market.dao;
 
 import edu.nus.market.pojo.Like;
+import edu.nus.market.pojo.ResEntity.ResSeller;
+import edu.nus.market.pojo.ResEntity.ResUserInfo;
+import edu.nus.market.pojo.Seller;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -37,4 +40,10 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
 
     @Query(value = "{ 'itemId': ?0 }", delete = true)
     void deleteByItemId(String itemId);
+
+    Optional<Like> findFirstByItemId(String itemId);
+
+    @Query(value = "{ 'itemId': ?0 }", fields = "{ 'userId': 1, 'nickname': 1, 'avatarUrl': 1 }")
+    List<ResUserInfo> findUserInfoByItemId(String itemId);
+
 }

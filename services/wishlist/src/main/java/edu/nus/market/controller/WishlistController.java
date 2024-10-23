@@ -3,6 +3,7 @@ package edu.nus.market.controller;
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 
+import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.service.WishlistService;
 import jakarta.annotation.Resource;
@@ -75,9 +76,9 @@ public class WishlistController {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
-
+        JWTPayload decodedToken = JwtTokenManager.decodeAccessToken(token);
         // check userId
-        if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
+        if (userId != decodedToken.getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
         // check req.userId
@@ -85,7 +86,13 @@ public class WishlistController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA.ErrorMsg));
         }
 
+        String avatarUrl = decodedToken.getAvatarUrl();
+        String nickname = decodedToken.getNickname();
+
         req.setUserId(userId);
+        req.setNickname(nickname);
+        req.setAvatarUrl(avatarUrl);
+
         return wishlistService.addLikeService(req);
     }
 
@@ -103,7 +110,7 @@ public class WishlistController {
         if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
-        // check req.userId
+
 
         return wishlistService.deleteLikeService(userId, itemId);
     }

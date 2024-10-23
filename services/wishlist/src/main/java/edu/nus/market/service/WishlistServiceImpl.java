@@ -8,7 +8,9 @@ import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
 import edu.nus.market.pojo.ResEntity.ResLike;
+import edu.nus.market.pojo.ResEntity.ResSeller;
 import jakarta.annotation.Resource;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpHeaders;
@@ -72,11 +74,16 @@ public class WishlistServiceImpl implements WishlistService {
     public ResponseEntity<Object> getItemLikeInfoService(String itemId, int userId) {
         int count = wishlistDao.countByItemId(itemId);
         Date favoriteDate = wishlistDao.findTopWantedAtByItemId(itemId);
+        ResItemLikeInfo itemLikeInfoResponse = null;
+        Optional<Like> itemSeller = wishlistDao.findFirstByItemId(itemId);
 
+        if (itemSeller.isPresent() && userId == itemSeller.get().getSeller().getSellerId()) {
+            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, wishlistDao.findUserInfoByItemId(itemId));
+        } else {
+            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, null);
+        }
 
-        ResItemLikeInfo response = new ResItemLikeInfo(count, favoriteDate);
-
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.OK).body(itemLikeInfoResponse);
     }
 
     @Autowired
