@@ -51,7 +51,7 @@ it("saves and removes photo", async () => {
   );
 });
 
-it("throws HTTPException if SM.MS upload fails", async () => {
+it("throws HTTPException if upload fails", async () => {
   const gateway = new SmmsPhotoStorageGateway();
   const photo = new File(["test"], "test.png") as unknown as File;
   mockSmmsResponse(400, {});
@@ -61,7 +61,7 @@ it("throws HTTPException if SM.MS upload fails", async () => {
   expect(fn).toThrow(HTTPException);
 });
 
-it("throws HTTPException if SM.MS delete fails", async () => {
+it("throws HTTPException if deletion fails", async () => {
   const gateway = new SmmsPhotoStorageGateway();
   const photo = new File(["test"], "test.png") as unknown as File;
   mockSmmsResponse(200, {
