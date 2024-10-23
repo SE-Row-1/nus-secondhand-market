@@ -21,6 +21,8 @@ public class MQServiceImpl implements MQService{
     public void sendEmailMessage(EmailMessage message) {
         rabbitTemplate.convertAndSend("email", "Email", message);
         logger.info("Sent email message: " + message);
+    }
+
     // send updated message，use `account.updated.success`
     public void sendUpdateMessage(UpdateMessage message) {
         rabbitTemplate.convertAndSend("account", "account.updated.success", message);

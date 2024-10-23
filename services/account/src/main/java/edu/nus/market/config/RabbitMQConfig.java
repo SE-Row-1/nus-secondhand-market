@@ -24,11 +24,14 @@ public class RabbitMQConfig {
     }
 
     // define account Topic exchange: email
-    // define account Topic exchange
+
     @Bean
     public TopicExchange EmailExchange() {
-        return new TopicExchange("email");
-    public TopicExchange topicExchange() {
+        return new TopicExchange("email");}
+
+    // define account Topic exchange
+    @Bean
+    public TopicExchange AccountExchange() {
         return new TopicExchange("account");
     }
 }
