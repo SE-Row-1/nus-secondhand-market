@@ -11,10 +11,10 @@ public enum ErrorMsgEnum {
     ACCESS_FORBIDDEN("You are not allowed to access this resource."),
 
     TRANSACTION_NOT_FOUND("Transaction not found."),
-    EMAIL_NOT_MATCHED("Email not matched."),
     EMAIL_VERIFIED("Email has been verified."),
     OTP_EXPIRED("OTP has expired."),
-    INVALID_OTP("Invalid OTP."),
+    INVALID_OTP("This OTP is invalid."),
+    EMAIL_NOT_VERIFIED("This Email is not verified. Please verify it first."),
     ;
     public String ErrorMsg;
 

@@ -21,8 +21,8 @@ public interface AccountDao {
         "created_at, deleted_at FROM account WHERE email = #{email} AND deleted_at IS NULL")
     Account getAccountByEmail(String email);
 
-    @Select("INSERT INTO account (email, password_hash, password_salt) VALUES " +
-        "(#{email}, #{passwordHash}, #{passwordSalt}) " +
+    @Select("INSERT INTO account (email, password_hash, password_salt, nickname) VALUES " +
+        "(#{email}, #{passwordHash}, #{passwordSalt}, #{nickname}) " +
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
         "created_at AS createdAt, deleted_at AS deletedAt")

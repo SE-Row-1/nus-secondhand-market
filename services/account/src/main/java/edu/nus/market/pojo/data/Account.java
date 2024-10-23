@@ -49,7 +49,6 @@ public class Account {
     String deletedAt;
 
     public Account(RegisterReq registerReq){
-        this.email = registerReq.getEmail();
         this.nickname = null;
         this.avatarUrl = null;
         this.departmentId = 0;

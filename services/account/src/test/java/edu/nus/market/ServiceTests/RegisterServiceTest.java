@@ -1,9 +1,11 @@
 package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
+import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.data.EmailTransaction;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.*;
@@ -24,11 +26,19 @@ public class RegisterServiceTest {
     @Resource
     AccountDao accountDao;
 
+    @Resource
+    EmailTransactionDao emailTransactionDao;
+
+    private static final String ID = "1";
+    private static final String NICKNAME = "test";
     private static final String EMAIL = "e1351827@u.nus.edu";
     private static final String PASSWORD = "12345678";
 
     @BeforeAll
     void setup(){
+        emailTransactionDao.cleanTable();
+        emailTransactionDao.insertEmailTransaction(new EmailTransaction(ID, EMAIL, "123456"));
+        emailTransactionDao.verifyEmailTransaction(ID);
         accountDao.cleanTable();
     }
 
@@ -76,7 +86,7 @@ public class RegisterServiceTest {
 
     private RegisterReq createRegisterReq() {
         RegisterReq registerReq = new RegisterReq();
-        registerReq.setEmail(EMAIL);
+        registerReq.setId(ID);
         registerReq.setPassword(PASSWORD);
         return registerReq;
     }
