@@ -82,11 +82,12 @@ jobs:
           chart_dir="helm/nshm"
           new_image_tag=${{ github.sha }}
           sed -i -E "s|(repository: z1yoon/nshm-${{ matrix.service }}[[:space:]]+tag: )[^\"]*|\1$new_image_tag|g" "$chart_dir/values.yaml"
+          cat $chart_dir/values.yaml
 
       - name: Commit the changes
         run: |
           git config --global user.email "nshm@u.nus.edu"
           git config --global user.name "nshm"
-          git commit -am "Updated image tags for services: ${{ matrix.service }}"
+          git commit -am "chore: updated image tags for services: ${{ matrix.service }}"
           git push
         continue-on-error: true

@@ -50,7 +50,7 @@ resource "aws_eks_cluster" "nshm_cluster" {
   node_group_name = "nshm-eks-workers-30"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = var.public_subnet_ids
-  instance_types  = ["t2.micro", "t3.micro"]
+  instance_types  = ["t3a.medium", "t3a.large"]
   capacity_type   = "SPOT"
 
   scaling_config {
