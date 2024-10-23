@@ -62,6 +62,6 @@ export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
       });
     }
 
-    delete this.registry[hash];
+    delete this.registry[photoUrl];
   }
 }
