@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 public class EmailValidationServiceImpl implements EmailValidationService{
@@ -58,7 +59,9 @@ public class EmailValidationServiceImpl implements EmailValidationService{
         EmailMessage message = new EmailMessage(email, "Your Verification Code", "Your verification code is: " + otp);
         mqService.sendEmailMessage(message);
 
-        int id = emailTransactionDao.insertEmailTransaction(new EmailTransaction(email, otp));
+        String id = UUID.randomUUID().toString();
+
+        emailTransactionDao.insertEmailTransaction(new EmailTransaction(id, email, otp));
 
         return ResponseEntity.ok(id);
     }
@@ -69,10 +72,6 @@ public class EmailValidationServiceImpl implements EmailValidationService{
         EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(emailOTPValidationReq.getId());
         if (emailTransaction == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.TRANSACTION_NOT_FOUND.ErrorMsg));
-
-        // if the email doesn't match
-        if (!emailOTPValidationReq.getEmail().equals(emailTransaction.getEmail()))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_MATCHED.ErrorMsg));
 
         // if the email is verified
         if (emailTransaction.getVerifiedAt() != null)
@@ -91,7 +90,7 @@ public class EmailValidationServiceImpl implements EmailValidationService{
         if (!emailOTPValidationReq.getOtp().equals(emailTransaction.getOtp())){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.INVALID_OTP.ErrorMsg));
         }
-        emailTransactionDao.updateEmailTransaction(emailOTPValidationReq.getId());
+        emailTransactionDao.verifyEmailTransaction(emailOTPValidationReq.getId());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

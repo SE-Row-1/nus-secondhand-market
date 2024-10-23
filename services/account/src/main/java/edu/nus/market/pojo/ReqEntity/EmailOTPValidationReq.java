@@ -12,12 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmailOTPValidationReq {
     @NotBlank
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
-    String email;
-
-    @NotBlank
     String otp;
 
     @NotBlank
-    int id;
+    String id;
 }

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmailTransactionDao {
     // Insert into email_transaction (email, otp, created_at) VALUES (#{email}, #{otp}, now()) and return the id
-    @Select("INSERT INTO email_transaction (email, otp) VALUES (#{email}, #{otp}) " +
+    @Select("INSERT INTO email_transaction (id, email, otp) VALUES (#{id}, #{email}, #{otp}) " +
         "RETURNING id")
-    int insertEmailTransaction(EmailTransaction emailTransaction);
+    String insertEmailTransaction(EmailTransaction emailTransaction);
 
     // Select the email_transaction (id, email, otp, created_at, verified_at) from email_transaction where id = #{id}
 //    @Select("SELECT id, email, otp, created_at, verified_at FROM email_transaction WHERE id = #{id}")
@@ -17,15 +17,15 @@ public interface EmailTransactionDao {
     @Select("SELECT id, email, otp, to_char(created_at, 'YYYY-MM-DD\" \"HH24:MI:SS.USOF') AS created_at, " +
         "to_char(verified_at, 'YYYY-MM-DD\" \"HH24:MI:SS.USOF') AS verified_at " +
         "FROM email_transaction WHERE id = #{id}")
-    EmailTransaction getEmailTransactionById(int id);
+    EmailTransaction getEmailTransactionById(String id);
 
 
     @Select("UPDATE email_transaction SET verified_at = now() WHERE id = #{id}")
-    void updateEmailTransaction(int id);
+    void verifyEmailTransaction(String id);
 
     // Update the created_at column of the email_transaction table
     @Select("UPDATE email_transaction SET created_at = #{time} WHERE id = #{id}")
-    void updateCreatedAt(String time, int id);
+    void updateCreatedAt(String time, String id);
 
     // clean table
     @Select("TRUNCATE TABLE email_transaction")

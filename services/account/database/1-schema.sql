@@ -49,7 +49,7 @@ create table account (
 
 create table email_transaction (
   -- Transaction's ID.
-  id int generated always as identity primary key,
+  id text as primary key,
 
   -- User's EDU email address.
   email text check (email like '%@u.nus.edu') not null,

@@ -11,7 +11,7 @@ import javax.persistence.Column;
 @NoArgsConstructor
 public class EmailTransaction {
     @Column(name = "id")
-    int id;
+    String id;
 
     @Column(name = "email")
     String email;
@@ -25,8 +25,9 @@ public class EmailTransaction {
     @Column(name = "verified_at")
     String verifiedAt;
 
-    public EmailTransaction(String email, String otp)
+    public EmailTransaction(String uuid, String email, String otp)
     {
+        this.id = uuid;
         this.email = email;
         this.otp = otp;
     }
