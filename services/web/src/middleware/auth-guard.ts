@@ -9,7 +9,8 @@ export class AuthGuard extends Middleware {
   /**
    * These routes are accessible only if the user IS authenticated.
    */
-  private static AUTH_ROUTES = /^\/belongings|^\/wishlist|^\/settings/;
+  private static AUTH_ROUTES =
+    /^\/belongings|^\/wishlist|^\/transactions|^\/settings/;
 
   /**
    * These routes are accessible only if the user IS NOT authenticated.
