@@ -5,7 +5,7 @@ import { HTTPException } from "hono/http-exception";
 type Transition = (dto: {
   item: Item;
   actor: SimplifiedAccount;
-  counterparty?: SimplifiedAccount;
+  buyer?: SimplifiedAccount;
 }) => Promise<void>;
 
 export function createTransition(from: ItemStatus, to: ItemStatus) {
@@ -26,15 +26,15 @@ export function createTransition(from: ItemStatus, to: ItemStatus) {
   });
 }
 
-const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
+const forSaleToDealt: Transition = async ({ item, actor, buyer }) => {
   if (actor.id !== item.seller.id) {
     throw new HTTPException(403, {
       message: "You are not the seller of this item",
     });
   }
 
-  if (!counterparty) {
-    throw new HTTPException(400, { message: "Counterparty not given" });
+  if (!buyer) {
+    throw new HTTPException(400, { message: "Buyer not given" });
   }
 
   const conflictedTransaction = await transactionsRepository.findOne({
@@ -53,7 +53,7 @@ const forSaleToDealt: Transition = async ({ item, actor, counterparty }) => {
       price: item.price,
     },
     seller: item.seller,
-    buyer: counterparty,
+    buyer: buyer,
   });
 };
 

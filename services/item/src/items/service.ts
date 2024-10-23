@@ -180,7 +180,7 @@ export async function update(dto: UpdateServiceDto) {
 type UpdateStatusServiceDto = {
   id: string;
   status: ItemStatus;
-  counterparty?: SimplifiedAccount;
+  buyer?: SimplifiedAccount;
   user: SimplifiedAccount;
 };
 
@@ -195,7 +195,7 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
   await transition({
     item,
     actor: dto.user,
-    ...(dto.counterparty && { counterparty: dto.counterparty }),
+    ...(dto.buyer && { buyer: dto.buyer }),
   });
 
   const newItem = await itemsRepository.updateOne(

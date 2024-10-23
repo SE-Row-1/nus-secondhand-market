@@ -140,13 +140,13 @@ export const updateStatusJsonSchema = v.object({
     v.transform(Number),
     v.enum(ItemStatus, "Invalid item status"),
   ),
-  counterparty: v.optional(
+  buyer: v.optional(
     v.object({
       id: v.pipe(
         v.unknown(),
         v.transform(Number),
-        v.integer("Counterparty ID should be an integer"),
-        v.minValue(1, "Invalid counterparty ID"),
+        v.integer("Buyer ID should be an integer"),
+        v.minValue(1, "Invalid buyer ID"),
       ),
       nickname: v.string("Name should be a string"),
       avatarUrl: v.pipe(

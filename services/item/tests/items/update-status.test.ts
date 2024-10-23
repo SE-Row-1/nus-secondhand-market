@@ -35,7 +35,7 @@ describe("for sale -> dealt", () => {
       `/items/${item.id}/status`,
       {
         status: ItemStatus.Dealt,
-        counterparty: someone.simplifiedAccount,
+        buyer: someone.simplifiedAccount,
       },
       {
         headers: {
@@ -70,7 +70,7 @@ describe("for sale -> dealt", () => {
     expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
   });
 
-  it("fails if counterparty is not given", async () => {
+  it("fails if buyer is not given", async () => {
     mock.module("@/events/publish-item-updated-event", () => ({
       publishItemUpdatedEvent: mock(),
     }));
@@ -139,7 +139,7 @@ describe("for sale -> dealt", () => {
       `/items/${item.id}/status`,
       {
         status: ItemStatus.Dealt,
-        counterparty: someone.simplifiedAccount,
+        buyer: someone.simplifiedAccount,
       },
       {
         headers: {
@@ -199,7 +199,7 @@ describe("for sale -> dealt", () => {
       `/items/${item.id}/status`,
       {
         status: ItemStatus.Dealt,
-        counterparty: someone.simplifiedAccount,
+        buyer: someone.simplifiedAccount,
       },
       {
         headers: {
@@ -260,7 +260,7 @@ describe("for sale -> dealt", () => {
       `/items/${item.id}/status`,
       {
         status: ItemStatus.Dealt,
-        counterparty: someone.simplifiedAccount,
+        buyer: someone.simplifiedAccount,
       },
       {
         headers: {
