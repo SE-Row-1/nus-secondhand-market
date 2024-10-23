@@ -86,6 +86,14 @@ public class AuthController {
         return emailValidationService.sendOTP(emailOTPReq);
     }
 
+    @PostMapping("/otp/verification")
+    public ResponseEntity<Object> validateOtp(@Valid @RequestBody EmailOTPValidationReq emailOTPValidationReq, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+        return emailValidationService.validateOTP(emailOTPValidationReq);
+    }
+
     // Health Check
     @GetMapping("/healthz")
     public String checkHealth(){

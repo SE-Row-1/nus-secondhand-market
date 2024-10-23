@@ -5,6 +5,7 @@ import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.EmailOTPReq;
+import edu.nus.market.pojo.ReqEntity.EmailOTPValidationReq;
 import edu.nus.market.pojo.ResEntity.EmailMessage;
 import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.data.EmailTransaction;
@@ -13,6 +14,10 @@ import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class EmailValidationServiceImpl implements EmailValidationService{
@@ -59,11 +64,34 @@ public class EmailValidationServiceImpl implements EmailValidationService{
     }
 
     @Override
-    public ResponseEntity<Object> validateOTP(String email, String otp) {
-        // TODO: validate OTP
-        return null;
+    public ResponseEntity<Object> validateOTP(EmailOTPValidationReq emailOTPValidationReq) {
+        // select the email transaction by id
+        EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(emailOTPValidationReq.getId());
+        if (emailTransaction == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.TRANSACTION_NOT_FOUND.ErrorMsg));
+
+        // if the email doesn't match
+        if (!emailOTPValidationReq.getEmail().equals(emailTransaction.getEmail()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_MATCHED.ErrorMsg));
+
+        // if the email is verified
+        if (emailTransaction.getVerifiedAt() != null)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.EMAIL_VERIFIED.ErrorMsg));
+
+        // if the time is expired
+        String time = emailTransaction.getCreatedAt();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSSX");
+        OffsetDateTime createdTime = OffsetDateTime.parse(emailTransaction.getCreatedAt(), formatter);
+        OffsetDateTime now = OffsetDateTime.now();
+        if (now.isAfter(createdTime.plus(expirationTime, ChronoUnit.MILLIS)))
+            return ResponseEntity.status(HttpStatus.GONE).body(new ErrorMsg(ErrorMsgEnum.OTP_EXPIRED.ErrorMsg));
+
+        // if the otp is incorrect
+        if (!emailOTPValidationReq.getOtp().equals(emailTransaction.getOtp())){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.INVALID_OTP.ErrorMsg));
+        }
+        emailTransactionDao.updateEmailTransaction(emailOTPValidationReq.getId());
+        return ResponseEntity.ok().build();
     }
-
-
-
 }

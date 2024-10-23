@@ -58,7 +58,7 @@ create table email_transaction (
   otp text not null,
 
   -- Time when the opt was sent.
-  sent_at timestamptz default now() not null,
+  created_at timestamptz default now() not null,
 
   -- Time when the opt verified.
   verified_at timestamptz default null

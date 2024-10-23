@@ -10,6 +10,11 @@ public enum ErrorMsgEnum {
     FAILED_UPDATE("Failed to update profile."),
     ACCESS_FORBIDDEN("You are not allowed to access this resource."),
 
+    TRANSACTION_NOT_FOUND("Transaction not found."),
+    EMAIL_NOT_MATCHED("Email not matched."),
+    EMAIL_VERIFIED("Email has been verified."),
+    OTP_EXPIRED("OTP has expired."),
+    INVALID_OTP("Invalid OTP."),
     ;
     public String ErrorMsg;
 
