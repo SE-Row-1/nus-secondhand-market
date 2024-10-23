@@ -52,7 +52,7 @@ public class Account {
     public Account(RegisterReq registerReq){
         this.nickname = registerReq.getNickname();
         this.avatarUrl = null;
-        this.departmentId = 0;
+        this.departmentId = null;
         this.phoneCode = null;
         this.phoneNumber = null;
         this.preferredCurrency = null;
@@ -68,15 +68,5 @@ public class Account {
         this.email = null;
     }
 
-    public Account(int id, String email){
-        this.id = id;
-        this.email = email;
-        this.nickname = null;
-        this.avatarUrl = null;
-        this.departmentId = 0;
-        this.phoneCode = null;
-        this.phoneNumber = null;
-        this.preferredCurrency = null;
-    }
 
 }

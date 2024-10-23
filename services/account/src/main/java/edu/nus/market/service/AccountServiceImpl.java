@@ -208,7 +208,11 @@ public class AccountServiceImpl implements AccountService{
      */
     @Override
     public ResponseEntity<Object> forgetPasswordService(ForgetPasswordReq forgetPasswordReq){
-        Account account = accountDao.getAccountByEmail(forgetPasswordReq.getEmail());
+        EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(forgetPasswordReq.getId());
+        if(emailTransaction == null || emailTransaction.getVerifiedAt() == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
+
+        Account account = accountDao.getAccountByEmail(emailTransaction.getEmail());
         if(account == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
@@ -217,6 +221,6 @@ public class AccountServiceImpl implements AccountService{
         String passwordHash = passwordHasher.hashPassword(forgetPasswordReq.getNewPassword(),salt);
         // generate salt and hash the password
         int accountId = accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
-        return ResponseEntity.status(HttpStatus.OK).body("");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

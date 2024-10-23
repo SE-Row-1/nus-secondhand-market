@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ForgetPasswordReq {
     @NotBlank
-    @Pattern(regexp = "^[A-Za-z0-9._%+-]+@u\\.nus\\.edu$")
-    String email;
+    String id;
 
     @NotBlank
     @Size(min = 8, max = 20)
