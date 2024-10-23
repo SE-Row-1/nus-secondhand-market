@@ -79,6 +79,21 @@ public class RegisterServiceTest {
         assertNotEquals(id, accountDao.getAccountByEmail(EMAIL).getId());
     }
 
+    @Test
+    @Order(4)
+    void registerAccountWithNicknameTest(){
+        accountDao.hardDeleteAccountByEmail(EMAIL);
+        RegisterReq registerReq = createRegisterReq();
+        registerReq.setNickname(NICKNAME);
+
+        ResponseEntity<Object> registerResponse = accountService.registerService(registerReq);
+
+        assertEquals(HttpStatus.CREATED, registerResponse.getStatusCode());
+        assertNotNull(accountDao.getAccountByEmail(EMAIL));
+        assertInstanceOf (ResAccount.class, registerResponse.getBody());
+        assertEquals(NICKNAME, ((ResAccount) registerResponse.getBody()).getNickname());
+    }
+
     @AfterAll
     void cleanup(){
         accountDao.cleanTable();

@@ -49,7 +49,7 @@ public class Account {
     String deletedAt;
 
     public Account(RegisterReq registerReq){
-        this.nickname = null;
+        this.nickname = registerReq.getNickname();
         this.avatarUrl = null;
         this.departmentId = 0;
         this.phoneCode = null;
