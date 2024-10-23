@@ -10,7 +10,7 @@ import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon, UndoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState } from "react";
 import * as v from "valibot";
 import { PhotoSelector } from "./photo-selector";
 
@@ -58,14 +58,9 @@ export function PublishItemForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
+    mutationFn: async (formData: FormData) => {
       const validFormData = v.parse(formSchema, {
-        ...formData,
+        ...Object.fromEntries(formData),
         photos: photoObjects.map(({ file }) => file),
       });
 
@@ -107,7 +102,7 @@ export function PublishItemForm() {
   return (
     <form
       ref={formRef}
-      onSubmit={mutate}
+      action={mutate}
       className="grow flex flex-col justify-center items-stretch gap-4 w-full max-w-lg mx-auto"
     >
       <div className="grid gap-2">

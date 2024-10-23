@@ -15,7 +15,6 @@ import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import { type FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -36,13 +35,11 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
-      const { email } = v.parse(formSchema, formData);
+    mutationFn: async (formData: FormData) => {
+      const { email } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
       return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         email,
@@ -68,7 +65,7 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
           Your NUS email address, used for identity verification and login.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={mutate}>
+      <form action={mutate}>
         <CardContent>
           <Input
             type="email"

@@ -15,7 +15,6 @@ import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import { type FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -37,13 +36,11 @@ export function UpdateNicknameCard({ id, initialNickname }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
-      const { nickname } = v.parse(formSchema, formData);
+    mutationFn: async (formData: FormData) => {
+      const { nickname } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
       return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         nickname,
@@ -69,7 +66,7 @@ export function UpdateNicknameCard({ id, initialNickname }: Props) {
           Your preferred name, displayed to everyone else on the platform.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={mutate}>
+      <form action={mutate}>
         <CardContent>
           <Input
             type="text"

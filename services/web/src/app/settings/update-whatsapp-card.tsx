@@ -15,7 +15,6 @@ import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import type { FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -48,13 +47,11 @@ export function UpdateWhatsappCard({
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
-      const { phoneCode, phoneNumber } = v.parse(formSchema, formData);
+    mutationFn: async (formData: FormData) => {
+      const { phoneCode, phoneNumber } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
       return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
         phone_code: phoneCode,
@@ -79,7 +76,7 @@ export function UpdateWhatsappCard({
         <CardTitle>WhatsApp</CardTitle>
         <CardDescription>Your WhatsApp phone number.</CardDescription>
       </CardHeader>
-      <form onSubmit={mutate}>
+      <form action={mutate}>
         <CardContent className="flex items-center gap-2">
           <span>+</span>
           <Input

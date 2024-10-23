@@ -9,7 +9,6 @@ import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -38,13 +37,11 @@ export function RegisterForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
-      const { email, password, confirmation } = v.parse(formSchema, formData);
+    mutationFn: async (formData: FormData) => {
+      const { email, password, confirmation } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
       if (password !== confirmation) {
         throw new Error("Passwords do not match. Please double check.");
@@ -74,7 +71,7 @@ export function RegisterForm() {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4 min-w-80">
+    <form action={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input

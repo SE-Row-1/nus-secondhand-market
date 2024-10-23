@@ -11,7 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon, UndoIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import * as v from "valibot";
 import { PhotoSlots } from "./photo-slots";
 
@@ -74,12 +74,7 @@ export function EditItemForm({ id, initialItem }: Props) {
   const router = useRouter();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
+    mutationFn: async (formData: FormData) => {
       const addedPhotos = photos
         .filter((photo) => !item.photo_urls.includes(photo.url))
         .map((photo) => photo.file);
@@ -89,7 +84,7 @@ export function EditItemForm({ id, initialItem }: Props) {
       );
 
       const validFormData = v.parse(formSchema, {
-        ...formData,
+        ...Object.fromEntries(formData),
         addedPhotos,
         removedPhotoUrls,
       });
@@ -133,7 +128,7 @@ export function EditItemForm({ id, initialItem }: Props) {
   );
 
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form action={mutate} className="grid gap-4">
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="name">
           Name
