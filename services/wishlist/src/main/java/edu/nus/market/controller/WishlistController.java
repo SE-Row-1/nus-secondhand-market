@@ -124,6 +124,10 @@ public class WishlistController {
         if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
+        // check userId
+        if (userId != JwtTokenManager.decodeAccessToken(token).getId()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
 
         return wishlistService.checkLikeService(itemId, userId);
     }
@@ -133,9 +137,9 @@ public class WishlistController {
                                                   @CookieValue(value = "access_token", required = false) String token){
         // account verification
         if (token == null || token.isEmpty())
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+            return wishlistService.getItemLikeInfoService(itemId, 0);
         if (!JwtTokenManager.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+            return wishlistService.getItemLikeInfoService(itemId, 0);
         }
 
         return wishlistService.getItemLikeInfoService(itemId, JwtTokenManager.decodeAccessToken(token).getId());
