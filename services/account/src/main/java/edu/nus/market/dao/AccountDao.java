@@ -54,7 +54,7 @@ public interface AccountDao {
     Account updateProfile(UpdateProfileReq updateProfileReq, int id);
 
     // clean table everytime before and after test
-    @Delete("TRUNCATE TABLE account")
+    @Delete("Delete FROM account")
     void cleanTable();
 
     // delete account by email
