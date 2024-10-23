@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 @Component
 public class OTPGenerator {
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String CHARACTERS = "0123456789";
     private static final SecureRandom random = new SecureRandom();
 
     public static String generateOTP(int length) {
