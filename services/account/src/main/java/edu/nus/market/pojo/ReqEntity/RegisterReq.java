@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,7 +18,7 @@ public class RegisterReq {
 //    String email;
 //
     // this id means transaction_id
-    String id;
+    UUID id;
 
     @Size(min = 8, max = 20)
     String nickname;

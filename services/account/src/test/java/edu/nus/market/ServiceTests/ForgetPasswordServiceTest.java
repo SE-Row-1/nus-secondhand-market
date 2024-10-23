@@ -21,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,7 +43,7 @@ public class ForgetPasswordServiceTest {
     private static final String OLD_PASSWORD = "oldPassword123";
     private static final String NEW_PASSWORD = "newPassword456";
     private static int userId;
-    private static final String UUID = "123456";
+    private static UUID uuid;
 
     @BeforeAll
     void setup() {
@@ -53,8 +55,8 @@ public class ForgetPasswordServiceTest {
         accountDao.registerNewAccount(account);
 
         emailTransactionDao.cleanTable();
-        emailTransactionDao.insertEmailTransaction(new EmailTransaction(UUID, EMAIL, "reset-password"));
-        emailTransactionDao.verifyEmailTransaction(UUID);
+        uuid = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, "reset-password"));
+        emailTransactionDao.verifyEmailTransaction(uuid);
 
         userId = accountDao.getAccountByEmail(EMAIL).getId();
     }
@@ -62,7 +64,7 @@ public class ForgetPasswordServiceTest {
     @Test
     void forgetPasswordSuccessTest() {
         ForgetPasswordReq forgetPasswordReq = new ForgetPasswordReq();
-        forgetPasswordReq.setId(UUID);
+        forgetPasswordReq.setId(uuid);
         forgetPasswordReq.setNewPassword(NEW_PASSWORD);
 
         ResponseEntity<Object> response = accountService.forgetPasswordService(forgetPasswordReq);
@@ -77,7 +79,7 @@ public class ForgetPasswordServiceTest {
     @Test
     void forgetPasswordEmailNotVerifiedTest() {
         ForgetPasswordReq forgotPasswordReq = new ForgetPasswordReq();
-        forgotPasswordReq.setId("invalid-id");
+        forgotPasswordReq.setId(UUID.randomUUID());
         forgotPasswordReq.setNewPassword(NEW_PASSWORD);
 
         ResponseEntity<Object> response = accountService.forgetPasswordService(forgotPasswordReq);

@@ -5,7 +5,6 @@ import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.pojo.data.EmailTransaction;
@@ -15,6 +14,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,7 +36,7 @@ public class UpdateProfileServiceTest {
     private static final String EMAIL = "e1351826@u.nus.edu";
     private static final String PASSWORD = "12345678";
     private static final String NICKNAME = "Nickname";
-    private static final String UUID = "1";
+    private static UUID uuid;
     private static int ID;
 
     @BeforeAll
@@ -52,8 +53,8 @@ public class UpdateProfileServiceTest {
 
         ID = accountDao.getAccountByEmail(EMAIL).getId();
 
-        emailTransactionDao.insertEmailTransaction(new EmailTransaction(UUID, EMAIL, "123456"));
-        emailTransactionDao.verifyEmailTransaction(UUID);
+        uuid = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, "123456"));
+        emailTransactionDao.verifyEmailTransaction(uuid);
     }
 
     @Test
@@ -106,7 +107,7 @@ public class UpdateProfileServiceTest {
 
 
         UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setId(UUID + "1");
+        updateProfileReq.setId(UUID.randomUUID());
 
         ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
 

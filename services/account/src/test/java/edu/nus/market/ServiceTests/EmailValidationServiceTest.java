@@ -17,6 +17,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
@@ -39,6 +41,8 @@ public class EmailValidationServiceTest {
     @Mock
     private MQServiceImpl mqServiceImpl;  // Mock MQServiceImpl
 
+    UUID id = UUID.randomUUID();
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -59,7 +63,7 @@ public class EmailValidationServiceTest {
             mockedOTP.when(() -> OTPGenerator.generateOTP(6)).thenReturn("123456");
 
             // 模拟 EmailTransactionDao 的 insert 操作
-            when(emailTransactionDao.insertEmailTransaction(any())).thenReturn("1");
+            when(emailTransactionDao.insertEmailTransaction(any())).thenReturn(id);
 
             // 模拟 RabbitTemplate 的 convertAndSend 方法
             doNothing().when(rabbitTemplate).convertAndSend(eq("email"), eq("Email"), any(EmailMessage.class));

@@ -6,11 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class UpdateProfileReq {
-    private String Id;
+    private UUID Id;
 
     @Size(min = 2, max = 20)
     private String nickname;

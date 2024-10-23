@@ -59,9 +59,7 @@ public class EmailValidationServiceImpl implements EmailValidationService{
         EmailMessage message = new EmailMessage(email, "Your Verification Code", "Your verification code is: " + otp);
         mqService.sendEmailMessage(message);
 
-        String id = UUID.randomUUID().toString();
-
-        emailTransactionDao.insertEmailTransaction(new EmailTransaction(id, email, otp));
+        UUID id = emailTransactionDao.insertEmailTransaction(new EmailTransaction(email, otp));
 
         return ResponseEntity.ok(id);
     }

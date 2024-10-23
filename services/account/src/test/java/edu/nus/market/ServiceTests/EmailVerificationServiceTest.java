@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -28,13 +30,15 @@ public class EmailVerificationServiceTest {
     private static final String EMAIL = "e1351827@u.nus.edu";
     private static final String OTP = "123456";
     private static final String WRONG_OTP = "654321";
-    private static final String ID = "abide";
+    private static UUID ID;
     private static EmailOTPValidationReq emailOTPValidationReq;
 
     @BeforeEach
     public void resetTable() {
         emailTransactionDao.cleanTable();
-        emailTransactionDao.insertEmailTransaction(new EmailTransaction(ID, EMAIL, OTP));
+        emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, OTP));
+        ID = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, OTP));
+        System.out.println(ID);
     }
 
     @Test
@@ -58,7 +62,7 @@ public class EmailVerificationServiceTest {
     @Test
     @Order(4)
     public void EmailVerificationWrongIDTest() {
-        emailOTPValidationReq = new EmailOTPValidationReq(OTP, ID + "1");
+        emailOTPValidationReq = new EmailOTPValidationReq(OTP, UUID.randomUUID());
         ResponseEntity<Object> response = emailValidationService.validateOTP(emailOTPValidationReq);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals(new ErrorMsg(ErrorMsgEnum.TRANSACTION_NOT_FOUND.ErrorMsg), response.getBody());

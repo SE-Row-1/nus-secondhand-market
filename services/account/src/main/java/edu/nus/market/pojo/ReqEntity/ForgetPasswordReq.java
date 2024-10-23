@@ -7,12 +7,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForgetPasswordReq {
     @NotBlank
-    String id;
+    UUID id;
 
     @NotBlank
     @Size(min = 8, max = 20)

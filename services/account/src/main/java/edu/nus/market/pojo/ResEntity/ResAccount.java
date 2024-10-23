@@ -18,7 +18,7 @@ public class ResAccount {
 
     String avatarUrl;
 
-    int departmentId;
+    Integer departmentId;
 
     String phoneCode;
 

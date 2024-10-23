@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -29,7 +31,7 @@ public class RegisterServiceTest {
     @Resource
     EmailTransactionDao emailTransactionDao;
 
-    private static final String ID = "1";
+    private static UUID ID;
     private static final String NICKNAME = "test";
     private static final String EMAIL = "e1351827@u.nus.edu";
     private static final String PASSWORD = "12345678";
@@ -37,7 +39,7 @@ public class RegisterServiceTest {
     @BeforeAll
     void setup(){
         emailTransactionDao.cleanTable();
-        emailTransactionDao.insertEmailTransaction(new EmailTransaction(ID, EMAIL, "123456"));
+        ID = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, "123456"));
         emailTransactionDao.verifyEmailTransaction(ID);
         accountDao.cleanTable();
     }
