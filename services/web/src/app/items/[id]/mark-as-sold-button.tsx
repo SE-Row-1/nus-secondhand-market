@@ -30,7 +30,7 @@ export function MarkAsSoldButton({ itemId }: Props) {
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       return await clientRequester.put(`/items/${itemId}/status`, {
-        status: ItemStatus.SOLD,
+        status: ItemStatus.Sold,
       });
     },
     onSuccess: (item) => {

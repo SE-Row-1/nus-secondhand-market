@@ -7,15 +7,15 @@ type Props = {
 
 export function StatusBadge({ status }: Props) {
   switch (status) {
-    case ItemStatus.FOR_SALE:
+    case ItemStatus.ForSale:
       return (
         <Badge className="bg-green-600 hover:bg-green-600/80">FOR SALE</Badge>
       );
-    case ItemStatus.DEALT:
+    case ItemStatus.Dealt:
       return (
         <Badge className="bg-yellow-600 hover:bg-yellow-600/80">DEALT</Badge>
       );
-    case ItemStatus.SOLD:
+    case ItemStatus.Sold:
       return <Badge className="bg-red-600 hover:bg-red-600/80">SOLD</Badge>;
   }
 }

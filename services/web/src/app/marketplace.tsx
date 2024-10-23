@@ -16,7 +16,7 @@ export function Marketplace({ firstPage }: Props) {
     queryKey: ["items", "marketplace"],
     queryFn: async ({ pageParam: cursor }) => {
       const searchParams = new URLSearchParams({
-        status: String(ItemStatus.FOR_SALE),
+        status: String(ItemStatus.ForSale),
         limit: "10",
         ...(cursor && { cursor }),
       });

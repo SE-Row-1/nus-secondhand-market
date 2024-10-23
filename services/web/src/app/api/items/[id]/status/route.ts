@@ -37,7 +37,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
 
   const { status, buyer } = await req.json();
 
-  if (item.status === ItemStatus.FOR_SALE && status === ItemStatus.DEALT) {
+  if (item.status === ItemStatus.ForSale && status === ItemStatus.Dealt) {
     if (account.id !== item.seller.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -81,7 +81,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json(newItem, { status: 200 });
   }
 
-  if (item.status === ItemStatus.DEALT && status === ItemStatus.FOR_SALE) {
+  if (item.status === ItemStatus.Dealt && status === ItemStatus.ForSale) {
     if (account.id !== item.seller.id) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -118,7 +118,7 @@ export async function PUT(req: NextRequest, { params }: RouteSegments) {
     return NextResponse.json(newItem, { status: 200 });
   }
 
-  if (item.status === ItemStatus.DEALT && status === ItemStatus.SOLD) {
+  if (item.status === ItemStatus.Dealt && status === ItemStatus.Sold) {
     const pendingTransaction = mockTransactions.find(
       (transaction) =>
         transaction.item.id === item.id &&

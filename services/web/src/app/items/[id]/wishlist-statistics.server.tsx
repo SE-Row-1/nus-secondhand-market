@@ -9,7 +9,7 @@ type Props = {
 };
 
 export async function WishlistStatisticsServer({ item, me }: Props) {
-  if (item.status === ItemStatus.SOLD) {
+  if (item.status === ItemStatus.Sold) {
     return null;
   }
 

@@ -104,7 +104,7 @@ function simplifyAccount(account: DetailedAccount) {
 export const mockItems: Item[] = [
   {
     id: "9ab42141-580e-44dd-af63-f29efb593740",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[0]!),
     name: "Vintage Lamp",
     description:
@@ -117,7 +117,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "806c722d-cb49-4ac8-b136-3ec9b64c98fc",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[1]!),
     name: "iPhone 12",
     description: "iPhone 12 in great condition, barely used.",
@@ -132,7 +132,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "757c61ad-2c95-4b06-a8e7-96c1a1b15181",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[3]!),
     name: "Gaming Laptop",
     description: "High-performance gaming laptop with RTX 3070. Barely used.",
@@ -144,7 +144,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "a369a12b-1120-454c-aa6e-090db245630e",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[4]!),
     name: "Mountain Bike",
     description: "Lightweight aluminum mountain bike, perfect for trails.",
@@ -156,7 +156,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "084a6dec-6d81-4984-8102-4e501bc175cc",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[0]!),
     name: "Smartwatch",
     description: "Water-resistant smartwatch with heart-rate monitor and GPS.",
@@ -168,7 +168,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "e26d219d-80ee-456a-8fc8-db03d166ebc7",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[1]!),
     name: "Bluetooth Speaker",
     description:
@@ -181,7 +181,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "36b5388d-6865-406f-931e-7f4e27acdaef",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[3]!),
     name: "Air Purifier",
     description: "HEPA air purifier for large rooms, 3 fan speeds.",
@@ -193,7 +193,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "6e235fc2-3b78-4895-b347-c159f226eac9",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[4]!),
     name: "Leather Jacket",
     description: "Men’s leather jacket, genuine leather, worn twice.",
@@ -205,7 +205,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "2be19455-1c63-4b56-8b87-152721b54179",
-    type: ItemType.PACK,
+    type: ItemType.Pack,
     seller: simplifyAccount(mockAccounts[0]!),
     name: "Give back to the community",
     description: "A bonus pack of my items for sale. Get a 20% discount!",
@@ -215,7 +215,7 @@ export const mockItems: Item[] = [
     children: [
       {
         id: "c64b2db0-cf23-46a4-90d0-fc535b49fdca",
-        type: ItemType.SINGLE,
+        type: ItemType.Single,
         seller: simplifyAccount(mockAccounts[0]!),
         name: "Office Chair",
         description:
@@ -231,7 +231,7 @@ export const mockItems: Item[] = [
       },
       {
         id: "8011e111-845d-4201-a97a-dd7626c71fcf",
-        type: ItemType.SINGLE,
+        type: ItemType.Single,
         seller: simplifyAccount(mockAccounts[0]!),
         name: "Electric Kettle",
         description:
@@ -248,7 +248,7 @@ export const mockItems: Item[] = [
   },
   {
     id: "c8c92520-800f-4db2-b431-eeff1d9db891",
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: simplifyAccount(mockAccounts[0]!),
     name: "Wireless Mouse",
     description: "Ergonomic wireless mouse with adjustable DPI.",

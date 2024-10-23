@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
   const newItem: Item = {
     id: crypto.randomUUID(),
-    type: ItemType.SINGLE,
+    type: ItemType.Single,
     seller: {
       id: account.id,
       nickname: account.nickname,
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     description: String(description),
     price: Number(price),
     photo_urls: [],
-    status: ItemStatus.FOR_SALE,
+    status: ItemStatus.ForSale,
     created_at: new Date().toISOString(),
     deleted_at: null,
   };

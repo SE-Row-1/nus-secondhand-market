@@ -21,21 +21,21 @@ export type DetailedAccount = SimplifiedAccount & {
 };
 
 export enum ItemType {
-  SINGLE = "single",
-  PACK = "pack",
+  Single = "single",
+  Pack = "pack",
 }
 
 export enum ItemStatus {
-  FOR_SALE,
-  DEALT,
-  SOLD,
+  ForSale,
+  Dealt,
+  Sold,
 }
 
 export type SingleItem<
   A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
 > = {
   id: string;
-  type: ItemType.SINGLE;
+  type: ItemType.Single;
   name: string;
   description: string;
   price: number;
@@ -50,7 +50,7 @@ export type ItemPack<
   A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
 > = {
   id: string;
-  type: ItemType.PACK;
+  type: ItemType.Pack;
   name: string;
   description: string;
   price: number;

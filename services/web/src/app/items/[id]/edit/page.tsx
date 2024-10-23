@@ -47,7 +47,7 @@ export default async function Page({ params }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
       </Link>
-      {item.type === ItemType.SINGLE && (
+      {item.type === ItemType.Single && (
         <EditItemForm id={id} initialItem={item} />
       )}
     </div>

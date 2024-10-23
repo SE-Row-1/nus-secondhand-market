@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const pack: Item = {
     id: crypto.randomUUID(),
-    type: ItemType.PACK,
+    type: ItemType.Pack,
     seller: {
       id: account.id,
       nickname: account.nickname,

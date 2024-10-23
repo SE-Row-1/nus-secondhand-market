@@ -32,7 +32,7 @@ export function ItemDetailsClient({
 
   return (
     <div className="w-full max-w-xl m-auto">
-      {item.type === ItemType.SINGLE ? (
+      {item.type === ItemType.Single ? (
         <PhotoCarousel photoUrls={item.photo_urls} />
       ) : (
         <ChildrenGrid items={item.children} />
@@ -56,7 +56,7 @@ export function ItemDetailsClient({
       <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 mt-5">
         {identity === "seller" ? (
           <>
-            {item.type === ItemType.SINGLE ? (
+            {item.type === ItemType.Single ? (
               <>
                 <EditItemLink itemId={item.id} />
                 <DeleteItemButton itemId={item.id} />
@@ -68,11 +68,11 @@ export function ItemDetailsClient({
         ) : (
           <>
             <ContactSellerButton seller={item.seller} itemName={item.name} />
-            {item.status === ItemStatus.FOR_SALE ? (
+            {item.status === ItemStatus.ForSale ? (
               wishlistButton
-            ) : item.status === ItemStatus.DEALT && identity === "buyer" ? (
+            ) : item.status === ItemStatus.Dealt && identity === "buyer" ? (
               <MarkAsSoldButton itemId={item.id} />
-            ) : item.status === ItemStatus.DEALT ? (
+            ) : item.status === ItemStatus.Dealt ? (
               <Button variant="outline" disabled>
                 <CheckIcon className="size-4 mr-2" />
                 Dealt

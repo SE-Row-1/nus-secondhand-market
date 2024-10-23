@@ -21,7 +21,7 @@ export function MarkAsDealtButton({ itemId, buyer, onDealt }: Props) {
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       return await clientRequester.put(`/items/${itemId}/status`, {
-        status: ItemStatus.DEALT,
+        status: ItemStatus.Dealt,
         buyer,
       });
     },
