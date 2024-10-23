@@ -115,6 +115,19 @@ public class WishlistController {
         return wishlistService.deleteLikeService(userId, itemId);
     }
 
+    @GetMapping("/{user_id}/items/{item_id}")
+    public ResponseEntity<Object> checkLike(@PathVariable("user_id") int userId, @PathVariable("item_id") String itemId,
+                                             @CookieValue(value = "access_token", required = false) String token){
+        // account verification
+        if (token == null || token.isEmpty())
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
+        if (!JwtTokenManager.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+        }
+
+        return wishlistService.checkLikeService(itemId, userId);
+    }
+
     @GetMapping("/statistics/{item_id}")
     public ResponseEntity<Object> getItemLikeInfo(@PathVariable("item_id") String itemId,
                                                   @CookieValue(value = "access_token", required = false) String token){
