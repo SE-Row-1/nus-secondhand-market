@@ -15,3 +15,10 @@ spec:
       key: RABBITMQ_DEFAULT_PASS
   management:
     enabled: true
+  resources:
+    requests:
+      cpu: "512m"
+      memory: "512Mi"
+    limits:
+      cpu: "512m"
+      memory: "512Mi"
