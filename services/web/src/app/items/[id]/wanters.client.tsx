@@ -15,7 +15,6 @@ type Props = {
 };
 
 export function WantersClient({ itemId, wanters, buyer }: Props) {
-  console.log(buyer?.id);
   const [dealtWithId, setDealtWithId] = useState(buyer?.id ?? -1);
 
   return (

@@ -5,7 +5,6 @@ import { columns } from "./columns";
 
 export default async function TransactionsPage() {
   const { data: transactions, error } = await prefetchTransactions();
-  console.log(transactions);
 
   if (error) {
     return <div>Error loading transactions</div>;
