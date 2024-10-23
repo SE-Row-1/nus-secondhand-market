@@ -39,7 +39,6 @@ export function VerifyOtpForm({ state, dispatch }: Props) {
 
       return await clientRequester.post<undefined>("/auth/otp/verification", {
         id: state.transactionId,
-        email: state.email,
         otp,
       });
     },
