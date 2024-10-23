@@ -18,7 +18,7 @@ it("saves and removes photo", async () => {
   const photoUrl = await gateway.save(photo);
 
   expect(photoUrl).toMatch(
-    /^uploads\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.png$/,
+    /^uploads\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.png$/,
   );
   expect(existsSync(photoUrl)).toBeTrue();
 

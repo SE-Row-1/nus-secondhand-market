@@ -28,7 +28,7 @@ it("saves and removes photo", async () => {
       input: {
         Bucket: Bun.env.S3_BUCKET_NAME,
         Key: expect.stringMatching(
-          /^item-photos\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.png$/,
+          /^item-photos\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.png$/,
         ),
         Body: expect.any(Uint8Array),
       },
