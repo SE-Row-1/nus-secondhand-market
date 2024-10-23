@@ -13,7 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ForgetPasswordReq {
-    @NotBlank
     UUID id;
 
     @NotBlank

@@ -16,6 +16,5 @@ public class EmailOTPValidationReq {
     @NotBlank
     String otp;
 
-    @NotBlank
     UUID id;
 }
