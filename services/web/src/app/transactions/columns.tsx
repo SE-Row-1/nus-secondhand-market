@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/components/ui/utils";
+import { useIsMounted } from "@/hooks/use-is-mounted";
 import type { SimplifiedAccount, Transaction } from "@/types";
 import type { ColumnDef } from "@tanstack/react-table";
 import { CopyIcon, MoreHorizontalIcon, PackageIcon } from "lucide-react";
@@ -63,9 +64,9 @@ export const columns: ColumnDef<Transaction>[] = [
     header: "Created at",
     accessorKey: "created_at",
     cell: ({ getValue }) => {
-      const date = new Date(getValue<string>());
+      const date = getValue<string>();
 
-      return <time dateTime={date.toISOString()}>{date.toLocaleString()}</time>;
+      return <Time time={date} />;
     },
   },
   {
@@ -74,13 +75,13 @@ export const columns: ColumnDef<Transaction>[] = [
       const { text, date, classNames } = row.original.completed_at
         ? {
             text: "Completed",
-            date: new Date(row.original.completed_at),
+            date: row.original.completed_at,
             classNames: "bg-green-600",
           }
         : row.original.cancelled_at
           ? {
               text: "Cancelled",
-              date: new Date(row.original.cancelled_at),
+              date: row.original.cancelled_at,
               classNames: "bg-red-600",
             }
           : {
@@ -97,9 +98,7 @@ export const columns: ColumnDef<Transaction>[] = [
             {date && (
               <>
                 at&nbsp;
-                <time dateTime={date.toISOString()}>
-                  {date.toLocaleString()}
-                </time>
+                <Time time={date} />
               </>
             )}
           </span>
@@ -142,3 +141,17 @@ export const columns: ColumnDef<Transaction>[] = [
     },
   },
 ];
+
+type Props = {
+  time: string;
+};
+
+function Time({ time }: Props) {
+  const isMounted = useIsMounted();
+  const date = new Date(time);
+  return (
+    <time dateTime={date.toISOString()}>
+      {isMounted ? date.toLocaleString() : ""}
+    </time>
+  );
+}
