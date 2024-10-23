@@ -2,10 +2,10 @@ import { S3PhotoStorageGateway } from "@/utils/photo-storage-gateway/s3";
 import { S3Client } from "@aws-sdk/client-s3";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 
-const mySend = mock();
+const mockSend = mock();
 
 beforeAll(() => {
-  S3Client.prototype.send = mySend;
+  S3Client.prototype.send = mockSend;
 });
 
 afterAll(() => {
@@ -23,7 +23,7 @@ it("saves and removes photo", async () => {
       `^https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.AWS_REGION}.amazonaws.com/item-photos/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.png$`,
     ),
   );
-  expect(mySend).toHaveBeenLastCalledWith(
+  expect(mockSend).toHaveBeenLastCalledWith(
     expect.objectContaining({
       input: {
         Bucket: Bun.env.S3_BUCKET_NAME,
@@ -37,12 +37,13 @@ it("saves and removes photo", async () => {
 
   await gateway.remove(photoUrl);
 
-  expect(mySend).toHaveBeenLastCalledWith(
+  expect(mockSend).toHaveBeenLastCalledWith(
     expect.objectContaining({
       input: {
         Bucket: Bun.env.S3_BUCKET_NAME,
-        Key: expect.stringMatching(
-          /^item-photos\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}.png$/,
+        Key: photoUrl.replace(
+          `https://${Bun.env.S3_BUCKET_NAME}.s3.${Bun.env.AWS_REGION}.amazonaws.com/`,
+          "",
         ),
       },
     }),

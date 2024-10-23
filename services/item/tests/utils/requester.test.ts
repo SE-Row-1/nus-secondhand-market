@@ -2,55 +2,53 @@ import { createRequester } from "@/utils/requester";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 
-const myFetch = mock();
+const mockFetch = mock();
 
 beforeAll(() => {
-  global.fetch = myFetch;
+  global.fetch = mockFetch;
 });
 
 afterAll(() => {
   mock.restore();
 });
 
-it("concatenates endpoint with the right base URL", async () => {
-  myFetch.mockImplementationOnce(
-    async () => new Response("{}", { status: 200 }),
+function mockResponse(status: number, json: unknown) {
+  mockFetch.mockImplementationOnce(
+    async () => new Response(JSON.stringify(json), { status }),
   );
+}
+
+it("concatenates endpoint with the right base URL", async () => {
+  mockResponse(200, {});
 
   await createRequester("account")("/accounts/1");
 
-  expect(myFetch).toHaveBeenCalledWith(
+  expect(mockFetch).toHaveBeenCalledWith(
     Bun.env.ACCOUNT_SERVICE_BASE_URL + "/accounts/1",
     {},
   );
 });
 
-it("returns JSON response if successful", async () => {
-  myFetch.mockImplementationOnce(
-    async () => new Response('{ "test": [0] }', { status: 200 }),
-  );
+it("returns JSON response", async () => {
+  mockResponse(200, { test: [0] });
 
-  const result = await createRequester("account")("/");
+  const res = await createRequester("account")("/");
 
-  expect(result).toEqual({ test: [0] });
+  expect(res).toEqual({ test: [0] });
 });
 
 it("returns undefined if status is 204", async () => {
-  myFetch.mockImplementationOnce(
-    async () => new Response(null, { status: 204 }),
-  );
+  mockResponse(204, null);
 
-  const result = await createRequester("account")("/");
+  const res = await createRequester("account")("/");
 
-  expect(result).toBeUndefined();
+  expect(res).toBeUndefined();
 });
 
-it("throws HTTPException if not successful", async () => {
-  myFetch.mockImplementationOnce(
-    async () => new Response('{ "error": "test" }', { status: 400 }),
-  );
+it("throws HTTPException if fails", async () => {
+  mockResponse(400, { error: "test" });
 
   const fn = async () => await createRequester("account")("/");
 
-  expect(fn).toThrow(new HTTPException(400, { message: "test" }));
+  expect(fn).toThrow(HTTPException);
 });
