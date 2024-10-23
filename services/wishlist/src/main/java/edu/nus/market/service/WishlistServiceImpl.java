@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -76,7 +77,7 @@ public class WishlistServiceImpl implements WishlistService {
         if (itemSeller.isPresent() && userId == itemSeller.get().getSeller().getSellerId()) {
             itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, wishlistDao.findUserInfoByItemId(itemId));
         } else {
-            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, null);
+            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, new ArrayList<>());
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(itemLikeInfoResponse);
@@ -129,6 +130,6 @@ public class WishlistServiceImpl implements WishlistService {
         if (existingLike.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(existingLike);
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.LIKE_NOT_FOUND.ErrorMsg));
     }
 }
