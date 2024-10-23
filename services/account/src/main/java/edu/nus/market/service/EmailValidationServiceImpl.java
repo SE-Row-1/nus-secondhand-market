@@ -92,6 +92,6 @@ public class EmailValidationServiceImpl implements EmailValidationService{
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.INVALID_OTP.ErrorMsg));
         }
         emailTransactionDao.updateEmailTransaction(emailOTPValidationReq.getId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
