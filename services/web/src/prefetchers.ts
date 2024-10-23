@@ -3,7 +3,7 @@ import type {
   Item,
   PaginatedItems,
   Transaction,
-  WishlistItem,
+  WishlistEntry,
   WishlistStatistics,
 } from "@/types";
 import { serverRequester } from "@/utils/requester/server";
@@ -35,7 +35,7 @@ export const prefetchWishlist = cache(async (userId: number) => {
 
 export const prefetchWishlistItem = cache(
   async (userId: number, itemId: string) => {
-    return await serverRequester.get<WishlistItem>(
+    return await serverRequester.get<WishlistEntry>(
       `/wishlists/${userId}/items/${itemId}`,
     );
   },
