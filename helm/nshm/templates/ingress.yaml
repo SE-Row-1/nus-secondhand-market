@@ -51,6 +51,13 @@ spec:
                 name: wishlist
                 port:
                   number: 8083
+          - path: /api/notification
+            pathType: Prefix
+            backend:
+              service:
+                name: notification
+                port:
+                  number: 8085
           - path: /rabbitmq
             pathType: Prefix
             backend:

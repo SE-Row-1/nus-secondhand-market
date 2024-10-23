@@ -33,7 +33,7 @@ logging:
 management:
   health:
     probes:
-      enabled: true
+      enablced: true
     group:
       liveness:
         include: livenessState
