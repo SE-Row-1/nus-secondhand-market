@@ -22,9 +22,7 @@ const mockAccount: DetailedAccount = {
 const mockJwt =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzI3MjY1NTY3fQ.dsSDeoQ1Nwxi4tNWyyhM8KFiKaVxnpemMkNkLe7_Y60";
 
-export async function POST(request: NextRequest) {
-  const { email } = await request.json();
-
+export async function POST() {
   cookies().set({
     name: "access_token",
     value: mockJwt,
@@ -37,7 +35,7 @@ export async function POST(request: NextRequest) {
     sameSite: "lax",
   });
 
-  return NextResponse.json({ ...mockAccount, email }, { status: 201 });
+  return NextResponse.json({ ...mockAccount }, { status: 201 });
 }
 
 export async function PATCH(request: NextRequest) {

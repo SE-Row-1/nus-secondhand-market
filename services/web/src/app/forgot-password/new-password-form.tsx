@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import type { DetailedAccount } from "@/types";
 import { clientRequester } from "@/utils/requester/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon, UserRoundPlusIcon } from "lucide-react";
-import type { FormEvent } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { FlagIcon, Loader2Icon } from "lucide-react";
+import type { Dispatch, FormEvent } from "react";
 import * as v from "valibot";
+import type { PasswordResetAction, PasswordResetState } from "./reducer";
 
 const formSchema = v.object({
   password: v.pipe(
@@ -22,28 +22,21 @@ const formSchema = v.object({
     v.minLength(8, "Password should be at least 8 characters long"),
     v.maxLength(20, "Password should be at most 20 characters long"),
   ),
-  nickname: v.pipe(
-    v.string("Nickname should be a string"),
-    v.minLength(2, "Nickname should be at least 2 characters long"),
-    v.maxLength(20, "Nickname should be at most 20 characters long"),
-  ),
 });
 
 type Props = {
-  email: string;
-  progressToNextStep: () => void;
+  state: PasswordResetState;
+  dispatch: Dispatch<PasswordResetAction>;
 };
 
-export function InfoForm({ email, progressToNextStep }: Props) {
+export function NewPasswordForm({ state, dispatch }: Props) {
   const { toast } = useToast();
-
-  const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const { password, passwordConfirmation, nickname } = await v.parseAsync(
+      const { password, passwordConfirmation } = await v.parseAsync(
         formSchema,
         Object.fromEntries(new FormData(event.target as HTMLFormElement)),
       );
@@ -52,23 +45,16 @@ export function InfoForm({ email, progressToNextStep }: Props) {
         throw new Error("Passwords do not match. Please double check.");
       }
 
-      return await clientRequester.post<DetailedAccount>("/accounts", {
-        email,
+      return await clientRequester.post<undefined>("/auth/reset-password", {
+        id: state.transactionId,
         password,
-        nickname,
       });
     },
-    onSuccess: (account) => {
-      queryClient.setQueryData(["auth", "me"], account);
-
-      progressToNextStep();
+    onSuccess: () => {
+      dispatch({ type: "COMPLETE" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to register",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 
@@ -76,7 +62,7 @@ export function InfoForm({ email, progressToNextStep }: Props) {
     <form onSubmit={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="password">
-          Password
+          New password
         </Label>
         <Input
           type="password"
@@ -88,7 +74,7 @@ export function InfoForm({ email, progressToNextStep }: Props) {
       </div>
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="passwordConfirmation">
-          Confirm password
+          Confirm new password
         </Label>
         <Input
           type="password"
@@ -98,20 +84,11 @@ export function InfoForm({ email, progressToNextStep }: Props) {
           id="passwordConfirmation"
         />
       </div>
-      <div className="grid gap-2">
-        <Label htmlFor="nickname">Nickname</Label>
-        <Input
-          type="text"
-          name="nickname"
-          placeholder="2-20 characters"
-          id="nickname"
-        />
-      </div>
       <Button type="submit" disabled={isPending}>
         {isPending ? (
           <Loader2Icon className="size-4 mr-2 animate-spin" />
         ) : (
-          <UserRoundPlusIcon className="size-4 mr-2" />
+          <FlagIcon className="size-4 mr-2" />
         )}
         Finish
       </Button>

@@ -1,4 +1,4 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json();
@@ -9,5 +9,5 @@ export async function POST(req: NextRequest) {
 
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  return new Response(null, { status: 204 });
+  return NextResponse.json(1, { status: 200 });
 }
