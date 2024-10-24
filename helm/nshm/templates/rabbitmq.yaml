@@ -31,8 +31,8 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:985539788320:certificate/87ec1614-b12a-48f2-b8b2-5532c47684b7
-
 spec:
+  ingressClassName: alb
   rules:
     - host: rabbitmq.nshm.store
       http:
