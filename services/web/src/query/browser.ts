@@ -98,9 +98,16 @@ export function useWishlistEntry(accountId: number, itemId: string) {
   return useQuery({
     queryKey: ["wishlists", accountId, "items", itemId],
     queryFn: async () => {
-      return await clientRequester.get<WishlistEntry>(
-        `/wishlists/${accountId}/items/${itemId}`,
-      );
+      try {
+        return await clientRequester.get<WishlistEntry>(
+          `/wishlists/${accountId}/items/${itemId}`,
+        );
+      } catch (error) {
+        if (error instanceof HttpError && error.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
   });
 }
