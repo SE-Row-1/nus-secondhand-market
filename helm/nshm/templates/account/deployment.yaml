@@ -30,8 +30,8 @@ spec:
         args:
           - |
             export PGPASSWORD=$POSTGRES_PASSWORD && \
-            psql $POSTGRES_URL -U $POSTGRES_USERNAME -f /scripts/services/account/database/1-schema.sql && \
-            psql $POSTGRES_URL -U $POSTGRES_USERNAME -f /scripts/services/account/database/2-seed.sql
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/account/database/1-schema.sql && \
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/account/database/2-seed.sql
         volumeMounts:
           - name: init-script
             mountPath: /scripts
