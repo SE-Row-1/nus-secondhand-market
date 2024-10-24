@@ -72,10 +72,3 @@ spec:
                 name: locust-master
                 port:
                   number: 8089
-          - path: /grafana
-            pathType: Prefix
-            backend:
-              service:
-                name: prometheus-loki-stack-grafana
-                port:
-                  number: 80
