@@ -1,6 +1,6 @@
 package edu.nus.market.dao;
 
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.annotations.Select;
@@ -21,8 +21,8 @@ public interface AccountDao {
         "created_at, deleted_at FROM account WHERE email = #{email} AND deleted_at IS NULL")
     Account getAccountByEmail(String email);
 
-    @Select("INSERT INTO account (email, password_hash, password_salt) VALUES " +
-        "(#{email}, #{passwordHash}, #{passwordSalt}) " +
+    @Select("INSERT INTO account (email, password_hash, password_salt, nickname) VALUES " +
+        "(#{email}, #{passwordHash}, #{passwordSalt}, #{nickname}) " +
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
         "created_at AS createdAt, deleted_at AS deletedAt")
@@ -39,19 +39,19 @@ public interface AccountDao {
     int updatePassword(int id, String passwordHash, String passwordSalt);
 
     @Select("UPDATE account SET " +
-        "email = COALESCE(#{updateProfileReq.email}, email), " +
-        "nickname = COALESCE(#{updateProfileReq.nickname}, nickname), " +
-        "avatar_url = COALESCE(#{updateProfileReq.avatarUrl}, avatar_url), " +
-        "phone_code = COALESCE(#{updateProfileReq.phoneCode}, phone_code), " +
-        "phone_number = COALESCE(#{updateProfileReq.phoneNumber}, phone_number), " +
-        "preferred_currency = COALESCE(#{updateProfileReq.preferredCurrency}, preferred_currency), " +
-        "department_id = COALESCE(#{updateProfileReq.departmentId}, department_id) " +
+        "email = COALESCE(#{account.email}, email), " +
+        "nickname = COALESCE(#{account.nickname}, nickname), " +
+        "avatar_url = COALESCE(#{account.avatarUrl}, avatar_url), " +
+        "phone_code = COALESCE(#{account.phoneCode}, phone_code), " +
+        "phone_number = COALESCE(#{account.phoneNumber}, phone_number), " +
+        "preferred_currency = COALESCE(#{account.preferredCurrency}, preferred_currency), " +
+        "department_id = COALESCE(#{account.departmentId}, department_id) " +
         "WHERE id = #{id} " +
         "RETURNING id, email, nickname, avatar_url AS avatarUrl, department_id AS departmentId, " +
         "phone_code AS phoneCode, phone_number AS phoneNumber, preferred_currency AS preferredCurrency, " +
         "created_at AS createdAt, deleted_at AS deletedAt"
     )
-    Account updateProfile(UpdateProfileReq updateProfileReq, int id);
+    Account updateProfile(Account account, int id);
 
     // clean table everytime before and after test
     @Delete("Delete FROM account")
