@@ -4,10 +4,9 @@ metadata:
   name: rabbitmq
   namespace: nshm
 spec:
-  rabbitmq:
-    additionalConfig: |
-      default_user=guest
-      default_pass=guest
+  secretBackend:
+    externalSecret:
+      name: "rabbitmq-secret"
   replicas: 3
   resources:
     requests:
