@@ -1,8 +1,11 @@
 package edu.nus.market.service;
+import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
 import edu.nus.market.pojo.ResEntity.UpdateMessage;
+import edu.nus.market.pojo.data.Account;
+import edu.nus.market.pojo.data.EmailTransaction;
 import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.PasswordHasher;
@@ -10,6 +13,8 @@ import edu.nus.market.security.SaltGenerator;
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.pojo.*;
 import jakarta.annotation.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +42,12 @@ public class AccountServiceImpl implements AccountService{
     CookieManager cookieManager;
 
     @Resource
+    EmailTransactionDao emailTransactionDao;
+
+    @Resource
     MQService mqService;
+
+    private static Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     /**
      *
@@ -62,25 +72,39 @@ public class AccountServiceImpl implements AccountService{
      */
     @Override
     public ResponseEntity<Object> registerService(RegisterReq registerReq){
+        EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(registerReq.getId());
+        if (emailTransaction == null || emailTransaction.getVerifiedAt() == null) {
+            logger.warn("Email transaction not found");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
+        }
+        String email = emailTransaction.getEmail();
+
         // we should check all the emails in this case, no matter if it is deleted or not
-        Account checkAccount = accountDao.getAccountByEmailAll(registerReq.getEmail());
+        Account checkAccount = accountDao.getAccountByEmailAll(email);
         if(checkAccount != null) {
-            if (checkAccount.getDeletedAt() == null)
+            if (checkAccount.getDeletedAt() == null) {
+                logger.warn("Account is not deleted");
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
+            }
             // if the account is soft-deleted, we need to hard-delete it and register a new one
             accountDao.hardDeleteAccount(checkAccount.getId());
         }
 
+        logger.info("Registering new account");
         byte[] salt = saltGenerator.generateSalt();
         String passwordHash = passwordHasher.hashPassword(registerReq.getPassword(),salt);
         // generate salt and hash the password
         Account account = new Account(registerReq);
         account.setPasswordHash(passwordHash);
         account.setPasswordSalt(Base64.getEncoder().encodeToString(salt));
+        account.setEmail(email);
+
         account = accountDao.registerNewAccount(account);
 
         String accessToken = jwtTokenManager.generateAccessToken(new JWTPayload(account));
         ResponseCookie cookie = cookieManager.generateCookie(accessToken);
+
+        logger.info("Create new account successfully.");
         // generate the JWTaccesstoken and send it to the frontend
         return ResponseEntity.status(HttpStatus.CREATED).header("Set-Cookie", cookie.toString()).body(new ResAccount(account));
     }
@@ -123,13 +147,18 @@ public class AccountServiceImpl implements AccountService{
         // Business logic to update nickname, avatar, phone in the database
         // Use repository or DAO to interact with the database.
         Account account = accountDao.getAccountById(id);
+        EmailTransaction emailTransaction = new EmailTransaction();
         if (account == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
-        if (updateProfileReq.getEmail() != null){
+        if (updateProfileReq.getId() != null){
+            emailTransaction = emailTransactionDao.getEmailTransactionById(updateProfileReq.getId());
+            if(emailTransaction == null || emailTransaction.getVerifiedAt() == null)
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
+
             // we should check all the emails in this case, no matter if it is deleted or not
-            Account checkAccount = accountDao.getAccountByEmailAll(updateProfileReq.getEmail());
+            Account checkAccount = accountDao.getAccountByEmailAll(emailTransaction.getEmail());
             if(checkAccount != null) {
                 if (checkAccount.getDeletedAt() == null)
                     return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorMsg(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg));
@@ -137,10 +166,14 @@ public class AccountServiceImpl implements AccountService{
                 accountDao.hardDeleteAccount(checkAccount.getId());
             }
         }
+        account = new Account(updateProfileReq);
+        if (emailTransaction != null)
+            account.setEmail(emailTransaction.getEmail());
 
-        account = accountDao.updateProfile(updateProfileReq, id);
+        ResAccount resAccount = new ResAccount(accountDao.updateProfile(account, id));
+
         mqService.sendUpdateMessage(new UpdateMessage(account));
-        return ResponseEntity.status(HttpStatus.OK).body(new ResAccount(account));
+        return ResponseEntity.status(HttpStatus.OK).body(resAccount);
 
     }
 
@@ -185,16 +218,19 @@ public class AccountServiceImpl implements AccountService{
      */
     @Override
     public ResponseEntity<Object> forgetPasswordService(ForgetPasswordReq forgetPasswordReq){
-        Account account = accountDao.getAccountByEmail(forgetPasswordReq.getEmail());
+        EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(forgetPasswordReq.getId());
+        if(emailTransaction == null || emailTransaction.getVerifiedAt() == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg));
+
+        Account account = accountDao.getAccountByEmail(emailTransaction.getEmail());
         if(account == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
-        // TODO: use email to do verification
 
         byte[] salt = saltGenerator.generateSalt();
         String passwordHash = passwordHasher.hashPassword(forgetPasswordReq.getNewPassword(),salt);
         // generate salt and hash the password
         int accountId = accountDao.updatePassword(account.getId(), passwordHash, Base64.getEncoder().encodeToString(salt));
-        return ResponseEntity.status(HttpStatus.OK).body("");
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
