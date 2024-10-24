@@ -47,3 +47,19 @@ create table account (
   deleted_at timestamptz default null
 );
 
+create table email_transaction (
+  -- Transaction's ID.
+  id UUID DEFAULT GEN_RANDOM_UUID() primary key,
+
+  -- User's EDU email address.
+  email text check (email like '%@u.nus.edu') not null,
+
+  -- Opt sent to user email.
+  otp text not null,
+
+  -- Time when the opt was sent.
+  created_at timestamptz default now() not null,
+
+  -- Time when the opt verified.
+  verified_at timestamptz default null
+);
