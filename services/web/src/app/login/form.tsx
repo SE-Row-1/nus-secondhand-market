@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import Link from "next/link";
@@ -79,7 +79,7 @@ export function LogInForm() {
       <div className="grid gap-2">
         <div className="flex justify-between items-center">
           <Label htmlFor="password">Password</Label>
-          <Link href="#" className="text-sm underline">
+          <Link href="/forgot-password" className="text-sm underline">
             Forgot your password?
           </Link>
         </div>

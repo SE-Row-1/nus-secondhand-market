@@ -5,7 +5,7 @@ import { LogInForm } from "./form";
 
 export default function LogInPage() {
   return (
-    <div className="grow flex flex-col justify-center items-center gap-4">
+    <div className="flex flex-col justify-center items-center gap-4 h-full">
       <h1 className="font-bold text-3xl">Log in</h1>
       <Suspense>
         <LogInForm />

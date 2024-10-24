@@ -5,8 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import type { SingleItem } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, PlusIcon, UndoIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -103,7 +103,7 @@ export function PublishItemForm() {
     <form
       ref={formRef}
       action={mutate}
-      className="grow flex flex-col justify-center items-stretch gap-4 w-full max-w-lg mx-auto"
+      className="flex flex-col justify-center items-stretch gap-4 w-full max-w-lg h-full mx-auto"
     >
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="name">

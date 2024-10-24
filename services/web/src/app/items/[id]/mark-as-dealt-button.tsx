@@ -2,18 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import { ItemStatus, type SimplifiedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon } from "lucide-react";
+import { useParams } from "next/navigation";
 
 type Props = {
-  itemId: string;
   buyer: SimplifiedAccount;
   onDealt: () => void;
 };
 
-export function MarkAsDealtButton({ itemId, buyer, onDealt }: Props) {
+export function MarkAsDealtButton({ buyer, onDealt }: Props) {
+  const { id: itemId } = useParams<{ id: string }>();
+
   const queryClient = useQueryClient();
 
   const { toast } = useToast();

@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import type { DetailedAccount, SingleItem } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useItem } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
+import { ItemType, type SingleItem } from "@/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon, UndoIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -53,21 +54,12 @@ const formSchema = v.object({
 
 type Props = {
   id: string;
-  initialItem: SingleItem<DetailedAccount>;
 };
 
 type Photo = { url: string; file?: File };
 
-export function EditItemForm({ id, initialItem }: Props) {
-  const { data: item } = useQuery({
-    queryKey: ["items", id],
-    queryFn: async () => {
-      return await clientRequester.get<SingleItem<DetailedAccount>>(
-        `/items/${id}`,
-      );
-    },
-    initialData: initialItem,
-  });
+export function EditItemForm({ id }: Props) {
+  const { data: item } = useItem(id);
 
   const queryClient = useQueryClient();
 
@@ -75,6 +67,10 @@ export function EditItemForm({ id, initialItem }: Props) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (formData: FormData) => {
+      if (!item || item.type === ItemType.Pack) {
+        return;
+      }
+
       const addedPhotos = photos
         .filter((photo) => !item.photo_urls.includes(photo.url))
         .map((photo) => photo.file);
@@ -123,9 +119,16 @@ export function EditItemForm({ id, initialItem }: Props) {
     },
   });
 
-  const [photos, setPhotos] = useState<Photo[]>(
-    item.photo_urls.map((url) => ({ url })),
-  );
+  const [photos, setPhotos] = useState<Photo[]>(() => {
+    if (!item || item.type === ItemType.Pack) {
+      return [];
+    }
+    return item.photo_urls.map((url) => ({ url }));
+  });
+
+  if (!item || item.type === ItemType.Pack) {
+    return null;
+  }
 
   return (
     <form action={mutate} className="grid gap-4">

@@ -2,17 +2,19 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import { ItemStatus } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, XIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 
 type Props = {
-  itemId: string;
   onSuccess: () => void;
 };
 
-export function MarkAsForSaleButton({ itemId, onSuccess }: Props) {
+export function MarkAsForSaleButton({ onSuccess }: Props) {
+  const { id: itemId } = useParams<{ id: string }>();
+
   const queryClient = useQueryClient();
 
   const { toast } = useToast();

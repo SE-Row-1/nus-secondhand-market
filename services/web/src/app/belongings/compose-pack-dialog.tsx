@@ -9,16 +9,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { DetailedAccount } from "@/types";
 import { BoxesIcon } from "lucide-react";
 import { useState } from "react";
 import { ComposePackForm } from "./compose-pack-form";
 
-type Props = {
-  me: DetailedAccount;
-};
-
-export function ComposePackDialog({ me }: Props) {
+export function ComposePackDialog() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -36,7 +31,7 @@ export function ComposePackDialog({ me }: Props) {
             Bundle your items together and sell them in one go!
           </DialogDescription>
         </DialogHeader>
-        <ComposePackForm me={me} closeDialog={() => setIsOpen(false)} />
+        <ComposePackForm closeDialog={() => setIsOpen(false)} />
       </DialogContent>
     </Dialog>
   );

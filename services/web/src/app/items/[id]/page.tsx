@@ -1,12 +1,5 @@
-import {
-  prefetchItem,
-  prefetchItemTransaction,
-  prefetchMe,
-} from "@/prefetchers";
-import { notFound, redirect } from "next/navigation";
-import { ItemDetailsClient } from "./item-details.client";
-import { WishlistButtonServer } from "./wishlist-button.server";
-import { WishlistStatisticsServer } from "./wishlist-statistics.server";
+import { createPrefetcher } from "@/query/server";
+import { ItemDetails } from "./item-details";
 
 type Props = {
   params: Promise<{
@@ -17,50 +10,28 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { id } = await params;
 
-  const [
-    { data: item, error: itemError },
-    { data: me, error: meError },
-    { data: itemTransaction },
-  ] = await Promise.all([
-    prefetchItem(id),
-    prefetchMe(),
-    prefetchItemTransaction(id),
+  const prefetcher = createPrefetcher();
+
+  const [me] = await Promise.all([
+    prefetcher.prefetchMe(),
+    prefetcher.prefetchItem(id),
+    prefetcher.prefetchWishlistStatistics(id),
+    prefetcher.prefetchLastTransaction(id),
   ]);
 
-  if (itemError && itemError.status === 404) {
-    notFound();
+  if (me) {
+    await prefetcher.prefetchWishlistEntry(me.id, id);
   }
 
-  if (itemError) {
-    redirect(`/error?message=${itemError.message}`);
-  }
-
-  if (meError && meError.status !== 401) {
-    redirect(`/error?message=${meError.message}`);
-  }
-
-  const identity = !me
-    ? "passer-by"
-    : me.id === item.seller.id
-      ? "seller"
-      : me.id === itemTransaction?.[0]?.buyer.id
-        ? "buyer"
-        : "passer-by";
-
-  return (
-    <ItemDetailsClient
-      initialItem={item}
-      identity={identity}
-      wishlistStatistics={<WishlistStatisticsServer item={item} me={me} />}
-      wishlistButton={<WishlistButtonServer item={item} />}
-    />
-  );
+  return <ItemDetails />;
 }
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
 
-  const { data: item } = await prefetchItem(id);
+  const prefetcher = createPrefetcher();
+
+  const item = await prefetcher.prefetchItem(id);
 
   return {
     title: item?.name,

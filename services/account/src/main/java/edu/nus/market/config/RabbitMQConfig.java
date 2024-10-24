@@ -23,9 +23,15 @@ public class RabbitMQConfig {
         return template;
     }
 
+    // define account Topic exchange: email
+
+    @Bean
+    public TopicExchange EmailExchange() {
+        return new TopicExchange("notification");}
+
     // define account Topic exchange
     @Bean
-    public TopicExchange topicExchange() {
+    public TopicExchange AccountExchange() {
         return new TopicExchange("account");
     }
 }

@@ -1,14 +1,17 @@
 package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
-import edu.nus.market.pojo.Account;
+import edu.nus.market.dao.EmailTransactionDao;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.ForgetPasswordReq;
 import edu.nus.market.pojo.ReqEntity.RegisterReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.data.EmailTransaction;
 import edu.nus.market.service.AccountService;
 import jakarta.annotation.Resource;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,27 +36,40 @@ public class ForgetPasswordServiceTest {
     @Resource
     AccountDao accountDao;
 
+    @Resource
+    EmailTransactionDao emailTransactionDao;
+
     private static final String EMAIL = "e1351826@u.nus.edu";
     private static final String OLD_PASSWORD = "oldPassword123";
     private static final String NEW_PASSWORD = "newPassword456";
     private static int userId;
+    private static UUID uuid;
 
     @BeforeAll
     void setup() {
         accountDao.cleanTable();
-        ResAccount resAccount = (ResAccount) accountService.registerService(new RegisterReq(EMAIL, OLD_PASSWORD)).getBody();
-        userId = resAccount.getId();
+        Account account = new Account();
+        account.setEmail(EMAIL);
+        account.setPasswordHash(OLD_PASSWORD);
+        account.setPasswordSalt("salt");
+        accountDao.registerNewAccount(account);
+
+        emailTransactionDao.cleanTable();
+        uuid = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, "reset-password"));
+        emailTransactionDao.verifyEmailTransaction(uuid);
+
+        userId = accountDao.getAccountByEmail(EMAIL).getId();
     }
 
     @Test
     void forgetPasswordSuccessTest() {
         ForgetPasswordReq forgetPasswordReq = new ForgetPasswordReq();
-        forgetPasswordReq.setEmail(EMAIL);
+        forgetPasswordReq.setId(uuid);
         forgetPasswordReq.setNewPassword(NEW_PASSWORD);
 
         ResponseEntity<Object> response = accountService.forgetPasswordService(forgetPasswordReq);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         Account updatedAccount = accountDao.getAccountById(userId);
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -59,15 +77,15 @@ public class ForgetPasswordServiceTest {
     }
 
     @Test
-    void forgetPasswordAccountNotFoundTest() {
+    void forgetPasswordEmailNotVerifiedTest() {
         ForgetPasswordReq forgotPasswordReq = new ForgetPasswordReq();
-        forgotPasswordReq.setEmail("nonexistent@u.nus.edu");
+        forgotPasswordReq.setId(UUID.randomUUID());
         forgotPasswordReq.setNewPassword(NEW_PASSWORD);
 
         ResponseEntity<Object> response = accountService.forgetPasswordService(forgotPasswordReq);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg), response.getBody());
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        assertEquals(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg), response.getBody());
     }
 
     @AfterAll

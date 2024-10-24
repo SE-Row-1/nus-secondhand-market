@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import * as v from "valibot";
@@ -31,44 +32,42 @@ const formSchema = v.object({
   ),
 });
 
-type Props = {
-  id: number;
-  initialPhoneCode: string | null;
-  initialPhoneNumber: string | null;
-};
+export function UpdateWhatsappCard() {
+  const { data: me } = useMe();
 
-export function UpdateWhatsappCard({
-  id,
-  initialPhoneCode,
-  initialPhoneNumber,
-}: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (formData: FormData) => {
+      if (!me) {
+        return null;
+      }
+
       const { phoneCode, phoneNumber } = await v.parseAsync(
         formSchema,
         Object.fromEntries(formData),
       );
 
-      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
-        phone_code: phoneCode,
-        phone_number: phoneNumber,
-      });
+      return await clientRequester.patch<DetailedAccount>(
+        `/accounts/${me.id}`,
+        { phone_code: phoneCode, phone_number: phoneNumber },
+      );
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
+
+      toast({ description: "Update success" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to update Email",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
+
+  if (!me) {
+    return null;
+  }
 
   return (
     <Card>
@@ -83,7 +82,7 @@ export function UpdateWhatsappCard({
             type="text"
             name="phoneCode"
             required
-            defaultValue={initialPhoneCode ?? "65"}
+            defaultValue={me.phone_code ?? "65"}
             placeholder="65"
             id="phoneCode"
             className="w-14"
@@ -92,7 +91,7 @@ export function UpdateWhatsappCard({
             type="tel"
             name="phoneNumber"
             required
-            defaultValue={initialPhoneNumber ?? ""}
+            defaultValue={me.phone_number ?? ""}
             placeholder="1234 5678"
             id="phoneNumber"
             className="grow"

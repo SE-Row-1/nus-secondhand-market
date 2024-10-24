@@ -1,6 +1,6 @@
 package edu.nus.market.pojo.ResEntity;
 
-import edu.nus.market.pojo.Account;
+import edu.nus.market.pojo.data.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ public class ResAccount {
 
     String avatarUrl;
 
-    int departmentId;
+    Integer departmentId;
 
     String phoneCode;
 

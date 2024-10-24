@@ -1,4 +1,4 @@
-import { prefetchItem, prefetchMe } from "@/prefetchers";
+import { createPrefetcher } from "@/query/server";
 import { ItemType } from "@/types";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";
@@ -15,23 +15,18 @@ type Props = {
 export default async function Page({ params }: Props) {
   const { id } = await params;
 
-  const [{ data: item, error: itemError }, { data: me, error: meError }] =
-    await Promise.all([prefetchItem(id), prefetchMe()]);
+  const prefetcher = createPrefetcher();
 
-  if (itemError && itemError.status === 404) {
-    notFound();
-  }
+  const me = await prefetcher.prefetchMe();
 
-  if (itemError) {
-    redirect(`/error?message=${itemError.message}`);
-  }
-
-  if (meError && meError.status === 401) {
+  if (!me) {
     redirect("/login");
   }
 
-  if (meError) {
-    redirect(`/error?message=${meError.message}`);
+  const item = await prefetcher.prefetchItem(id);
+
+  if (!item) {
+    notFound();
   }
 
   if (item.seller.id !== me.id) {
@@ -47,9 +42,7 @@ export default async function Page({ params }: Props) {
         <ChevronLeftIcon className="size-4 mr-2" />
         Back to details
       </Link>
-      {item.type === ItemType.Single && (
-        <EditItemForm id={id} initialItem={item} />
-      )}
+      {item.type === ItemType.Single && <EditItemForm id={id} />}
     </div>
   );
 }
