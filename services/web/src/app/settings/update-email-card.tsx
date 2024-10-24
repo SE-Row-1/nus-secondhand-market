@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/query/browser";
 import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -48,12 +49,9 @@ const verifyOtpFormSchema = v.object({
   ),
 });
 
-type Props = {
-  id: number;
-  initialEmail: string;
-};
+export function UpdateEmailCard() {
+  const { data: me } = useMe();
 
-export function UpdateEmailCard({ id, initialEmail }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 
@@ -63,18 +61,22 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
 
   const { mutate: sendOtp, isPending: isSendingOtp } = useMutation({
     mutationFn: async (formData: FormData) => {
-      const { email: newEmail } = await v.parseAsync(
+      if (!me) {
+        return "";
+      }
+
+      const { email } = await v.parseAsync(
         sendOtpFormSchema,
         Object.fromEntries(formData),
       );
 
-      if (newEmail === initialEmail) {
+      if (email === me.email) {
         throw new Error("You are already using this email address.");
       }
 
       return await clientRequester.post<string>("/auth/otp", {
         type: "update_email",
-        email: newEmail,
+        email,
       });
     },
     onSuccess: (transactionId) => {
@@ -108,12 +110,19 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
 
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useMutation({
     mutationFn: async () => {
-      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
-        id: transactionId,
-      });
+      if (!me) {
+        return undefined;
+      }
+
+      return await clientRequester.patch<DetailedAccount>(
+        `/accounts/${me.id}`,
+        { id: transactionId },
+      );
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
+
+      toast({ description: "Update success" });
 
       setIsDialogOpen(false);
     },
@@ -121,6 +130,10 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
       toast({ variant: "destructive", description: error.message });
     },
   });
+
+  if (!me) {
+    return null;
+  }
 
   return (
     <>
@@ -137,7 +150,7 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
               type="email"
               name="email"
               required
-              defaultValue={initialEmail}
+              defaultValue={me.email}
               placeholder="e1234567@u.nus.edu"
               id="email"
             />

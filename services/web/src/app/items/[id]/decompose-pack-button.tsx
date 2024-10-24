@@ -16,13 +16,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/query/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, UnplugIcon, XIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
-type Props = {
-  itemId: string;
-};
+export function DecomposePackButton() {
+  const { id: itemId } = useParams<{ id: string }>();
 
-export function DecomposePackButton({ itemId }: Props) {
   const router = useRouter();
 
   const queryClient = useQueryClient();

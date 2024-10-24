@@ -2,20 +2,24 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useLastTransaction } from "@/query/browser";
 import type { SimplifiedAccount } from "@/types";
 import { BanIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { MarkAsDealtButton } from "./mark-as-dealt-button";
 import { MarkAsForSaleButton } from "./mark-as-for-sale-button";
 
 type Props = {
-  itemId: string;
   wanters: SimplifiedAccount[];
-  buyer: SimplifiedAccount | undefined;
 };
 
-export function WantersClient({ itemId, wanters, buyer }: Props) {
-  const [dealtWithId, setDealtWithId] = useState(buyer?.id ?? -1);
+export function Wanters({ wanters }: Props) {
+  const { id: itemId } = useParams<{ id: string }>();
+
+  const { data: transaction } = useLastTransaction(itemId);
+
+  const [dealtWithId, setDealtWithId] = useState(transaction?.buyer?.id ?? -1);
 
   return (
     <ul className="space-y-2 px-4 py-3 border rounded-md">
@@ -32,15 +36,11 @@ export function WantersClient({ itemId, wanters, buyer }: Props) {
           <div className="ml-auto">
             {dealtWithId === -1 ? (
               <MarkAsDealtButton
-                itemId={itemId}
                 buyer={wanter}
                 onDealt={() => setDealtWithId(wanter.id)}
               />
             ) : dealtWithId === wanter.id ? (
-              <MarkAsForSaleButton
-                itemId={itemId}
-                onSuccess={() => setDealtWithId(-1)}
-              />
+              <MarkAsForSaleButton onSuccess={() => setDealtWithId(-1)} />
             ) : dealtWithId !== wanter.id ? (
               <Button variant="outline" size="sm" disabled>
                 <BanIcon className="size-3.5 mr-1.5" />

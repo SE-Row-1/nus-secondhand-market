@@ -5,16 +5,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { DetailedAccount } from "@/types";
+import { useItem } from "@/query/browser";
 import { MailIcon, MessageSquareMoreIcon, SendIcon } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-type Props = {
-  seller: DetailedAccount;
-  itemName: string;
-};
+export function ContactSellerButton() {
+  const { id: itemId } = useParams<{ id: string }>();
 
-export function ContactSellerButton({ seller, itemName }: Props) {
+  const { data: item } = useItem(itemId);
+
+  if (!item) {
+    return null;
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,20 +29,20 @@ export function ContactSellerButton({ seller, itemName }: Props) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem asChild>
-          <Link href={`mailto:${seller.email}`} target="_blank">
+          <Link href={`mailto:${item.seller.email}`} target="_blank">
             <MailIcon className="size-4 mr-2" />
-            Email:&nbsp;{seller.email}
+            Email:&nbsp;{item.seller.email}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem disabled={!seller.phone_number} asChild>
+        <DropdownMenuItem disabled={!item.seller.phone_number} asChild>
           <Link
-            href={`https://wa.me/${seller.phone_code}${seller.phone_number}?text=Hi! I'm interested in your "${itemName}" published on NUS Second-Hand market.`}
+            href={`https://wa.me/${item.seller.phone_code}${item.seller.phone_number}?text=Hi! I'm interested in your "${item.name}" published on NUS Second-Hand market.`}
             target="_blank"
           >
             <SendIcon className="size-4 mr-2" />
             WhatsApp:&nbsp;
-            {seller.phone_number
-              ? `+${seller.phone_code} ${seller.phone_number}`
+            {item.seller.phone_number
+              ? `+${item.seller.phone_code} ${item.seller.phone_number}`
               : "Not provided"}
           </Link>
         </DropdownMenuItem>

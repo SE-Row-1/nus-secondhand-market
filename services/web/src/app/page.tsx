@@ -5,6 +5,7 @@ import { Marketplace } from "./marketplace";
 
 export default async function MarketplacePage() {
   const prefetcher = createPrefetcher();
+
   await prefetcher.prefetchMarketplace();
 
   return (

@@ -17,12 +17,11 @@ import { clientRequester } from "@/query/requester/client";
 import { ItemStatus } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCheckIcon, CheckIcon, Loader2Icon, XIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 
-type Props = {
-  itemId: string;
-};
+export function MarkAsSoldButton() {
+  const { id: itemId } = useParams<{ id: string }>();
 
-export function MarkAsSoldButton({ itemId }: Props) {
   const queryClient = useQueryClient();
 
   const { toast } = useToast();

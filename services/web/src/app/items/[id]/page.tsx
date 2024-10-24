@@ -1,13 +1,5 @@
-import { getQueryClient } from "@/query/client";
-import {
-  prefetchItem,
-  prefetchMe,
-  prefetchTransaction,
-  prefetchWishlistEntry,
-  prefetchWishlistStatistics,
-} from "@/query/server";
-import type { DetailedAccount, Item } from "@/types";
-import { ItemDetails } from "./item-details.client";
+import { createPrefetcher } from "@/query/server";
+import { ItemDetails } from "./item-details";
 
 type Props = {
   params: Promise<{
@@ -17,23 +9,29 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const queryClient = getQueryClient();
-  await Promise.all([
-    prefetchMe(queryClient),
-    prefetchItem(queryClient, id),
-    prefetchWishlistEntry(queryClient, id),
-    prefetchWishlistStatistics(queryClient, id),
-    prefetchTransaction(queryClient, id),
+
+  const prefetcher = createPrefetcher();
+
+  const [me] = await Promise.all([
+    prefetcher.prefetchMe(),
+    prefetcher.prefetchItem(id),
+    prefetcher.prefetchWishlistStatistics(id),
+    prefetcher.prefetchLastTransaction(id),
   ]);
 
-  return <ItemDetails id={id} />;
+  if (me) {
+    await prefetcher.prefetchWishlistEntry(me.id, id);
+  }
+
+  return <ItemDetails />;
 }
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-  const queryClient = getQueryClient();
-  await prefetchItem(queryClient, id);
-  const item = queryClient.getQueryData<Item<DetailedAccount>>(["item", id]);
+
+  const prefetcher = createPrefetcher();
+
+  const item = await prefetcher.prefetchItem(id);
 
   return {
     title: item?.name,

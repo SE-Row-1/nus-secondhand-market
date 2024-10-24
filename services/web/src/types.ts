@@ -73,14 +73,12 @@ export type PaginatedItems<
   next_cursor: string;
 };
 
-export type WishlistEntry =
+export type WishlistEntry = (
   | Omit<SingleItem, "description" | "created_at" | "deleted_at">
-  | (Omit<
-      ItemPack,
-      "description" | "children" | "created_at" | "deleted_at"
-    > & {
-      wanted_at: string;
-    });
+  | Omit<ItemPack, "description" | "children" | "created_at" | "deleted_at">
+) & {
+  wanted_at: string;
+};
 
 export type WishlistStatistics = {
   count: number;

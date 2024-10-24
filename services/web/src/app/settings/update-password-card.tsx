@@ -55,17 +55,10 @@ export function UpdatePasswordCard() {
       });
     },
     onSuccess: () => {
-      toast({
-        title: "Password updated",
-        description: "Your password has been successfully updated.",
-      });
+      toast({ description: "Update success" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to update password",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 

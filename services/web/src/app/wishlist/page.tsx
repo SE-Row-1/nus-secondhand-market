@@ -1,26 +1,20 @@
-import { prefetchMe, prefetchWishlist } from "@/query/server";
+import { createPrefetcher } from "@/query/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { WishList } from "./wishlist";
 
 export default async function WishlistPage() {
-  const { data: me, error: meError } = await prefetchMe();
+  const prefetcher = createPrefetcher();
 
-  if (meError && meError.status === 401) {
+  const me = await prefetcher.prefetchMe();
+
+  if (!me) {
     redirect("/login");
   }
 
-  if (meError) {
-    redirect(`/error?message=${meError.message}`);
-  }
+  await prefetcher.prefetchWishlist(me.id);
 
-  const { data: page, error: pageError } = await prefetchWishlist(me.id);
-
-  if (pageError) {
-    redirect(`/error?message=${pageError.message}`);
-  }
-
-  return <WishList firstPage={page} me={me} />;
+  return <WishList />;
 }
 
 export const metadata: Metadata = {

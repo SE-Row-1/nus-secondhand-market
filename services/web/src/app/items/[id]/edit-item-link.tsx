@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { EditIcon } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
-type Props = {
-  itemId: string;
-};
+export function EditItemLink() {
+  const { id: itemId } = useParams<{ id: string }>();
 
-export function EditItemLink({ itemId }: Props) {
   return (
     <Button variant="secondary" asChild>
       <Link href={`/items/${itemId}/edit`}>

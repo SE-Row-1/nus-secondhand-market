@@ -5,6 +5,7 @@ import { MeCardClient } from "./me-card.client";
 
 export async function MeCardServer() {
   const prefetcher = createPrefetcher();
+
   await prefetcher.prefetchMe();
 
   return (
