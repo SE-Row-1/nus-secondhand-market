@@ -43,7 +43,7 @@ export function SendOtpForm({ dispatch }: Props) {
       setEmail(email);
 
       return await clientRequester.post<string>("/auth/otp", {
-        type: "reset-password",
+        type: "reset_password",
         email,
       });
     },

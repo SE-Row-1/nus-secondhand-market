@@ -79,7 +79,7 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
       setTempEmail(newEmail);
 
       return await clientRequester.post<string>("/auth/otp", {
-        type: "update-email",
+        type: "update_email",
         email: newEmail,
       });
     },
