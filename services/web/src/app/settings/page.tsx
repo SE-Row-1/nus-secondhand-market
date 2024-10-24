@@ -18,15 +18,11 @@ export default async function AccountSettingsPage() {
 
   return (
     <div className="grid gap-6 w-full max-w-xl mx-auto">
-      <UpdateEmailCard id={me.id} initialEmail={me.email} />
+      <UpdateEmailCard />
       <UpdatePasswordCard />
-      <UpdateNicknameCard id={me.id} initialNickname={me.nickname} />
-      <UpdateWhatsappCard
-        id={me.id}
-        initialPhoneCode={me.phone_code}
-        initialPhoneNumber={me.phone_number}
-      />
-      <DeleteAccountCard id={me.id} />
+      <UpdateNicknameCard />
+      <UpdateWhatsappCard />
+      <DeleteAccountCard />
     </div>
   );
 }
