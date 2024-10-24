@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FlagIcon, Loader2Icon } from "lucide-react";
-import type { Dispatch, FormEvent } from "react";
+import type { Dispatch } from "react";
 import * as v from "valibot";
 import type { RegistrationAction, RegistrationState } from "./reducer";
 
@@ -47,12 +47,10 @@ export function FillInfoForm({ state, dispatch }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { password, passwordConfirmation, nickname } = await v.parseAsync(
         formSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
       if (password !== passwordConfirmation) {
@@ -76,7 +74,7 @@ export function FillInfoForm({ state, dispatch }: Props) {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4 min-w-80">
+    <form action={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="password">
           Password

@@ -6,10 +6,10 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { clientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/query/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon, ShieldCheckIcon } from "lucide-react";
-import type { Dispatch, FormEvent } from "react";
+import type { Dispatch } from "react";
 import * as v from "valibot";
 import type { PasswordResetAction, PasswordResetState } from "./reducer";
 
@@ -29,12 +29,10 @@ export function VerifyOtpForm({ state, dispatch }: Props) {
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { otp } = await v.parseAsync(
         formSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
       return await clientRequester.post<undefined>("/auth/otp/verification", {
@@ -55,7 +53,7 @@ export function VerifyOtpForm({ state, dispatch }: Props) {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4 min-w-80">
+    <form action={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="otp">One-Time Password</Label>
         <InputOTP name="otp" required maxLength={6} id="otp">

@@ -7,7 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/utils/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon, MailIcon } from "lucide-react";
-import { useState, type Dispatch, type FormEvent } from "react";
+import { useState, type Dispatch } from "react";
 import * as v from "valibot";
 import type { PasswordResetAction } from "./reducer";
 
@@ -32,12 +32,10 @@ export function SendOtpForm({ dispatch }: Props) {
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { email } = await v.parseAsync(
         formSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
       setEmail(email);
@@ -61,7 +59,7 @@ export function SendOtpForm({ dispatch }: Props) {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4 min-w-80">
+    <form action={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
