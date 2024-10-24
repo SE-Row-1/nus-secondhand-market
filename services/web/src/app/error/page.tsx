@@ -13,7 +13,7 @@ export default async function ErrorPage({ searchParams }: Props) {
   const { message } = await searchParams;
 
   return (
-    <div className="grow flex flex-col justify-center items-center gap-4">
+    <div className="flex flex-col justify-center items-center gap-4 h-full">
       <CircleXIcon className="size-20" />
       <h1 className="font-bold text-3xl">Server-side error occurred</h1>
       <p className="text-muted-foreground text-center text-balance">

@@ -103,7 +103,7 @@ export function PublishItemForm() {
     <form
       ref={formRef}
       action={mutate}
-      className="grow flex flex-col justify-center items-stretch gap-4 w-full max-w-lg mx-auto"
+      className="flex flex-col justify-center items-stretch gap-4 w-full max-w-lg h-full mx-auto"
     >
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="name">
