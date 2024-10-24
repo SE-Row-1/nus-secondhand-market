@@ -36,7 +36,7 @@ export function UpdateNicknameCard() {
   const { mutate, isPending } = useMutation({
     mutationFn: async (formData: FormData) => {
       if (!me) {
-        return undefined;
+        return null;
       }
 
       const { nickname } = await v.parseAsync(

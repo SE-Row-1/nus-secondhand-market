@@ -44,11 +44,11 @@ export function WishlistButton() {
         ["wishlists", me?.id, "items", itemId],
         (oldWishlistEntry: WishlistEntry) => {
           if (oldWishlistEntry) {
-            return undefined;
+            return null;
           }
 
           if (!item) {
-            return undefined;
+            return null;
           }
 
           if (item.type === ItemType.Single) {

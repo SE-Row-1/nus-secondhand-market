@@ -111,7 +111,7 @@ export function UpdateEmailCard() {
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useMutation({
     mutationFn: async () => {
       if (!me) {
-        return undefined;
+        return null;
       }
 
       return await clientRequester.patch<DetailedAccount>(

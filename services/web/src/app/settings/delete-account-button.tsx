@@ -26,7 +26,7 @@ export function DeleteAccountButton() {
       return await clientRequester.delete<undefined>(`/accounts/${me.id}`);
     },
     onSuccess: () => {
-      queryClient.setQueryData(["auth", "me"], undefined);
+      queryClient.setQueryData(["auth", "me"], null);
 
       toast({
         description:

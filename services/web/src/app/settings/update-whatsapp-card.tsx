@@ -42,7 +42,7 @@ export function UpdateWhatsappCard() {
   const { mutate, isPending } = useMutation({
     mutationFn: async (formData: FormData) => {
       if (!me) {
-        return undefined;
+        return null;
       }
 
       const { phoneCode, phoneNumber } = await v.parseAsync(

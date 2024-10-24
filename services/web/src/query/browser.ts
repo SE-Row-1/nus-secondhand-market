@@ -19,7 +19,7 @@ export function useMe() {
         return await clientRequester.get<DetailedAccount>("/auth/me");
       } catch (error) {
         if (error instanceof HttpError && error.status === 401) {
-          return undefined;
+          return null;
         }
         throw error;
       }
