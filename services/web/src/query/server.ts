@@ -149,7 +149,7 @@ class Prefetcher {
         const transactions = await serverRequester.get<Transaction[]>(
           `/transactions?item_id=${itemId}&exclude_cancelled=true`,
         );
-        return transactions[0];
+        return transactions[0] ?? null;
       },
     });
 

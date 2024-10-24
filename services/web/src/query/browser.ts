@@ -139,7 +139,7 @@ export function useLastTransaction(itemId: string) {
       const transactions = await clientRequester.get<Transaction[]>(
         `/transactions?item_id=${itemId}&exclude_cancelled=true`,
       );
-      return transactions[0];
+      return transactions[0] ?? null;
     },
   });
 }
