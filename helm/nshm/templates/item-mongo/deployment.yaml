@@ -21,13 +21,6 @@ spec:
           - name: init-script
             mountPath: /scripts
 
-      - name: link-init-scripts
-        image: alpine:latest
-        command: ["sh", "-c", "ln -s /scripts/services/item/database/production /docker-entrypoint-initdb.d/init-scripts"]
-        volumeMounts:
-          - name: init-script
-            mountPath: /docker-entrypoint-initdb.d
-
       containers:
         - name: item-mongo
           image: bitnami/mongodb:latest
@@ -51,6 +44,7 @@ spec:
           volumeMounts:
             - name: init-script
               mountPath: /docker-entrypoint-initdb.d
+              subPath: services/item/database/production
 
       volumes:
         - name: init-script
