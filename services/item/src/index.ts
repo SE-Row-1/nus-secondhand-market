@@ -7,6 +7,7 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { consumeAccountDeletedEvent } from "./events/consume-account-deleted-event";
 import { consumeAccountUpdatedEvent } from "./events/consume-account-updated-event";
+import { consumeTransactionAutoCompletedEvent } from "./events/consume-transaction-auto-completed-event";
 import { itemsController } from "./items/controller";
 import { itemPacksController } from "./items/packs/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
@@ -74,5 +75,6 @@ app.notFound(globalNotFoundHandler);
 // Start consuming RabbitMQ events.
 await consumeAccountUpdatedEvent();
 await consumeAccountDeletedEvent();
+await consumeTransactionAutoCompletedEvent();
 
 export default app;

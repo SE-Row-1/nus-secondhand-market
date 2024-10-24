@@ -13,8 +13,10 @@ export async function findOne(filter: Filter<Transaction>) {
 type CreateDto = Pick<Transaction, "seller" | "buyer" | "item">;
 
 export async function create(dto: CreateDto) {
+  const id = crypto.randomUUID();
+
   await transactionsCollection.insertOne({
-    id: crypto.randomUUID(),
+    id,
     buyer: dto.buyer,
     seller: dto.seller,
     item: dto.item,
@@ -22,6 +24,8 @@ export async function create(dto: CreateDto) {
     completedAt: null,
     cancelledAt: null,
   });
+
+  return id;
 }
 
 export async function complete(id: string) {

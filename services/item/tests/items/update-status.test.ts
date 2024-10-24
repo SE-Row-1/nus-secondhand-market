@@ -1,4 +1,5 @@
 import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
+import { publishTransactionAutoCompletedEvent } from "@/events/publish-transaction-auto-completed-event";
 import { ItemStatus, ItemType, type Item } from "@/types";
 import { itemsCollection, transactionsCollection } from "@/utils/db";
 import { afterAll, describe, expect, it, mock } from "bun:test";
@@ -15,6 +16,9 @@ describe("for sale -> dealt", () => {
   it("succeeds if the actor is the seller", async () => {
     mock.module("@/events/publish-item-updated-event", () => ({
       publishItemUpdatedEvent: mock(),
+    }));
+    mock.module("@/events/publish-transaction-auto-completed-event", () => ({
+      publishTransactionAutoCompletedEvent: mock(),
     }));
 
     const item: Item = {
@@ -68,6 +72,10 @@ describe("for sale -> dealt", () => {
       }),
     ).toEqual(1);
     expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
+    expect(publishTransactionAutoCompletedEvent).toHaveBeenCalledTimes(1);
+    expect(publishTransactionAutoCompletedEvent).toHaveBeenLastCalledWith(
+      expect.any(String),
+    );
   });
 
   it("fails if buyer is not given", async () => {
