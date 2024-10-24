@@ -1,3 +1,4 @@
+import { publishTransactionAutoCompletedEvent } from "@/events/publish-transaction-auto-completed-event";
 import * as transactionsRepository from "@/transactions/repository";
 import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
 import { HTTPException } from "hono/http-exception";
@@ -46,7 +47,7 @@ const forSaleToDealt: Transition = async ({ item, actor, buyer }) => {
     throw new HTTPException(409, { message: "Transaction already exists" });
   }
 
-  await transactionsRepository.create({
+  const transactionId = await transactionsRepository.create({
     item: {
       id: item.id,
       name: item.name,
@@ -55,6 +56,8 @@ const forSaleToDealt: Transition = async ({ item, actor, buyer }) => {
     seller: item.seller,
     buyer: buyer,
   });
+
+  publishTransactionAutoCompletedEvent(transactionId);
 };
 
 const dealtToSold: Transition = async ({ item, actor }) => {

@@ -8,7 +8,7 @@ export function publishTransactionAutoCompletedEvent(transactionId: string) {
     {
       persistent: true,
       headers: {
-        "x-delay": 5000,
+        "x-delay": 1000 * 60 * 60 * 24 * 14,
       },
     },
   );
