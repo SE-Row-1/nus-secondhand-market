@@ -56,9 +56,10 @@ public class EmailValidationServiceImpl implements EmailValidationService{
         }
         // for reset password, check if the email exists
         else if (type.equals("reset_password")){
-            if (account == null)
+            if (account == null) {
                 logger.info("Email not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+            }
         }
         else {
             logger.info("Invalid type");

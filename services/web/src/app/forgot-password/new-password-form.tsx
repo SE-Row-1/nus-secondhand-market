@@ -47,7 +47,7 @@ export function NewPasswordForm({ state, dispatch }: Props) {
 
       return await clientRequester.post<undefined>("/auth/reset-password", {
         id: state.transactionId,
-        password,
+        new_password: password,
       });
     },
     onSuccess: () => {
