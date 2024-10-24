@@ -4,10 +4,12 @@ import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { me } from "../test-utils/mock-data";
 import { GET } from "../test-utils/request";
 
+const mockFetch = mock().mockImplementation(
+  async () => new Response(JSON.stringify(me.detailedAccount), { status: 200 }),
+);
+
 beforeAll(() => {
-  mock.module("@/utils/requester", () => ({
-    createRequester: () => () => me.detailedAccount,
-  }));
+  global.fetch = mockFetch;
 });
 
 afterAll(() => {
