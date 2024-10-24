@@ -92,7 +92,7 @@ public class AuthController {
     }
 
     //Forgot password and reset without Login
-    @PatchMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<Object> resetPassword(@Valid @RequestBody ForgetPasswordReq forgotPasswordReq, BindingResult bindingResult){
         //forget password and reset
         if (bindingResult.hasErrors()) {
