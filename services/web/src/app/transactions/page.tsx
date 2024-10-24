@@ -1,5 +1,5 @@
 import { DataTable } from "@/components/ui/data-table";
-import { prefetchTransactions } from "@/prefetchers";
+import { prefetchTransactions } from "@/query/server";
 import type { Metadata } from "next";
 import { columns } from "./columns";
 

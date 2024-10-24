@@ -3,9 +3,8 @@
 import { StatusBadge } from "@/components/item/status-badge";
 import { Button } from "@/components/ui/button";
 import { useItem } from "@/hooks/use-item";
-import { ItemStatus, ItemType, type DetailedAccount, type Item } from "@/types";
+import { ItemStatus, ItemType } from "@/types";
 import { CheckCheckIcon, CheckIcon } from "lucide-react";
-import type { ReactNode } from "react";
 import { ChildrenGrid } from "./children-grid";
 import { ContactSellerButton } from "./contact-seller-button";
 import { DecomposePackButton } from "./decompose-pack-button";
@@ -14,21 +13,18 @@ import { EditItemLink } from "./edit-item-link";
 import { MarkAsSoldButton } from "./mark-as-sold-button";
 import { PhotoCarousel } from "./photo-carousel";
 import { Seller } from "./seller";
+import { WishlistStatisticsClient } from "./wishlist-statistics.client";
 
 type Props = {
-  initialItem: Item<DetailedAccount>;
-  identity: "seller" | "buyer" | "passer-by";
-  wishlistStatistics: ReactNode;
-  wishlistButton: ReactNode;
+  id: string;
 };
 
-export function ItemDetailsClient({
-  initialItem,
-  identity,
-  wishlistStatistics,
-  wishlistButton,
-}: Props) {
-  const { data: item } = useItem(initialItem.id, initialItem);
+export function ItemDetails({ id }: Props) {
+  const { data: item } = useItem(id);
+
+  if (!item) {
+    return null;
+  }
 
   return (
     <div className="w-full max-w-xl m-auto">
@@ -52,7 +48,9 @@ export function ItemDetailsClient({
       <div className="mt-6">
         <Seller seller={item.seller} />
       </div>
-      <div className="mt-5">{wishlistStatistics}</div>
+      <div className="mt-5">
+        <WishlistStatisticsClient />
+      </div>
       <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 mt-5">
         {identity === "seller" ? (
           <>

@@ -1,4 +1,4 @@
-import { prefetchItem, prefetchMe } from "@/prefetchers";
+import { prefetchItem, prefetchMe } from "@/query/server";
 import { ItemType } from "@/types";
 import { ChevronLeftIcon } from "lucide-react";
 import type { Metadata } from "next";

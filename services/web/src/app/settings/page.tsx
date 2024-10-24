@@ -1,4 +1,4 @@
-import { prefetchMe } from "@/prefetchers";
+import { prefetchMe } from "@/query/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DeleteAccountCard } from "./delete-account-card";

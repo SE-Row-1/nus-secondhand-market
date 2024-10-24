@@ -1,8 +1,8 @@
 "use client";
 
 import { FromNow } from "@/components/item/from-now";
+import { clientRequester } from "@/query/requester/client";
 import type { Item, SimplifiedAccount, WishlistStatistics } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 

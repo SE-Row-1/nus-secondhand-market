@@ -1,33 +1,23 @@
-import { prefetchBelongings, prefetchMe } from "@/prefetchers";
+import { createPrefetcher } from "@/query/server";
+import type { DetailedAccount } from "@/types";
+import { HydrationBoundary } from "@tanstack/react-query";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { Belongings } from "./belongings";
 import { ComposePackDialog } from "./compose-pack-dialog";
 
 export default async function BelongingsPage() {
-  const { data: me, error: meError } = await prefetchMe();
-
-  if (meError && meError.status === 401) {
-    redirect("/login");
-  }
-
-  if (meError) {
-    redirect(`/error?message=${meError.message}`);
-  }
-
-  const { data: page, error: pageError } = await prefetchBelongings(me.id);
-
-  if (pageError) {
-    redirect(`/error?message=${pageError.message}`);
-  }
+  const prefetcher = createPrefetcher();
+  await prefetcher.prefetchMe();
+  const me = prefetcher.getData<DetailedAccount>(["auth", "me"]);
+  await prefetcher.prefetchBelongings(me?.id ?? 0);
 
   return (
-    <>
+    <HydrationBoundary state={prefetcher.dehydrate()}>
       <div className="mb-8">
-        <ComposePackDialog me={me} />
+        <ComposePackDialog />
       </div>
-      <Belongings firstPage={page} me={me} />
-    </>
+      <Belongings />
+    </HydrationBoundary>
   );
 }
 

@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import { ItemStatus, type SimplifiedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 

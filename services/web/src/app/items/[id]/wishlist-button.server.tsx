@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { prefetchMe, prefetchWishlistItem } from "@/prefetchers";
+import { prefetchMe, prefetchWishlistEntry } from "@/query/server";
 import type { Item } from "@/types";
 import { HeartIcon } from "lucide-react";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export async function WishlistButtonServer({ item }: Props) {
     );
   }
 
-  const { data: wishlistItem } = await prefetchWishlistItem(me.id, item.id);
+  const { data: wishlistItem } = await prefetchWishlistEntry(me.id, item.id);
 
   return (
     <WishlistButtonClient

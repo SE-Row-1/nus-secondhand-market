@@ -1,16 +1,17 @@
-import { prefetchMarketplace } from "@/prefetchers";
+import { createPrefetcher } from "@/query/server";
+import { HydrationBoundary } from "@tanstack/react-query";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { Marketplace } from "./marketplace";
 
 export default async function MarketplacePage() {
-  const { data: page, error } = await prefetchMarketplace();
+  const prefetcher = createPrefetcher();
+  await prefetcher.prefetchMarketplace();
 
-  if (error) {
-    redirect(`/error?message=${error.message}`);
-  }
-
-  return <Marketplace firstPage={page} />;
+  return (
+    <HydrationBoundary state={prefetcher.dehydrate()}>
+      <Marketplace />
+    </HydrationBoundary>
+  );
 }
 
 export const metadata: Metadata = {

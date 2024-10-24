@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { clientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/query/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon, TrashIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";

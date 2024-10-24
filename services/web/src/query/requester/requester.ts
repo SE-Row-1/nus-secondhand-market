@@ -60,8 +60,8 @@ export class Requester {
 
   public async delete<T>(endpoint: Endpoint, init: RequestInit = {}) {
     return await this.fetcher.fetch<T>(endpoint, {
-      ...init,
       method: "DELETE",
+      ...init,
     });
   }
 

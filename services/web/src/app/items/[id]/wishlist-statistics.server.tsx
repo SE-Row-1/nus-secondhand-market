@@ -1,4 +1,4 @@
-import { prefetchWishlistStatistics } from "@/prefetchers";
+import { prefetchWishlistStatistics } from "@/query/server";
 import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
 import { WantersServer } from "./wanters.server";
 import { WishlistStatisticsClient } from "./wishlist-statistics.client";

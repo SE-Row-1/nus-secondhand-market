@@ -2,8 +2,8 @@
 
 import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount, PaginatedItems } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 

@@ -1,4 +1,4 @@
-import { prefetchMe, prefetchWishlist } from "@/prefetchers";
+import { prefetchMe, prefetchWishlist } from "@/query/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { WishList } from "./wishlist";

@@ -1,12 +1,13 @@
+import { getQueryClient } from "@/query/client";
 import {
   prefetchItem,
-  prefetchItemTransaction,
   prefetchMe,
-} from "@/prefetchers";
-import { notFound, redirect } from "next/navigation";
-import { ItemDetailsClient } from "./item-details.client";
-import { WishlistButtonServer } from "./wishlist-button.server";
-import { WishlistStatisticsServer } from "./wishlist-statistics.server";
+  prefetchTransaction,
+  prefetchWishlistEntry,
+  prefetchWishlistStatistics,
+} from "@/query/server";
+import type { DetailedAccount, Item } from "@/types";
+import { ItemDetails } from "./item-details.client";
 
 type Props = {
   params: Promise<{
@@ -16,51 +17,23 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-
-  const [
-    { data: item, error: itemError },
-    { data: me, error: meError },
-    { data: itemTransaction },
-  ] = await Promise.all([
-    prefetchItem(id),
-    prefetchMe(),
-    prefetchItemTransaction(id),
+  const queryClient = getQueryClient();
+  await Promise.all([
+    prefetchMe(queryClient),
+    prefetchItem(queryClient, id),
+    prefetchWishlistEntry(queryClient, id),
+    prefetchWishlistStatistics(queryClient, id),
+    prefetchTransaction(queryClient, id),
   ]);
 
-  if (itemError && itemError.status === 404) {
-    notFound();
-  }
-
-  if (itemError) {
-    redirect(`/error?message=${itemError.message}`);
-  }
-
-  if (meError && meError.status !== 401) {
-    redirect(`/error?message=${meError.message}`);
-  }
-
-  const identity = !me
-    ? "passer-by"
-    : me.id === item.seller.id
-      ? "seller"
-      : me.id === itemTransaction?.[0]?.buyer.id
-        ? "buyer"
-        : "passer-by";
-
-  return (
-    <ItemDetailsClient
-      initialItem={item}
-      identity={identity}
-      wishlistStatistics={<WishlistStatisticsServer item={item} me={me} />}
-      wishlistButton={<WishlistButtonServer item={item} />}
-    />
-  );
+  return <ItemDetails id={id} />;
 }
 
 export async function generateMetadata({ params }: Props) {
   const { id } = await params;
-
-  const { data: item } = await prefetchItem(id);
+  const queryClient = getQueryClient();
+  await prefetchItem(queryClient, id);
+  const item = queryClient.getQueryData<Item<DetailedAccount>>(["item", id]);
 
   return {
     title: item?.name,

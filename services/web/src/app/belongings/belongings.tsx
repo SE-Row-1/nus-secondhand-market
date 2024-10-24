@@ -2,20 +2,26 @@
 
 import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { DetailedAccount, PaginatedItems } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
+import { useMe } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
+import type { PaginatedItems } from "@/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 
-type Props = {
-  firstPage: PaginatedItems;
-  me: DetailedAccount;
-};
+export function Belongings() {
+  const { data: me } = useMe();
 
-export function Belongings({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["items", "belongings"],
+  const {
+    data: belongings,
+    fetchNextPage,
+    hasNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["items", { seller_id: me?.id, limit: 10 }],
     queryFn: async ({ pageParam: cursor }) => {
+      if (!me) {
+        return { items: [], next_cursor: null };
+      }
+
       const searchParams = new URLSearchParams({
         seller_id: String(me.id),
         limit: "10",
@@ -26,12 +32,8 @@ export function Belongings({ firstPage, me }: Props) {
         `/items?${searchParams.toString()}`,
       );
     },
-    initialPageParam: undefined,
+    initialPageParam: undefined as string | undefined,
     getNextPageParam: (lastPage) => lastPage.next_cursor,
-    initialData: {
-      pages: [firstPage],
-      pageParams: [undefined, firstPage.next_cursor],
-    },
   });
 
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -41,9 +43,13 @@ export function Belongings({ firstPage, me }: Props) {
     }
   });
 
+  if (!me || !belongings) {
+    return null;
+  }
+
   return (
     <>
-      <ItemGrid items={data.pages.flatMap((page) => page.items)} />
+      <ItemGrid items={belongings.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
     </>
   );
