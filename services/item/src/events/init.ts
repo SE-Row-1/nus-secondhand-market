@@ -13,3 +13,13 @@ export const { exchange: itemExchange } = await channel.assertExchange(
   "item",
   "topic",
 );
+
+export const { exchange: delayedExchange } = await channel.assertExchange(
+  "delayed",
+  "x-delayed-message",
+  {
+    arguments: {
+      "x-delayed-type": "topic",
+    },
+  },
+);
