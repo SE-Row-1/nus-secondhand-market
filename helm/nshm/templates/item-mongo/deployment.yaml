@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,6 +13,14 @@ spec:
       labels:
         app: item-mongo
     spec:
+      initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command: ["git", "clone", "https://github.com/SE-Row-1/nus-secondhand-market.git", "/scripts"]
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
       containers:
         - name: item-mongo
           image: bitnami/mongodb:latest
@@ -34,3 +41,11 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 3
+          volumeMounts:
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+              subPath: services/item/database/production
+
+      volumes:
+        - name: init-script
+          emptyDir: {}

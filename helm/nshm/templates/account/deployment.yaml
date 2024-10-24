@@ -13,6 +13,29 @@ spec:
       labels:
         app: account
     spec:
+      initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command: ["git", "clone", "https://github.com/SE-Row-1/nus-secondhand-market.git", "/scripts"]
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      - name: init-db
+        image: postgres:13
+        envFrom:
+          - secretRef:
+              name: account-secret
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            export PGPASSWORD=$POSTGRES_PASSWORD && \
+            psql $POSTGRES_URL -U $POSTGRES_USERNAME -f /scripts/services/account/database/1-schema.sql && \
+            psql $POSTGRES_URL -U $POSTGRES_USERNAME -f /scripts/services/account/database/2-seed.sql
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
       containers:
       - name: account
         image: {{ .Values.account.image.repository }}:{{ .Values.account.image.tag }}
@@ -41,3 +64,7 @@ spec:
           initialDelaySeconds: 30
           periodSeconds: 30
           failureThreshold: 3
+
+      volumes:
+        - name: init-script
+          emptyDir: {}
