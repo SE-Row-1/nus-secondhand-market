@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
@@ -17,7 +18,12 @@ import java.util.List;
 public class AddLikeReq {
 
 
-    private int userId;  // add manually from path variable
+    // add manually from path variable
+    private int userId;
+
+    private String nickname;
+
+    private String avatarUrl;
 
     @NotBlank
     @JsonProperty("id")

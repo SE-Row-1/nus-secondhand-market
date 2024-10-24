@@ -9,21 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
-import { useMe } from "@/hooks/use-me";
-import type { DetailedAccount } from "@/types";
-import type { ReactNode } from "react";
+import { useMe } from "@/query/browser";
+import { JoinNowCard } from "./join-now-card";
 import { LogOutButton } from "./log-out-button";
 
-type Props = {
-  initialMe: DetailedAccount;
-  noAuthFallback: ReactNode;
-};
-
-export function MeCardClient({ initialMe, noAuthFallback }: Props) {
-  const { data: me } = useMe(initialMe);
+export function MeCardClient() {
+  const { data: me } = useMe();
 
   if (!me) {
-    return noAuthFallback;
+    return <JoinNowCard />;
   }
 
   const nickname = me.nickname ?? me.email.replace(/@.+$/, "");

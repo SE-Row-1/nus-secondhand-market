@@ -1,3 +1,5 @@
+import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
+import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
 import {
   ItemStatus,
   ItemType,
@@ -5,13 +7,12 @@ import {
   type Item,
   type SimplifiedAccount,
 } from "@/types";
-import { publishItemEvent } from "@/utils/mq";
-import { photoManager } from "@/utils/photo-manager";
+import { createPhotoStorageGateway } from "@/utils/photo-storage-gateway";
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import { ObjectId } from "mongodb";
 import * as itemsRepository from "./repository";
-import { StatefulItem } from "./states";
+import { createTransition } from "./states";
 
 type GetAllServiceDto = {
   type?: ItemType;
@@ -77,7 +78,9 @@ type PublishServiceDto = {
 };
 
 export async function publish(dto: PublishServiceDto) {
-  const photoUrls = await Promise.all(dto.photos.map(photoManager.save));
+  const photoStorageGateway = createPhotoStorageGateway();
+
+  const photoUrls = await Promise.all(dto.photos.map(photoStorageGateway.save));
 
   const item: Item = {
     id: crypto.randomUUID(),
@@ -147,10 +150,12 @@ export async function update(dto: UpdateServiceDto) {
     }
   }
 
-  await Promise.all(dto.removedPhotoUrls.map(photoManager.remove));
+  const photoStorageGateway = createPhotoStorageGateway();
+
+  await Promise.all(dto.removedPhotoUrls.map(photoStorageGateway.remove));
 
   const addedPhotoUrls = await Promise.all(
-    dto.addedPhotos.map(photoManager.save),
+    dto.addedPhotos.map(photoStorageGateway.save),
   );
 
   const newPhotoUrls = [...item.photoUrls, ...addedPhotoUrls].filter(
@@ -167,7 +172,7 @@ export async function update(dto: UpdateServiceDto) {
     },
   );
 
-  publishItemEvent("item.updated", newItem!);
+  publishItemUpdatedEvent(newItem!);
 
   return newItem;
 }
@@ -175,6 +180,7 @@ export async function update(dto: UpdateServiceDto) {
 type UpdateStatusServiceDto = {
   id: string;
   status: ItemStatus;
+  buyer?: SimplifiedAccount;
   user: SimplifiedAccount;
 };
 
@@ -185,16 +191,19 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
     throw new HTTPException(404, { message: "This item does not exist" });
   }
 
-  const statefulItem = new StatefulItem(item);
-  statefulItem.transitionTo(dto.status, dto.user);
-  const newStatefulItem = statefulItem.getRepresentation();
+  const transition = createTransition(item.status, dto.status);
+  await transition({
+    item,
+    actor: dto.user,
+    ...(dto.buyer && { buyer: dto.buyer }),
+  });
 
   const newItem = await itemsRepository.updateOne(
     { id: dto.id },
-    { status: newStatefulItem.status },
+    { status: dto.status },
   );
 
-  publishItemEvent("item.updated", newItem!);
+  publishItemUpdatedEvent(newItem!);
 
   return newItem;
 }
@@ -219,7 +228,7 @@ export async function takeDown(dto: TakeDownServiceDto) {
 
   await itemsRepository.deleteOne({ id: dto.id });
 
-  publishItemEvent("item.deleted", dto.id);
+  publishItemDeletedEvent(dto.id);
 }
 
 type SearchServiceDto = {

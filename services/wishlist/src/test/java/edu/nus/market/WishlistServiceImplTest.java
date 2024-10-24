@@ -4,7 +4,7 @@ import edu.nus.market.dao.WishlistDao;
 import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
-import edu.nus.market.pojo.ResEntity.ResLike;
+import edu.nus.market.pojo.ResEntity.ResWishlist;
 import edu.nus.market.service.WishlistServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,10 +57,10 @@ class WishlistServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // 确认返回体是 ResLike 类型
-        ResLike resLike = (ResLike) response.getBody();
+        ResWishlist resWishlist = (ResWishlist) response.getBody();
 
         // 验证 items 和 nextCursor
-        assertEquals(mockLikes, resLike.getItems());
+        assertEquals(mockLikes, resWishlist.getItems());
     }
 
 
@@ -73,13 +73,13 @@ class WishlistServiceImplTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // 确认返回体是 ResLike 类型
-        ResLike resLike = (ResLike) response.getBody();
+        ResWishlist resWishlist = (ResWishlist) response.getBody();
 
         // 验证 items 列表为空
-        assertEquals(0, resLike.getItems().size());
+        assertEquals(0, resWishlist.getItems().size());
 
         // nextCursor 应该为 null（根据逻辑）
-        assertEquals(null, resLike.getNextCursor());
+        assertEquals(null, resWishlist.getNextCursor());
     }
 
 

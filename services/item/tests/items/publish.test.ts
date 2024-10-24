@@ -1,8 +1,20 @@
 import { type Item } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it } from "bun:test";
+import { afterAll, beforeAll, expect, it } from "bun:test";
+import { existsSync } from "fs";
+import { mkdir, rm } from "fs/promises";
 import { me } from "../test-utils/mock-data";
 import { FORM } from "../test-utils/request";
+
+beforeAll(async () => {
+  if (!existsSync("uploads")) {
+    await mkdir("uploads");
+  }
+});
+
+afterAll(async () => {
+  await rm("uploads", { force: true, recursive: true });
+});
 
 type ExpectedResponse = Item;
 
@@ -57,7 +69,7 @@ it("creates an item with exactly 1 photo", async () => {
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: ["uploads/test1.png"],
+    photo_urls: [expect.stringMatching(/^uploads\/.+\.png$/)],
   });
   expect(body).not.toContainKey("_id");
 
@@ -95,7 +107,10 @@ it("creates an item with multiple photos", async () => {
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: ["uploads/test1.png", "uploads/test2.jpg"],
+    photo_urls: [
+      expect.stringMatching(/^uploads\/.+\.png$/),
+      expect.stringMatching(/^uploads\/.+\.jpg$/),
+    ],
   });
   expect(body).not.toContainKey("_id");
 

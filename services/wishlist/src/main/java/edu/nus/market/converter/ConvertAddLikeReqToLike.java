@@ -38,6 +38,8 @@ public class ConvertAddLikeReqToLike {
         like.setId(null);  // MongoDB will generate the ID
         like.setType(req.getType());
         like.setUserId(req.getUserId());
+        like.setNickname(req.getNickname());
+        like.setAvatarUrl(req.getAvatarUrl());
         like.setItemId(req.getItemId());
         like.setWantedAt(new Date());  // Set current date
         like.setName(req.getName());

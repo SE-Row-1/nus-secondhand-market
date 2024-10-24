@@ -20,4 +20,6 @@ public interface WishlistService {
     void deleteItemService(String itemId);
 
     void deleteAccountService(int userId);
+
+    ResponseEntity<Object> checkLikeService(String itemId, int userId);
 }

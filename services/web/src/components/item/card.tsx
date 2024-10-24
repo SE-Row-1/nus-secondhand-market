@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { ItemType, type Item } from "@/types";
 import { BoxesIcon } from "lucide-react";
 import Link from "next/link";
-import { FromNow } from "./from-now";
 import { Cover } from "./cover";
+import { FromNow } from "./from-now";
 import { StatusBadge } from "./status-badge";
 
 type Props = {
@@ -17,7 +17,7 @@ export function ItemCard({ item }: Props) {
       <div className="absolute top-3 left-4 z-10">
         <StatusBadge status={item.status} />
       </div>
-      {item.type === ItemType.SINGLE ? (
+      {item.type === ItemType.Single ? (
         <Cover photoUrls={item.photo_urls} />
       ) : (
         <div className="grid place-items-center aspect-square rounded-t-lg bg-muted">
@@ -28,7 +28,7 @@ export function ItemCard({ item }: Props) {
         <div className="flex justify-between items-center flex-wrap gap-x-2 gap-y-1">
           <p className="font-semibold text-lg line-clamp-1">{item.name}</p>
           <p className="font-medium text-primary">
-            {item.type === ItemType.SINGLE
+            {item.type === ItemType.Single
               ? `${item.price} SGD`
               : `-${item.discount * 100}%`}
           </p>

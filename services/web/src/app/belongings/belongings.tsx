@@ -2,37 +2,17 @@
 
 import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { DetailedAccount, PaginatedItems } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useBelongings, useMe } from "@/query/browser";
 import { useRef } from "react";
 
-type Props = {
-  firstPage: PaginatedItems;
-  me: DetailedAccount;
-};
+export function Belongings() {
+  const { data: me } = useMe();
 
-export function Belongings({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["items", "belongings"],
-    queryFn: async ({ pageParam: cursor }) => {
-      const searchParams = new URLSearchParams({
-        seller_id: String(me.id),
-        limit: "10",
-        ...(cursor && { cursor }),
-      });
-
-      return await clientRequester.get<PaginatedItems>(
-        `/items?${searchParams.toString()}`,
-      );
-    },
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor,
-    initialData: {
-      pages: [firstPage],
-      pageParams: [undefined, firstPage.next_cursor],
-    },
-  });
+  const {
+    data: belongings,
+    fetchNextPage,
+    hasNextPage,
+  } = useBelongings(me?.id ?? 0);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   useInfiniteScroll(bottomRef, () => {
@@ -41,9 +21,13 @@ export function Belongings({ firstPage, me }: Props) {
     }
   });
 
+  if (!me || !belongings) {
+    return null;
+  }
+
   return (
     <>
-      <ItemGrid items={data.pages.flatMap((page) => page.items)} />
+      <ItemGrid items={belongings.pages.flatMap((page) => page.items)} />
       <div ref={bottomRef}></div>
     </>
   );

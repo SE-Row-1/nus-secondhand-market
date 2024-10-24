@@ -1,67 +1,37 @@
-import {
-  prefetchItem,
-  prefetchMe,
-  prefetchWishlistStatistics,
-} from "@/prefetchers";
-import { ChevronLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { createPrefetcher } from "@/query/server";
 import { ItemDetails } from "./item-details";
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
-export default async function Page({ params: { id } }: Props) {
-  const [
-    { data: item, error: itemError },
-    { data: wishlistStatistics },
-    { data: me, error: meError },
-  ] = await Promise.all([
-    prefetchItem(id),
-    prefetchWishlistStatistics(id),
-    prefetchMe(),
+export default async function Page({ params }: Props) {
+  const { id } = await params;
+
+  const prefetcher = createPrefetcher();
+
+  const [me] = await Promise.all([
+    prefetcher.prefetchMe(),
+    prefetcher.prefetchItem(id),
+    prefetcher.prefetchWishlistStatistics(id),
+    prefetcher.prefetchLastTransaction(id),
   ]);
 
-  if (itemError && itemError.status === 404) {
-    notFound();
+  if (me) {
+    await prefetcher.prefetchWishlistEntry(me.id, id);
   }
 
-  if (itemError) {
-    redirect(`/error?message=${itemError.message}`);
-  }
-
-  if (meError && meError.status !== 401) {
-    redirect(`/error?message=${meError.message}`);
-  }
-
-  const safeWishlistStatistics = wishlistStatistics ?? {
-    count: 0,
-    last_wanted_at: null,
-  };
-
-  return (
-    <div className="w-full max-w-xl mx-auto">
-      <Link
-        href="/"
-        className="flex items-center mb-8 text-sm text-muted-foreground hover:text-primary transition-colors"
-      >
-        <ChevronLeftIcon className="size-4 mr-2" />
-        Back to marketplace
-      </Link>
-      <ItemDetails
-        initialItem={item}
-        wishlistStatistics={safeWishlistStatistics}
-        me={me}
-      />
-    </div>
-  );
+  return <ItemDetails />;
 }
 
-export async function generateMetadata({ params: { id } }: Props) {
-  const { data: item } = await prefetchItem(id);
+export async function generateMetadata({ params }: Props) {
+  const { id } = await params;
+
+  const prefetcher = createPrefetcher();
+
+  const item = await prefetcher.prefetchItem(id);
 
   return {
     title: item?.name,

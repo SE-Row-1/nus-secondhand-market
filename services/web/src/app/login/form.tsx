@@ -4,13 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, LogInIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { type FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -34,13 +33,11 @@ export function LogInForm() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
-
-      const { email, password } = v.parse(formSchema, formData);
+    mutationFn: async (formData: FormData) => {
+      const { email, password } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
       return await clientRequester.post<DetailedAccount>("/auth/token", {
         email,
@@ -68,7 +65,7 @@ export function LogInForm() {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4 min-w-80">
+    <form action={mutate} className="grid gap-4 min-w-80">
       <div className="grid gap-2">
         <Label htmlFor="email">Email</Label>
         <Input

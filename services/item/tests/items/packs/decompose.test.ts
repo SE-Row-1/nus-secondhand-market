@@ -1,6 +1,6 @@
+import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
 import { ItemStatus, ItemType, type ItemPack } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { publishItemEvent } from "@/utils/mq";
 import { afterAll, expect, it, mock } from "bun:test";
 import { me, someone } from "../../test-utils/mock-data";
 import { DELETE } from "../../test-utils/request";
@@ -10,8 +10,8 @@ afterAll(async () => {
 });
 
 it("decomposes a pack", async () => {
-  mock.module("@/utils/mq", () => ({
-    publishItemEvent: mock(),
+  mock.module("@/events/publish-item-deleted-event", () => ({
+    publishItemDeletedEvent: mock(),
   }));
 
   const itemPack: ItemPack = {
@@ -70,7 +70,7 @@ it("decomposes a pack", async () => {
   expect(
     await itemsCollection.countDocuments({ id: itemPack.children[1]!.id }),
   ).toEqual(1);
-  expect(publishItemEvent).toHaveBeenCalledTimes(1);
+  expect(publishItemDeletedEvent).toHaveBeenCalledTimes(1);
 });
 
 it("returns 401 if not authenticated", async () => {

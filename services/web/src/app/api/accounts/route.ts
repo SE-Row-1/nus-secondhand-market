@@ -1,31 +1,15 @@
-import type { DetailedAccount } from "@/types";
 import { cookies } from "next/headers";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { mockAccounts } from "../mock-db";
 
-const mockAccount: DetailedAccount = {
-  id: 1,
-  email: "e1351826@u.nus.edu",
-  nickname: "mrcaidev",
-  avatar_url: "https://avatars.githubusercontent.com/u/78269445?v=4",
-  department: {
-    id: 0,
-    acronym: "ISS",
-    name: "Institute of System Science",
-  },
-  phone_code: "65",
-  phone_number: "80843976",
-  preferred_currency: "CNY",
-  created_at: "2024-09-23 12:19:10.415264+00",
-  deleted_at: null,
-};
-
-const mockJwt =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzI3MjY1NTY3fQ.dsSDeoQ1Nwxi4tNWyyhM8KFiKaVxnpemMkNkLe7_Y60";
-
+// Create account.
+// Not actually creating, just returning the first account from the mock database.
 export async function POST() {
-  cookies().set({
+  const cookieStore = await cookies();
+
+  cookieStore.set({
     name: "access_token",
-    value: mockJwt,
+    value: "1",
     path: "/",
     domain: "localhost",
     maxAge: 60 * 60 * 24 * 7,
@@ -35,26 +19,5 @@ export async function POST() {
     sameSite: "lax",
   });
 
-  return NextResponse.json({ ...mockAccount }, { status: 201 });
-}
-
-export async function PATCH(request: NextRequest) {
-  const accessToken = cookies().get("access_token")?.value;
-
-  if (!accessToken) {
-    return NextResponse.json(
-      { error: "Please log in first." },
-      { status: 401 },
-    );
-  }
-
-  const json = await request.json();
-
-  return NextResponse.json({ ...mockAccount, ...json }, { status: 200 });
-}
-
-export async function DELETE() {
-  cookies().set("access_token", "", { maxAge: 0 });
-
-  return new NextResponse(null, { status: 204 });
+  return NextResponse.json(mockAccounts[0], { status: 201 });
 }

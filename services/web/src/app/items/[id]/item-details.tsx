@@ -1,143 +1,149 @@
 "use client";
 
-import { FromNow } from "@/components/item/from-now";
 import { StatusBadge } from "@/components/item/status-badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/components/ui/utils";
-import { useItem } from "@/hooks/use-item";
-import {
-  ItemStatus,
-  ItemType,
-  type DetailedAccount,
-  type Item,
-  type WishlistStatistics,
-} from "@/types";
-import { EditIcon, MailIcon } from "lucide-react";
+import { useItem, useLastTransaction, useMe } from "@/query/browser";
+import { ItemStatus, ItemType } from "@/types";
+import { CheckCheckIcon, CheckIcon, HeartIcon } from "lucide-react";
 import Link from "next/link";
-import { AddToWishListButton } from "./add-to-wishlist-button";
+import { useParams } from "next/navigation";
 import { ChildrenGrid } from "./children-grid";
-import { DecomposePackDialog } from "./decompose-pack-dialog";
-import { DeleteItemDialog } from "./delete-item-dialog";
+import { ContactSellerButton } from "./contact-seller-button";
+import { DecomposePackButton } from "./decompose-pack-button";
+import { DeleteItemButton } from "./delete-item-button";
+import { EditItemLink } from "./edit-item-link";
+import { MarkAsSoldButton } from "./mark-as-sold-button";
 import { PhotoCarousel } from "./photo-carousel";
-import {
-  UpdateStatusAction,
-  UpdateStatusDropdownMenu,
-} from "./update-status-dropdown-menu";
+import { Seller } from "./seller";
+import { WishlistButton } from "./wishlist-button";
+import { WishlistStatistics } from "./wishlist-statistics";
+import { WishlistStatisticsSeller } from "./wishlist-statistics-seller";
 
-type Props = {
-  initialItem: Item<DetailedAccount>;
-  wishlistStatistics: WishlistStatistics;
-  me: DetailedAccount | null;
-};
+export function ItemDetails() {
+  const { id: itemId } = useParams<{ id: string }>();
 
-export function ItemDetails({ initialItem, wishlistStatistics, me }: Props) {
-  const { data: item } = useItem(initialItem.id, initialItem);
+  const { data: me } = useMe();
+
+  const { data: item } = useItem(itemId);
+
+  const { data: transaction } = useLastTransaction(itemId);
+
+  const isSeller = me && me.id === item?.seller.id;
+  const isBuyer = me && me.id === transaction?.buyer.id;
+  const isAnonymous = !me;
+  const isPasserBy = !isBuyer && !isSeller && !isAnonymous;
+
+  if (!item) {
+    return null;
+  }
 
   return (
-    <div>
-      <div className="max-w-xl mx-auto">
-        {item.type === ItemType.SINGLE ? (
-          <PhotoCarousel photoUrls={item.photo_urls} />
-        ) : (
-          <ChildrenGrid items={item.children} />
-        )}
+    <div className="flex flex-col justify-center w-full max-w-xl h-full mx-auto">
+      {item.type === ItemType.Single ? (
+        <PhotoCarousel photoUrls={item.photo_urls} />
+      ) : (
+        <ChildrenGrid items={item.children} />
+      )}
+      <div className="flex justify-between items-center gap-x-8 gap-y-3 flex-wrap mt-12">
+        <div className="grow flex items-center gap-3 sm:gap-4">
+          <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
+            {item.name}
+          </h1>
+          <StatusBadge status={item.status} />
+        </div>
+        <span className="font-medium text-lg lg:text-xl text-primary">
+          {item.price} SGD
+        </span>
       </div>
-      <div className="max-w-xl mx-auto">
-        <div className="flex justify-between items-center gap-x-8 gap-y-3 flex-wrap pt-12">
-          <div className="grow flex items-center gap-3 sm:gap-4">
-            <h1 className="shrink-0 font-bold text-xl lg:text-2xl line-clamp-1">
-              {item.name}
-            </h1>
-            <StatusBadge status={item.status} />
-          </div>
-          <span className="font-medium text-lg lg:text-xl text-primary">
-            {item.price} SGD
-          </span>
+      <p className="mt-4 text-muted-foreground">{item.description}</p>
+      <div className="mt-6">
+        <Seller seller={item.seller} />
+      </div>
+      {item.status !== ItemStatus.Sold && (
+        <div className="mt-5">
+          {isSeller ? <WishlistStatisticsSeller /> : <WishlistStatistics />}
         </div>
-        <p className="pt-4 text-muted-foreground">{item.description}</p>
-        <div className="pt-6">
-          <div className="flex items-center gap-3">
-            <Avatar className="size-10">
-              <AvatarImage
-                src={item.seller.avatar_url ?? undefined}
-                alt="Seller's avatar"
-              />
-              <AvatarFallback>
-                {item.seller.nickname ?? "Seller " + item.seller.id}
-              </AvatarFallback>
-            </Avatar>
-            <span>{item.seller.nickname ?? "Seller " + item.seller.id}</span>
-            <span className="text-muted-foreground">
-              published at&nbsp;
-              <FromNow date={item.created_at} />
-            </span>
-          </div>
-        </div>
-        {wishlistStatistics.count >= 3 ? (
-          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
-            🔥 {wishlistStatistics.count} people want this item.
-          </p>
-        ) : wishlistStatistics.last_wanted_at ? (
-          <p className="px-3 sm:px-4 py-2 sm:py-3 border rounded-md mt-5">
-            🔥 Someone wanted it&nbsp;
-            <FromNow date={wishlistStatistics.last_wanted_at} />.
-          </p>
-        ) : null}
-        <div
-          className={cn(
-            "grid sm:grid-cols-2 gap-x-4 gap-y-2 pt-5",
-            me?.id === item.seller.id &&
-              item.type === ItemType.SINGLE &&
-              "lg:grid-cols-3",
-          )}
-        >
-          {me?.id === item.seller.id ? (
-            <>
-              {item.status === ItemStatus.FOR_SALE ? (
-                <UpdateStatusDropdownMenu>
-                  <UpdateStatusAction itemId={item.id} to={ItemStatus.DEALT} />
-                </UpdateStatusDropdownMenu>
-              ) : item.status === ItemStatus.DEALT ? (
-                <UpdateStatusDropdownMenu>
-                  <UpdateStatusAction
-                    itemId={item.id}
-                    to={ItemStatus.FOR_SALE}
-                  />
-                  <UpdateStatusAction itemId={item.id} to={ItemStatus.SOLD} />
-                </UpdateStatusDropdownMenu>
-              ) : null}
-              {item.type === ItemType.SINGLE ? (
-                <>
-                  <Button variant="secondary" asChild>
-                    <Link href={`/items/${item.id}/edit`}>
-                      <EditIcon className="size-4 mr-2" />
-                      Edit
-                    </Link>
-                  </Button>
-                  <DeleteItemDialog item={item} />
-                </>
-              ) : (
-                <DecomposePackDialog item={item} />
-              )}
-            </>
-          ) : (
-            <>
-              <AddToWishListButton item={item} initialIsInWishlist={false} />
-              <div className="space-y-1">
-                <Button disabled={!item.seller.phone_number} className="w-full">
-                  <MailIcon className="size-4 mr-2" />
-                  Contact seller
-                </Button>
-                {item.seller.phone_number || (
-                  <p className="text-xs text-muted-foreground text-center text-balance">
-                    This seller has not yet provided his contact number
-                  </p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+      )}
+      <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 mt-5">
+        {isSeller && item.type === ItemType.Single && (
+          <>
+            <EditItemLink />
+            <DeleteItemButton />
+          </>
+        )}
+        {isSeller && item.type === ItemType.Pack && (
+          <>
+            <DecomposePackButton />
+          </>
+        )}
+        {isBuyer && item.status === ItemStatus.Dealt && (
+          <>
+            <ContactSellerButton />
+            <MarkAsSoldButton />
+          </>
+        )}
+        {isBuyer && item.status === ItemStatus.Sold && (
+          <>
+            <ContactSellerButton />
+            <Button variant="outline" disabled>
+              <CheckCheckIcon className="size-4 mr-2" />
+              Sold to you
+            </Button>
+          </>
+        )}
+        {isPasserBy && item.status === ItemStatus.ForSale && (
+          <>
+            <ContactSellerButton />
+            <WishlistButton />
+          </>
+        )}
+        {isPasserBy && item.status === ItemStatus.Dealt && (
+          <>
+            <ContactSellerButton />
+            <Button variant="outline" disabled>
+              <CheckIcon className="size-4 mr-2" />
+              Dealt already
+            </Button>
+          </>
+        )}
+        {isPasserBy && item.status === ItemStatus.Sold && (
+          <>
+            <ContactSellerButton />
+            <Button variant="outline" disabled>
+              <CheckCheckIcon className="size-4 mr-2" />
+              Sold already
+            </Button>
+          </>
+        )}
+        {isAnonymous && item.status === ItemStatus.ForSale && (
+          <>
+            <ContactSellerButton />
+            <Button asChild>
+              <Link href="/login">
+                <HeartIcon className="size-4 mr-2" />
+                Want it
+              </Link>
+            </Button>
+          </>
+        )}
+        {isAnonymous && item.status === ItemStatus.Dealt && (
+          <>
+            <ContactSellerButton />
+            <Button variant="outline" disabled>
+              <CheckIcon className="size-4 mr-2" />
+              Dealt already
+            </Button>
+          </>
+        )}
+        {isAnonymous && item.status === ItemStatus.Sold && (
+          <>
+            <ContactSellerButton />
+            <Button variant="outline" disabled>
+              <CheckCheckIcon className="size-4 mr-2" />
+              Sold already
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

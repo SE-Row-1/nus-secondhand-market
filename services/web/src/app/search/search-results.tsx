@@ -3,8 +3,8 @@
 import { ItemGrid } from "@/components/item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
+import { clientRequester } from "@/query/requester/client";
 import type { PaginatedItems } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useRef } from "react";

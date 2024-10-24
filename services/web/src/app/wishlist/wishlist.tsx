@@ -2,36 +2,16 @@
 
 import { ItemGrid } from "@/components/item";
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll";
-import type { DetailedAccount, PaginatedItems } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useMe, useWishlist } from "@/query/browser";
 import { useRef } from "react";
 
-type Props = {
-  firstPage: PaginatedItems;
-  me: DetailedAccount;
-};
-
-export function WishList({ firstPage, me }: Props) {
-  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ["wishlist"],
-    queryFn: async ({ pageParam: cursor }) => {
-      const searchParams = new URLSearchParams({
-        limit: "10",
-        ...(cursor && { cursor }),
-      });
-
-      return await clientRequester.get<PaginatedItems>(
-        `/wishlists/${me.id}?${searchParams.toString()}`,
-      );
-    },
-    initialPageParam: undefined,
-    getNextPageParam: (lastPage) => lastPage.next_cursor,
-    initialData: {
-      pages: [firstPage],
-      pageParams: [undefined, firstPage.next_cursor],
-    },
-  });
+export function WishList() {
+  const { data: me } = useMe();
+  const {
+    data: wishlist,
+    fetchNextPage,
+    hasNextPage,
+  } = useWishlist(me?.id ?? 0);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   useInfiniteScroll(bottomRef, () => {
@@ -42,7 +22,7 @@ export function WishList({ firstPage, me }: Props) {
 
   return (
     <>
-      <ItemGrid items={data.pages.flatMap((page) => page.items)} />
+      <ItemGrid items={wishlist?.pages.flatMap((page) => page.items) ?? []} />
       <div ref={bottomRef}></div>
     </>
   );

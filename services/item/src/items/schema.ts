@@ -140,6 +140,21 @@ export const updateStatusJsonSchema = v.object({
     v.transform(Number),
     v.enum(ItemStatus, "Invalid item status"),
   ),
+  buyer: v.optional(
+    v.object({
+      id: v.pipe(
+        v.unknown(),
+        v.transform(Number),
+        v.integer("Buyer ID should be an integer"),
+        v.minValue(1, "Invalid buyer ID"),
+      ),
+      nickname: v.string("Name should be a string"),
+      avatarUrl: v.pipe(
+        v.string("Avatar URL should be a string"),
+        v.url("Avatar URL should be a valid URL"),
+      ),
+    }),
+  ),
 });
 
 export const takeDownParamSchema = v.object({

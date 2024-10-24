@@ -26,11 +26,12 @@ import {
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SendIcon, ShieldCheckIcon, XIcon } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import * as v from "valibot";
 
 const sendOtpFormSchema = v.object({
@@ -48,12 +49,9 @@ const verifyOtpFormSchema = v.object({
   ),
 });
 
-type Props = {
-  id: number;
-  initialEmail: string;
-};
+export function UpdateEmailCard() {
+  const { data: me } = useMe();
 
-export function UpdateEmailCard({ id, initialEmail }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
 
@@ -62,21 +60,23 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate: sendOtp, isPending: isSendingOtp } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    mutationFn: async (formData: FormData) => {
+      if (!me) {
+        return "";
+      }
 
-      const { email: newEmail } = await v.parseAsync(
+      const { email } = await v.parseAsync(
         sendOtpFormSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
-      if (newEmail === initialEmail) {
+      if (email === me.email) {
         throw new Error("You are already using this email address.");
       }
 
       return await clientRequester.post<string>("/auth/otp", {
         type: "update_email",
-        email: newEmail,
+        email,
       });
     },
     onSuccess: (transactionId) => {
@@ -89,12 +89,10 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
   });
 
   const { mutate: verifyOtp, isPending: isVerifyingOtp } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { otp } = await v.parseAsync(
         verifyOtpFormSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
       return await clientRequester.post<undefined>("/auth/otp/verification", {
@@ -112,12 +110,19 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
 
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useMutation({
     mutationFn: async () => {
-      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
-        id: transactionId,
-      });
+      if (!me) {
+        return null;
+      }
+
+      return await clientRequester.patch<DetailedAccount>(
+        `/accounts/${me.id}`,
+        { id: transactionId },
+      );
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
+
+      toast({ description: "Update success" });
 
       setIsDialogOpen(false);
     },
@@ -125,6 +130,10 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
       toast({ variant: "destructive", description: error.message });
     },
   });
+
+  if (!me) {
+    return null;
+  }
 
   return (
     <>
@@ -135,13 +144,13 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
             Your NUS email address, used for identity verification and login.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={sendOtp}>
+        <form action={sendOtp}>
           <CardContent>
             <Input
               type="email"
               name="email"
               required
-              defaultValue={initialEmail}
+              defaultValue={me.email}
               placeholder="e1234567@u.nus.edu"
               id="email"
             />
@@ -166,7 +175,7 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
               We have sent a 6-digit OTP to your email. Please check your inbox.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={verifyOtp} className="grid gap-4 min-w-80">
+          <form action={verifyOtp} className="grid gap-4 min-w-80">
             <div className="grid gap-2">
               <Label htmlFor="otp">One-Time Password</Label>
               <InputOTP name="otp" required maxLength={6} id="otp">

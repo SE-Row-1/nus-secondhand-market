@@ -12,10 +12,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { clientRequester } from "@/utils/requester/client";
+import { clientRequester } from "@/query/requester/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import type { FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -40,12 +39,10 @@ export function UpdatePasswordCard() {
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { oldPassword, newPassword, confirmPassword } = await v.parseAsync(
         formSchema,
-        Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        Object.fromEntries(formData),
       );
 
       if (newPassword !== confirmPassword) {
@@ -58,17 +55,10 @@ export function UpdatePasswordCard() {
       });
     },
     onSuccess: () => {
-      toast({
-        title: "Password updated",
-        description: "Your password has been successfully updated.",
-      });
+      toast({ description: "Update success" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to update password",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
 
@@ -78,7 +68,7 @@ export function UpdatePasswordCard() {
         <CardTitle>Password</CardTitle>
         <CardDescription>Your login credentials.</CardDescription>
       </CardHeader>
-      <form onSubmit={mutate}>
+      <form action={mutate}>
         <CardContent className="space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="old-password">Old password</Label>
