@@ -16,7 +16,7 @@ account:
 item:
   image:
     repository: z1yoon/nshm-item
-    tag: latest
+    tag: dc2c9f5175a3655840912829dde8e7ed1f64521f
   replicas: 1
   resources:
     limits:
