@@ -4,6 +4,10 @@ metadata:
   name: rabbitmq
   namespace: nshm
 spec:
+  rabbitmq:
+    additionalConfig: |
+      default_user=guest
+      default_pass=guest
   replicas: 3
   resources:
     requests:
@@ -12,13 +16,6 @@ spec:
     limits:
       cpu: 1
       memory: 1Gi
- #rabbitmq:
-  additionalConfig: |
-        log.console.level = info
-        channel_max = 1700
-        default_user= rabbitmq
-        default_pass = rabbitmq
-        default_user_tags.administrator = true
   service:
     type: LoadBalancer
   persistence:
