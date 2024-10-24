@@ -13,5 +13,3 @@ export function publishTransactionAutoCompletedEvent(transactionId: string) {
     },
   );
 }
-
-publishTransactionAutoCompletedEvent("transaction-id");

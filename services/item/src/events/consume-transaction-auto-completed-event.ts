@@ -57,5 +57,3 @@ export async function consumeTransactionAutoCompletedEvent() {
     channel.ack(message);
   });
 }
-
-await consumeTransactionAutoCompletedEvent();
