@@ -126,12 +126,14 @@ services:
     restart: always
 
   rabbitmq:
-    image: rabbitmq
+    build:
+      context: services/rabbitmq
+      dockerfile: Dockerfile
     ports:
       - 5672:5672
       - 15672:15672
     env_file:
-      - envs/rabbitmq.env
+      - services/rabbitmq/.env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
