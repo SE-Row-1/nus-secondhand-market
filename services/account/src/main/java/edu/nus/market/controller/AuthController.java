@@ -8,6 +8,7 @@ import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.pojo.ResEntity.EmailMessage;
 import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.data.EmailTransaction;
+import edu.nus.market.security.CookieManager;
 import edu.nus.market.security.JwtTokenManager;
 import edu.nus.market.security.OTPGenerator;
 import edu.nus.market.service.AccountService;
@@ -41,6 +42,9 @@ public class AuthController {
     @Resource
     OTPGenerator otpGenerator;
 
+    @Resource
+    CookieManager cookieManager;
+
     // Get Account Info
     @GetMapping("/me")
     public ResponseEntity<Object> getAccount(@CookieValue(value = "access_token", required = false) String token){
@@ -59,8 +63,14 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
         if (!JwtTokenManager.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
+
+        int userId = JwtTokenManager.decodeAccessToken(token).getId();
+        if (accountDao.getAccountById(userId).equals(null)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
+        }
+
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
@@ -75,6 +85,7 @@ public class AuthController {
         }
         return accountService.loginService(loginReq);
     }
+
     @DeleteMapping("/token")
     public ResponseEntity<Object> logout(@RequestHeader(value = "Cookie") String token){
         return accountService.logoutService();
