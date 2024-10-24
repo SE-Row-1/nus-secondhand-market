@@ -16,7 +16,11 @@ spec:
       initContainers:
       - name: git-sync
         image: alpine/git:latest
-        command: ["sh", "-c", "git clone https://github.com/SE-Row-1/nus-secondhand-market.git /scripts"]
+        command:
+          - "sh"
+          - "-c"
+          - |
+            git clone --branch NSHM-9-Set-up-environment https://github.com/SE-Row-1/nus-secondhand-market.git /scripts
         volumeMounts:
           - name: init-script
             mountPath: /scripts
