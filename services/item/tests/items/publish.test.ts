@@ -1,8 +1,20 @@
 import { type Item } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it } from "bun:test";
+import { afterAll, beforeAll, expect, it } from "bun:test";
+import { existsSync } from "fs";
+import { mkdir, rm } from "fs/promises";
 import { me } from "../test-utils/mock-data";
 import { FORM } from "../test-utils/request";
+
+beforeAll(async () => {
+  if (!existsSync("uploads")) {
+    await mkdir("uploads");
+  }
+});
+
+afterAll(async () => {
+  await rm("uploads", { force: true, recursive: true });
+});
 
 type ExpectedResponse = Item;
 
