@@ -12,13 +12,13 @@ spec:
     limits:
       cpu: 1
       memory: 1Gi
-  rabbitmq:
-    additionalConfig: |
-            log.console.level = info
-            channel_max = 1700
-            default_user= rabbitmq
-            default_pass = rabbitmq
-            default_user_tags.administrator = true
+ #rabbitmq:
+  additionalConfig: |
+        log.console.level = info
+        channel_max = 1700
+        default_user= rabbitmq
+        default_pass = rabbitmq
+        default_user_tags.administrator = true
   service:
     type: LoadBalancer
   persistence:
