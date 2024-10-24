@@ -19,7 +19,7 @@ public class MQServiceImpl implements MQService{
 
     // send email otp message，use `Email`
     public void sendEmailMessage(EmailMessage message) {
-        rabbitTemplate.convertAndSend("notification", "Email", message);
+        rabbitTemplate.convertAndSend("notification", "email", message);
         logger.info("Sent email message: " + message);
     }
 

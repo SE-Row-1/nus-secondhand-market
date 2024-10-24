@@ -56,8 +56,6 @@ type Props = {
 export function UpdateEmailCard({ id, initialEmail }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [transactionId, setTransactionId] = useState("");
-  const [tempEmail, setTempEmail] = useState(initialEmail);
-  const [email, setEmail] = useState(initialEmail);
 
   const { toast } = useToast();
 
@@ -72,14 +70,12 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
         Object.fromEntries(new FormData(event.target as HTMLFormElement)),
       );
 
-      if (newEmail === email) {
+      if (newEmail === initialEmail) {
         throw new Error("You are already using this email address.");
       }
 
-      setTempEmail(newEmail);
-
       return await clientRequester.post<string>("/auth/otp", {
-        type: "update-email",
+        type: "update_email",
         email: newEmail,
       });
     },
@@ -117,14 +113,13 @@ export function UpdateEmailCard({ id, initialEmail }: Props) {
   const { mutate: updateEmail, isPending: isUpdatingEmail } = useMutation({
     mutationFn: async () => {
       return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
-        email: tempEmail,
+        id: transactionId,
       });
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
 
       setIsDialogOpen(false);
-      setEmail(tempEmail);
     },
     onError: (error) => {
       toast({ variant: "destructive", description: error.message });
