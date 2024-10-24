@@ -27,8 +27,8 @@ export function ItemDetails() {
 
   const { data: transaction } = useLastTransaction(itemId);
 
+  const isSeller = me && me.id === item?.seller.id;
   const isBuyer = me && me.id === transaction?.buyer.id;
-  const isSeller = me && me.id === transaction?.seller.id;
   const isAnonymous = !me;
   const isPasserBy = !isBuyer && !isSeller && !isAnonymous;
 
