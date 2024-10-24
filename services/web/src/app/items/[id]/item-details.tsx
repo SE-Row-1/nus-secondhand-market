@@ -17,6 +17,7 @@ import { PhotoCarousel } from "./photo-carousel";
 import { Seller } from "./seller";
 import { WishlistButton } from "./wishlist-button";
 import { WishlistStatistics } from "./wishlist-statistics";
+import { WishlistStatisticsSeller } from "./wishlist-statistics-seller";
 
 export function ItemDetails() {
   const { id: itemId } = useParams<{ id: string }>();
@@ -37,7 +38,7 @@ export function ItemDetails() {
   }
 
   return (
-    <div className="w-full max-w-xl m-auto">
+    <div className="flex flex-col justify-center w-full max-w-xl h-full mx-auto">
       {item.type === ItemType.Single ? (
         <PhotoCarousel photoUrls={item.photo_urls} />
       ) : (
@@ -58,9 +59,11 @@ export function ItemDetails() {
       <div className="mt-6">
         <Seller seller={item.seller} />
       </div>
-      <div className="mt-5">
-        <WishlistStatistics />
-      </div>
+      {item.status !== ItemStatus.Sold && (
+        <div className="mt-5">
+          {isSeller ? <WishlistStatisticsSeller /> : <WishlistStatistics />}
+        </div>
+      )}
       <div className="grid sm:grid-cols-2 gap-x-4 gap-y-2 mt-5">
         {isSeller && item.type === ItemType.Single && (
           <>
