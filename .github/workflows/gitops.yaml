@@ -35,6 +35,8 @@ jobs:
               - 'services/item/**'
             wishlist:
               - 'services/wishlist/**'
+            notification:
+              - 'services/notification/**'
 
   build:
     name: Build and push Docker image
