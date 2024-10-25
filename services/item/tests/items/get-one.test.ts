@@ -1,12 +1,20 @@
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it, mock } from "bun:test";
+import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { me } from "../test-utils/mock-data";
 import { GET } from "../test-utils/request";
 
-mock.module("@/utils/requester", () => ({
-  createRequester: () => () => me.detailedAccount,
-}));
+const mockFetch = mock().mockImplementation(
+  async () => new Response(JSON.stringify(me.detailedAccount), { status: 200 }),
+);
+
+beforeAll(() => {
+  global.fetch = mockFetch;
+});
+
+afterAll(() => {
+  mock.restore();
+});
 
 it("returns the item with the given ID", async () => {
   const insertedId = crypto.randomUUID();

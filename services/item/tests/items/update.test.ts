@@ -1,18 +1,25 @@
-import { ItemStatus, ItemType } from "@/types";
+import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
+import { ItemStatus, ItemType, type SingleItem } from "@/types";
+import type { CamelToSnake } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
-import { publishItemEvent } from "@/utils/mq";
-import { expect, it, mock } from "bun:test";
+import { beforeAll, expect, it, mock } from "bun:test";
 import { existsSync } from "fs";
-import { rm } from "fs/promises";
+import { mkdir, rm } from "fs/promises";
 import { me, someone } from "../test-utils/mock-data";
 import { PATCH_FORM } from "../test-utils/request";
 
+beforeAll(async () => {
+  if (!existsSync("uploads")) {
+    await mkdir("uploads");
+  }
+});
+
 it("updates an item", async () => {
-  mock.module("@/utils/mq", () => ({
-    publishItemEvent: mock(),
+  mock.module("@/events/publish-item-updated-event", () => ({
+    publishItemUpdatedEvent: mock(),
   }));
 
-  await Bun.write("uploads/before-update.png", "");
+  await Bun.write("uploads/test.png", "");
 
   const insertedId = crypto.randomUUID();
 
@@ -22,7 +29,7 @@ it("updates an item", async () => {
     name: "test",
     description: "test",
     price: 100,
-    photoUrls: ["uploads/before-update.png"],
+    photoUrls: ["uploads/test.png"],
     seller: me.simplifiedAccount,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
@@ -38,37 +45,39 @@ it("updates an item", async () => {
     new File(["foo"], "after-update.png", { type: "image/png" }),
     "after-update.png",
   );
-  formData.append("removed_photo_urls", "uploads/before-update.png");
+  formData.append("removed_photo_urls", "uploads/test.png");
 
   const res = await PATCH_FORM(`/items/${insertedId}`, formData, {
     headers: {
       Cookie: `access_token=${me.jwt}`,
     },
   });
-  const body = await res.json();
+  const body = (await res.json()) as CamelToSnake<SingleItem>;
 
   expect(res.status).toEqual(200);
-  expect(body).toMatchObject({
-    id: insertedId,
-    type: ItemType.Single,
-    name: "update",
-    description: "update",
-    price: 200,
-    photo_urls: ["uploads/after-update.png"],
-    seller: me.simplified_account,
-    status: ItemStatus.ForSale,
-    created_at: expect.any(String),
-    deleted_at: null,
-  });
+  expect(body).toEqual(
+    expect.objectContaining({
+      id: insertedId,
+      type: ItemType.Single,
+      name: "update",
+      description: "update",
+      price: 200,
+      photo_urls: [expect.stringMatching(/^uploads\/.+\.png$/)],
+      seller: me.simplified_account,
+      status: ItemStatus.ForSale,
+      created_at: expect.any(String),
+      deleted_at: null,
+    }),
+  );
   expect(body).not.toContainKey("_id");
-  expect(existsSync("uploads/before-update.png")).toBeFalse();
-  expect(existsSync("uploads/after-update.png")).toBeTrue();
+  expect(existsSync("uploads/test.png")).toBeFalse();
+  expect(existsSync(body.photo_urls?.[0] ?? "")).toBeTrue();
   expect(
     await itemsCollection.countDocuments({ id: insertedId, name: "update" }),
   ).toEqual(1);
-  expect(publishItemEvent).toHaveBeenCalledTimes(1);
+  expect(publishItemUpdatedEvent).toHaveBeenCalledTimes(1);
 
-  await rm("uploads/after-update.png");
+  await rm("uploads", { recursive: true });
   await itemsCollection.deleteOne({ id: insertedId });
 });
 

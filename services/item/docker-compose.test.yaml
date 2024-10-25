@@ -8,7 +8,13 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017
       - MONGO_DB_NAME=nshm
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_REGION=test
+      - S3_BUCKET_NAME=test
+      - SMMS_API_KEY=test
       - JWT_SECRET_KEY=test
+      - ACCOUNT_SERVICE_BASE_URL=http://test
     networks:
       - bridge
     depends_on:

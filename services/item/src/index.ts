@@ -5,11 +5,14 @@ import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
+import { consumeAccountDeletedEvent } from "./events/consume-account-deleted-event";
+import { consumeAccountUpdatedEvent } from "./events/consume-account-updated-event";
 import { itemsController } from "./items/controller";
 import { itemPacksController } from "./items/packs/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
+import { transactionsController } from "./transactions/controller";
 
 // Entry point of the application.
 const app = new Hono();
@@ -62,9 +65,14 @@ app.get("/healthz", (c) => c.text("ok"));
 // Register controllers.
 app.route("/items", itemsController);
 app.route("/items/packs", itemPacksController);
+app.route("/transactions", transactionsController);
 
 // Register global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
+
+// Start consuming RabbitMQ events.
+await consumeAccountUpdatedEvent();
+await consumeAccountDeletedEvent();
 
 export default app;

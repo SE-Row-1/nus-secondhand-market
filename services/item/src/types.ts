@@ -101,3 +101,16 @@ export type ItemPack = {
  * An item can be either a single item, or an item pack.
  */
 export type Item = SingleItem | ItemPack;
+
+/**
+ * A transaction between a seller and a buyer, regarding an item.
+ */
+export type Transaction = {
+  id: string;
+  seller: SimplifiedAccount;
+  buyer: SimplifiedAccount;
+  item: Pick<Item, "id" | "name" | "price">;
+  createdAt: Date;
+  completedAt: Date | null;
+  cancelledAt: Date | null;
+};

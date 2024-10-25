@@ -1,7 +1,7 @@
 import { Header, Sidebar } from "@/components/layout";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
-import { QueryProvider } from "@/contexts/query-provider";
+import { QueryProvider } from "@/query/provider";
 import type { Metadata } from "next";
 import { Nunito as FontSans } from "next/font/google";
 import type { PropsWithChildren } from "react";
@@ -28,13 +28,15 @@ export default function RootLayout({ children }: PropsWithChildren) {
           }}
         ></script>
       </head>
-      <body className="bg-background font-sans text-foreground antialiased scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
+      <body className="bg-background font-sans text-foreground antialiased">
         <QueryProvider>
           <SidebarProvider>
             <Sidebar />
             <SidebarInset>
               <Header />
-              <div className="grow flex flex-col px-8 pb-16">{children}</div>
+              <div className="h-[calc(100vh-72px)] px-6 pb-16 overflow-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-muted">
+                {children}
+              </div>
             </SidebarInset>
           </SidebarProvider>
         </QueryProvider>

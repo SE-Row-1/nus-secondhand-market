@@ -19,11 +19,7 @@ import {
 import { TrashIcon, XIcon } from "lucide-react";
 import { DeleteAccountButton } from "./delete-account-button";
 
-type Props = {
-  id: number;
-};
-
-export async function DeleteAccountCard({ id }: Props) {
+export async function DeleteAccountCard() {
   return (
     <Card className="border-destructive">
       <CardHeader>
@@ -66,7 +62,7 @@ export async function DeleteAccountCard({ id }: Props) {
                 <XIcon className="size-4 mr-2" />
                 Cancel
               </AlertDialogCancel>
-              <DeleteAccountButton id={id} />
+              <DeleteAccountButton />
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

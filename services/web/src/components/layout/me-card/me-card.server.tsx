@@ -1,22 +1,18 @@
 import { SidebarMenuItem } from "@/components/ui/sidebar";
-import { prefetchMe } from "@/prefetchers";
-import { JoinNowCard } from "./join-now-card";
+import { createPrefetcher } from "@/query/server";
+import { HydrationBoundary } from "@tanstack/react-query";
 import { MeCardClient } from "./me-card.client";
 
 export async function MeCardServer() {
-  const { data: me, error: meError } = await prefetchMe();
+  const prefetcher = createPrefetcher();
 
-  if (meError) {
-    return (
-      <SidebarMenuItem>
-        <JoinNowCard />
-      </SidebarMenuItem>
-    );
-  }
+  await prefetcher.prefetchMe();
 
   return (
     <SidebarMenuItem>
-      <MeCardClient initialMe={me} noAuthFallback={<JoinNowCard />} />
+      <HydrationBoundary state={prefetcher.dehydrate()}>
+        <MeCardClient />
+      </HydrationBoundary>
     </SidebarMenuItem>
   );
 }

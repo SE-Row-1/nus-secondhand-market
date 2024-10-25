@@ -18,8 +18,6 @@ if (db.getUser(process.env.MONGO_INITDB_ROOT_USERNAME) === null) {
     ]
   });
   print("User created: " + process.env.MONGO_INITDB_ROOT_USERNAME);
-} else {
-  print("User already exists: " + process.env.MONGO_INITDB_ROOT_USERNAME);
 }
 
-print("Database and user initialization complete.");
+db.createCollection("transactions");

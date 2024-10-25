@@ -9,7 +9,8 @@ export class AuthGuard extends Middleware {
   /**
    * These routes are accessible only if the user IS authenticated.
    */
-  private static AUTH_ROUTES = /^\/belongings|^\/wishlist|^\/settings/;
+  private static AUTH_ROUTES =
+    /^\/belongings|^\/wishlist|^\/transactions|^\/settings/;
 
   /**
    * These routes are accessible only if the user IS NOT authenticated.
@@ -17,7 +18,9 @@ export class AuthGuard extends Middleware {
   private static NO_AUTH_ROUTES = /^\/login|^\/register|^\/forgot-password/;
 
   public override async handle(req: NextRequest) {
-    const isAuthenticated = cookies().has("access_token");
+    const cookieStore = await cookies();
+
+    const isAuthenticated = cookieStore.has("access_token");
 
     const isAuthRoute = AuthGuard.AUTH_ROUTES.test(req.nextUrl.pathname);
 

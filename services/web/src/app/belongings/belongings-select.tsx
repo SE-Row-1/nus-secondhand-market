@@ -7,9 +7,9 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMe } from "@/hooks/use-me";
+import { useMe } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
 import type { Item } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useQuery } from "@tanstack/react-query";
 
 type Props = {

@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { useMe } from "@/query/browser";
+import { clientRequester } from "@/query/requester/client";
 import type { DetailedAccount } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import { type FormEvent } from "react";
 import * as v from "valibot";
 
 const formSchema = v.object({
@@ -26,40 +26,42 @@ const formSchema = v.object({
   ),
 });
 
-type Props = {
-  id: number;
-  initialNickname: string | null;
-};
+export function UpdateNicknameCard() {
+  const { data: me } = useMe();
 
-export function UpdateNicknameCard({ id, initialNickname }: Props) {
   const { toast } = useToast();
 
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+    mutationFn: async (formData: FormData) => {
+      if (!me) {
+        return null;
+      }
 
-      const target = event.target as HTMLFormElement;
-      const formData = Object.fromEntries(new FormData(target));
+      const { nickname } = await v.parseAsync(
+        formSchema,
+        Object.fromEntries(formData),
+      );
 
-      const { nickname } = v.parse(formSchema, formData);
-
-      return await clientRequester.patch<DetailedAccount>(`/accounts/${id}`, {
-        nickname,
-      });
+      return await clientRequester.patch<DetailedAccount>(
+        `/accounts/${me.id}`,
+        { nickname },
+      );
     },
     onSuccess: (account) => {
       queryClient.setQueryData(["auth", "me"], account);
+
+      toast({ description: "Update success" });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        title: "Failed to update nickname",
-        description: error.message,
-      });
+      toast({ variant: "destructive", description: error.message });
     },
   });
+
+  if (!me) {
+    return null;
+  }
 
   return (
     <Card>
@@ -69,13 +71,13 @@ export function UpdateNicknameCard({ id, initialNickname }: Props) {
           Your preferred name, displayed to everyone else on the platform.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={mutate}>
+      <form action={mutate}>
         <CardContent>
           <Input
             type="text"
             name="nickname"
             required
-            defaultValue={initialNickname ?? ""}
+            defaultValue={me.nickname ?? ""}
             placeholder="2-20 characters"
             id="nickname"
           />

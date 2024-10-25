@@ -4,11 +4,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { clientRequester } from "@/query/requester/client";
 import type { ItemPack } from "@/types";
-import { clientRequester } from "@/utils/requester/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { BoxesIcon, Loader2Icon, XIcon } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import * as v from "valibot";
 import { BelongingsSelect } from "./belongings-select";
 
@@ -54,11 +54,9 @@ export function ComposePackForm({ closeDialog }: Props) {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
+    mutationFn: async (formData: FormData) => {
       const { name, description, discount } = await v.parseAsync(formSchema, {
-        ...Object.fromEntries(new FormData(event.target as HTMLFormElement)),
+        ...Object.fromEntries(formData),
         childrenIds,
       });
 
@@ -89,7 +87,7 @@ export function ComposePackForm({ closeDialog }: Props) {
   });
 
   return (
-    <form onSubmit={mutate} className="grid gap-4">
+    <form action={mutate} className="grid gap-4">
       <div className="grid gap-2">
         <Label showRequiredMarker htmlFor="name">
           Name

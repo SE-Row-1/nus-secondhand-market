@@ -10,6 +10,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
+  ArrowRightLeftIcon,
   HeartIcon,
   PackageIcon,
   SearchIcon,
@@ -58,6 +59,11 @@ export function AppSidebar() {
                   { title: "My Items", to: "/belongings" },
                   { title: "Publish New Item", to: "/belongings/publish" },
                 ]}
+              />
+              <NavLink
+                icon={<ArrowRightLeftIcon />}
+                title="Transactions"
+                to="/transactions"
               />
               <NavLink
                 icon={<SettingsIcon />}

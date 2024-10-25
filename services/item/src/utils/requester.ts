@@ -1,12 +1,16 @@
 import { HTTPException } from "hono/http-exception";
 import type { StatusCode } from "hono/utils/http-status";
 
+/**
+ * Register every microservice's base URL here.
+ */
 const serviceRegistry = {
   account: Bun.env.ACCOUNT_SERVICE_BASE_URL,
 };
 
 /**
- * Create a requester towards another microservice.
+ * Requesters created by this function are used exclusively
+ * for inter-microservice HTTP communication.
  */
 export function createRequester(service: keyof typeof serviceRegistry) {
   const baseUrl = serviceRegistry[service];

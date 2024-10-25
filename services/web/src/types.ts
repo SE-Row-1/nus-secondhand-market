@@ -21,21 +21,21 @@ export type DetailedAccount = SimplifiedAccount & {
 };
 
 export enum ItemType {
-  SINGLE = "single",
-  PACK = "pack",
+  Single = "single",
+  Pack = "pack",
 }
 
 export enum ItemStatus {
-  FOR_SALE,
-  DEALT,
-  SOLD,
+  ForSale,
+  Dealt,
+  Sold,
 }
 
 export type SingleItem<
   A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
 > = {
   id: string;
-  type: ItemType.SINGLE;
+  type: ItemType.Single;
   name: string;
   description: string;
   price: number;
@@ -50,7 +50,7 @@ export type ItemPack<
   A extends SimplifiedAccount | DetailedAccount = SimplifiedAccount,
 > = {
   id: string;
-  type: ItemType.PACK;
+  type: ItemType.Pack;
   name: string;
   description: string;
   price: number;
@@ -73,7 +73,25 @@ export type PaginatedItems<
   next_cursor: string;
 };
 
+export type WishlistEntry = (
+  | Omit<SingleItem, "description" | "created_at" | "deleted_at">
+  | Omit<ItemPack, "description" | "children" | "created_at" | "deleted_at">
+) & {
+  wanted_at: string;
+};
+
 export type WishlistStatistics = {
   count: number;
   last_wanted_at: string | null;
+  wanters: SimplifiedAccount[];
+};
+
+export type Transaction = {
+  id: string;
+  item: Pick<Item, "id" | "name" | "price">;
+  buyer: SimplifiedAccount;
+  seller: SimplifiedAccount;
+  created_at: string;
+  completed_at: string | null;
+  cancelled_at: string | null;
 };
