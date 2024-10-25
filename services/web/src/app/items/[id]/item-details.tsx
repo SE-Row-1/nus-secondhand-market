@@ -52,7 +52,7 @@ export function ItemDetails() {
           <StatusBadge status={item.status} />
         </div>
         <span className="font-medium text-lg lg:text-xl text-primary">
-          {item.price} SGD
+          {Math.round(item.price * 100) / 100} SGD
         </span>
       </div>
       <p className="mt-4 text-muted-foreground">{item.description}</p>
