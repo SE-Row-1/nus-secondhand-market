@@ -44,7 +44,7 @@ wishlist:
 web:
   image:
     repository: z1yoon/nshm-web
-    tag: ad73a185e15c81b31882d8660add0cb8cd06874b
+    tag: a0b4e3f8b54f95b3bac2406c5aafa85fab73db71
   replicas: 1
   resources:
     limits:
