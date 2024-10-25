@@ -17,10 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -106,6 +103,9 @@ public class WishlistServiceImpl implements WishlistService {
     private RabbitTemplate rabbitTemplate;
 
     public void updateItemService(Like updatedLikeInfo) {
+        boolean hasImage = false;
+        String imageUrl = null;
+
         String itemId = updatedLikeInfo.getItemId();
 
         // Search by itemId
@@ -124,21 +124,80 @@ public class WishlistServiceImpl implements WishlistService {
         if (updatedLikeInfo instanceof SingleLike) {
             SingleLike singleLike = (SingleLike) updatedLikeInfo;
             update.set("photoUrls", singleLike.getPhotoUrls());
+
+            imageUrl = singleLike.getPhotoUrls().get(0); // Use the first photoUrl
+            hasImage = true;
         } else if (updatedLikeInfo instanceof PackLike) {
             PackLike packLike = (PackLike) updatedLikeInfo;
             update.set("discount", packLike.getDiscount());
+
+            hasImage = false; // No image for PackLike
         }
         //search original information before executing update
         List<Like> updatedLikes = wishlistDao.findByItemId(itemId);
         // Execute
         mongoTemplate.updateMulti(query, update, Like.class);
 
+        //compare price
 
-        for (Like updatedLike : updatedLikes) {
-            EmailMessage message = new EmailMessage(updatedLike.getEmail(), "Your Wanted Product Updated!",
-                "The " + updatedLike.getName() + " you wanted has been updated, come and check it!");
-            rabbitTemplate.convertAndSend("notification", "email", message);
+        String title;
+        boolean changePrice;
+        if (updatedLikeInfo.getPrice() != updatedLikes.get(0).getPrice()) {
+            title = "Price Of Your Wanted Product Updated!";
+            changePrice= true;
+        }else{
+            title = "Your Wanted Product Updated!";
+            changePrice= false;
         }
+
+        // Prepare batch email request
+        List<Map<String, String>> emailBatch = new ArrayList<>();
+        for (Like updatedLike : updatedLikes) {
+            String emailContent = generateEmailContent(
+                title,
+                updatedLike,
+                updatedLikeInfo,
+                imageUrl,
+                changePrice,
+                hasImage
+            );
+
+            // Build email data
+            Map<String, String> emailData = new HashMap<>();
+            emailData.put("to", updatedLike.getEmail());
+            emailData.put("title", title);
+            emailData.put("content", emailContent);
+
+            // Add to batch
+            emailBatch.add(emailData);
+        }
+
+        // Send batch email
+        Map<String, Object> batchEmailRequest = new HashMap<>();
+        batchEmailRequest.put("emails", emailBatch);
+
+        rabbitTemplate.convertAndSend("notification", "batch-email", batchEmailRequest);
+    }
+    private String generateEmailContent(String title,Like oldLikeDataWithPersonalInfo,Like newLikeData, String imageUrl, boolean changePrice, boolean hasImage) {
+        StringBuilder content = new StringBuilder();
+        content.append("<html><body>")
+            .append("<h2>").append(title).append("</h2>")
+            .append("<p>Hi, ").append(oldLikeDataWithPersonalInfo.getNickname()).append(". The <strong>").append(oldLikeDataWithPersonalInfo.getName());
+        if (changePrice) {
+            content.append("</strong>'s price has been updated to <strong>").append(newLikeData.getPrice()).append("SGD").append("</strong>, ");
+        }else{
+            content.append("</strong> has been updated, ");
+        }
+
+        content.append("come and check it!</p>")
+            .append("<p>Click <a href='https://www.nshm.store/items/").append(oldLikeDataWithPersonalInfo.getItemId()).append("'>here</a> to view the product.</p>");
+
+        if (hasImage) {
+            content.append("<p><img src='").append(imageUrl).append("' alt='Product Image' /></p>");
+        }
+
+        content.append("</body></html>");
+        return content.toString();
     }
     @Override
     public void deleteItemService(String itemId) {
