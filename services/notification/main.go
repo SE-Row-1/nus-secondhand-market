@@ -35,6 +35,11 @@ func main() {
 		log.Panic(err)
 	}
 
+	err = startQueue[processors.BatchEmailPayload](channel, "batch-email")
+	if err != nil {
+		log.Panic(err)
+	}
+
 	startHealthCheck()
 
 	log.Print("service started")
