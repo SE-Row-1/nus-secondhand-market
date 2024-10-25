@@ -6,9 +6,11 @@ import edu.nus.market.pojo.*;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import edu.nus.market.converter.ConvertAddLikeReqToLike;
 
+import edu.nus.market.pojo.ResEntity.EmailMessage;
 import edu.nus.market.pojo.ResEntity.ResItemLikeInfo;
 import edu.nus.market.pojo.ResEntity.ResWishlist;
 import jakarta.annotation.Resource;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -86,8 +88,11 @@ public class WishlistServiceImpl implements WishlistService {
     @Autowired
     private MongoTemplate mongoTemplate;
 
-    public void updateItemService(Like updatedLike) {
-        String itemId = updatedLike.getItemId();
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    public void updateItemService(Like updatedLikeInfo) {
+        String itemId = updatedLikeInfo.getItemId();
 
         // Search by itemId
         Query query = new Query(Criteria.where("itemId").is(itemId));
@@ -96,22 +101,32 @@ public class WishlistServiceImpl implements WishlistService {
         Update update = new Update();
 
         // Public fields
-        update.set("name", updatedLike.getName());
-        update.set("price", updatedLike.getPrice());
-        update.set("status", updatedLike.getStatus());
-        update.set("seller", updatedLike.getSeller());
+        update.set("name", updatedLikeInfo.getName());
+        update.set("price", updatedLikeInfo.getPrice());
+        update.set("status", updatedLikeInfo.getStatus());
+        update.set("seller", updatedLikeInfo.getSeller());
 
         // Update specific fields
-        if (updatedLike instanceof SingleLike) {
-            SingleLike singleLike = (SingleLike) updatedLike;
+        if (updatedLikeInfo instanceof SingleLike) {
+            SingleLike singleLike = (SingleLike) updatedLikeInfo;
             update.set("photoUrls", singleLike.getPhotoUrls());
-        } else if (updatedLike instanceof PackLike) {
-            PackLike packLike = (PackLike) updatedLike;
+        } else if (updatedLikeInfo instanceof PackLike) {
+            PackLike packLike = (PackLike) updatedLikeInfo;
             update.set("discount", packLike.getDiscount());
         }
-
+        //search original information before executing update
+        List<Like> updatedLikes = wishlistDao.findByItemId(itemId);
         // Execute
         mongoTemplate.updateMulti(query, update, Like.class);
+
+
+
+
+        for (Like updatedLike : updatedLikes) {
+            EmailMessage message = new EmailMessage(updatedLike.getEmail(), "Your Wanted Product Updated!",
+                "The " + updatedLike.getName() + " you wanted has been updated.");
+            rabbitTemplate.convertAndSend("notification", "email", message);
+        }
     }
     @Override
     public void deleteItemService(String itemId) {

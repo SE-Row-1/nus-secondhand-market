@@ -88,10 +88,12 @@ public class WishlistController {
 
         String avatarUrl = decodedToken.getAvatarUrl();
         String nickname = decodedToken.getNickname();
+        String email = decodedToken.getEmail();
 
         req.setUserId(userId);
         req.setNickname(nickname);
         req.setAvatarUrl(avatarUrl);
+        req.setEmail(email);
 
         return wishlistService.addLikeService(req);
     }
