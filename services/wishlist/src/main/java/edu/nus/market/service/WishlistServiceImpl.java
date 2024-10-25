@@ -76,9 +76,23 @@ public class WishlistServiceImpl implements WishlistService {
         ResItemLikeInfo itemLikeInfoResponse = null;
         Optional<Like> itemSeller = wishlistDao.findFirstByItemId(itemId);
 
-        if (itemSeller.isPresent() && userId == itemSeller.get().getSeller().getSellerId()) {
-            itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, wishlistDao.findUserInfoByItemId(itemId));
+        System.out.println("Seller checking");
+        if (itemSeller.isPresent()) {
+            if (userId == itemSeller.get().getSeller().getSellerId()){
+                System.out.println(userId);
+                System.out.println(itemSeller.get().getSeller().getSellerId());
+                System.out.println("seller confirm");
+                itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, wishlistDao.findUserInfoByItemId(itemId));
+            }else{
+                System.out.println(userId);
+                System.out.println(itemSeller.get().getSeller().getSellerId());
+                System.out.println("not seller");
+                itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, new ArrayList<>());
+            }
+
         } else {
+            System.out.println(userId);
+            System.out.println("not seller, no record");
             itemLikeInfoResponse = new ResItemLikeInfo(count, favoriteDate, new ArrayList<>());
         }
 
@@ -120,11 +134,9 @@ public class WishlistServiceImpl implements WishlistService {
         mongoTemplate.updateMulti(query, update, Like.class);
 
 
-
-
         for (Like updatedLike : updatedLikes) {
             EmailMessage message = new EmailMessage(updatedLike.getEmail(), "Your Wanted Product Updated!",
-                "The " + updatedLike.getName() + " you wanted has been updated.");
+                "The " + updatedLike.getName() + " you wanted has been updated, come and check it!");
             rabbitTemplate.convertAndSend("notification", "email", message);
         }
     }
