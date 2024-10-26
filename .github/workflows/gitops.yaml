@@ -37,6 +37,8 @@ jobs:
               - 'services/wishlist/**'
             notification:
               - 'services/notification/**'
+            rabbitmq:
+              - 'services/rabbitmq/**'
 
   build:
     name: Build and push Docker image

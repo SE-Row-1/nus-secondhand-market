@@ -107,7 +107,7 @@ services:
     env_file:
       - envs/wishlist-mongo.env
     volumes:
-      - ./services/wishlist/database:/docker-entrypoint-initdb.d
+      - ./services/wishlist/database/dev:/docker-entrypoint-initdb.d
       - wishlist-mongo-data:/data/db
     networks:
       - bridge
@@ -126,15 +126,14 @@ services:
     restart: always
 
   rabbitmq:
-    image: rabbitmq
+    build:
+      context: services/rabbitmq
+      dockerfile: Dockerfile
     ports:
       - 5672:5672
       - 15672:15672
     env_file:
-      - envs/rabbitmq.env
-    command: >
-      sh -c "rabbitmq-plugins enable rabbitmq_management &&
-             rabbitmq-server"
+      - services/rabbitmq/.env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:

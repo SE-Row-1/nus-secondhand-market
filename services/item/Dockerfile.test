@@ -8,4 +8,6 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
+ENV NODE_ENV=test
+
 CMD ["sleep", "infinity"]

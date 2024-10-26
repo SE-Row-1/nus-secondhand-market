@@ -7,6 +7,12 @@ const config: NextConfig = {
       {
         hostname: "picsum.photos",
       },
+      {
+        hostname: "s2.loli.net",
+      },
+      {
+        hostname: "nshm-public.s3.ap-southeast-1.amazonaws.com",
+      },
     ],
   },
 };

@@ -46,4 +46,6 @@ public interface WishlistDao extends MongoRepository<Like, ObjectId> {
     @Query(value = "{ 'itemId': ?0 }", fields = "{ 'userId': 1, 'nickname': 1, 'avatarUrl': 1 }")
     List<ResUserInfo> findUserInfoByItemId(String itemId);
 
+    List<Like> findByItemId(String itemId);
+
 }

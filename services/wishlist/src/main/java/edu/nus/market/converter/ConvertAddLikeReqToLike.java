@@ -40,6 +40,7 @@ public class ConvertAddLikeReqToLike {
         like.setUserId(req.getUserId());
         like.setNickname(req.getNickname());
         like.setAvatarUrl(req.getAvatarUrl());
+        like.setEmail(req.getEmail());
         like.setItemId(req.getItemId());
         like.setWantedAt(new Date());  // Set current date
         like.setName(req.getName());

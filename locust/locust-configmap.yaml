@@ -16,12 +16,12 @@ data:
 
         @task
         def account_service(self):
-            self.client.get("/api/accounts")
+            self.client.get("/accounts")
 
         @task
         def item_service(self):
-            self.client.get("/api/items")
+            self.client.get("/items")
 
         @task
         def wishlist_service(self):
-            self.client.get("/api/wishlists")
+            self.client.get("/wishlists")

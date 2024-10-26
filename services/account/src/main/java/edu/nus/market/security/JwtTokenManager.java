@@ -35,6 +35,7 @@ public class JwtTokenManager {
             .claim("id", jwtPayload.getId())
             .claim("nickname", jwtPayload.getNickname())
             .claim("avatar_url", jwtPayload.getAvatarUrl())
+            .claim("email", jwtPayload.getEmail())
 
             .setIssuedAt(new Date())
             .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -75,7 +76,7 @@ public class JwtTokenManager {
                 .getBody();
 
             JWTPayload jwtPayload = new JWTPayload((int) claims.get("id"), (String)claims.get("nickname"),
-                (String)claims.get("avatar_url"));
+                (String)claims.get("avatar_url"), (String)claims.get("email"));
 
             return jwtPayload;
 

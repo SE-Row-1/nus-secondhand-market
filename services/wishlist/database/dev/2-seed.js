@@ -139,6 +139,36 @@ const likes = [
     },
     _class: 'edu.nus.market.pojo.SingleLike',
   },
+  {
+    userId: 1,
+    nickname: 'Johnny',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/78269445?v=4',
+    email: 'e1234561@u.nus.edu',
+    itemId: 'ca2d2b51-0905-47e9-a0d3-0f89d588e047',
+    name: 'Coffee Maker',
+    price: 80.0,
+    status: 0,
+    type: 'single',
+    photoUrls: ['https://picsum.photos/200?random=16'],
+    wantedAt: new Date(),
+    seller: { sellerId: 3, nickname: 'AlexL', avatarUrl: 'https://avatars.githubusercontent.com/u/13389461?v=4' },
+    _class: 'edu.nus.market.pojo.SingleLike'
+  },
+  {
+    userId: 1,
+    nickname: 'Johnny',
+    avatarUrl: 'https://avatars.githubusercontent.com/u/78269445?v=4',
+    email: 'e1234561@u.nus.edu',
+    itemId: '05a5cc9d-8616-4876-8ba5-de403e2dc573',
+    name: 'Running Shoes',
+    price: 60.0,
+    status: 1,
+    type: 'single',
+    photoUrls: ['https://picsum.photos/200?random=17'],
+    wantedAt: new Date(),
+    seller: { sellerId: 4, nickname: 'MikeB', avatarUrl: 'https://avatars.githubusercontent.com/u/60336739?v=4' },
+    _class: 'edu.nus.market.pojo.SingleLike'
+  },
 ];
 
 db.wishlist.insertMany(likes);

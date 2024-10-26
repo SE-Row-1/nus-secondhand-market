@@ -25,6 +25,8 @@ public class AddLikeReq {
 
     private String avatarUrl;
 
+    private String email;
+
     @NotBlank
     @JsonProperty("id")
     private String itemId;

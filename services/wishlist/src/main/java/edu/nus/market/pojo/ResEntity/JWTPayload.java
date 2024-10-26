@@ -15,10 +15,13 @@ public class JWTPayload {
 
     String avatarUrl;
 
+    String email;
+
     // all args constructor, input an account object, and convert to this rspAccount object
     public JWTPayload(Account account) {
         this.id = account.getId();
         this.nickname = account.getNickname();
         this.avatarUrl = account.getAvatarUrl();
+        this.email = account.getEmail();
     }
 }
