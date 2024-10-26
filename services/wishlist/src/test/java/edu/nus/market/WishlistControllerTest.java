@@ -64,7 +64,7 @@ class WishlistControllerTest {
 
     private void generateValidToken() {
         JWTPayload jwtPayload = new JWTPayload(
-            1,  "testuser", "http://example.com/avatar.jpg");
+            1,  "testuser", "http://example.com/avatar.jpg","example.u.nus.edu");
         cookie = JwtTokenManager.generateAccessToken(jwtPayload);
     }
 

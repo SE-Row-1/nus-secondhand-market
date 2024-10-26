@@ -14,29 +14,13 @@ Each notification is guaranteed to be processed **exactly once**.
 
 ## Exchange
 
-| Property    | Value        |
-|-------------|--------------|
-| name        | notification |
-| type        | topic        |
-| durable     | true         |
-| auto delete | false        |
-| internal    | false        |
-| no wait     | false        |
-| args        | (none)       |
+- Name: notification
+- Type: topic
+- Durable: true
 
-## Topic
+## Topic: email
 
-The topic name indicates the eventual notification channel.
-
-| Topic name | Notification channel |
-|------------|----------------------|
-| email      | Email                |
-
-## Message
-
-It is recommended to mark all messages as `persistent`.
-
-For email topic:
+Send an email to one user.
 
 ```json
 {
@@ -45,3 +29,23 @@ For email topic:
   "content": "<p>Email content in HTML or plain text</p>"
 }
 ```
+
+## Topic: batch-email
+
+Send multiple emails to multiple users at once, in batch.
+
+```json
+{
+  "emails": [
+    {
+      "to": "someone1@example.com",
+      "title": "Email subject 1",
+      "content": "<p>Email content in HTML or plain text</p>"
+    },
+    {
+      "to": "someone2@example.com",
+      "title": "Email subject 2",
+      "content": "<p>Email content in HTML or plain text</p>"
+    }
+  ]
+}

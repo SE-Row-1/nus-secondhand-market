@@ -18,4 +18,6 @@ RUN apk add --no-cache curl
 
 COPY --from=build /app/dist/index.js .
 
+ENV NODE_ENV=production
+
 CMD ["bun", "run", "index.js"]

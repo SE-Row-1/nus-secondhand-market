@@ -107,7 +107,7 @@ services:
     env_file:
       - envs/wishlist-mongo.env
     volumes:
-      - ./services/wishlist/database:/docker-entrypoint-initdb.d
+      - ./services/wishlist/database/dev:/docker-entrypoint-initdb.d
       - wishlist-mongo-data:/data/db
     networks:
       - bridge

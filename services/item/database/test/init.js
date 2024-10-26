@@ -138,6 +138,7 @@ const items = [
     seller: simplifiedAccounts[2],
     name: "Give back to the community",
     description: "A bonus pack of my items for sale. Get a 20% discount!",
+    price: (120.5 + 45.0) * 0.8,
     discount: 0.2,
     status: 0,
     children: [
@@ -264,6 +265,7 @@ const items = [
     seller: simplifiedAccounts[2],
     name: "Home Office Essentials",
     description: "A pack of essential items for a home office setup.",
+    price: (30.0 + 40.0) * 0.85,
     discount: 0.15,
     status: 0,
     children: [
@@ -361,6 +363,7 @@ const items = [
     seller: simplifiedAccounts[3],
     name: "Kitchen Essentials",
     description: "A pack of essential kitchen appliances and tools.",
+    price: (60.0 + 40.0) * 0.9,
     discount: 0.1,
     status: 0,
     children: [
@@ -458,6 +461,7 @@ const items = [
     seller: simplifiedAccounts[4],
     name: "Travel Essentials",
     description: "A pack of essential items for travel.",
+    price: (25.0 + 150.0) * 0.9,
     discount: 0.1,
     status: 0,
     children: [

@@ -8,4 +8,6 @@ COPY package.json bun.lockb ./
 
 RUN bun install --frozen-lockfile
 
+ENV NODE_ENV=development
+
 CMD ["bun", "run", "dev"]
