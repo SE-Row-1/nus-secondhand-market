@@ -47,8 +47,8 @@ spec:
                 name: item
                 port:
                   number: 8082
-          - path: /
-            pathType: Prefix
+          - path: (/.*)
+            pathType: ImplementationSpecific↴
             backend:
               service:
                 name: web
