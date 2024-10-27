@@ -6,7 +6,7 @@ on:
       - main
       - NSHM-126-CI-for-account
     paths:
-      - services/wishlist/**
+      - services/account/**
   pull_request:
     branches:
       - main
