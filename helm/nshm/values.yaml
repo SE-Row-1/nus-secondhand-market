@@ -71,4 +71,4 @@ notification:
 rabbitmq:
   image:
     repository: z1yoon/nshm-rabbitmq
-    tag: 79657e1faf18ac92e5808b00f224091707a190cd
+    tag: 02f7561840c2b6d431b269b363290c5bbf89757e
