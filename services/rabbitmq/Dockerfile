@@ -9,3 +9,5 @@ RUN curl -fsSL https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/rel
 RUN chown rabbitmq:rabbitmq $RABBITMQ_HOME/plugins/rabbitmq_delayed_message_exchange-4.0.2.ez
 
 RUN rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange
+
+CMD ["rabbitmq-server"]
