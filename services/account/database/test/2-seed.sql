@@ -2,7 +2,8 @@ insert into department (acronym, name) values
 ('ISS', 'Institute of Systems Science'),
 ('SOC', 'School of Computing'),
 ('BIZ', 'Business School'),
-('ECE', 'Electrical and Computer Engineering');
+('ECE', 'Electrical and Computer Engineering'),
+('FASS', 'Faculty of Arts and Social Sciences');
 
   insert into account (email, password_hash, password_salt, nickname, avatar_url) values
   ('e1234561@u.nus.edu', '$2a$10$/UwR7JKUFzyPfLLs9.DlyOXtWMLgPEob0jfF0I6sEK85t7z0vNLlK', '/+uNyqPxTo0OAecGgo3Oog==', 'Johnny', 'https://avatars.githubusercontent.com/u/78269445?v=4'),

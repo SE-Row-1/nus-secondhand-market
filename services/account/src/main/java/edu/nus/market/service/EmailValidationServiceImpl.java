@@ -82,7 +82,6 @@ public class EmailValidationServiceImpl implements EmailValidationService{
     public ResponseEntity<Object> validateOTP(EmailOTPValidationReq emailOTPValidationReq) {
         logger.info("Receive validation req: " + emailOTPValidationReq);
 
-        System.out.println(emailOTPValidationReq.getId().getClass());
         // select the email transaction by id
         EmailTransaction emailTransaction = emailTransactionDao.getEmailTransactionById(emailOTPValidationReq.getId());
         if (emailTransaction == null) {

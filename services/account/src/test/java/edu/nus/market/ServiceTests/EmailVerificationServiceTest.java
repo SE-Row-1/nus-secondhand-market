@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -72,7 +73,7 @@ public class EmailVerificationServiceTest {
     @Order(5)
     public void EmailVerificationExpiredOTPTest() {
         emailOTPValidationReq = new EmailOTPValidationReq(OTP, ID);
-        emailTransactionDao.updateCreatedAt("2023-01-01 00:00:00.000000Z", ID);
+        emailTransactionDao.updateCreatedAt(new Timestamp(System.currentTimeMillis() - 10 * 60 * 1000), ID);
         ResponseEntity<Object> response = emailValidationService.validateOTP(emailOTPValidationReq);
         assertEquals(HttpStatus.GONE, response.getStatusCode());
         assertEquals(new ErrorMsg(ErrorMsgEnum.OTP_EXPIRED.ErrorMsg), response.getBody());

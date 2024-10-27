@@ -11,7 +11,7 @@ services:
       - POSTGRES_USERNAME=test_user
       - POSTGRES_PASSWORD=test_password
       - POSTGRES_URL=jdbc:postgresql://postgres:5432/test_account_db
-      - JWT_SECRET_KEY=test_jwt_secret_key
+      - JWT_SECRET_KEY=nR0ttSlo2LjWAJbiCc3QWX7h+/j0hFK6gO2qRBb3Q3Y= #test
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
     depends_on:

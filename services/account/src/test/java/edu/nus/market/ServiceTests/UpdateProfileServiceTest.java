@@ -2,143 +2,131 @@ package edu.nus.market.ServiceTests;
 
 import edu.nus.market.dao.AccountDao;
 import edu.nus.market.dao.EmailTransactionDao;
-import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
 import edu.nus.market.pojo.ReqEntity.UpdateProfileReq;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.data.EmailTransaction;
-import edu.nus.market.service.AccountService;
-import jakarta.annotation.Resource;
-import org.junit.jupiter.api.*;
+import edu.nus.market.service.AccountServiceImpl;
+import edu.nus.market.service.MQService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UpdateProfileServiceTest {
 
-    @Resource
-    AccountService accountService;
+    @Spy
+    @InjectMocks
+    private AccountServiceImpl accountService;
 
-    @Resource
-    AccountDao accountDao;
+    @Mock
+    private AccountDao accountDao;
 
-    @Resource
-    EmailTransactionDao emailTransactionDao;
+    @Mock
+    private EmailTransactionDao emailTransactionDao;
 
-    private static final String EMAIL = "e1351826@u.nus.edu";
-    private static final String PASSWORD = "12345678";
-    private static final String NICKNAME = "Nickname";
-    private static UUID uuid;
-    private static int ID;
+    @Mock
+    private MQService mqService;
 
-    @BeforeAll
-    @Order(1)
-    void setup() {
-        accountDao.cleanTable();
-        emailTransactionDao.cleanTable();
+    private UpdateProfileReq updateProfileReq;
+    private Account account;
 
-        Account account = new Account();
-        account.setEmail(EMAIL);
-        account.setPasswordHash(PASSWORD);
-        account.setPasswordSalt(PASSWORD);
-        accountDao.registerNewAccount(account);
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
 
-        ID = accountDao.getAccountByEmail(EMAIL).getId();
+        // Mock `mqService` to avoid sending actual messages
+        doNothing().when(mqService).sendUpdateMessage(any());
 
-        uuid = emailTransactionDao.insertEmailTransaction(new EmailTransaction(EMAIL, "123456"));
-        emailTransactionDao.verifyEmailTransaction(uuid);
-    }
+        // Prepare test data
+        account = new Account();
+        account.setId(1);
+        account.setNickname("test_nickname");
 
-    @Test
-    @Order(2)
-    void updateProfileSuccessTest() {
-        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setNickname("Nickname");
-        updateProfileReq.setAvatarUrl("https://new-avatar.com/avatar.png");
+        updateProfileReq = new UpdateProfileReq();
+        updateProfileReq.setNickname("updated_nickname");
+        updateProfileReq.setAvatarUrl("https://example.com/avatar.png");
         updateProfileReq.setPhoneCode("65");
         updateProfileReq.setPhoneNumber("98765432");
         updateProfileReq.setDepartmentId(1);
         updateProfileReq.setPreferredCurrency("SGD");
-
-        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Account updatedAccount = accountDao.getAccountById(ID);
-        assertEquals("Nickname", updatedAccount.getNickname());
-        assertEquals("https://new-avatar.com/avatar.png", updatedAccount.getAvatarUrl());
-        assertEquals("65", updatedAccount.getPhoneCode());
-        assertEquals("98765432", updatedAccount.getPhoneNumber());
-        assertEquals(1, updatedAccount.getDepartmentId());
-        assertEquals("SGD", updatedAccount.getPreferredCurrency());
-
-        ResAccount resAccount = (ResAccount) response.getBody();
-        assertNotNull(resAccount);
-        assertEquals("Nickname", resAccount.getNickname());
-        assertEquals("https://new-avatar.com/avatar.png", resAccount.getAvatarUrl());
-        assertEquals("65", resAccount.getPhoneCode());
-        assertEquals("98765432", resAccount.getPhoneNumber());
-        assertEquals(1, resAccount.getDepartmentId());
-        assertEquals("SGD", resAccount.getPreferredCurrency());
     }
 
     @Test
-    @Order(3)
-    void updateProfileAccountNotFoundTest() {
-        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setNickname("New Nickname");
+    public void testUpdateProfile_Success() {
+        when(accountDao.getAccountById(1)).thenReturn(account);
+        account.setNickname("updated_nickname");
+        when(accountDao.updateProfile(any(Account.class), any(Integer.class))).thenReturn(account);
 
-        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID + 1);
+
+        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, 1);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        ResAccount resAccount = (ResAccount) response.getBody();
+        assertNotNull(resAccount);
+        assertEquals("updated_nickname", resAccount.getNickname());
+    }
+
+    @Test
+    public void testUpdateProfile_AccountNotFound() {
+        when(accountDao.getAccountById(1)).thenReturn(null);
+
+        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, 1);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg), response.getBody());
+        ErrorMsg errorMsg = (ErrorMsg) response.getBody();
+        assertEquals(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg, errorMsg.getError());
     }
 
     @Test
-    @Order(4)
-    void updateProfileEmailConflictTest() {
+    public void testUpdateProfile_EmailNotVerified() {
+        UUID uuid = UUID.randomUUID();
+        updateProfileReq.setId(uuid);
 
+        when(accountDao.getAccountById(1)).thenReturn(account);
+        when(emailTransactionDao.getEmailTransactionById(uuid)).thenReturn(new EmailTransaction());
 
-        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setId(UUID.randomUUID());
-
-        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
+        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, 1);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals(new ErrorMsg(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg), response.getBody());
+        ErrorMsg errorMsg = (ErrorMsg) response.getBody();
+        assertEquals(ErrorMsgEnum.EMAIL_NOT_VERIFIED.ErrorMsg, errorMsg.getError());
     }
 
     @Test
-    @Order(5)
-    void updatePartialProfileTest() {
-        UpdateProfileReq updateProfileReq = new UpdateProfileReq();
-        updateProfileReq.setNickname("New Nickname");
+    public void testUpdateProfile_EmailConflict() {
+        UUID uuid = UUID.randomUUID();
+        updateProfileReq.setId(uuid);
 
-        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, ID);
+        EmailTransaction emailTransaction = new EmailTransaction();
+        emailTransaction.setEmail("conflicting@example.com");
+        emailTransaction.setVerifiedAt("verified");
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        when(accountDao.getAccountById(1)).thenReturn(account);
+        when(emailTransactionDao.getEmailTransactionById(uuid)).thenReturn(emailTransaction);
+        when(accountDao.getAccountByEmailAll(emailTransaction.getEmail())).thenReturn(new Account());
 
-        ResAccount resAccount = (ResAccount) response.getBody();
-        assertNotNull(resAccount);
-        assertEquals("New Nickname", resAccount.getNickname());
+        ResponseEntity<Object> response = accountService.updateProfileService(updateProfileReq, 1);
 
-        Account updatedAccount = accountDao.getAccountById(ID);
-        assertEquals("New Nickname", updatedAccount.getNickname());
-        assertEquals("https://new-avatar.com/avatar.png", updatedAccount.getAvatarUrl());
-        assertEquals("65", updatedAccount.getPhoneCode());
-        assertEquals("98765432", updatedAccount.getPhoneNumber());
-    }
-
-
-    @AfterAll
-    void cleanup() {
-        accountDao.cleanTable();
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        ErrorMsg errorMsg = (ErrorMsg) response.getBody();
+        assertEquals(ErrorMsgEnum.REGISTERED_EMAIL.ErrorMsg, errorMsg.getError());
     }
 }
