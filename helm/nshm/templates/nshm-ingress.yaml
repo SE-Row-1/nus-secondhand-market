@@ -5,53 +5,52 @@ metadata:
   namespace: nshm
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2  # Capture the second group from the regex
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
   ingressClassName: nginx
   rules:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/(.*)  # Matches /api/ followed by any characters
+          - path: /api/(.*)
             pathType: Prefix
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/items(/|$)(.*)  # Capture /items
-            pathType: ImplementationSpecific
+          - path: /api/items
+            pathType: Prefix
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/wishlists(/|$)(.*)  # Capture /wishlists
-            pathType: ImplementationSpecific
+          - path: /api/wishlists
+            pathType: Prefix
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api/notification(/|$)(.*)  # Capture /notification
-            pathType: ImplementationSpecific
+          - path: /api/notification
+            pathType: Prefix
             backend:
               service:
                 name: notification
                 port:
                   number: 8085
-          - path: /rabbitmq(/|$)(.*)  # Capture /rabbitmq
-            pathType: ImplementationSpecific
+          - path: /rabbitmq
+            pathType: Prefix
             backend:
               service:
                 name: rabbitmq
                 port:
                   number: 15672
-          - path: /  # Fallback path for web service
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: web
                 port:
                   number: 3000
-
