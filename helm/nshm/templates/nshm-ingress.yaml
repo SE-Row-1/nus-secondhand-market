@@ -5,49 +5,49 @@ metadata:
   namespace: nshm
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: $1
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api(/auth/.*|/auth$)
+          - path: /api(auth/.*|auth$)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api(/accounts/.*|/accounts$)
+          - path: /api(accounts/.*|accounts$)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api(/items$|/items/.*)
+          - path: /api(items$|items/.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api(/wishlists$|/wishlists/.*)
+          - path: /api(wishlists$|wishlists/.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api(/transactions$|/transactions/.*)
+          - path: /api(transactions$|transactions/.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /(?!api)(.*)
+          - path: /(.*)
             pathType: ImplementationSpecific↴
             backend:
               service:
