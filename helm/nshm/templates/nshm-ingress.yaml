@@ -55,7 +55,7 @@ spec:
               service:
                 name: rabbitmq
                 port:
-                  number: 8086
+                  number: 15672
           - path: /
             pathType: Prefix
             backend:
@@ -63,4 +63,3 @@ spec:
                 name: web
                 port:
                   number: 3000
-
