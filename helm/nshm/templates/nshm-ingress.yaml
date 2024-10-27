@@ -5,58 +5,53 @@ metadata:
   namespace: nshm
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/configuration-snippet: |-
+      rewrite ^(/api)(.*) /$2 last;
 spec:
   ingressClassName: nginx
   rules:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/(.*)
+            pathType: Prefix
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-
-          - path: /api/items(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/items
+            pathType: Prefix
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-
-          - path: /api/wishlists(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/wishlists
+            pathType: Prefix
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-
-          - path: /api/notification(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/notification
+            pathType: Prefix
             backend:
               service:
                 name: notification
                 port:
                   number: 8085
-
-          - path: /rabbitmq(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /rabbitmq
+            pathType: Prefix
             backend:
               service:
                 name: rabbitmq
                 port:
                   number: 15672
-
-          - path: /(.*)
-            pathType: ImplementationSpecific
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: web
                 port:
                   number: 3000
-
