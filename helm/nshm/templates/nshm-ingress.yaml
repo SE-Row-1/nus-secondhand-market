@@ -4,7 +4,6 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/server-snippet: |
       if ($host = 'www.nshm.store') {
         rewrite ^/api/auth(/|$)(.*) /auth$1 break;
@@ -19,35 +18,35 @@ spec:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/auth(/|$)(.*)
+          - path: /auth(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/accounts(/|$)(.*)
+          - path: /accounts(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/items(/|$)(.*)
+          - path: /items(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/wishlists(/|$)(.*)
+          - path: /wishlists(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api/notification(/|$)(.*)
+          - path: /notification(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
