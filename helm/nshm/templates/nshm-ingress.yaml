@@ -4,57 +4,51 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    nginx.ingress.kubernetes.io/server-snippet: |
-      if ($host = 'api.nshm.store') {
-        rewrite ^/api/(.*) /$1 break;
-      }
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
-    - host: api.nshm.store
+    - host: www.nshm.store
       http:
         paths:
-          - path: /auth
-            pathType: Prefix
+          - path: /api(/auth/.*|/auth$)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /accounts
-            pathType: Prefix
-            backend:
-              service:
-                name: account
-                port:
-                  number: 8081
-          - path: /items
-            pathType: Prefix
+          - path: /api(/items/.*|items$)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /transactions
-            pathType: Prefix
-            backend:
-              service:
-                name: item
-                port:
-                  number: 8082
-          - path: /wishlists
-            pathType: Prefix
+          - path: /api/(wishlist/.*|wishlist$)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-
-    - host: www.nshm.store
-      http:
-        paths:
+          - path: /api(transactions/.*|transactions$)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: item
+                port:
+                  number: 8082
+          - path: /rabbitmq
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                  number: 15672
           - path: /
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: web
