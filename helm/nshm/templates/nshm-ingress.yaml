@@ -4,42 +4,49 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/server-snippet: |
+      if ($host = 'www.nshm.store') {
+        rewrite ^/api/auth(/|$)(.*) /auth$1 break;
+        rewrite ^/api/accounts(/|$)(.*) /accounts$1 break;
+        rewrite ^/api/items(/|$)(.*) /items$1 break;
+        rewrite ^/api/wishlists(/|$)(.*) /wishlists$1 break;
+        rewrite ^/api/notification(/|$)(.*) /notification$1 break;
+      }
 spec:
   ingressClassName: nginx
   rules:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/(auth/?.*)
+          - path: /api/auth(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/(accounts/?.*)
+          - path: /api/accounts(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/(items/?.*)
+          - path: /api/items(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/(wishlists/?.*)
+          - path: /api/wishlists(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api/(notifications/?.*)
+          - path: /api/notification(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
@@ -52,7 +59,7 @@ spec:
               service:
                 name: rabbitmq
                 port:
-                  number: 15672
+                  number: 8086
           - path: /
             pathType: Prefix
             backend:
@@ -60,3 +67,4 @@ spec:
                 name: web
                 port:
                   number: 3000
+
