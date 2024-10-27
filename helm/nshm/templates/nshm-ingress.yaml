@@ -19,21 +19,21 @@ spec:
                 name: account
                 port:
                   number: 8081
-          - path: /api(/items/.*|items$)
+          - path: /api(/items/.*|/items$)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/(wishlist/.*|wishlist$)
+          - path: /api(/wishlist/.*|/wishlist$)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api(transactions/.*|transactions$)
+          - path: /api(/transactions/.*|/transactions$)
             pathType: ImplementationSpecific
             backend:
               service:
