@@ -1,0 +1,41 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - ACCOUNT_PORT=8081
+      - POSTGRES_HOST=account-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=test_account_db
+      - POSTGRES_USERNAME=test_user
+      - POSTGRES_PASSWORD=test_password
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/test_account_db
+      - JWT_SECRET_KEY=test_jwt_secret_key
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      - postgres
+      - rabbitmq
+    volumes:
+      - ./reports:/app/target/site/jacoco
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=test_account_db
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_password
+    ports:
+      - 5432:5432
+    volumes:
+      - ./database/test:/docker-entrypoint-initdb.d
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=test_user
+      - RABBITMQ_DEFAULT_PASS=test_password
+    ports:
+      - 5672:5672   # AMQP 端口
+      - 15672:15672 # 管理控制台端口，可选，用于调试
