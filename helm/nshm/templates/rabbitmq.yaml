@@ -19,3 +19,14 @@ spec:
   persistence:
     storageClassName: gp3
     storage: 10Gi
+  podTemplate:
+    spec:
+      containers:
+        - name: rabbitmq
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - "rabbitmq-plugins enable rabbitmq_delayed_message_exchange"
