@@ -4,7 +4,9 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/permanent-redirect: /$2
 spec:
   ingressClassName: nginx
   rules:
