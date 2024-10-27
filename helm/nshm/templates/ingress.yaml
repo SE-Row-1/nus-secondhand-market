@@ -4,14 +4,11 @@ metadata:
   name: nshm-ingress
   namespace: nshm
   annotations:
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/backend-protocol: HTTP
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:985539788320:certificate/87ec1614-b12a-48f2-b8b2-5532c47684b7
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
-  ingressClassName: alb
+  ingressClassName: nginx
   rules:
     - host: www.nshm.store
       http:
@@ -23,14 +20,8 @@ spec:
                 name: web
                 port:
                   number: 3000
-          - path: /api/auth
-            pathType: Prefix
-            backend:
-              service:
-                name: account
-                port:
-                  number: 8081
-          - path: /api/accounts
+
+          - path: /api/(.*)
             pathType: Prefix
             backend:
               service:
@@ -65,3 +56,10 @@ spec:
                 name: locust-master
                 port:
                   number: 8089
+          - path: /rabbitmq
+            pathType: Prefix
+            backend:
+              service:
+                name: rabbitmq
+                port:
+                  number: 15672
