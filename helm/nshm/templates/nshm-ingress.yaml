@@ -12,7 +12,7 @@ spec:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/accounts(/|$)(.*)
+          - path: /api(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
