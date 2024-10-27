@@ -5,13 +5,13 @@ metadata:
   namespace: nshm
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
-      if ($host = 'www.nshm.store') {
+      if ($host = 'api.nshm.store') {
         rewrite ^/api/(.*) /$1 break;
       }
 spec:
   ingressClassName: nginx
   rules:
-    - host: www.nshm.store
+    - host: api.nshm.store
       http:
         paths:
           - path: /auth
@@ -21,34 +21,38 @@ spec:
                 name: account
                 port:
                   number: 8081
-          - path: /api/accounts
+          - path: /accounts
             pathType: Prefix
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/items
+          - path: /items
             pathType: Prefix
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/wishlists
+          - path: /transactions
+            pathType: Prefix
+            backend:
+              service:
+                name: item
+                port:
+                  number: 8082
+          - path: /wishlists
             pathType: Prefix
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /notification
-            pathType: Prefix
-            backend:
-              service:
-                name: notification
-                port:
-                  number: 8085
+
+    - host: www.nshm.store
+      http:
+        paths:
           - path: /
             pathType: Prefix
             backend:
