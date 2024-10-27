@@ -6,11 +6,11 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
       if ($host = 'www.nshm.store') {
-        rewrite ^/api/auth(/|$)(.*) /auth/$2 break;
-        rewrite ^/api/accounts(/|$)(.*) /accounts/$2 break;
-        rewrite ^/api/items(/|$)(.*) /items/$2 break;
-        rewrite ^/api/wishlists(/|$)(.*) /wishlists/$2 break;
-        rewrite ^/api/notification(/|$)(.*) /notification/$2 break;
+        rewrite ^/api/auth(/|$)(.*) /auth$2 break;
+        rewrite ^/api/accounts(/|$)(.*) /accounts$2 break;
+        rewrite ^/api/items(/|$)(.*) /items$2 break;
+        rewrite ^/api/wishlists(/|$)(.*) /wishlists$2 break;
+        rewrite ^/api/notification(/|$)(.*) /notification$2 break;
       }
 spec:
   ingressClassName: nginx
