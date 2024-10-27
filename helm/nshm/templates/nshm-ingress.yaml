@@ -47,13 +47,6 @@ spec:
                 name: item
                 port:
                   number: 8082
-          - path: /rabbitmq
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: rabbitmq
-                port:
-                  number: 15672
           - path: /
             pathType: ImplementationSpecific
             backend:
