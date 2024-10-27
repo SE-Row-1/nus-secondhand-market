@@ -11,8 +11,8 @@ spec:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/auth(/|$)(.*)
-            pathType: ImplementationSpecific
+          - path: /api/auth
+            pathType: Prefix
             backend:
               service:
                 name: account
