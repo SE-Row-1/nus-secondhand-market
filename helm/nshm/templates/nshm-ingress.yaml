@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/server-snippet: |
       if ($host = 'www.nshm.store') {
-        rewrite ^/api/auth(/|$)(.*) /auth$1 break;
+        rewrite ^/api/auth(/|$)(.*) /auth/me$1 break;
         rewrite ^/api/accounts(/|$)(.*) /accounts$1 break;
         rewrite ^/api/items(/|$)(.*) /items$1 break;
         rewrite ^/api/wishlists(/|$)(.*) /wishlists$1 break;
