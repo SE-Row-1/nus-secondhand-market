@@ -14,28 +14,28 @@ spec:
     - host: www.nshm.store
       http:
         paths:
-          - path: /auth
+          - path: /api/auth
             pathType: Prefix
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /accounts
+          - path: /api/accounts
             pathType: Prefix
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /items
+          - path: /api/items
             pathType: Prefix
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /wishlists
+          - path: /api/wishlists
             pathType: Prefix
             backend:
               service:
