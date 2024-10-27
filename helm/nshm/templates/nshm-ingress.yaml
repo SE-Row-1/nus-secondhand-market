@@ -11,35 +11,35 @@ spec:
     - host: www.nshm.store
       http:
         paths:
-          - path: /api/auth(/|$)(.*)
+          - path: /api(/auth/?.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/accounts(/|$)(.*)
+          - path: /api(/accounts/?.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: account
                 port:
                   number: 8081
-          - path: /api/items(/|$)(.*)
+          - path: /api(/items/?.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: item
                 port:
                   number: 8082
-          - path: /api/wishlists(/|$)(.*)
+          - path: /api(/wishlists/?.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: wishlist
                 port:
                   number: 8083
-          - path: /api/notification(/|$)(.*)
+          - path: /api(/notifications/?.*)
             pathType: ImplementationSpecific
             backend:
               service:
