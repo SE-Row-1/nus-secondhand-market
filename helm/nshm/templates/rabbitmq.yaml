@@ -19,34 +19,3 @@ spec:
   persistence:
     storageClassName: gp3
     storage: 10Gi
-  podTemplate:
-    spec:
-      initContainers:
-        - name: setup-delayed-message-exchange
-          image: alpine:3.17
-          command: ["sh", "-c"]
-          args:
-            - |
-              # Download the RabbitMQ delayed message exchange plugin
-              apk add --no-cache curl && \
-              curl -fsSL https://github.com/rabbitmq/rabbitmq-delayed-message-exchange/releases/download/v4.0.2/rabbitmq_delayed_message_exchange-4.0.2.ez \
-              -o /plugins/rabbitmq_delayed_message_exchange-4.0.2.ez
-          volumeMounts:
-            - name: plugins
-              mountPath: /plugins
-      containers:
-        - name: rabbitmq
-          volumeMounts:
-            - name: plugins
-              mountPath: /plugins
-          env:
-            - name: RABBITMQ_PLUGINS_DIR
-              value: /plugins
-          command: ["sh", "-c"]
-          args:
-            - |
-              rabbitmq-plugins enable --offline rabbitmq_delayed_message_exchange && \
-              rabbitmq-server
-      volumes:
-        - name: plugins
-          emptyDir: {}
