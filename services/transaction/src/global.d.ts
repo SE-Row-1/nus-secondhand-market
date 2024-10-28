@@ -8,5 +8,7 @@ declare module "bun" {
     PGPASSWORD: string;
     JWT_SECRET_KEY: string;
     RABBITMQ_URL: string;
+    ACCOUNT_SERVICE_BASE_URL: string;
+    ITEM_SERVICE_BASE_URL: string;
   }
 }
