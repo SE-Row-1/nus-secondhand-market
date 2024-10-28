@@ -1,4 +1,4 @@
-create table transactions (
+create table transaction (
   id uuid default gen_random_uuid() primary key,
   item_id uuid not null,
   item_name text not null,

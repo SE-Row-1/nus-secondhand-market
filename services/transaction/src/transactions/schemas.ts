@@ -11,7 +11,6 @@ export const getAllQuerySchema = v.object({
     v.pipe(
       v.unknown(),
       v.transform((value) => value === "true"),
-      v.boolean("exclude_cancelled should be a boolean"),
     ),
     false,
   ),

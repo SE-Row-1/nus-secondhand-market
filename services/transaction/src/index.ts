@@ -7,7 +7,7 @@ import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
-import { transactionsController } from "./transaction/controller";
+import { transactionsController } from "./transactions/controller";
 
 // Entry point of the application.
 const app = new Hono();

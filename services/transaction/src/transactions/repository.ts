@@ -17,8 +17,8 @@ export async function selectAll(dto: SelectAllDto) {
     `
       select *
       from transaction
-      where ($1 is null or item_id = $1)
-        and ($2 is null or buyer_id = $2 or seller_id = $2)
+      where case when $1::uuid is null then true else item_id = $1 end
+        and (buyer_id = $2 or seller_id = $2)
         and ($3 = false or cancelled_at is null)
       order by created_at desc
     `,

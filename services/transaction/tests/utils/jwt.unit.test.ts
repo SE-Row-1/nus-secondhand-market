@@ -5,7 +5,7 @@ import { sign } from "jsonwebtoken";
 
 describe("decodeJwt", () => {
   it("decodes JWT token", async () => {
-    const jwt = sign("test", "secret");
+    const jwt = sign("test", Buffer.from(Bun.env.JWT_SECRET_KEY, "base64"));
 
     const payload = await decodeJwt(jwt);
 

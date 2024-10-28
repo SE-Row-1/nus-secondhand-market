@@ -1,4 +1,4 @@
-import * as transactionsRepository from "@/transaction/repository";
+import * as transactionsRepository from "@/transactions/repository";
 import type { Account, DetailedItem, Transaction } from "@/types";
 import { channel } from "./init";
 
