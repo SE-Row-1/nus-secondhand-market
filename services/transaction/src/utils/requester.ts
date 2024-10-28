@@ -18,20 +18,31 @@ export function createRequester(service: keyof typeof serviceRegistry) {
   const baseUrl = serviceRegistry[service];
 
   return async <T>(endpoint: `/${string}`, init: RequestInit = {}) => {
-    const res = await fetch(baseUrl + endpoint, init);
+    try {
+      const res = await fetch(baseUrl + endpoint, init);
 
-    if (res.status === 204) {
-      return undefined as T;
-    }
+      if (res.status === 204) {
+        return undefined as T;
+      }
 
-    const json = await res.json();
+      const json = await res.json();
 
-    if (!res.ok) {
-      throw new HTTPException(res.status as StatusCode, {
-        message: (json as { error: string }).error,
+      if (!res.ok) {
+        throw new HTTPException(res.status as StatusCode, {
+          message: (json as { error: string }).error,
+        });
+      }
+
+      return snakeToCamel(json) as T;
+    } catch (error) {
+      if (error instanceof HTTPException) {
+        throw error;
+      }
+
+      console.error(error);
+      throw new HTTPException(500, {
+        message: `Error when requesting endpoint ${endpoint}`,
       });
     }
-
-    return snakeToCamel(json) as T;
   };
 }

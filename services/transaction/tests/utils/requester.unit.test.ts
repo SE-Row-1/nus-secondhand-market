@@ -45,8 +45,18 @@ it("returns undefined if status is 204", async () => {
   expect(res).toBeUndefined();
 });
 
-it("throws HTTPException if fails", async () => {
+it("throws HTTPException if not ok", async () => {
   mockResponse(400, { error: "test" });
+
+  const fn = async () => await createRequester("account")("/");
+
+  expect(fn).toThrow(HTTPException);
+});
+
+it("throws HTTPException if fetch fails", async () => {
+  mockFetch.mockImplementationOnce(async () => {
+    throw new Error("test");
+  });
 
   const fn = async () => await createRequester("account")("/");
 
