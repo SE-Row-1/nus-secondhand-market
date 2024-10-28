@@ -30,11 +30,11 @@ it("concatenates endpoint with the right base URL", async () => {
 });
 
 it("returns JSON response", async () => {
-  mockResponse(200, { test: [0] });
+  mockResponse(200, { foo_bar: [0] });
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ test: [0] });
+  expect(res).toEqual({ fooBar: [0] });
 });
 
 it("returns undefined if status is 204", async () => {
