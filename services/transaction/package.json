@@ -1,0 +1,31 @@
+{
+  "name": "transaction",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --hot src/index.ts",
+    "build": "bun build --outdir dist --target bun --minify src/index.ts"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "hono": "^4.6.7",
+    "hono-rate-limiter": "^0.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1",
+    "valibot": "^0.42.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/amqplib": "^0.10.5",
+    "@types/bun": "^1.1.12",
+    "@types/eslint-config-prettier": "^6.11.3",
+    "@types/eslint__js": "^8.42.3",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/pg": "^8.11.10",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "typescript-eslint": "^8.11.0"
+  }
+}
