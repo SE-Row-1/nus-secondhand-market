@@ -12,53 +12,51 @@ afterAll(() => {
   mock.restore();
 });
 
-function mockResponse(status: number, json: unknown) {
-  mockFetch.mockImplementationOnce(
-    async () => new Response(JSON.stringify(json), { status }),
-  );
-}
-
 it("concatenates endpoint with the right base URL", async () => {
-  mockResponse(200, {});
+  mockFetch.mockResolvedValueOnce(
+    new Response(JSON.stringify({}), { status: 200 }),
+  );
 
   await createRequester("account")("/accounts/1");
 
-  expect(mockFetch).toHaveBeenCalledWith(
+  expect(mockFetch).toHaveBeenLastCalledWith(
     Bun.env.ACCOUNT_SERVICE_BASE_URL + "/accounts/1",
     {},
   );
 });
 
-it("returns JSON response", async () => {
-  mockResponse(200, { foo_bar: [0] });
+it("returns camel-case JSON response", async () => {
+  mockFetch.mockResolvedValueOnce(
+    new Response(JSON.stringify({ foo_bar: [0] }), { status: 200 }),
+  );
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ fooBar: [0] });
+  expect(res).toEqual({ data: { fooBar: [0] }, error: null });
 });
 
 it("returns undefined if status is 204", async () => {
-  mockResponse(204, null);
+  mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
 
   const res = await createRequester("account")("/");
 
-  expect(res).toBeUndefined();
+  expect(res).toEqual({ data: undefined, error: null });
 });
 
-it("throws HTTPException if not ok", async () => {
-  mockResponse(400, { error: "test" });
+it("returns HTTPException if not ok", async () => {
+  mockFetch.mockResolvedValueOnce(
+    new Response(JSON.stringify({ error: "test" }), { status: 400 }),
+  );
 
-  const fn = async () => await createRequester("account")("/");
+  const res = await createRequester("account")("/");
 
-  expect(fn).toThrow(HTTPException);
+  expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
 });
 
-it("throws HTTPException if fetch fails", async () => {
-  mockFetch.mockImplementationOnce(async () => {
-    throw new Error("test");
-  });
+it("returns HTTPException if fetch fails", async () => {
+  mockFetch.mockRejectedValueOnce("test");
 
-  const fn = async () => await createRequester("account")("/");
+  const res = await createRequester("account")("/");
 
-  expect(fn).toThrow(HTTPException);
+  expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
 });

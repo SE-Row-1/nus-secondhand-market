@@ -22,27 +22,29 @@ export function createRequester(service: keyof typeof serviceRegistry) {
       const res = await fetch(baseUrl + endpoint, init);
 
       if (res.status === 204) {
-        return undefined as T;
+        return { data: undefined as T, error: null };
       }
 
       const json = await res.json();
 
       if (!res.ok) {
-        throw new HTTPException(res.status as StatusCode, {
-          message: (json as { error: string }).error,
-        });
+        return {
+          data: null,
+          error: new HTTPException(res.status as StatusCode, {
+            message: (json as { error: string }).error,
+          }),
+        };
       }
 
-      return snakeToCamel(json) as T;
+      return { data: snakeToCamel(json) as T, error: null };
     } catch (error) {
-      if (error instanceof HTTPException) {
-        throw error;
-      }
-
       console.error(error);
-      throw new HTTPException(500, {
-        message: `Error when requesting endpoint ${endpoint}`,
-      });
+      return {
+        data: null,
+        error: new HTTPException(500, {
+          message: `Error when requesting endpoint ${endpoint}`,
+        }),
+      };
     }
   };
 }

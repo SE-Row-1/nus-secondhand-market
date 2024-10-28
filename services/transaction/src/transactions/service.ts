@@ -35,16 +35,19 @@ export async function create(dto: CreateDto) {
     throw new HTTPException(403, { message: "You cannot buy your own item" });
   }
 
-  const [buyerAccount, detailedItem] = await Promise.all([
+  const [
+    { data: buyerAccount, error: buyerAccountError },
+    { data: detailedItem, error: detailedItemError },
+  ] = await Promise.all([
     createRequester("account")<Account>(`/accounts/${dto.buyerId}`),
     createRequester("item")<DetailedItem>(`/items/${dto.itemId}`),
   ]);
 
-  if (!buyerAccount) {
+  if (!buyerAccount || buyerAccountError) {
     throw new HTTPException(404, { message: "Buyer not found" });
   }
 
-  if (!detailedItem) {
+  if (!detailedItem || detailedItemError) {
     throw new HTTPException(404, { message: "Item not found" });
   }
 
