@@ -8,3 +8,13 @@ describe("Health check endpoint", () => {
     expect(res.status).toEqual(200);
   });
 });
+
+describe("Not found endpoint", () => {
+  it("returns custom error message", async () => {
+    const res = await GET("/not-found");
+    const body = await res.json();
+
+    expect(res.status).toEqual(404);
+    expect(body).toEqual({ error: expect.any(String) });
+  });
+});
