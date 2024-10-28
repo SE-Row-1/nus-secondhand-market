@@ -5,6 +5,9 @@ metadata:
   namespace: nshm
 spec:
   image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+  rabbitmq:
+    additionalPlugins:
+      - rabbitmq_delayed_message_exchange
   secretBackend:
     externalSecret:
       name: "rabbitmq-secret"
