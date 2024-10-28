@@ -1,6 +1,6 @@
 import { getAll } from "@/transactions/service";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
-import { me } from "../test-utils/mock";
+import { me } from "../../test-utils/mock";
 
 const mockSelectAll = mock();
 
