@@ -13,7 +13,7 @@ type SelectAllDto = {
 };
 
 export async function selectAll(dto: SelectAllDto) {
-  const result = await db.query<DbTransaction>(
+  const { rows } = await db.query<DbTransaction>(
     `
       select *
       from transaction
@@ -25,11 +25,11 @@ export async function selectAll(dto: SelectAllDto) {
     [dto.itemId, dto.participantId, dto.excludeCancelled],
   );
 
-  return result.rows.map(convertToTransaction);
+  return rows.map(convertToTransaction);
 }
 
 export async function selectOneById(id: string) {
-  const result = await db.query<DbTransaction>(
+  const { rows } = await db.query<DbTransaction>(
     `
       select *
       from transaction
@@ -38,15 +38,11 @@ export async function selectOneById(id: string) {
     [id],
   );
 
-  if (result.rowCount === 0) {
-    return;
-  }
-
-  return convertToTransaction(result.rows[0]!);
+  return convertToTransaction(rows[0]);
 }
 
 export async function selectLatestOneByItemId(itemId: string) {
-  const result = await db.query<DbTransaction>(
+  const { rows } = await db.query<DbTransaction>(
     `
       select *
       from transaction
@@ -57,17 +53,13 @@ export async function selectLatestOneByItemId(itemId: string) {
     [itemId],
   );
 
-  if (result.rowCount === 0) {
-    return;
-  }
-
-  return convertToTransaction(result.rows[0]!);
+  return convertToTransaction(rows[0]);
 }
 
 type InsertDto = Pick<Transaction, "item" | "seller" | "buyer">;
 
 export async function insertOne(dto: InsertDto) {
-  const result = await db.query<DbTransaction>(
+  const { rows } = await db.query<DbTransaction>(
     `
       insert into transaction (item_id, item_name, item_price, buyer_id, buyer_nickname, buyer_avatar_url, seller_id, seller_nickname, seller_avatar_url)
       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -86,11 +78,11 @@ export async function insertOne(dto: InsertDto) {
     ],
   );
 
-  return convertToTransaction(result.rows[0]!);
+  return convertToTransaction(rows[0]!);
 }
 
 export async function completeById(id: string) {
-  const result = await db.query(
+  const { rowCount } = await db.query(
     `
       update transaction
       set completed_at = now()
@@ -101,11 +93,11 @@ export async function completeById(id: string) {
     [id],
   );
 
-  return result.rowCount;
+  return rowCount!;
 }
 
 export async function cancelById(id: string) {
-  const result = await db.query(
+  const { rowCount } = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -116,11 +108,11 @@ export async function cancelById(id: string) {
     [id],
   );
 
-  return result.rowCount;
+  return rowCount!;
 }
 
 export async function updateParticipant(partipant: Participant) {
-  const result1 = await db.query(
+  const { rowCount: rowCount1 } = await db.query(
     `
       update transaction
       set seller_nickname = $2, seller_avatar_url = $3
@@ -129,7 +121,7 @@ export async function updateParticipant(partipant: Participant) {
     [partipant.id, partipant.nickname, partipant.avatarUrl],
   );
 
-  const result2 = await db.query(
+  const { rowCount: rowCount2 } = await db.query(
     `
       update transaction
       set buyer_nickname = $2, buyer_avatar_url = $3
@@ -138,11 +130,11 @@ export async function updateParticipant(partipant: Participant) {
     [partipant.id, partipant.nickname, partipant.avatarUrl],
   );
 
-  return result1.rowCount! + result2.rowCount!;
+  return rowCount1! + rowCount2!;
 }
 
 export async function cancelByParticipantId(participantId: number) {
-  const result = await db.query(
+  const { rowCount } = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -153,11 +145,11 @@ export async function cancelByParticipantId(participantId: number) {
     [participantId],
   );
 
-  return result.rowCount;
+  return rowCount!;
 }
 
 export async function updateItem(item: DetailedItem) {
-  const result = await db.query(
+  const { rowCount } = await db.query(
     `
       update transaction
       set item_name = $2, item_price = $3
@@ -166,11 +158,11 @@ export async function updateItem(item: DetailedItem) {
     [item.id, item.name, item.price],
   );
 
-  return result.rowCount;
+  return rowCount!;
 }
 
 export async function cancelByItemId(itemId: string) {
-  const result = await db.query(
+  const { rowCount } = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -181,10 +173,14 @@ export async function cancelByItemId(itemId: string) {
     [itemId],
   );
 
-  return result.rowCount;
+  return rowCount!;
 }
 
-function convertToTransaction(row: DbTransaction) {
+function convertToTransaction(row: DbTransaction | undefined) {
+  if (!row) {
+    return undefined;
+  }
+
   return {
     id: row.id,
     item: {
