@@ -1,14 +1,14 @@
 import type {
   DbTransaction,
-  DetailedAccount,
   DetailedItem,
+  Participant,
   Transaction,
 } from "@/types";
 import { db } from "@/utils/db";
 
 type SelectAllDto = {
   itemId: string | undefined;
-  userId: number;
+  participantId: number;
   excludeCancelled: boolean;
 };
 
@@ -20,8 +20,9 @@ export async function selectAll(dto: SelectAllDto) {
       where ($1 is null or item_id = $1)
         and ($2 is null or buyer_id = $2 or seller_id = $2)
         and ($3 = false or cancelled_at is null)
+      order by created_at desc
     `,
-    [dto.itemId, dto.userId, dto.excludeCancelled],
+    [dto.itemId, dto.participantId, dto.excludeCancelled],
   );
 
   return result.rows.map(convertToTransaction);
@@ -35,6 +36,25 @@ export async function selectOneById(id: string) {
       where id = $1
     `,
     [id],
+  );
+
+  if (result.rowCount === 0) {
+    return;
+  }
+
+  return convertToTransaction(result.rows[0]!);
+}
+
+export async function selectLatestOneByItemId(itemId: string) {
+  const result = await db.query<DbTransaction>(
+    `
+      select *
+      from transaction
+      where item_id = $1
+      order by created_at desc
+      limit 1
+    `,
+    [itemId],
   );
 
   if (result.rowCount === 0) {
@@ -70,7 +90,7 @@ export async function insertOne(dto: InsertDto) {
 }
 
 export async function completeById(id: string) {
-  await db.query(
+  const result = await db.query(
     `
       update transaction
       set completed_at = now()
@@ -80,10 +100,12 @@ export async function completeById(id: string) {
     `,
     [id],
   );
+
+  return result.rowCount;
 }
 
 export async function cancelById(id: string) {
-  await db.query(
+  const result = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -93,30 +115,34 @@ export async function cancelById(id: string) {
     `,
     [id],
   );
+
+  return result.rowCount;
 }
 
-export async function updateAccount(account: DetailedAccount) {
-  await db.query(
+export async function updateParticipant(partipant: Participant) {
+  const result1 = await db.query(
     `
       update transaction
       set seller_nickname = $2, seller_avatar_url = $3
       where seller_id = $1
     `,
-    [account.id, account.nickname, account.avatarUrl],
+    [partipant.id, partipant.nickname, partipant.avatarUrl],
   );
 
-  await db.query(
+  const result2 = await db.query(
     `
       update transaction
       set buyer_nickname = $2, buyer_avatar_url = $3
       where buyer_id = $1
     `,
-    [account.id, account.nickname, account.avatarUrl],
+    [partipant.id, partipant.nickname, partipant.avatarUrl],
   );
+
+  return result1.rowCount! + result2.rowCount!;
 }
 
-export async function cancelByAccountId(accountId: number) {
-  await db.query(
+export async function cancelByParticipantId(participantId: number) {
+  const result = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -124,12 +150,14 @@ export async function cancelByAccountId(accountId: number) {
         and completed_at is null
         and cancelled_at is null
     `,
-    [accountId],
+    [participantId],
   );
+
+  return result.rowCount;
 }
 
 export async function updateItem(item: DetailedItem) {
-  await db.query(
+  const result = await db.query(
     `
       update transaction
       set item_name = $2, item_price = $3
@@ -137,10 +165,12 @@ export async function updateItem(item: DetailedItem) {
     `,
     [item.id, item.name, item.price],
   );
+
+  return result.rowCount;
 }
 
 export async function cancelByItemId(itemId: string) {
-  await db.query(
+  const result = await db.query(
     `
       update transaction
       set cancelled_at = now()
@@ -150,6 +180,8 @@ export async function cancelByItemId(itemId: string) {
     `,
     [itemId],
   );
+
+  return result.rowCount;
 }
 
 function convertToTransaction(row: DbTransaction) {

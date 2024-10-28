@@ -1,10 +1,9 @@
-import { publishTransactionAutoCompletedEvent } from "@/events/publish-transaction-auto-completed-event";
-import { publishTransactionCreatedEvent } from "@/events/publish-transaction-created-event";
+import { publishEvent } from "@/events/publish";
 import {
   ItemStatus,
-  type DetailedAccount,
+  type Account,
   type DetailedItem,
-  type SimplifiedAccount,
+  type Participant,
 } from "@/types";
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
@@ -14,13 +13,13 @@ import { chooseStrategy } from "./update-status-strategies";
 type GetAllDto = {
   itemId?: string;
   excludeCancelled: boolean;
-  user: SimplifiedAccount;
+  user: Participant;
 };
 
 export async function getAll(dto: GetAllDto) {
   return transactionsRepository.selectAll({
     itemId: dto.itemId,
-    userId: dto.user.id,
+    participantId: dto.user.id,
     excludeCancelled: dto.excludeCancelled,
   });
 }
@@ -28,7 +27,7 @@ export async function getAll(dto: GetAllDto) {
 type CreateDto = {
   itemId: string;
   buyerId: number;
-  user: SimplifiedAccount;
+  user: Participant;
 };
 
 export async function create(dto: CreateDto) {
@@ -36,10 +35,18 @@ export async function create(dto: CreateDto) {
     throw new HTTPException(403, { message: "You cannot buy your own item" });
   }
 
-  const [detailedBuyer, detailedItem] = await Promise.all([
-    createRequester("account")<DetailedAccount>(`/accounts/${dto.buyerId}`),
+  const [buyerAccount, detailedItem] = await Promise.all([
+    createRequester("account")<Account>(`/accounts/${dto.buyerId}`),
     createRequester("item")<DetailedItem>(`/items/${dto.itemId}`),
   ]);
+
+  if (!buyerAccount) {
+    throw new HTTPException(404, { message: "Buyer not found" });
+  }
+
+  if (!detailedItem) {
+    throw new HTTPException(404, { message: "Item not found" });
+  }
 
   if (dto.user.id !== detailedItem.seller.id) {
     throw new HTTPException(403, {
@@ -48,7 +55,16 @@ export async function create(dto: CreateDto) {
   }
 
   if (detailedItem.status !== ItemStatus.FOR_SALE) {
-    throw new HTTPException(400, { message: "Item is not for sale now" });
+    throw new HTTPException(400, { message: "Item is currently not for sale" });
+  }
+
+  const pendingTransaction =
+    await transactionsRepository.selectLatestOneByItemId(dto.itemId);
+
+  if (pendingTransaction) {
+    throw new HTTPException(409, {
+      message: "There is already a pending transaction for this item",
+    });
   }
 
   const transaction = await transactionsRepository.insertOne({
@@ -63,14 +79,14 @@ export async function create(dto: CreateDto) {
       avatarUrl: detailedItem.seller.avatarUrl,
     },
     buyer: {
-      id: detailedBuyer.id,
-      nickname: detailedBuyer.nickname,
-      avatarUrl: detailedBuyer.avatarUrl,
+      id: buyerAccount.id,
+      nickname: buyerAccount.nickname,
+      avatarUrl: buyerAccount.avatarUrl,
     },
   });
 
-  publishTransactionCreatedEvent(transaction);
-  publishTransactionAutoCompletedEvent(transaction);
+  publishEvent("transaction", "transaction.created", transaction);
+  publishEvent("transaction", "transaction.auto-completed", transaction);
 
   return transaction;
 }
@@ -78,7 +94,7 @@ export async function create(dto: CreateDto) {
 type UpdateDto = {
   id: string;
   action: "complete" | "cancel";
-  user: SimplifiedAccount;
+  user: Participant;
 };
 
 export async function update(dto: UpdateDto) {
@@ -86,18 +102,6 @@ export async function update(dto: UpdateDto) {
 
   if (!transaction) {
     throw new HTTPException(404, { message: "Transaction not found" });
-  }
-
-  if (transaction.completedAt) {
-    throw new HTTPException(409, {
-      message: "Transaction is already completed",
-    });
-  }
-
-  if (transaction.cancelledAt) {
-    throw new HTTPException(409, {
-      message: "Transaction is already cancelled",
-    });
   }
 
   const updateStrategy = chooseStrategy(dto.action);

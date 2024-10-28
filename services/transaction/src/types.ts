@@ -1,10 +1,10 @@
-export type SimplifiedAccount = {
+export type Participant = {
   id: number;
   nickname: string | null;
   avatarUrl: string | null;
 };
 
-export type DetailedAccount = SimplifiedAccount & {
+export type Account = Participant & {
   email: string;
   department: {
     id: number;
@@ -31,7 +31,7 @@ export enum ItemStatus {
 }
 
 export type DetailedItem = SimplifiedItem & {
-  seller: SimplifiedAccount;
+  seller: Participant;
   status: ItemStatus;
 };
 
@@ -54,8 +54,8 @@ export type DbTransaction = {
 export type Transaction = {
   id: string;
   item: SimplifiedItem;
-  buyer: SimplifiedAccount;
-  seller: SimplifiedAccount;
+  buyer: Participant;
+  seller: Participant;
   createdAt: string;
   completedAt: string | null;
   cancelledAt: string | null;

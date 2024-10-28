@@ -23,5 +23,9 @@ export function globalErrorHandler(error: unknown, c: Context) {
 
   console.error(error);
 
+  if (error instanceof Error) {
+    return c.json({ error: error.message }, 500);
+  }
+
   return c.json({ error: "Unknown server-side error" }, 500);
 }
