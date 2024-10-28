@@ -1,7 +1,7 @@
 import type {
   DbTransaction,
-  DetailedItem,
   Participant,
+  SimplifiedItem,
   Transaction,
 } from "@/types";
 import { db } from "@/utils/db";
@@ -148,7 +148,7 @@ export async function cancelByParticipantId(participantId: number) {
   return rowCount!;
 }
 
-export async function updateItem(item: DetailedItem) {
+export async function updateItem(item: SimplifiedItem) {
   const { rowCount } = await db.query(
     `
       update transaction
