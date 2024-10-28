@@ -5,9 +5,7 @@ import { channel } from "./init";
 await consumeEvent("account", "account.updated.*", async (data) => {
   const account = data as Account;
   const count = await transactionsRepository.updateParticipant(account);
-  console.log(
-    `Updated [Participant ${account.id}]'s information in ${count} transactions`,
-  );
+  console.log(`Updated [Participant ${account.id}] in ${count} transactions`);
 });
 
 await consumeEvent("account", "account.deleted.*", async (data) => {
@@ -21,9 +19,7 @@ await consumeEvent("account", "account.deleted.*", async (data) => {
 await consumeEvent("item", "item.updated", async (data) => {
   const detailedItem = data as DetailedItem;
   const count = await transactionsRepository.updateItem(detailedItem);
-  console.log(
-    `Updated [Item ${detailedItem.id}]'s information in ${count} transactions`,
-  );
+  console.log(`Updated [Item ${detailedItem.id}] in ${count} transactions`);
 });
 
 await consumeEvent("item", "item.deleted", async (data) => {
@@ -36,9 +32,7 @@ await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   const transaction = data as Transaction;
   const count = await transactionsRepository.completeById(transaction.id);
   if (count! > 0) {
-    console.log(
-      `Auto completed [Transaction ${transaction.id}] after 14 days of inactivity`,
-    );
+    console.log(`Auto completed [Transaction ${transaction.id}]`);
   }
 });
 
