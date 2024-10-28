@@ -38,6 +38,10 @@ export async function selectOneById(id: string) {
     [id],
   );
 
+  if (!rows[0]) {
+    return undefined;
+  }
+
   return convertToTransaction(rows[0]);
 }
 
@@ -52,6 +56,10 @@ export async function selectLatestOneByItemId(itemId: string) {
     `,
     [itemId],
   );
+
+  if (!rows[0]) {
+    return undefined;
+  }
 
   return convertToTransaction(rows[0]);
 }
@@ -176,11 +184,7 @@ export async function cancelByItemId(itemId: string) {
   return rowCount!;
 }
 
-function convertToTransaction(row: DbTransaction | undefined) {
-  if (!row) {
-    return undefined;
-  }
-
+function convertToTransaction(row: DbTransaction) {
   return {
     id: row.id,
     item: {
