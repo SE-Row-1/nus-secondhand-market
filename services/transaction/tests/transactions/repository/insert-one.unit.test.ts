@@ -22,7 +22,6 @@ it("returns the inserted transaction", async () => {
     name: "test",
     price: 100,
   };
-
   mockQuery.mockResolvedValueOnce({
     rows: [
       {
@@ -58,4 +57,15 @@ it("returns the inserted transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   });
+  expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [
+    item.id,
+    item.name,
+    item.price,
+    someone.participant.id,
+    someone.participant.nickname,
+    someone.participant.avatarUrl,
+    me.participant.id,
+    me.participant.nickname,
+    me.participant.avatarUrl,
+  ]);
 });
