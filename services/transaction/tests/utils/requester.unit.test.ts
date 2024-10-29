@@ -1,14 +1,14 @@
 import { createRequester } from "@/utils/requester";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 
 const mockFetch = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   global.fetch = mockFetch;
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

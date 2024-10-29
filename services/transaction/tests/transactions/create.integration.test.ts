@@ -1,7 +1,7 @@
 import { ItemStatus, type Transaction } from "@/types";
 import { snakeToCamel } from "@/utils/case";
 import { db } from "@/utils/db";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterAll, afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import {
   account1,
@@ -17,7 +17,7 @@ const mockAccountRequester = mock();
 const mockItemRequester = mock();
 const mockPublishEvent = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/utils/requester", () => ({
     createRequester: (service: string) => {
       if (service === "account") {
@@ -32,9 +32,11 @@ beforeAll(() => {
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
+});
 
+afterAll(() => {
   db.query("delete from transaction where item_name = $1", ["test-create"]);
 });
 

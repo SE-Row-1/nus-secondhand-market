@@ -1,16 +1,16 @@
 import { getAll } from "@/transactions/service";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { participant1 } from "../../test-utils/data";
 
 const mockSelectAll = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/transactions/repository", () => ({
     selectAll: mockSelectAll,
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

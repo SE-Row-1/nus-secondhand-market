@@ -1,10 +1,10 @@
 import { selectAll } from "@/transactions/repository";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { participant1, participant2 } from "../../test-utils/data";
 
 const mockQuery = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/utils/db", () => ({
     db: {
       query: mockQuery,
@@ -12,7 +12,7 @@ beforeAll(() => {
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

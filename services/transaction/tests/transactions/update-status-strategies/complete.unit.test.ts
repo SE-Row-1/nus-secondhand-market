@@ -1,7 +1,7 @@
 import * as transactionsRepository from "@/transactions/repository";
 import { chooseStrategy } from "@/transactions/update-status-strategies";
 import type { Transaction } from "@/types";
-import { afterAll, beforeAll, expect, it, mock, spyOn } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { participant1, participant2 } from "../../test-utils/data";
 
@@ -11,13 +11,13 @@ const mockCompleteById = spyOn(
 ).mockImplementation(async () => 1);
 const mockPublishEvent = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/events/publish", () => ({
     publishEvent: mockPublishEvent,
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

@@ -1,5 +1,5 @@
 import { update } from "@/transactions/service";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { participant1 } from "../../test-utils/data";
 
@@ -7,7 +7,7 @@ const mockSelectOneById = mock();
 const mockPublishEvent = mock();
 const mockStrategy = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/transactions/repository", () => ({
     selectOneById: mockSelectOneById,
   }));
@@ -21,7 +21,7 @@ beforeAll(() => {
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

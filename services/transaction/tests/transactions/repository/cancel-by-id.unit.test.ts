@@ -1,9 +1,9 @@
 import { cancelById } from "@/transactions/repository";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 
 const mockQuery = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/utils/db", () => ({
     db: {
       query: mockQuery,
@@ -11,7 +11,7 @@ beforeAll(() => {
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 

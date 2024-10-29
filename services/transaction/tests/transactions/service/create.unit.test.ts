@@ -1,6 +1,6 @@
 import { create } from "@/transactions/service";
 import { ItemStatus } from "@/types";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterEach, beforeEach, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import {
   account1,
@@ -15,7 +15,7 @@ const mockAccountRequester = mock();
 const mockItemRequester = mock();
 const mockPublishEvent = mock();
 
-beforeAll(() => {
+beforeEach(() => {
   mock.module("@/transactions/repository", () => ({
     selectLatestOneByItemId: mockSelectLatestOneByItemId,
     insertOne: mockInsertOne,
@@ -35,7 +35,7 @@ beforeAll(() => {
   }));
 });
 
-afterAll(() => {
+afterEach(() => {
   mock.restore();
 });
 
