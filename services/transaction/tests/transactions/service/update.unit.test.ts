@@ -37,7 +37,7 @@ it("executes a strategy", async () => {
   expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
 });
 
-it("throws HTTPException if transaction is not found", async () => {
+it("throws HTTPException 404 if transaction is not found", async () => {
   mockSelectOneById.mockResolvedValueOnce(undefined);
 
   const fn = async () =>
@@ -48,4 +48,5 @@ it("throws HTTPException if transaction is not found", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrow(expect.objectContaining({ status: 404 }));
 });

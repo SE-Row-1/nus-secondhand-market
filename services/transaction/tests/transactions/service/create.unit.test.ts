@@ -85,7 +85,7 @@ it("creates a transaction", async () => {
   expect(mockPublishEvent).toHaveBeenCalledTimes(2);
 });
 
-it("throws HTTPException if user is buyer", async () => {
+it("throws HTTPException 403 if user is buyer", async () => {
   const fn = async () =>
     await create({
       itemId: crypto.randomUUID(),
@@ -94,15 +94,16 @@ it("throws HTTPException if user is buyer", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 403 }));
 });
 
-it("throws HTTPException if buyer is not found", async () => {
+it("throws HTTPException 404 if buyer is not found", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
+  mockAccountRequester.mockResolvedValue({
     data: null,
     error: new HTTPException(404),
   });
@@ -123,9 +124,10 @@ it("throws HTTPException if buyer is not found", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 404 }));
 });
 
-it("throws HTTPException if item is not found", async () => {
+it("throws HTTPException 404 if item is not found", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
@@ -135,7 +137,7 @@ it("throws HTTPException if item is not found", async () => {
     data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValueOnce({
+  mockItemRequester.mockResolvedValue({
     data: null,
     error: new HTTPException(404),
   });
@@ -148,9 +150,10 @@ it("throws HTTPException if item is not found", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 404 }));
 });
 
-it("throws HTTPException if user is not seller", async () => {
+it("throws HTTPException 403 if user is not seller", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
@@ -177,9 +180,10 @@ it("throws HTTPException if user is not seller", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 403 }));
 });
 
-it("throws HTTPException if item is not for sale", async () => {
+it("throws HTTPException 409 if item is not for sale", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
@@ -206,9 +210,10 @@ it("throws HTTPException if item is not for sale", async () => {
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 409 }));
 });
 
-it("throws HTTPException if there is already a pending transaction", async () => {
+it("throws HTTPException 409 if there is already a pending transaction", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
@@ -226,7 +231,7 @@ it("throws HTTPException if there is already a pending transaction", async () =>
     },
     error: null,
   });
-  mockSelectLatestOneByItemId.mockResolvedValueOnce({
+  mockSelectLatestOneByItemId.mockResolvedValue({
     id: crypto.randomUUID(),
     item,
     seller: participant1,
@@ -244,4 +249,5 @@ it("throws HTTPException if there is already a pending transaction", async () =>
     });
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrowError(expect.objectContaining({ status: 409 }));
 });

@@ -48,7 +48,7 @@ it("calls completeById and publishEvent", async () => {
   );
 });
 
-it("throws HTTPException if user is not buyer", async () => {
+it("throws HTTPException 403 if user is not buyer", async () => {
   const transaction: Transaction = {
     id: crypto.randomUUID(),
     item: {
@@ -66,9 +66,10 @@ it("throws HTTPException if user is not buyer", async () => {
   const fn = async () => await complete(transaction, participant1);
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrow(expect.objectContaining({ status: 403 }));
 });
 
-it("throws HTTPException if transaction is already completed", async () => {
+it("throws HTTPException 409 if transaction is already completed", async () => {
   const transaction: Transaction = {
     id: crypto.randomUUID(),
     item: {
@@ -86,9 +87,10 @@ it("throws HTTPException if transaction is already completed", async () => {
   const fn = async () => await complete(transaction, participant2);
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrow(expect.objectContaining({ status: 409 }));
 });
 
-it("throws HTTPException if transaction is already cancelled", async () => {
+it("throws HTTPException 409 if transaction is already cancelled", async () => {
   const transaction: Transaction = {
     id: crypto.randomUUID(),
     item: {
@@ -106,4 +108,5 @@ it("throws HTTPException if transaction is already cancelled", async () => {
   const fn = async () => await complete(transaction, participant2);
 
   expect(fn).toThrow(HTTPException);
+  expect(fn).toThrow(expect.objectContaining({ status: 409 }));
 });

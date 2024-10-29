@@ -58,7 +58,7 @@ export async function create(dto: CreateDto) {
   }
 
   if (detailedItem.status !== ItemStatus.FOR_SALE) {
-    throw new HTTPException(400, { message: "Item is currently not for sale" });
+    throw new HTTPException(409, { message: "Item is currently not for sale" });
   }
 
   const pendingTransaction =

@@ -12,11 +12,12 @@ describe("decodeJwt", () => {
     expect(payload).toEqual("test");
   });
 
-  it("throws HTTPException if JWT is invalid", async () => {
+  it("throws HTTPException 401 if JWT is invalid", async () => {
     const jwt = "invalid";
 
     const fn = async () => await decodeJwt(jwt);
 
     expect(fn).toThrow(HTTPException);
+    expect(fn).toThrowError(expect.objectContaining({ status: 401 }));
   });
 });

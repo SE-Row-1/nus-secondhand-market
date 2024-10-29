@@ -208,7 +208,7 @@ it("returns 403 if user is not seller", async () => {
   expect(body).toEqual({ error: expect.any(String) });
 });
 
-it("returns 400 if item is not for sale", async () => {
+it("returns 409 if item is not for sale", async () => {
   mockAccountRequester.mockResolvedValue({
     data: account2,
     error: null,
@@ -239,7 +239,7 @@ it("returns 400 if item is not for sale", async () => {
   );
   const body = await res.json();
 
-  expect(res.status).toEqual(400);
+  expect(res.status).toEqual(409);
   expect(body).toEqual({ error: expect.any(String) });
 });
 
