@@ -3,7 +3,14 @@ import { snakeToCamel } from "@/utils/case";
 import { db } from "@/utils/db";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import { me, someone } from "../test-utils/mock";
+import {
+  account1,
+  account2,
+  jwt1,
+  jwt2,
+  participant1,
+  participant2,
+} from "../test-utils/data";
 import { POST } from "../test-utils/request";
 
 const mockAccountRequester = mock();
@@ -33,7 +40,7 @@ afterAll(() => {
 
 it("creates a transaction", async () => {
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   const itemId = crypto.randomUUID();
@@ -42,7 +49,7 @@ it("creates a transaction", async () => {
       id: itemId,
       name: "test-create",
       price: 100,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -52,11 +59,11 @@ it("creates a transaction", async () => {
     "/transactions",
     {
       item_id: itemId,
-      buyer_id: someone.participant.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -70,8 +77,8 @@ it("creates a transaction", async () => {
       name: "test-create",
       price: 100,
     },
-    seller: me.participant,
-    buyer: someone.participant,
+    seller: participant1,
+    buyer: participant2,
     createdAt: expect.any(String),
     completedAt: null,
     cancelledAt: null,
@@ -89,11 +96,11 @@ it("returns 403 if user is buyer", async () => {
     "/transactions",
     {
       item_id: crypto.randomUUID(),
-      buyer_id: me.participant.id,
+      buyer_id: participant1.id,
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -114,7 +121,7 @@ it("returns 404 if buyer is not found", async () => {
       id: itemId,
       name: "test-create",
       price: 100,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -128,7 +135,7 @@ it("returns 404 if buyer is not found", async () => {
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -140,7 +147,7 @@ it("returns 404 if buyer is not found", async () => {
 
 it("returns 404 if item is not found", async () => {
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   mockItemRequester.mockResolvedValueOnce({
@@ -152,11 +159,11 @@ it("returns 404 if item is not found", async () => {
     "/transactions",
     {
       item_id: crypto.randomUUID(),
-      buyer_id: someone.participant.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -168,7 +175,7 @@ it("returns 404 if item is not found", async () => {
 
 it("returns 403 if user is not seller", async () => {
   mockAccountRequester.mockResolvedValue({
-    data: me.account,
+    data: account1,
     error: null,
   });
   const itemId = crypto.randomUUID();
@@ -177,7 +184,7 @@ it("returns 403 if user is not seller", async () => {
       id: itemId,
       name: "test-create",
       price: 100,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -187,11 +194,11 @@ it("returns 403 if user is not seller", async () => {
     "/transactions",
     {
       item_id: itemId,
-      buyer_id: someone.participant.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${someone.jwt}`,
+        Cookie: `access_token=${jwt2}`,
       },
     },
   );
@@ -203,7 +210,7 @@ it("returns 403 if user is not seller", async () => {
 
 it("returns 400 if item is not for sale", async () => {
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   const itemId = crypto.randomUUID();
@@ -212,7 +219,7 @@ it("returns 400 if item is not for sale", async () => {
       id: crypto.randomUUID(),
       name: "test-create",
       price: 100,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.SOLD,
     },
     error: null,
@@ -222,11 +229,11 @@ it("returns 400 if item is not for sale", async () => {
     "/transactions",
     {
       item_id: itemId,
-      buyer_id: someone.participant.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -238,7 +245,7 @@ it("returns 400 if item is not for sale", async () => {
 
 it("returns 409 if there is already a pending transaction", async () => {
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   const itemId = crypto.randomUUID();
@@ -247,7 +254,7 @@ it("returns 409 if there is already a pending transaction", async () => {
       id: itemId,
       name: "test-create",
       price: 100,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -258,12 +265,12 @@ it("returns 409 if there is already a pending transaction", async () => {
       itemId,
       "test-create",
       100,
-      me.participant.id,
-      me.participant.nickname,
-      me.participant.avatarUrl,
-      someone.participant.id,
-      someone.participant.nickname,
-      someone.participant.avatarUrl,
+      participant1.id,
+      participant1.nickname,
+      participant1.avatarUrl,
+      participant2.id,
+      participant2.nickname,
+      participant2.avatarUrl,
     ],
   );
 
@@ -271,11 +278,11 @@ it("returns 409 if there is already a pending transaction", async () => {
     "/transactions",
     {
       item_id: itemId,
-      buyer_id: someone.participant.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );

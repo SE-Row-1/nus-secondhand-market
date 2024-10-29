@@ -1,6 +1,6 @@
 import { updateParticipant } from "@/transactions/repository";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
-import { me } from "../../test-utils/mock";
+import { participant1 } from "../../test-utils/data";
 
 const mockQuery = mock();
 
@@ -21,12 +21,12 @@ it("returns total row count", async () => {
     .mockResolvedValueOnce({ rowCount: 2 })
     .mockResolvedValueOnce({ rowCount: 3 });
 
-  const result = await updateParticipant(me.participant);
+  const result = await updateParticipant(participant1);
 
   expect(result).toEqual(5);
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [
-    me.participant.id,
-    me.participant.nickname,
-    me.participant.avatarUrl,
+    participant1.id,
+    participant1.nickname,
+    participant1.avatarUrl,
   ]);
 });

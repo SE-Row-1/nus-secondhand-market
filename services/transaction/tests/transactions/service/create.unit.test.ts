@@ -2,7 +2,12 @@ import { create } from "@/transactions/service";
 import { ItemStatus } from "@/types";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import { me, someone } from "../../test-utils/mock";
+import {
+  account1,
+  account2,
+  participant1,
+  participant2,
+} from "../../test-utils/data";
 
 const mockInsertOne = mock();
 const mockSelectLatestOneByItemId = mock();
@@ -43,20 +48,20 @@ it("creates a transaction", async () => {
   mockInsertOne.mockResolvedValueOnce({
     id: crypto.randomUUID(),
     item,
-    seller: me.participant,
-    buyer: someone.participant,
+    seller: participant1,
+    buyer: participant2,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
   });
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   mockItemRequester.mockResolvedValue({
     data: {
       ...item,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -64,15 +69,15 @@ it("creates a transaction", async () => {
 
   const result = await create({
     itemId: item.id,
-    buyerId: someone.participant.id,
-    user: me.participant,
+    buyerId: participant2.id,
+    user: participant1,
   });
 
   expect(result).toEqual({
     id: expect.any(String),
     item,
-    seller: me.participant,
-    buyer: someone.participant,
+    seller: participant1,
+    buyer: participant2,
     createdAt: expect.any(String),
     completedAt: null,
     cancelledAt: null,
@@ -84,8 +89,8 @@ it("throws HTTPException if user is buyer", async () => {
   const fn = async () =>
     await create({
       itemId: crypto.randomUUID(),
-      buyerId: me.participant.id,
-      user: me.participant,
+      buyerId: participant1.id,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);
@@ -104,7 +109,7 @@ it("throws HTTPException if buyer is not found", async () => {
   mockItemRequester.mockResolvedValue({
     data: {
       ...item,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -113,8 +118,8 @@ it("throws HTTPException if buyer is not found", async () => {
   const fn = async () =>
     await create({
       itemId: item.id,
-      buyerId: someone.participant.id,
-      user: me.participant,
+      buyerId: participant2.id,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);
@@ -127,7 +132,7 @@ it("throws HTTPException if item is not found", async () => {
     price: 100,
   };
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   mockItemRequester.mockResolvedValueOnce({
@@ -138,8 +143,8 @@ it("throws HTTPException if item is not found", async () => {
   const fn = async () =>
     await create({
       itemId: item.id,
-      buyerId: someone.participant.id,
-      user: me.participant,
+      buyerId: participant2.id,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);
@@ -152,13 +157,13 @@ it("throws HTTPException if user is not seller", async () => {
     price: 100,
   };
   mockAccountRequester.mockResolvedValue({
-    data: me.account,
+    data: account1,
     error: null,
   });
   mockItemRequester.mockResolvedValue({
     data: {
       ...item,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -167,8 +172,8 @@ it("throws HTTPException if user is not seller", async () => {
   const fn = async () =>
     await create({
       itemId: item.id,
-      buyerId: someone.participant.id,
-      user: someone.participant,
+      buyerId: participant2.id,
+      user: participant2,
     });
 
   expect(fn).toThrow(HTTPException);
@@ -181,13 +186,13 @@ it("throws HTTPException if item is not for sale", async () => {
     price: 100,
   };
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   mockItemRequester.mockResolvedValue({
     data: {
       ...item,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.SOLD,
     },
     error: null,
@@ -196,8 +201,8 @@ it("throws HTTPException if item is not for sale", async () => {
   const fn = async () =>
     await create({
       itemId: item.id,
-      buyerId: someone.participant.id,
-      user: me.participant,
+      buyerId: participant2.id,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);
@@ -210,13 +215,13 @@ it("throws HTTPException if there is already a pending transaction", async () =>
     price: 100,
   };
   mockAccountRequester.mockResolvedValue({
-    data: someone.account,
+    data: account2,
     error: null,
   });
   mockItemRequester.mockResolvedValue({
     data: {
       ...item,
-      seller: me.participant,
+      seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -224,8 +229,8 @@ it("throws HTTPException if there is already a pending transaction", async () =>
   mockSelectLatestOneByItemId.mockResolvedValueOnce({
     id: crypto.randomUUID(),
     item,
-    seller: me.participant,
-    buyer: someone.participant,
+    seller: participant1,
+    buyer: participant2,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
@@ -234,8 +239,8 @@ it("throws HTTPException if there is already a pending transaction", async () =>
   const fn = async () =>
     await create({
       itemId: item.id,
-      buyerId: someone.participant.id,
-      user: me.participant,
+      buyerId: participant2.id,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);

@@ -1,17 +1,17 @@
+import * as transactionsRepository from "@/transactions/repository";
 import { chooseStrategy } from "@/transactions/update-status-strategies";
 import type { Transaction } from "@/types";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterAll, beforeAll, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import { me, someone } from "../../test-utils/mock";
+import { participant1, participant2 } from "../../test-utils/data";
 
-const mockCompleteById = mock();
+const mockCompleteById = spyOn(
+  transactionsRepository,
+  "completeById",
+).mockImplementation(async () => 1);
 const mockPublishEvent = mock();
 
 beforeAll(() => {
-  mock.module("@/transactions/repository", () => ({
-    completeById: mockCompleteById,
-  }));
-
   mock.module("@/events/publish", () => ({
     publishEvent: mockPublishEvent,
   }));
@@ -31,14 +31,14 @@ it("calls completeById and publishEvent", async () => {
       name: "test",
       price: 100,
     },
-    buyer: someone.participant,
-    seller: me.participant,
+    buyer: participant2,
+    seller: participant1,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
   };
 
-  await complete(transaction, someone.participant);
+  await complete(transaction, participant2);
 
   expect(mockCompleteById).toHaveBeenLastCalledWith(transaction.id);
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
@@ -56,14 +56,14 @@ it("throws HTTPException if user is not buyer", async () => {
       name: "test",
       price: 100,
     },
-    buyer: someone.participant,
-    seller: me.participant,
+    buyer: participant2,
+    seller: participant1,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
   };
 
-  const fn = async () => await complete(transaction, me.participant);
+  const fn = async () => await complete(transaction, participant1);
 
   expect(fn).toThrow(HTTPException);
 });
@@ -76,14 +76,14 @@ it("throws HTTPException if transaction is already completed", async () => {
       name: "test",
       price: 100,
     },
-    buyer: someone.participant,
-    seller: me.participant,
+    buyer: participant2,
+    seller: participant1,
     createdAt: new Date().toISOString(),
     completedAt: new Date().toISOString(),
     cancelledAt: null,
   };
 
-  const fn = async () => await complete(transaction, someone.participant);
+  const fn = async () => await complete(transaction, participant2);
 
   expect(fn).toThrow(HTTPException);
 });
@@ -96,14 +96,14 @@ it("throws HTTPException if transaction is already cancelled", async () => {
       name: "test",
       price: 100,
     },
-    buyer: someone.participant,
-    seller: me.participant,
+    buyer: participant2,
+    seller: participant1,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: new Date().toISOString(),
   };
 
-  const fn = async () => await complete(transaction, someone.participant);
+  const fn = async () => await complete(transaction, participant2);
 
   expect(fn).toThrow(HTTPException);
 });

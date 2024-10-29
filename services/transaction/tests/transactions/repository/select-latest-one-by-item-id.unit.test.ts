@@ -1,6 +1,6 @@
 import { selectLatestOneByItemId } from "@/transactions/repository";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
-import { me, someone } from "../../test-utils/mock";
+import { participant1, participant2 } from "../../test-utils/data";
 
 const mockQuery = mock();
 
@@ -29,12 +29,12 @@ it("returns one row", async () => {
         item_id: item.id,
         item_name: item.name,
         item_price: item.price,
-        buyer_id: someone.participant.id,
-        buyer_nickname: someone.participant.nickname,
-        buyer_avatar_url: someone.participant.avatarUrl,
-        seller_id: me.participant.id,
-        seller_nickname: me.participant.nickname,
-        seller_avatar_url: me.participant.avatarUrl,
+        buyer_id: participant2.id,
+        buyer_nickname: participant2.nickname,
+        buyer_avatar_url: participant2.avatarUrl,
+        seller_id: participant1.id,
+        seller_nickname: participant1.nickname,
+        seller_avatar_url: participant1.avatarUrl,
         created_at: new Date().toISOString(),
         completed_at: null,
         cancelled_at: null,
@@ -47,8 +47,8 @@ it("returns one row", async () => {
   expect(result).toEqual({
     id: expect.any(String),
     item,
-    buyer: someone.participant,
-    seller: me.participant,
+    buyer: participant2,
+    seller: participant1,
     createdAt: expect.any(String),
     completedAt: null,
     cancelledAt: null,

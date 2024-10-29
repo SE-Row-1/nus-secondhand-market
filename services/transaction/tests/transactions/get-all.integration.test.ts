@@ -1,7 +1,7 @@
 import type { Transaction } from "@/types";
 import { snakeToCamel } from "@/utils/case";
 import { expect, it } from "bun:test";
-import { me } from "../test-utils/mock";
+import { jwt1, participant1 } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
 const expectation = expect.arrayContaining([
@@ -31,7 +31,7 @@ const expectation = expect.arrayContaining([
 it("returns all of one's transactions by default", async () => {
   const res = await GET("/transactions", {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = snakeToCamel(await res.json()) as Transaction[];
@@ -41,8 +41,8 @@ it("returns all of one's transactions by default", async () => {
 
   let lastCreatedAt = Infinity;
   for (const transaction of body) {
-    const isSeller = me.participant.id === transaction.seller.id;
-    const isBuyer = me.participant.id === transaction.buyer.id;
+    const isSeller = participant1.id === transaction.seller.id;
+    const isBuyer = participant1.id === transaction.buyer.id;
     expect(isSeller || isBuyer).toEqual(true);
 
     const currentCreatedAt = new Date(transaction.createdAt).getTime();
@@ -56,7 +56,7 @@ it("filters transactions if given item_id", async () => {
     "/transactions?item_id=10f33906-24df-449d-b4fb-fcc6c76606b6",
     {
       headers: {
-        Cookie: `access_token=${me.jwt}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -66,8 +66,8 @@ it("filters transactions if given item_id", async () => {
   expect(body).toEqual(expectation);
 
   for (const transaction of body) {
-    const isSeller = me.participant.id === transaction.seller.id;
-    const isBuyer = me.participant.id === transaction.buyer.id;
+    const isSeller = participant1.id === transaction.seller.id;
+    const isBuyer = participant1.id === transaction.buyer.id;
     expect(isSeller || isBuyer).toEqual(true);
 
     expect(transaction.item.id).toEqual("10f33906-24df-449d-b4fb-fcc6c76606b6");
@@ -77,7 +77,7 @@ it("filters transactions if given item_id", async () => {
 it("filters transactions if given exclude_cancelled", async () => {
   const res = await GET("/transactions?exclude_cancelled=true", {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = snakeToCamel(await res.json()) as Transaction[];
@@ -86,8 +86,8 @@ it("filters transactions if given exclude_cancelled", async () => {
   expect(body).toEqual(expectation);
 
   for (const transaction of body) {
-    const isSeller = me.participant.id === transaction.seller.id;
-    const isBuyer = me.participant.id === transaction.buyer.id;
+    const isSeller = participant1.id === transaction.seller.id;
+    const isBuyer = participant1.id === transaction.buyer.id;
     expect(isSeller || isBuyer).toEqual(true);
 
     expect(transaction.cancelledAt).toEqual(null);

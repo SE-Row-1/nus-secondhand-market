@@ -1,7 +1,7 @@
 import { update } from "@/transactions/service";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import { me } from "../../test-utils/mock";
+import { participant1 } from "../../test-utils/data";
 
 const mockSelectOneById = mock();
 const mockPublishEvent = mock();
@@ -31,10 +31,10 @@ it("executes a strategy", async () => {
   await update({
     id: crypto.randomUUID(),
     action: "complete",
-    user: me.participant,
+    user: participant1,
   });
 
-  expect(mockStrategy).toHaveBeenLastCalledWith({}, me.participant);
+  expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
 });
 
 it("throws HTTPException if transaction is not found", async () => {
@@ -44,7 +44,7 @@ it("throws HTTPException if transaction is not found", async () => {
     await update({
       id: crypto.randomUUID(),
       action: "complete",
-      user: me.participant,
+      user: participant1,
     });
 
   expect(fn).toThrow(HTTPException);
