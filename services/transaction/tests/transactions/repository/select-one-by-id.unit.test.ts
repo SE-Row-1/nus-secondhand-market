@@ -53,3 +53,13 @@ it("returns one transaction", async () => {
   });
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [id]);
 });
+
+it("returns undefined if transaction is not found", async () => {
+  const id = crypto.randomUUID();
+  mockQuery.mockResolvedValueOnce({ rows: [] } as never);
+
+  const result = await selectOneById(id);
+
+  expect(result).toBeUndefined();
+  expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [id]);
+});

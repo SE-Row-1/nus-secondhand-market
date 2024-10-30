@@ -1,20 +1,19 @@
+import * as transactionsRepository from "@/transactions/repository";
 import { getAll } from "@/transactions/service";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { participant1 } from "../../test-utils/data";
 
-const mockSelectAll = mock();
-
-beforeEach(() => {
-  mock.module("@/transactions/repository", () => ({
-    selectAll: mockSelectAll,
-  }));
-});
+const mockSelectAll = spyOn(transactionsRepository, "selectAll");
 
 afterEach(() => {
+  mockSelectAll.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
-it("returns transactions found by repository", async () => {
+it("returns transactions", async () => {
   mockSelectAll.mockResolvedValueOnce([]);
 
   const result = await getAll({ excludeCancelled: true, user: participant1 });

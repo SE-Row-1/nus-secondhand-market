@@ -1,50 +1,49 @@
+import * as publish from "@/events/publish";
+import * as transactionsRepository from "@/transactions/repository";
 import { create } from "@/transactions/service";
 import { ItemStatus } from "@/types";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import * as requester from "@/utils/requester";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import {
-  account1,
-  account2,
-  participant1,
-  participant2,
-} from "../../test-utils/data";
+import { account2, participant1, participant2 } from "../../test-utils/data";
 
-const mockInsertOne = mock();
-const mockSelectLatestOneByItemId = mock();
+const mockInsertOne = spyOn(transactionsRepository, "insertOne");
+const mockSelectLatestOneByItemId = spyOn(
+  transactionsRepository,
+  "selectLatestOneByItemId",
+);
 const mockAccountRequester = mock();
 const mockItemRequester = mock();
-const mockPublishEvent = mock();
-
-beforeEach(() => {
-  mock.module("@/transactions/repository", () => ({
-    selectLatestOneByItemId: mockSelectLatestOneByItemId,
-    insertOne: mockInsertOne,
-  }));
-
-  mock.module("@/utils/requester", () => ({
-    createRequester: (service: string) => {
-      if (service === "account") {
-        return mockAccountRequester;
-      }
-      return mockItemRequester;
-    },
-  }));
-
-  mock.module("@/events/publish", () => ({
-    publishEvent: mockPublishEvent,
-  }));
-});
+const mockRequester = spyOn(requester, "createRequester").mockImplementation(
+  (service: string) => {
+    if (service === "account") {
+      return mockAccountRequester;
+    }
+    return mockItemRequester;
+  },
+);
+const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
+  mockInsertOne.mockClear();
+  mockSelectLatestOneByItemId.mockClear();
+  mockAccountRequester.mockClear();
+  mockItemRequester.mockClear();
+  mockRequester.mockClear();
+  mockPublishEvent.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
-it("creates a transaction", async () => {
+it("creates transaction", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
     price: 100,
   };
+  mockSelectLatestOneByItemId.mockResolvedValueOnce(undefined);
   mockInsertOne.mockResolvedValueOnce({
     id: crypto.randomUUID(),
     item,
@@ -54,11 +53,11 @@ it("creates a transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   });
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
       ...item,
       seller: participant1,
@@ -82,19 +81,37 @@ it("creates a transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   });
-  expect(mockPublishEvent).toHaveBeenCalledTimes(2);
+  expect(mockAccountRequester).toHaveBeenLastCalledWith("/accounts/2");
+  expect(mockItemRequester).toHaveBeenLastCalledWith(`/items/${item.id}`);
+  expect(mockSelectLatestOneByItemId).toHaveBeenLastCalledWith(item.id);
+  expect(mockInsertOne).toHaveBeenLastCalledWith({
+    item,
+    seller: participant1,
+    buyer: participant2,
+  });
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    1,
+    "transaction",
+    "transaction.created",
+    result,
+  );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    2,
+    "transaction",
+    "transaction.auto-completed",
+    result,
+  );
 });
 
 it("throws HTTPException 403 if user is buyer", async () => {
-  const fn = async () =>
-    await create({
-      itemId: crypto.randomUUID(),
-      buyerId: participant1.id,
-      user: participant1,
-    });
+  const promise = create({
+    itemId: crypto.randomUUID(),
+    buyerId: participant1.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
 });
 
 it("throws HTTPException 404 if buyer is not found", async () => {
@@ -103,11 +120,11 @@ it("throws HTTPException 404 if buyer is not found", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: null,
     error: new HTTPException(404),
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
       ...item,
       seller: participant1,
@@ -116,15 +133,14 @@ it("throws HTTPException 404 if buyer is not found", async () => {
     error: null,
   });
 
-  const fn = async () =>
-    await create({
-      itemId: item.id,
-      buyerId: participant2.id,
-      user: participant1,
-    });
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
 });
 
 it("throws HTTPException 404 if item is not found", async () => {
@@ -133,24 +149,23 @@ it("throws HTTPException 404 if item is not found", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: null,
     error: new HTTPException(404),
   });
 
-  const fn = async () =>
-    await create({
-      itemId: item.id,
-      buyerId: participant2.id,
-      user: participant1,
-    });
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
 });
 
 it("throws HTTPException 403 if user is not seller", async () => {
@@ -159,28 +174,27 @@ it("throws HTTPException 403 if user is not seller", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValue({
-    data: account1,
+  mockAccountRequester.mockResolvedValueOnce({
+    data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
       ...item,
-      seller: participant1,
+      seller: participant2,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
   });
 
-  const fn = async () =>
-    await create({
-      itemId: item.id,
-      buyerId: participant2.id,
-      user: participant2,
-    });
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
 });
 
 it("throws HTTPException 409 if item is not for sale", async () => {
@@ -189,11 +203,11 @@ it("throws HTTPException 409 if item is not for sale", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
       ...item,
       seller: participant1,
@@ -202,15 +216,14 @@ it("throws HTTPException 409 if item is not for sale", async () => {
     error: null,
   });
 
-  const fn = async () =>
-    await create({
-      itemId: item.id,
-      buyerId: participant2.id,
-      user: participant1,
-    });
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
 });
 
 it("throws HTTPException 409 if there is already a pending transaction", async () => {
@@ -219,11 +232,11 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
       ...item,
       seller: participant1,
@@ -231,7 +244,7 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
     },
     error: null,
   });
-  mockSelectLatestOneByItemId.mockResolvedValue({
+  mockSelectLatestOneByItemId.mockResolvedValueOnce({
     id: crypto.randomUUID(),
     item,
     seller: participant1,
@@ -241,13 +254,12 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
     cancelledAt: null,
   });
 
-  const fn = async () =>
-    await create({
-      itemId: item.id,
-      buyerId: participant2.id,
-      user: participant1,
-    });
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrowError(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
 });

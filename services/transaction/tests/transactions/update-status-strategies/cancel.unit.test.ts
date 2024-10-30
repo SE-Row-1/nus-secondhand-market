@@ -1,29 +1,26 @@
+import * as publish from "@/events/publish";
 import * as transactionsRepository from "@/transactions/repository";
 import { chooseStrategy } from "@/transactions/update-status-strategies";
 import type { Transaction } from "@/types";
-import { afterEach, beforeEach, expect, it, mock, spyOn } from "bun:test";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { participant1, participant2 } from "../../test-utils/data";
 
-const mockCancelById = spyOn(
-  transactionsRepository,
-  "cancelById",
-).mockImplementation(async () => 1);
-const mockPublishEvent = mock();
-
-beforeEach(() => {
-  mock.module("@/events/publish", () => ({
-    publishEvent: mockPublishEvent,
-  }));
-});
+const mockCancelById = spyOn(transactionsRepository, "cancelById");
+const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
+  mockCancelById.mockClear();
+  mockPublishEvent.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
 const cancel = chooseStrategy("cancel");
 
-it("calls cancelById and publishEvent", async () => {
+it("cancels transaction", async () => {
   const transaction: Transaction = {
     id: crypto.randomUUID(),
     item: {
@@ -31,8 +28,8 @@ it("calls cancelById and publishEvent", async () => {
       name: "test",
       price: 100,
     },
-    buyer: participant2,
     seller: participant1,
+    buyer: participant2,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
@@ -56,17 +53,17 @@ it("throws HTTPException 403 if user is not seller", async () => {
       name: "test",
       price: 100,
     },
-    buyer: participant2,
     seller: participant1,
+    buyer: participant2,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
   };
 
-  const fn = async () => await cancel(transaction, participant2);
+  const promise = cancel(transaction, participant2);
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrow(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
 });
 
 it("throws HTTPException 409 if transaction is already completed", async () => {
@@ -84,10 +81,10 @@ it("throws HTTPException 409 if transaction is already completed", async () => {
     cancelledAt: null,
   };
 
-  const fn = async () => await cancel(transaction, participant1);
+  const promise = cancel(transaction, participant1);
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrow(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
 });
 
 it("throws HTTPException 409 if transaction is already cancelled", async () => {
@@ -105,8 +102,8 @@ it("throws HTTPException 409 if transaction is already cancelled", async () => {
     cancelledAt: new Date().toISOString(),
   };
 
-  const fn = async () => await cancel(transaction, participant1);
+  const promise = cancel(transaction, participant1);
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrow(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
 });

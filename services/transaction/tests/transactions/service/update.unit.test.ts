@@ -1,52 +1,59 @@
+import * as transactionsRepository from "@/transactions/repository";
 import { update } from "@/transactions/service";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import * as strategies from "@/transactions/update-status-strategies";
+import type { Transaction } from "@/types";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { participant1 } from "../../test-utils/data";
 
-const mockSelectOneById = mock();
-const mockPublishEvent = mock();
+const mockSelectOneById = spyOn(transactionsRepository, "selectOneById");
 const mockStrategy = mock();
-
-beforeEach(() => {
-  mock.module("@/transactions/repository", () => ({
-    selectOneById: mockSelectOneById,
-  }));
-
-  mock.module("@/transactions/update-status-strategies", () => ({
-    chooseStrategy: () => mockStrategy,
-  }));
-
-  mock.module("@/events/publish", () => ({
-    publishEvent: mockPublishEvent,
-  }));
-});
+const mockChooseStrategy = spyOn(
+  strategies,
+  "chooseStrategy",
+).mockImplementation(() => mockStrategy);
 
 afterEach(() => {
+  mockSelectOneById.mockClear();
+  mockChooseStrategy.mockClear();
+  mockStrategy.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
-it("executes a strategy", async () => {
-  mockSelectOneById.mockResolvedValueOnce({});
+it("executes complete strategy", async () => {
+  const id = crypto.randomUUID();
+  mockSelectOneById.mockResolvedValueOnce({} as Transaction);
 
-  await update({
-    id: crypto.randomUUID(),
-    action: "complete",
-    user: participant1,
-  });
+  await update({ id, action: "complete", user: participant1 });
 
+  expect(mockSelectOneById).toHaveBeenLastCalledWith(id);
+  expect(mockChooseStrategy).toHaveBeenLastCalledWith("complete");
+  expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
+});
+
+it("executes cancel strategy", async () => {
+  const id = crypto.randomUUID();
+  mockSelectOneById.mockResolvedValueOnce({} as Transaction);
+
+  await update({ id, action: "cancel", user: participant1 });
+
+  expect(mockSelectOneById).toHaveBeenLastCalledWith(id);
+  expect(mockChooseStrategy).toHaveBeenLastCalledWith("cancel");
   expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
 });
 
 it("throws HTTPException 404 if transaction is not found", async () => {
   mockSelectOneById.mockResolvedValueOnce(undefined);
 
-  const fn = async () =>
-    await update({
-      id: crypto.randomUUID(),
-      action: "complete",
-      user: participant1,
-    });
+  const promise = update({
+    id: crypto.randomUUID(),
+    action: "complete",
+    user: participant1,
+  });
 
-  expect(fn).toThrow(HTTPException);
-  expect(fn).toThrow(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
 });

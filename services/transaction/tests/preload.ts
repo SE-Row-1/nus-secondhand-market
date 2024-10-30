@@ -7,6 +7,7 @@ mock.module("amqplib", () => ({
         assertExchange: () => {},
         assertQueue: () => ({ queue: "mock" }),
         bindQueue: () => {},
+        publish: () => {},
         consume: () => {},
       }),
     }),
