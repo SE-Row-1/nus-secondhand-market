@@ -45,8 +45,11 @@ class Composite implements Composable {
     }
 
     return (
-      (1 - this.discount) *
-      this.children.reduce((acc, child) => acc + child.getPrice(), 0)
+      Math.round(
+        100 *
+          (1 - this.discount) *
+          this.children.reduce((acc, child) => acc + child.getPrice(), 0),
+      ) / 100
     );
   }
 }
