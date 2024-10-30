@@ -1,25 +1,20 @@
 import { cancelById } from "@/transactions/repository";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { db } from "@/utils/db";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 
-const mockQuery = mock();
-
-beforeEach(() => {
-  mock.module("@/utils/db", () => ({
-    db: {
-      query: mockQuery,
-    },
-  }));
-});
+const mockQuery = spyOn(db, "query");
 
 afterEach(() => {
+  mockQuery.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
 it("returns row count", async () => {
   const id = crypto.randomUUID();
-  mockQuery.mockResolvedValueOnce({
-    rowCount: 1,
-  });
+  mockQuery.mockResolvedValueOnce({ rowCount: 1 } as never);
 
   const result = await cancelById(id);
 

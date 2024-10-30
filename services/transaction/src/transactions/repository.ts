@@ -69,7 +69,7 @@ type InsertDto = Pick<Transaction, "item" | "seller" | "buyer">;
 export async function insertOne(dto: InsertDto) {
   const { rows } = await db.query<DbTransaction>(
     `
-      insert into transaction (item_id, item_name, item_price, buyer_id, buyer_nickname, buyer_avatar_url, seller_id, seller_nickname, seller_avatar_url)
+      insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url)
       values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       returning *
     `,
@@ -77,12 +77,12 @@ export async function insertOne(dto: InsertDto) {
       dto.item.id,
       dto.item.name,
       dto.item.price,
-      dto.buyer.id,
-      dto.buyer.nickname,
-      dto.buyer.avatarUrl,
       dto.seller.id,
       dto.seller.nickname,
       dto.seller.avatarUrl,
+      dto.buyer.id,
+      dto.buyer.nickname,
+      dto.buyer.avatarUrl,
     ],
   );
 

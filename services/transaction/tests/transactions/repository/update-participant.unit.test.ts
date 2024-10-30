@@ -1,25 +1,22 @@
 import { updateParticipant } from "@/transactions/repository";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { db } from "@/utils/db";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { participant1 } from "../../test-utils/data";
 
-const mockQuery = mock();
-
-beforeEach(() => {
-  mock.module("@/utils/db", () => ({
-    db: {
-      query: mockQuery,
-    },
-  }));
-});
+const mockQuery = spyOn(db, "query");
 
 afterEach(() => {
+  mockQuery.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
-it("returns total row count", async () => {
+it("returns row count", async () => {
   mockQuery
-    .mockResolvedValueOnce({ rowCount: 2 })
-    .mockResolvedValueOnce({ rowCount: 3 });
+    .mockResolvedValueOnce({ rowCount: 2 } as never)
+    .mockResolvedValueOnce({ rowCount: 3 } as never);
 
   const result = await updateParticipant(participant1);
 

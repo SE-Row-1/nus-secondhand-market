@@ -1,22 +1,19 @@
 import { selectOneById } from "@/transactions/repository";
-import { afterEach, beforeEach, expect, it, mock } from "bun:test";
+import { db } from "@/utils/db";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { participant1, participant2 } from "../../test-utils/data";
 
-const mockQuery = mock();
-
-beforeEach(() => {
-  mock.module("@/utils/db", () => ({
-    db: {
-      query: mockQuery,
-    },
-  }));
-});
+const mockQuery = spyOn(db, "query");
 
 afterEach(() => {
+  mockQuery.mockClear();
+});
+
+afterAll(() => {
   mock.restore();
 });
 
-it("returns one row", async () => {
+it("returns one transaction", async () => {
   const id = crypto.randomUUID();
   const item = {
     id: crypto.randomUUID(),
@@ -30,26 +27,26 @@ it("returns one row", async () => {
         item_id: item.id,
         item_name: item.name,
         item_price: item.price,
-        buyer_id: participant2.id,
-        buyer_nickname: participant2.nickname,
-        buyer_avatar_url: participant2.avatarUrl,
         seller_id: participant1.id,
         seller_nickname: participant1.nickname,
         seller_avatar_url: participant1.avatarUrl,
+        buyer_id: participant2.id,
+        buyer_nickname: participant2.nickname,
+        buyer_avatar_url: participant2.avatarUrl,
         created_at: new Date().toISOString(),
         completed_at: null,
         cancelled_at: null,
       },
     ],
-  });
+  } as never);
 
   const result = await selectOneById(id);
 
   expect(result).toEqual({
     id,
     item,
-    buyer: participant2,
     seller: participant1,
+    buyer: participant2,
     createdAt: expect.any(String),
     completedAt: null,
     cancelledAt: null,
