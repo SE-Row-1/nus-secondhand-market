@@ -1,0 +1,97 @@
+name: CI for transaction service
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - services/transaction/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/transaction/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/transaction
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Lint with TSC
+        run: bun tsc
+
+      - name: Lint with ESLint
+        run: bun eslint .
+
+  format:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/transaction
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Check format
+        run: bun prettier . --check
+
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/transaction
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/transaction
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Start containers
+        run: docker compose -f docker-compose.test.yaml up -d
+
+      - name: Unit test
+        run: docker exec nshm-transaction-test-api-1 bun test unit.test --coverage
+
+      - name: Integration test
+        run: docker exec nshm-transaction-test-api-1 bun test integration.test --coverage
