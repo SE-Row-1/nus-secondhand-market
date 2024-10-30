@@ -9,7 +9,6 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.676.0",
     "amqplib": "^0.10.4",
-    "bun-compression": "^0.0.4",
     "hono": "^4.6.6",
     "hono-rate-limiter": "^0.4.0",
     "jsonwebtoken": "^9.0.2",

@@ -1,4 +1,3 @@
-import { compress } from "bun-compression";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { getConnInfo } from "hono/bun";
@@ -20,12 +19,6 @@ const app = new Hono();
 
 // These middleware are applied to all routes.
 app.use(
-  // Compress the response in gzip.
-  //
-  // TODO: Replace `bun-compression` with `hono/compress`,
-  // once Bun has implemented `CompressionStream`. See oven-sh/bun#1723.
-  compress(),
-
   // Log incoming requests and their corresponding responses.
   //
   // TODO: Persist logs into files for better monitoring.
