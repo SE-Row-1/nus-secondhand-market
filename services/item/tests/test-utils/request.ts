@@ -9,23 +9,17 @@ const honoEnv = {
   },
 };
 
-/**
- * Fake a GET request.
- */
 export async function GET(endpoint: string, init: RequestInit = {}) {
   return await app.request(
     endpoint,
     {
-      ...init,
       method: "GET",
+      ...init,
     },
     honoEnv,
   );
 }
 
-/**
- * Fake a POST request.
- */
 export async function POST(
   endpoint: string,
   body: Record<string, unknown>,
@@ -34,40 +28,18 @@ export async function POST(
   return await app.request(
     endpoint,
     {
-      ...init,
       method: "POST",
       body: JSON.stringify(body),
+      ...init,
       headers: {
-        ...init.headers,
         "Content-Type": "application/json",
+        ...init.headers,
       },
     },
     honoEnv,
   );
 }
 
-/**
- * Fake a POST request with `multipart/form-data`.
- */
-export async function FORM(
-  endpoint: string,
-  formData: FormData,
-  init: RequestInit = {},
-) {
-  return await app.request(
-    endpoint,
-    {
-      ...init,
-      method: "POST",
-      body: formData,
-    },
-    honoEnv,
-  );
-}
-
-/**
- * Fake a PUT request.
- */
 export async function PUT(
   endpoint: string,
   body: Record<string, unknown>,
@@ -76,21 +48,18 @@ export async function PUT(
   return await app.request(
     endpoint,
     {
-      ...init,
       method: "PUT",
       body: JSON.stringify(body),
+      ...init,
       headers: {
-        ...init.headers,
         "Content-Type": "application/json",
+        ...init.headers,
       },
     },
     honoEnv,
   );
 }
 
-/**
- * Fake a PATCH request.
- */
 export async function PATCH(
   endpoint: string,
   body: Record<string, unknown>,
@@ -99,19 +68,30 @@ export async function PATCH(
   return await app.request(
     endpoint,
     {
-      ...init,
       method: "PATCH",
       body: JSON.stringify(body),
+      ...init,
       headers: {
-        ...init.headers,
         "Content-Type": "application/json",
+        ...init.headers,
       },
     },
     honoEnv,
   );
 }
 
-export async function PATCH_FORM(
+export async function DELETE(endpoint: string, init: RequestInit = {}) {
+  return await app.request(
+    endpoint,
+    {
+      method: "DELETE",
+      ...init,
+    },
+    honoEnv,
+  );
+}
+
+export async function FORM(
   endpoint: string,
   formData: FormData,
   init: RequestInit = {},
@@ -119,23 +99,9 @@ export async function PATCH_FORM(
   return await app.request(
     endpoint,
     {
-      ...init,
-      method: "PATCH",
+      method: "POST",
       body: formData,
-    },
-    honoEnv,
-  );
-}
-
-/**
- * Fake a DELETE request.
- */
-export async function DELETE(endpoint: string, init: RequestInit = {}) {
-  return await app.request(
-    endpoint,
-    {
       ...init,
-      method: "DELETE",
     },
     honoEnv,
   );

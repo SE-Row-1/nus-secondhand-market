@@ -1,11 +1,11 @@
 import { S3PhotoStorageGateway } from "@/utils/photo-storage-gateway/s3";
 import { S3Client } from "@aws-sdk/client-s3";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 
-const mockSend = mock();
+const mockSend = spyOn(S3Client.prototype, "send");
 
-beforeAll(() => {
-  S3Client.prototype.send = mockSend;
+afterEach(() => {
+  mockSend.mockClear();
 });
 
 afterAll(() => {

@@ -1,25 +1,38 @@
 import { mock } from "bun:test";
+import { ObjectId } from "mongodb";
 
-mock.module("@/events/consume-account-updated-event", () => ({
-  consumeAccountUpdatedEvent: mock(),
+mock.module("amqplib", () => ({
+  default: {
+    connect: () => ({
+      createChannel: () => ({
+        assertExchange: () => {},
+        assertQueue: () => ({ queue: "mock" }),
+        bindQueue: () => {},
+        publish: () => {},
+        consume: () => {},
+      }),
+    }),
+  },
 }));
 
-mock.module("@/events/consume-account-deleted-event", () => ({
-  consumeAccountDeletedEvent: mock(),
-}));
-
-mock.module("@/events/consume-transaction-auto-completed-event", () => ({
-  consumeTransactionAutoCompletedEvent: mock(),
-}));
-
-mock.module("@/events/publish-item-updated-event", () => ({
-  publishItemUpdatedEvent: mock(),
-}));
-
-mock.module("@/events/publish-item-deleted-event", () => ({
-  publishItemDeletedEvent: mock(),
-}));
-
-mock.module("@/events/publish-transaction-auto-completed-event", () => ({
-  publishTransactionAutoCompletedEvent: mock(),
-}));
+if (!Bun.env.INTEGRATION_TEST) {
+  mock.module("mongodb", () => ({
+    MongoClient: {
+      connect: () => ({
+        db: () => ({
+          collection: () => ({
+            find: () => ({ toArray: () => [] }),
+            findOne: () => {},
+            insertOne: () => {},
+            insertMany: () => {},
+            updateOne: () => {},
+            updateMany: () => {},
+            deleteOne: () => {},
+            deleteMany: () => {},
+          }),
+        }),
+      }),
+    },
+    ObjectId,
+  }));
+}

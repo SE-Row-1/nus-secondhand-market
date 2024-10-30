@@ -43,7 +43,7 @@ export async function findMany(dto: FindManyDto) {
 
 export async function findManyByIds(ids: string[]) {
   return await itemsCollection
-    .find({ id: { $in: ids }, deletedAt: null }, { projection: { _id: 0 } })
+    .find({ id: { $in: ids }, deletedAt: null })
     .toArray();
 }
 

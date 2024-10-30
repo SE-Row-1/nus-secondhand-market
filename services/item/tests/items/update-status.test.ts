@@ -3,7 +3,7 @@ import { publishTransactionAutoCompletedEvent } from "@/events/publish-transacti
 import { ItemStatus, ItemType, type Item } from "@/types";
 import { itemsCollection, transactionsCollection } from "@/utils/db";
 import { afterAll, describe, expect, it, mock } from "bun:test";
-import { me, someone } from "../test-utils/mock-data";
+import { me, someone } from "../test-utils/data";
 import { PUT } from "../test-utils/request";
 import { responsify } from "../test-utils/responsify";
 

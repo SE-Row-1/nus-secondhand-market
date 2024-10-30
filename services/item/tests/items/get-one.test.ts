@@ -1,7 +1,7 @@
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
-import { me } from "../test-utils/mock-data";
+import { me } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
 const mockFetch = mock().mockImplementation(

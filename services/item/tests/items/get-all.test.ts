@@ -2,7 +2,7 @@ import { ItemStatus, ItemType, type Item } from "@/types";
 import type { CamelToSnake } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { describe, expect, it } from "bun:test";
-import { me } from "../test-utils/mock-data";
+import { me } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
 type ExpectedResponse = CamelToSnake<{

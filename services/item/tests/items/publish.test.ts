@@ -3,7 +3,7 @@ import { itemsCollection } from "@/utils/db";
 import { afterAll, beforeAll, expect, it } from "bun:test";
 import { existsSync } from "fs";
 import { mkdir, rm } from "fs/promises";
-import { me } from "../test-utils/mock-data";
+import { me } from "../test-utils/data";
 import { FORM } from "../test-utils/request";
 
 beforeAll(async () => {

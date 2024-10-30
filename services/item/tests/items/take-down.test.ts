@@ -2,7 +2,7 @@ import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
 import { expect, it, mock } from "bun:test";
-import { me, someone } from "../test-utils/mock-data";
+import { me, someone } from "../test-utils/data";
 import { DELETE } from "../test-utils/request";
 
 it("takes down an item", async () => {

@@ -11,5 +11,6 @@ declare module "bun" {
     JWT_SECRET_KEY: string;
     RABBITMQ_URL: string;
     ACCOUNT_SERVICE_BASE_URL: string;
+    INTEGRATION_TEST?: boolean;
   }
 }

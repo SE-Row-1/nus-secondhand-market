@@ -5,7 +5,7 @@ import { itemsCollection } from "@/utils/db";
 import { beforeAll, expect, it, mock } from "bun:test";
 import { existsSync } from "fs";
 import { mkdir, rm } from "fs/promises";
-import { me, someone } from "../test-utils/mock-data";
+import { me, someone } from "../test-utils/data";
 import { PATCH_FORM } from "../test-utils/request";
 
 beforeAll(async () => {
