@@ -68,7 +68,7 @@ it("throws HTTPException 403 if user is not buyer", async () => {
   const promise = complete(transaction, participant1);
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toHaveProperty("status", 403);
 });
 
 it("throws HTTPException 409 if transaction is already completed", async () => {
@@ -89,7 +89,7 @@ it("throws HTTPException 409 if transaction is already completed", async () => {
   const promise = complete(transaction, participant2);
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toHaveProperty("status", 409);
 });
 
 it("throws HTTPException 409 if transaction is already cancelled", async () => {
@@ -110,5 +110,5 @@ it("throws HTTPException 409 if transaction is already cancelled", async () => {
   const promise = complete(transaction, participant2);
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toHaveProperty("status", 409);
 });

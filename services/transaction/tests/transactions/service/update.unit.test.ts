@@ -55,5 +55,5 @@ it("throws HTTPException 404 if transaction is not found", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toHaveProperty("status", 404);
 });

@@ -111,7 +111,7 @@ it("throws HTTPException 403 if user is buyer", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toHaveProperty("status", 403);
 });
 
 it("throws HTTPException 404 if buyer is not found", async () => {
@@ -140,7 +140,7 @@ it("throws HTTPException 404 if buyer is not found", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toHaveProperty("status", 404);
 });
 
 it("throws HTTPException 404 if item is not found", async () => {
@@ -165,7 +165,7 @@ it("throws HTTPException 404 if item is not found", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 404 }));
+  expect(promise).rejects.toHaveProperty("status", 404);
 });
 
 it("throws HTTPException 403 if user is not seller", async () => {
@@ -194,7 +194,7 @@ it("throws HTTPException 403 if user is not seller", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 403 }));
+  expect(promise).rejects.toHaveProperty("status", 403);
 });
 
 it("throws HTTPException 409 if item is not for sale", async () => {
@@ -223,7 +223,7 @@ it("throws HTTPException 409 if item is not for sale", async () => {
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toHaveProperty("status", 409);
 });
 
 it("throws HTTPException 409 if there is already a pending transaction", async () => {
@@ -261,5 +261,5 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
-  expect(promise).rejects.toEqual(expect.objectContaining({ status: 409 }));
+  expect(promise).rejects.toHaveProperty("status", 409);
 });
