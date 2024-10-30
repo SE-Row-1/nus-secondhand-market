@@ -113,6 +113,36 @@ services:
       - bridge
     restart: always
 
+  transaction:
+    build:
+      context: services/transaction
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    env_file:
+      - services/transaction/.env
+    networks:
+      - bridge
+    depends_on:
+      transaction-postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: always
+
+  transaction-postgres:
+    image: postgres
+    ports:
+      - 5433:5432
+    env_file:
+      - envs/transaction-postgres.env
+    volumes:
+      - ./services/transaction/database/development:/docker-entrypoint-initdb.d
+      - transaction-postgres-data:/var/lib/postgresql/data
+    networks:
+      - bridge
+    restart: always
+
   notification:
     build:
       context: services/notification
@@ -163,6 +193,7 @@ volumes:
   account-postgres-data:
   item-mongo-data:
   wishlist-mongo-data:
+  transaction-postgres-data:
   rabbitmq-data:
 
 
