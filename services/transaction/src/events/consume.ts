@@ -1,6 +1,7 @@
 import * as transactionsRepository from "@/transactions/repository";
 import type { Account, DetailedItem, Transaction } from "@/types";
 import { channel } from "./init";
+import { publishEvent } from "./publish";
 
 await consumeEvent("account", "account.updated.*", async (data) => {
   const account = data as Account;
@@ -33,9 +34,13 @@ await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   const newTransaction = await transactionsRepository.completeById(
     transaction.id,
   );
-  if (newTransaction) {
-    console.log(`Auto completed [Transaction ${transaction.id}]`);
+
+  if (!newTransaction) {
+    return;
   }
+
+  console.log(`Auto completed [Transaction ${transaction.id}]`);
+  publishEvent("transaction", "transaction.completed", newTransaction);
 });
 
 export async function consumeEvent(
