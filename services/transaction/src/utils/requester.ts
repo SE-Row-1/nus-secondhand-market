@@ -41,7 +41,7 @@ export function createRequester(service: keyof typeof serviceRegistry) {
       console.error(error);
       return {
         data: null,
-        error: new HTTPException(500, {
+        error: new HTTPException(502, {
           message: `Error when requesting endpoint ${endpoint}`,
         }),
       };

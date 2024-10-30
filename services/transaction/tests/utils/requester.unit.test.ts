@@ -13,9 +13,9 @@ afterAll(() => {
 });
 
 it("concatenates endpoint with correct base URL", async () => {
-  mockFetch.mockResolvedValue(
-    new Response(JSON.stringify({}), { status: 200 }),
-  );
+  mockFetch
+    .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }))
+    .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }));
 
   await createRequester("account")("/");
 
@@ -33,19 +33,19 @@ it("concatenates endpoint with correct base URL", async () => {
 });
 
 it("returns JSON response in camel case", async () => {
-  mockFetch.mockResolvedValue(
-    new Response(JSON.stringify({ foo_bar: [{ bar_baz: 0 }] }), {
+  mockFetch.mockResolvedValueOnce(
+    new Response(JSON.stringify({ foo_foo: [{ bar_bar: 0 }] }), {
       status: 200,
     }),
   );
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ data: { fooBar: [{ barBaz: 0 }] }, error: null });
+  expect(res).toEqual({ data: { fooFoo: [{ barBar: 0 }] }, error: null });
 });
 
 it("returns undefined if status is 204", async () => {
-  mockFetch.mockResolvedValue(new Response(null, { status: 204 }));
+  mockFetch.mockResolvedValueOnce(new Response(null, { status: 204 }));
 
   const res = await createRequester("account")("/");
 
@@ -53,7 +53,7 @@ it("returns undefined if status is 204", async () => {
 });
 
 it("returns HTTPException with upstream status code if not ok", async () => {
-  mockFetch.mockResolvedValue(
+  mockFetch.mockResolvedValueOnce(
     new Response(JSON.stringify({ error: "test" }), { status: 400 }),
   );
 
@@ -63,11 +63,11 @@ it("returns HTTPException with upstream status code if not ok", async () => {
   expect(res.error?.status).toEqual(400);
 });
 
-it("returns HTTPException 500 if fetch fails", async () => {
-  mockFetch.mockRejectedValue(new Error("test"));
+it("returns HTTPException 502 if fetch fails", async () => {
+  mockFetch.mockRejectedValueOnce(new Error("test"));
 
   const res = await createRequester("account")("/");
 
   expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
-  expect(res.error?.status).toEqual(500);
+  expect(res.error?.status).toEqual(502);
 });
