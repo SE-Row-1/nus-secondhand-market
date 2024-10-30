@@ -5,10 +5,10 @@ import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { itemsController } from "./items/controller";
-import { itemPacksController } from "./items/packs/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
+import { itemPacksController } from "./item-packs/controller";
 
 // Entry point of the application.
 const app = new Hono();

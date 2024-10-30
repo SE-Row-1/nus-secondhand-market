@@ -1,4 +1,5 @@
 import { HTTPException } from "hono/http-exception";
+import type { StatusCode } from "hono/utils/http-status";
 import type { PhotoStorageGateway } from "./types";
 
 /**
@@ -22,7 +23,7 @@ export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
     });
 
     if (!res.ok) {
-      throw new HTTPException(502, {
+      throw new HTTPException(res.status as StatusCode, {
         message: `Failed to upload photo "${photo.name}" to SM.MS`,
       });
     }
@@ -57,7 +58,7 @@ export class SmmsPhotoStorageGateway implements PhotoStorageGateway {
     );
 
     if (!res.ok) {
-      throw new HTTPException(502, {
+      throw new HTTPException(res.status as StatusCode, {
         message: `Failed to delete photo "${photoUrl}" from SM.MS`,
       });
     }

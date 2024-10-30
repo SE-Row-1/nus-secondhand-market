@@ -57,3 +57,13 @@ export type ItemPack = {
 };
 
 export type Item = SingleItem | ItemPack;
+
+export type Transaction = {
+  id: string;
+  item: Pick<Item, "id" | "name" | "price">;
+  buyer: Seller;
+  seller: Seller;
+  createdAt: string;
+  completedAt: string | null;
+  cancelledAt: string | null;
+};

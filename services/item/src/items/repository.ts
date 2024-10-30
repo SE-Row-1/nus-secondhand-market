@@ -1,16 +1,57 @@
-import { type Item, type ItemPack } from "@/types";
+import {
+  ItemStatus,
+  ItemType,
+  type Item,
+  type ItemPack,
+  type Seller,
+} from "@/types";
 import { itemsCollection } from "@/utils/db";
-import type { Document, Filter, FindOptions, WithId } from "mongodb";
+import { ObjectId, type Document, type WithId } from "mongodb";
 
-export async function find(filter: Filter<Item>, options?: FindOptions<Item>) {
-  return await itemsCollection.find(filter, options).toArray();
+type FindManyDto = {
+  type: ItemType | undefined;
+  status: ItemStatus | undefined;
+  sellerId: number | undefined;
+  limit: number;
+  cursor: string | undefined;
+};
+
+export async function findMany(dto: FindManyDto) {
+  const withIdItems = await itemsCollection
+    .find(
+      {
+        ...(dto.type && { type: dto.type }),
+        ...(dto.status !== undefined && { status: dto.status }),
+        ...(dto.sellerId && { "seller.id": dto.sellerId }),
+        ...(dto.cursor && { _id: { $lt: new ObjectId(dto.cursor) } }),
+        deletedAt: null,
+      },
+      { sort: { _id: -1 }, limit: dto.limit },
+    )
+    .toArray();
+
+  const nextCursor =
+    withIdItems.length < dto.limit
+      ? null
+      : withIdItems[withIdItems.length - 1]!._id;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const items = withIdItems.map(({ _id, ...item }) => item);
+
+  return { items, nextCursor };
 }
 
-export async function findOne(
-  filter: Filter<Item>,
-  options?: FindOptions<Item>,
-) {
-  return await itemsCollection.findOne(filter, options);
+export async function findManyByIds(ids: string[]) {
+  return await itemsCollection
+    .find({ id: { $in: ids }, deletedAt: null }, { projection: { _id: 0 } })
+    .toArray();
+}
+
+export async function findOneById(id: string) {
+  return await itemsCollection.findOne(
+    { id, deletedAt: null },
+    { projection: { _id: 0 } },
+  );
 }
 
 export async function insertOne(item: Item) {
@@ -18,28 +59,48 @@ export async function insertOne(item: Item) {
   return await itemsCollection.insertOne({ ...item });
 }
 
-export async function updateOne(filter: Filter<Item>, update: Partial<Item>) {
+export async function updateOneById(id: string, update: Partial<Item>) {
   return await itemsCollection.findOneAndUpdate(
-    filter,
+    { id, deletedAt: null },
     { $set: update },
     { projection: { _id: 0 }, returnDocument: "after" },
   );
 }
 
-export async function deleteOne(filter: Filter<Item>) {
-  return await itemsCollection.updateOne(filter, {
-    $set: { deletedAt: new Date() },
-  });
+export async function deleteOneById(id: string) {
+  return await itemsCollection.updateOne(
+    { id, deletedAt: null },
+    { $set: { deletedAt: new Date() } },
+  );
 }
 
-type SearchRepositoryDto = {
+export async function updateSeller(seller: Seller) {
+  return await itemsCollection.updateMany(
+    { "seller.id": seller.id },
+    {
+      $set: {
+        "seller.nickname": seller.nickname,
+        "seller.avatarUrl": seller.avatarUrl,
+      },
+    },
+  );
+}
+
+export async function deleteManyBySellerId(sellerId: number) {
+  return await itemsCollection.updateMany(
+    { "seller.id": sellerId, deletedAt: null },
+    { $set: { deletedAt: new Date() } },
+  );
+}
+
+type SearchDto = {
   q: string;
   limit: number;
-  cursor?: string;
-  threshold?: number;
+  cursor: string | undefined;
+  threshold: number | undefined;
 };
 
-export async function search(dto: SearchRepositoryDto) {
+export async function search(dto: SearchDto) {
   const pipeline: Document[] = [
     {
       $match: {
