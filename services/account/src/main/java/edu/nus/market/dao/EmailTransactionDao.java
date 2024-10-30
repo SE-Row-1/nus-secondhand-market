@@ -4,6 +4,7 @@ import edu.nus.market.pojo.data.EmailTransaction;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Repository
@@ -27,7 +28,7 @@ public interface EmailTransactionDao {
 
     // Update the created_at column of the email_transaction table
     @Select("UPDATE email_transaction SET created_at = #{time} WHERE id = #{id}::uuid")
-    void updateCreatedAt(String time, UUID id);
+    void updateCreatedAt(Timestamp time, UUID id);
 
     // clean table
     @Select("TRUNCATE TABLE email_transaction")

@@ -47,7 +47,7 @@ public class AccountController {
         }
 
         int userId = JwtTokenManager.decodeAccessToken(token).getId();
-        if (accountDao.getAccountById(userId).equals(null)){
+        if (accountDao.getAccountById(userId) == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
@@ -70,7 +70,7 @@ public class AccountController {
         }
         int userId = JwtTokenManager.decodeAccessToken(token).getId();
 
-        if (accountDao.getAccountById(userId).equals(null)){
+        if (accountDao.getAccountById(userId) == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
         if (userId != id){

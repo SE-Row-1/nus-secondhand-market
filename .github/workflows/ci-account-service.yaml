@@ -1,0 +1,48 @@
+name: CI for Account Service
+
+on:
+  push:
+    branches:
+      - main
+      - NSHM-126-CI-for-account
+    paths:
+      - services/account/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - services/account/**
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/account
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Start containers
+        run: |
+          docker compose -f docker-compose.test.yaml up -d --build
+
+      - name: Wait for test reports
+        run: |
+          for i in {1..30}; do
+            if [ -f ./reports/index.html ]; then
+              echo "Test report is ready!"
+              break
+            fi
+            echo "Waiting for test report to be generated..."
+            sleep 5
+          done
+          ls -lart reports
+
+      - name: Upload Test Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-reports
+          path: ${{ github.workspace }}/services/account/reports
