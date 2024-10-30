@@ -77,7 +77,7 @@ services:
     env_file:
       - envs/item-mongo.env
     volumes:
-      - ./services/item/database/dev:/docker-entrypoint-initdb.d
+      - ./services/item/database/development:/docker-entrypoint-initdb.d
       - item-mongo-data:/data/db
     networks:
       - bridge
