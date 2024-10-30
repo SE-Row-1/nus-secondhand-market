@@ -3,10 +3,10 @@ import { getAll } from "@/transactions/service";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { participant1 } from "../../test-utils/data";
 
-const mockSelectAll = spyOn(transactionsRepository, "selectAll");
+const mockSelectMany = spyOn(transactionsRepository, "selectMany");
 
 afterEach(() => {
-  mockSelectAll.mockClear();
+  mockSelectMany.mockClear();
 });
 
 afterAll(() => {
@@ -14,12 +14,12 @@ afterAll(() => {
 });
 
 it("returns transactions", async () => {
-  mockSelectAll.mockResolvedValueOnce([]);
+  mockSelectMany.mockResolvedValueOnce([]);
 
   const result = await getAll({ excludeCancelled: true, user: participant1 });
 
   expect(result).toEqual([]);
-  expect(mockSelectAll).toHaveBeenLastCalledWith({
+  expect(mockSelectMany).toHaveBeenLastCalledWith({
     itemId: undefined,
     excludeCancelled: true,
     participantId: participant1.id,

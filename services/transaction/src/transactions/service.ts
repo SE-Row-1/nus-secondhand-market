@@ -17,7 +17,7 @@ type GetAllDto = {
 };
 
 export async function getAll(dto: GetAllDto) {
-  return transactionsRepository.selectAll({
+  return transactionsRepository.selectMany({
     itemId: dto.itemId,
     participantId: dto.user.id,
     excludeCancelled: dto.excludeCancelled,

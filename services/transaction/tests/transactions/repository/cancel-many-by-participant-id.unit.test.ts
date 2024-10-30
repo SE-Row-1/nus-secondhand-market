@@ -1,4 +1,4 @@
-import { cancelByParticipantId } from "@/transactions/repository";
+import { cancelManyByParticipantId } from "@/transactions/repository";
 import { db } from "@/utils/db";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 
@@ -16,7 +16,7 @@ it("returns row count", async () => {
   const participantId = 1;
   mockQuery.mockResolvedValueOnce({ rowCount: 1 } as never);
 
-  const result = await cancelByParticipantId(participantId);
+  const result = await cancelManyByParticipantId(participantId);
 
   expect(result).toEqual(1);
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [

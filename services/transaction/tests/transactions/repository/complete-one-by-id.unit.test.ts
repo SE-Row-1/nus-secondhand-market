@@ -1,4 +1,4 @@
-import { completeById } from "@/transactions/repository";
+import { completeOneById } from "@/transactions/repository";
 import type { Transaction } from "@/types";
 import { db } from "@/utils/db";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
@@ -48,7 +48,7 @@ it("returns row count", async () => {
     ],
   } as never);
 
-  const result = await completeById(transaction.id);
+  const result = await completeOneById(transaction.id);
 
   expect(result).toEqual({ ...transaction, completedAt: expect.any(String) });
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [

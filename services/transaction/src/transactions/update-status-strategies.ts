@@ -32,7 +32,7 @@ const complete: Stragety = async (transaction, user) => {
     });
   }
 
-  const newTransaction = await transactionsRepository.completeById(
+  const newTransaction = await transactionsRepository.completeOneById(
     transaction.id,
   );
 
@@ -58,7 +58,7 @@ const cancel: Stragety = async (transaction, user) => {
     });
   }
 
-  const newTransaction = await transactionsRepository.cancelById(
+  const newTransaction = await transactionsRepository.cancelOneById(
     transaction.id,
   );
 

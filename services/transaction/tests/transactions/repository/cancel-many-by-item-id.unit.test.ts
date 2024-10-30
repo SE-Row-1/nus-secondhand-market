@@ -1,4 +1,4 @@
-import { cancelByItemId } from "@/transactions/repository";
+import { cancelManyByItemId } from "@/transactions/repository";
 import { db } from "@/utils/db";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 
@@ -16,7 +16,7 @@ it("returns row count", async () => {
   const itemId = crypto.randomUUID();
   mockQuery.mockResolvedValueOnce({ rowCount: 1 } as never);
 
-  const result = await cancelByItemId(itemId);
+  const result = await cancelManyByItemId(itemId);
 
   expect(result).toEqual(1);
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [itemId]);

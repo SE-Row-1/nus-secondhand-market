@@ -6,13 +6,13 @@ import type {
 } from "@/types";
 import { db } from "@/utils/db";
 
-type SelectAllDto = {
+type SelectManyDto = {
   itemId: string | undefined;
   participantId: number;
   excludeCancelled: boolean;
 };
 
-export async function selectAll(dto: SelectAllDto) {
+export async function selectMany(dto: SelectManyDto) {
   const { rows } = await db.query<DbTransaction>(
     `
       select *
@@ -89,7 +89,7 @@ export async function insertOne(dto: InsertDto) {
   return convertToTransaction(rows[0]!);
 }
 
-export async function completeById(id: string) {
+export async function completeOneById(id: string) {
   const { rows } = await db.query<DbTransaction>(
     `
       update transaction
@@ -105,7 +105,7 @@ export async function completeById(id: string) {
   return convertToTransaction(rows[0]!);
 }
 
-export async function cancelById(id: string) {
+export async function cancelOneById(id: string) {
   const { rows } = await db.query<DbTransaction>(
     `
       update transaction
@@ -143,7 +143,7 @@ export async function updateParticipant(partipant: Participant) {
   return rowCount1! + rowCount2!;
 }
 
-export async function cancelByParticipantId(participantId: number) {
+export async function cancelManyByParticipantId(participantId: number) {
   const { rowCount } = await db.query(
     `
       update transaction
@@ -171,7 +171,7 @@ export async function updateItem(item: SimplifiedItem) {
   return rowCount!;
 }
 
-export async function cancelByItemId(itemId: string) {
+export async function cancelManyByItemId(itemId: string) {
   const { rowCount } = await db.query(
     `
       update transaction

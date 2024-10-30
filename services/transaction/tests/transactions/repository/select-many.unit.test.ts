@@ -1,4 +1,4 @@
-import { selectAll } from "@/transactions/repository";
+import { selectMany } from "@/transactions/repository";
 import { db } from "@/utils/db";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { participant1, participant2 } from "../../test-utils/data";
@@ -39,7 +39,7 @@ it("returns transactions", async () => {
     ],
   } as never);
 
-  const result = await selectAll({
+  const result = await selectMany({
     itemId: undefined,
     participantId: 1,
     excludeCancelled: true,

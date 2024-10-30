@@ -6,11 +6,11 @@ import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { participant1, participant2 } from "../../test-utils/data";
 
-const mockCompleteById = spyOn(transactionsRepository, "completeById");
+const mockCompleteOneById = spyOn(transactionsRepository, "completeOneById");
 const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
-  mockCompleteById.mockClear();
+  mockCompleteOneById.mockClear();
   mockPublishEvent.mockClear();
 });
 
@@ -38,11 +38,11 @@ it("completes transaction", async () => {
     ...transaction,
     completedAt: new Date().toISOString(),
   };
-  mockCompleteById.mockResolvedValue(newTransaction);
+  mockCompleteOneById.mockResolvedValue(newTransaction);
 
   await complete(transaction, participant2);
 
-  expect(mockCompleteById).toHaveBeenLastCalledWith(transaction.id);
+  expect(mockCompleteOneById).toHaveBeenLastCalledWith(transaction.id);
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
     "transaction",
     "transaction.completed",
