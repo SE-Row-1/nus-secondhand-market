@@ -1,2 +1,3 @@
 [test]
 preload = ["./tests/preload"]
+coverageThreshold = 0.85
