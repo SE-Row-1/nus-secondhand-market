@@ -4,7 +4,7 @@ import { expect, it } from "bun:test";
 import { jwt1, participant1 } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
-const expectation = expect.arrayContaining([
+const expectedBody = expect.arrayContaining([
   {
     id: expect.any(String),
     buyer: {
@@ -28,7 +28,7 @@ const expectation = expect.arrayContaining([
   },
 ]);
 
-it("returns all of one's transactions by default", async () => {
+it("returns all transactions", async () => {
   const res = await GET("/transactions", {
     headers: {
       Cookie: `access_token=${jwt1}`,
@@ -37,7 +37,7 @@ it("returns all of one's transactions by default", async () => {
   const body = snakeToCamel(await res.json()) as Transaction[];
 
   expect(res.status).toEqual(200);
-  expect(body).toEqual(expectation);
+  expect(body).toEqual(expectedBody);
 
   let lastCreatedAt = Infinity;
   for (const transaction of body) {
@@ -51,30 +51,28 @@ it("returns all of one's transactions by default", async () => {
   }
 });
 
-it("filters transactions if given item_id", async () => {
-  const res = await GET(
-    "/transactions?item_id=10f33906-24df-449d-b4fb-fcc6c76606b6",
-    {
-      headers: {
-        Cookie: `access_token=${jwt1}`,
-      },
+it("filters transactions if item_id is given", async () => {
+  const itemId = "10f33906-24df-449d-b4fb-fcc6c76606b6";
+  const res = await GET(`/transactions?item_id=${itemId}`, {
+    headers: {
+      Cookie: `access_token=${jwt1}`,
     },
-  );
+  });
   const body = snakeToCamel(await res.json()) as Transaction[];
 
   expect(res.status).toEqual(200);
-  expect(body).toEqual(expectation);
+  expect(body).toEqual(expectedBody);
 
   for (const transaction of body) {
     const isSeller = participant1.id === transaction.seller.id;
     const isBuyer = participant1.id === transaction.buyer.id;
     expect(isSeller || isBuyer).toEqual(true);
 
-    expect(transaction.item.id).toEqual("10f33906-24df-449d-b4fb-fcc6c76606b6");
+    expect(transaction.item.id).toEqual(`${itemId}`);
   }
 });
 
-it("filters transactions if given exclude_cancelled", async () => {
+it("filters transactions if exclude_cancelled is given", async () => {
   const res = await GET("/transactions?exclude_cancelled=true", {
     headers: {
       Cookie: `access_token=${jwt1}`,
@@ -83,7 +81,7 @@ it("filters transactions if given exclude_cancelled", async () => {
   const body = snakeToCamel(await res.json()) as Transaction[];
 
   expect(res.status).toEqual(200);
-  expect(body).toEqual(expectation);
+  expect(body).toEqual(expectedBody);
 
   for (const transaction of body) {
     const isSeller = participant1.id === transaction.seller.id;

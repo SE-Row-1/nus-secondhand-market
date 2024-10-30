@@ -1,56 +1,50 @@
+import * as publish from "@/events/publish";
 import { ItemStatus, type Transaction } from "@/types";
 import { snakeToCamel } from "@/utils/case";
 import { db } from "@/utils/db";
-import { afterAll, afterEach, beforeEach, expect, it, mock } from "bun:test";
+import * as requester from "@/utils/requester";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
-import {
-  account1,
-  account2,
-  jwt1,
-  jwt2,
-  participant1,
-  participant2,
-} from "../test-utils/data";
+import { account2, jwt1, participant1, participant2 } from "../test-utils/data";
 import { POST } from "../test-utils/request";
 
 const mockAccountRequester = mock();
 const mockItemRequester = mock();
-const mockPublishEvent = mock();
-
-beforeEach(() => {
-  mock.module("@/utils/requester", () => ({
-    createRequester: (service: string) => {
-      if (service === "account") {
-        return mockAccountRequester;
-      }
-      return mockItemRequester;
-    },
-  }));
-
-  mock.module("@/events/publish", () => ({
-    publishEvent: mockPublishEvent,
-  }));
-});
+const mockRequester = spyOn(requester, "createRequester").mockImplementation(
+  (service: string) => {
+    if (service === "account") {
+      return mockAccountRequester;
+    }
+    return mockItemRequester;
+  },
+);
+const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
+  mockAccountRequester.mockClear();
+  mockItemRequester.mockClear();
+  mockRequester.mockClear();
+  mockPublishEvent.mockClear();
+});
+
+afterAll(async () => {
   mock.restore();
+  await db.query("delete from transaction where item_name = 'test'");
 });
 
-afterAll(() => {
-  db.query("delete from transaction where item_name = $1", ["test-create"]);
-});
-
-it("creates a transaction", async () => {
-  mockAccountRequester.mockResolvedValue({
+it("creates transaction", async () => {
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  const itemId = crypto.randomUUID();
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
-      id: itemId,
-      name: "test-create",
-      price: 100,
+      ...item,
       seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
@@ -60,7 +54,7 @@ it("creates a transaction", async () => {
   const res = await POST(
     "/transactions",
     {
-      item_id: itemId,
+      item_id: item.id,
       buyer_id: participant2.id,
     },
     {
@@ -74,11 +68,7 @@ it("creates a transaction", async () => {
   expect(res.status).toEqual(201);
   expect(body).toEqual({
     id: expect.any(String),
-    item: {
-      id: itemId,
-      name: "test-create",
-      price: 100,
-    },
+    item,
     seller: participant1,
     buyer: participant2,
     createdAt: expect.any(String),
@@ -90,7 +80,31 @@ it("creates a transaction", async () => {
     [body.id],
   );
   expect(rowCount).toEqual(1);
-  expect(mockPublishEvent).toHaveBeenCalledTimes(2);
+  expect(mockAccountRequester).toHaveBeenLastCalledWith("/accounts/2");
+  expect(mockItemRequester).toHaveBeenLastCalledWith(`/items/${item.id}`);
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    1,
+    "transaction",
+    "transaction.created",
+    { ...body, createdAt: new Date(body.createdAt) },
+  );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    2,
+    "transaction",
+    "transaction.auto-completed",
+    { ...body, createdAt: new Date(body.createdAt) },
+  );
+});
+
+it("returns 401 if not logged in", async () => {
+  const res = await POST("/transactions", {
+    item_id: crypto.randomUUID(),
+    buyer_id: participant2.id,
+  });
+  const body = await res.json();
+
+  expect(res.status).toEqual(401);
+  expect(body).toEqual({ error: expect.any(String) });
 });
 
 it("returns 403 if user is buyer", async () => {
@@ -113,16 +127,18 @@ it("returns 403 if user is buyer", async () => {
 });
 
 it("returns 404 if buyer is not found", async () => {
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
   mockAccountRequester.mockResolvedValueOnce({
     data: null,
     error: new HTTPException(404),
   });
-  const itemId = crypto.randomUUID();
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
-      id: itemId,
-      name: "test-create",
-      price: 100,
+      ...item,
       seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
@@ -132,8 +148,8 @@ it("returns 404 if buyer is not found", async () => {
   const res = await POST(
     "/transactions",
     {
-      item_id: itemId,
-      buyer_id: 999,
+      item_id: item.id,
+      buyer_id: participant2.id,
     },
     {
       headers: {
@@ -148,7 +164,7 @@ it("returns 404 if buyer is not found", async () => {
 });
 
 it("returns 404 if item is not found", async () => {
-  mockAccountRequester.mockResolvedValue({
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
@@ -176,17 +192,19 @@ it("returns 404 if item is not found", async () => {
 });
 
 it("returns 403 if user is not seller", async () => {
-  mockAccountRequester.mockResolvedValue({
-    data: account1,
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce({
+    data: account2,
     error: null,
   });
-  const itemId = crypto.randomUUID();
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
-      id: itemId,
-      name: "test-create",
-      price: 100,
-      seller: participant1,
+      ...item,
+      seller: participant2,
       status: ItemStatus.FOR_SALE,
     },
     error: null,
@@ -195,12 +213,12 @@ it("returns 403 if user is not seller", async () => {
   const res = await POST(
     "/transactions",
     {
-      item_id: itemId,
+      item_id: item.id,
       buyer_id: participant2.id,
     },
     {
       headers: {
-        Cookie: `access_token=${jwt2}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
@@ -211,16 +229,18 @@ it("returns 403 if user is not seller", async () => {
 });
 
 it("returns 409 if item is not for sale", async () => {
-  mockAccountRequester.mockResolvedValue({
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  const itemId = crypto.randomUUID();
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
-      id: crypto.randomUUID(),
-      name: "test-create",
-      price: 100,
+      ...item,
       seller: participant1,
       status: ItemStatus.SOLD,
     },
@@ -230,7 +250,7 @@ it("returns 409 if item is not for sale", async () => {
   const res = await POST(
     "/transactions",
     {
-      item_id: itemId,
+      item_id: item.id,
       buyer_id: participant2.id,
     },
     {
@@ -246,16 +266,18 @@ it("returns 409 if item is not for sale", async () => {
 });
 
 it("returns 409 if there is already a pending transaction", async () => {
-  mockAccountRequester.mockResolvedValue({
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce({
     data: account2,
     error: null,
   });
-  const itemId = crypto.randomUUID();
-  mockItemRequester.mockResolvedValue({
+  mockItemRequester.mockResolvedValueOnce({
     data: {
-      id: itemId,
-      name: "test-create",
-      price: 100,
+      ...item,
       seller: participant1,
       status: ItemStatus.FOR_SALE,
     },
@@ -264,9 +286,9 @@ it("returns 409 if there is already a pending transaction", async () => {
   await db.query(
     "insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
     [
-      itemId,
-      "test-create",
-      100,
+      item.id,
+      item.name,
+      item.price,
       participant1.id,
       participant1.nickname,
       participant1.avatarUrl,
@@ -279,7 +301,7 @@ it("returns 409 if there is already a pending transaction", async () => {
   const res = await POST(
     "/transactions",
     {
-      item_id: itemId,
+      item_id: item.id,
       buyer_id: participant2.id,
     },
     {
