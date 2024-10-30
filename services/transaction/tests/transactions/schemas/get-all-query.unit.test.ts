@@ -2,30 +2,30 @@ import { getAllQuerySchema } from "@/transactions/schemas";
 import { expect, it } from "bun:test";
 import * as v from "valibot";
 
-it("passes if given nothing", async () => {
+it("passes if itemId is not given", async () => {
   const result = await v.parseAsync(getAllQuerySchema, {});
 
   expect(result).toEqual({ excludeCancelled: false });
 });
 
 it("passes if itemId is valid", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {
-    itemId: "10f33906-24df-449d-b4fb-fcc6c76606b6",
-  });
+  const itemId = crypto.randomUUID();
 
-  expect(result).toEqual({
-    itemId: "10f33906-24df-449d-b4fb-fcc6c76606b6",
-    excludeCancelled: false,
-  });
+  const result = await v.parseAsync(getAllQuerySchema, { itemId });
+
+  expect(result).toEqual({ itemId, excludeCancelled: false });
 });
 
-it("throws if itemId is not UUID", async () => {
-  const fn = async () =>
-    await v.parseAsync(getAllQuerySchema, {
-      itemId: "invalid",
-    });
+it("throws ValiError if itemId is not UUID", async () => {
+  const promise = v.parseAsync(getAllQuerySchema, { itemId: "invalid" });
 
-  expect(fn).toThrow();
+  expect(promise).rejects.toBeInstanceOf(v.ValiError);
+});
+
+it("passes if excludeCancelled is not given", async () => {
+  const result = await v.parseAsync(getAllQuerySchema, {});
+
+  expect(result).toEqual({ excludeCancelled: false });
 });
 
 it("passes if excludeCancelled is true", async () => {
@@ -44,9 +44,9 @@ it("passes if excludeCancelled is false", async () => {
   expect(result).toEqual({ excludeCancelled: false });
 });
 
-it("passes if excludeCancelled is any string", async () => {
+it("passes if excludeCancelled is anything", async () => {
   const result = await v.parseAsync(getAllQuerySchema, {
-    excludeCancelled: "anything",
+    excludeCancelled: 1,
   });
 
   expect(result).toEqual({ excludeCancelled: false });
