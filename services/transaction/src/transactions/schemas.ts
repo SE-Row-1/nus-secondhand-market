@@ -35,7 +35,7 @@ export const updateParamSchema = v.object({
 
 export const updateJsonSchema = v.object({
   action: v.pipe(
-    v.string("status should be a string"),
+    v.string("action should be a string"),
     v.union(
       [v.literal("complete"), v.literal("cancel")],
       'action should be either "complete" or "cancel"',
