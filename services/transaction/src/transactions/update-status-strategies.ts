@@ -32,9 +32,11 @@ const complete: Stragety = async (transaction, user) => {
     });
   }
 
-  await transactionsRepository.completeById(transaction.id);
+  const newTransaction = await transactionsRepository.completeById(
+    transaction.id,
+  );
 
-  publishEvent("transaction", "transaction.completed", transaction);
+  publishEvent("transaction", "transaction.completed", newTransaction);
 };
 
 const cancel: Stragety = async (transaction, user) => {
@@ -56,7 +58,9 @@ const cancel: Stragety = async (transaction, user) => {
     });
   }
 
-  await transactionsRepository.cancelById(transaction.id);
+  const newTransaction = await transactionsRepository.cancelById(
+    transaction.id,
+  );
 
-  publishEvent("transaction", "transaction.cancelled", transaction);
+  publishEvent("transaction", "transaction.cancelled", newTransaction);
 };

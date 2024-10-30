@@ -30,8 +30,10 @@ await consumeEvent("item", "item.deleted", async (data) => {
 
 await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   const transaction = data as Transaction;
-  const count = await transactionsRepository.completeById(transaction.id);
-  if (count! > 0) {
+  const newTransaction = await transactionsRepository.completeById(
+    transaction.id,
+  );
+  if (newTransaction) {
     console.log(`Auto completed [Transaction ${transaction.id}]`);
   }
 });

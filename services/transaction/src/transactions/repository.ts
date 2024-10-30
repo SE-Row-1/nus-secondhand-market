@@ -90,33 +90,35 @@ export async function insertOne(dto: InsertDto) {
 }
 
 export async function completeById(id: string) {
-  const { rowCount } = await db.query(
+  const { rows } = await db.query<DbTransaction>(
     `
       update transaction
       set completed_at = now()
       where id = $1
         and completed_at is null
         and cancelled_at is null
+      returning *
     `,
     [id],
   );
 
-  return rowCount!;
+  return convertToTransaction(rows[0]!);
 }
 
 export async function cancelById(id: string) {
-  const { rowCount } = await db.query(
+  const { rows } = await db.query<DbTransaction>(
     `
       update transaction
       set cancelled_at = now()
       where id = $1
         and completed_at is null
         and cancelled_at is null
+      returning *
     `,
     [id],
   );
 
-  return rowCount!;
+  return convertToTransaction(rows[0]!);
 }
 
 export async function updateParticipant(partipant: Participant) {

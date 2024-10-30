@@ -34,6 +34,11 @@ it("completes transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   };
+  const newTransaction = {
+    ...transaction,
+    completedAt: new Date().toISOString(),
+  };
+  mockCompleteById.mockResolvedValue(newTransaction);
 
   await complete(transaction, participant2);
 
@@ -41,7 +46,7 @@ it("completes transaction", async () => {
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
     "transaction",
     "transaction.completed",
-    transaction,
+    newTransaction,
   );
 });
 

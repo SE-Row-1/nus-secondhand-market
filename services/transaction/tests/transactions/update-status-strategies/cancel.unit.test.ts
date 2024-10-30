@@ -34,6 +34,11 @@ it("cancels transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   };
+  const newTransaction = {
+    ...transaction,
+    cancelledAt: new Date().toISOString(),
+  };
+  mockCancelById.mockResolvedValue(newTransaction);
 
   await cancel(transaction, participant1);
 
@@ -41,7 +46,7 @@ it("cancels transaction", async () => {
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
     "transaction",
     "transaction.cancelled",
-    transaction,
+    newTransaction,
   );
 });
 

@@ -69,7 +69,11 @@ it("completes transaction", async () => {
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
     "transaction",
     "transaction.completed",
-    { ...transaction, createdAt: expect.any(Date) },
+    {
+      ...transaction,
+      createdAt: expect.any(Date),
+      completedAt: expect.any(Date),
+    },
   );
 });
 
@@ -126,7 +130,11 @@ it("cancels transaction", async () => {
   expect(mockPublishEvent).toHaveBeenLastCalledWith(
     "transaction",
     "transaction.cancelled",
-    { ...transaction, createdAt: expect.any(Date) },
+    {
+      ...transaction,
+      createdAt: expect.any(Date),
+      cancelledAt: expect.any(Date),
+    },
   );
 });
 
