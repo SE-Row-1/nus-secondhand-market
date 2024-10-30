@@ -1,14 +1,14 @@
-import type { DetailedAccount, SimplifiedAccount } from "@/types";
+import type { Account, Seller } from "@/types";
 import { camelToSnake } from "@/utils/case";
 import { sign } from "jsonwebtoken";
 
-const simplifiedMe: SimplifiedAccount = {
+const simplifiedMe: Seller = {
   id: 1,
   nickname: "me",
   avatarUrl: "https://example.com/me.jpg",
 };
 
-const detailedMe: DetailedAccount = {
+const detailedMe: Account = {
   ...simplifiedMe,
   email: "me@example.com",
   phoneCode: "65",
@@ -33,13 +33,13 @@ export const me = {
   jwt: meJwt,
 };
 
-const simplifiedSomeone: SimplifiedAccount = {
+const simplifiedSomeone: Seller = {
   id: 2,
   nickname: "someone",
   avatarUrl: "https://example.com/someone.jpg",
 };
 
-const detailedSomeone: DetailedAccount = {
+const detailedSomeone: Account = {
   ...simplifiedSomeone,
   email: "someone@example.com",
   phoneCode: "65",

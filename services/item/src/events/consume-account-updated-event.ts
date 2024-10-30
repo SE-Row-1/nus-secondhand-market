@@ -1,4 +1,4 @@
-import type { DetailedAccount } from "@/types";
+import type { Account } from "@/types";
 import { itemsCollection, transactionsCollection } from "@/utils/db";
 import { accountExchange, channel } from "./init";
 
@@ -12,9 +12,7 @@ export async function consumeAccountUpdatedEvent() {
       return;
     }
 
-    const updatedAccount = JSON.parse(
-      message.content.toString(),
-    ) as DetailedAccount;
+    const updatedAccount = JSON.parse(message.content.toString()) as Account;
 
     await itemsCollection.updateMany(
       {

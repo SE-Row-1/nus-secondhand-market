@@ -57,7 +57,7 @@ export async function create(dto: CreateDto) {
     });
   }
 
-  if (detailedItem.status !== ItemStatus.FOR_SALE) {
+  if (detailedItem.status !== ItemStatus.ForSale) {
     throw new HTTPException(409, { message: "Item is currently not for sale" });
   }
 

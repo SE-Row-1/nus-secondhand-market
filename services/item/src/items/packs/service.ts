@@ -1,5 +1,5 @@
 import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
-import { ItemType, type ItemPack, type SimplifiedAccount } from "@/types";
+import { ItemType, type ItemPack, type Seller } from "@/types";
 import { HTTPException } from "hono/http-exception";
 import * as itemsRepository from "../repository";
 import { CompositeItemPack } from "./composite";
@@ -9,7 +9,7 @@ type ComposeServiceDto = {
   description: string;
   discount: number;
   childrenIds: string[];
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function compose(dto: ComposeServiceDto) {
@@ -50,7 +50,7 @@ export async function compose(dto: ComposeServiceDto) {
 
 type DecomposeServiceDto = {
   id: string;
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function decompose(dto: DecomposeServiceDto) {

@@ -3,9 +3,9 @@ import { publishItemUpdatedEvent } from "@/events/publish-item-updated-event";
 import {
   ItemStatus,
   ItemType,
-  type DetailedAccount,
+  type Account,
   type Item,
-  type SimplifiedAccount,
+  type Seller,
 } from "@/types";
 import { createPhotoStorageGateway } from "@/utils/photo-storage-gateway";
 import { createRequester } from "@/utils/requester";
@@ -62,7 +62,7 @@ export async function getOne(dto: GetOneServiceDto) {
     throw new HTTPException(404, { message: "This item does not exist" });
   }
 
-  const seller = await createRequester("account")<DetailedAccount>(
+  const seller = await createRequester("account")<Account>(
     `/accounts/${item.seller.id}`,
   );
 
@@ -74,7 +74,7 @@ type PublishServiceDto = {
   description: string;
   price: number;
   photos: File[];
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function publish(dto: PublishServiceDto) {
@@ -111,7 +111,7 @@ type UpdateServiceDto = {
   price?: number;
   addedPhotos: File[];
   removedPhotoUrls: string[];
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function update(dto: UpdateServiceDto) {
@@ -180,8 +180,8 @@ export async function update(dto: UpdateServiceDto) {
 type UpdateStatusServiceDto = {
   id: string;
   status: ItemStatus;
-  buyer?: SimplifiedAccount;
-  user: SimplifiedAccount;
+  buyer?: Seller;
+  user: Seller;
 };
 
 export async function updateStatus(dto: UpdateStatusServiceDto) {
@@ -210,7 +210,7 @@ export async function updateStatus(dto: UpdateStatusServiceDto) {
 
 type TakeDownServiceDto = {
   id: string;
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function takeDown(dto: TakeDownServiceDto) {

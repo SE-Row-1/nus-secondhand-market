@@ -1,10 +1,10 @@
-import type { SimplifiedAccount } from "@/types";
+import type { Seller } from "@/types";
 import * as transactionsRepository from "./repository";
 
 type GetAllDto = {
   itemId?: string;
   excludeCancelled: boolean;
-  user: SimplifiedAccount;
+  user: Seller;
 };
 
 export async function getAll(dto: GetAllDto) {

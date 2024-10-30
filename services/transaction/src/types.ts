@@ -25,9 +25,9 @@ export type SimplifiedItem = {
 };
 
 export enum ItemStatus {
-  FOR_SALE,
-  DEALT,
-  SOLD,
+  ForSale,
+  Dealt,
+  Sold,
 }
 
 export type DetailedItem = SimplifiedItem & {

@@ -1,12 +1,12 @@
 import { publishTransactionAutoCompletedEvent } from "@/events/publish-transaction-auto-completed-event";
 import * as transactionsRepository from "@/transactions/repository";
-import { ItemStatus, type Item, type SimplifiedAccount } from "@/types";
+import { ItemStatus, type Item, type Seller } from "@/types";
 import { HTTPException } from "hono/http-exception";
 
 type Transition = (dto: {
   item: Item;
-  actor: SimplifiedAccount;
-  buyer?: SimplifiedAccount;
+  actor: Seller;
+  buyer?: Seller;
 }) => Promise<void>;
 
 export function createTransition(from: ItemStatus, to: ItemStatus) {

@@ -46,7 +46,7 @@ it("creates transaction", async () => {
     data: {
       ...item,
       seller: participant1,
-      status: ItemStatus.FOR_SALE,
+      status: ItemStatus.ForSale,
     },
     error: null,
   });
@@ -140,7 +140,7 @@ it("returns 404 if buyer is not found", async () => {
     data: {
       ...item,
       seller: participant1,
-      status: ItemStatus.FOR_SALE,
+      status: ItemStatus.ForSale,
     },
     error: null,
   });
@@ -205,7 +205,7 @@ it("returns 403 if user is not seller", async () => {
     data: {
       ...item,
       seller: participant2,
-      status: ItemStatus.FOR_SALE,
+      status: ItemStatus.ForSale,
     },
     error: null,
   });
@@ -242,7 +242,7 @@ it("returns 409 if item is not for sale", async () => {
     data: {
       ...item,
       seller: participant1,
-      status: ItemStatus.SOLD,
+      status: ItemStatus.Sold,
     },
     error: null,
   });
@@ -279,7 +279,7 @@ it("returns 409 if there is already a pending transaction", async () => {
     data: {
       ...item,
       seller: participant1,
-      status: ItemStatus.FOR_SALE,
+      status: ItemStatus.ForSale,
     },
     error: null,
   });
