@@ -4,6 +4,37 @@ This microservice handles all transactions between sellers and buyers against se
 
 ## Events
 
+### Transaction Created
+
+A transaction has been created.
+
+- Exchange: `transaction`
+- Topic: `transaction.created`
+
+```json
+{
+  "id": "d5132957-8655-4d4a-8e89-b7fa8e2afd57",
+  "item": {
+    "id": "5469a9e3-28d2-4926-8ffd-3ba3c10119ed",
+    "name": "item",
+    "price": 100
+  },
+  "seller": {
+    "id": 1,
+    "nickname": "seller",
+    "avatarUrl": "https://example.com/avatar.jpg"
+  },
+  "buyer": {
+    "id": 2,
+    "nickname": "buyer",
+    "avatarUrl": "https://example.com/avatar.jpg"
+  },
+  "createdAt": "2024-10-01T00:00:00Z",
+  "completedAt": null,
+  "cancelledAt": null
+}
+```
+
 ### Transaction Completed
 
 A transaction has been completed.
