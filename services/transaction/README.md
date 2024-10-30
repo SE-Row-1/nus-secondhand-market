@@ -6,10 +6,10 @@ This microservice handles all transactions between sellers and buyers against se
 
 ### Transaction Completed
 
+A transaction has been completed.
+
 - Exchange: `transaction`
 - Topic: `transaction.completed`
-
-A transaction has been completed.
 
 ```json
 {
@@ -37,10 +37,10 @@ A transaction has been completed.
 
 ### Transaction Cancelled
 
+A transaction has been cancelled.
+
 - Exchange: `transaction`
 - Topic: `transaction.cancelled`
-
-A transaction has been cancelled.
 
 ```json
 {
@@ -73,10 +73,10 @@ A transaction has been cancelled.
 > This event is only used internally. Subscribing to this event may result in unexpected behavior.
 > If you are interested in transactions' completion, please subscribe to `transaction.completed` instead.
 
+A transaction has been automatically marked as completed after 14 days of inactivity.
+
 - Exchange: `delayed`
 - Topic: `transaction.auto-completed`
-
-A transaction has been automatically marked as completed after 14 days of inactivity.
 
 ```json
 {
