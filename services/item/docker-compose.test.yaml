@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
+      - INTEGRATION_TEST=1
       - MONGO_URL=mongodb://mongo:27017
       - MONGO_DB_NAME=test
       - AWS_ACCESS_KEY_ID=test
