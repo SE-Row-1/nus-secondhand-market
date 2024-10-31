@@ -40,7 +40,10 @@ export function Wanters({ wanters }: Props) {
                 onDealt={() => setDealtWithId(wanter.id)}
               />
             ) : dealtWithId === wanter.id ? (
-              <MarkAsForSaleButton onSuccess={() => setDealtWithId(-1)} />
+              <MarkAsForSaleButton
+                transactionId={transaction!.id}
+                onSuccess={() => setDealtWithId(-1)}
+              />
             ) : dealtWithId !== wanter.id ? (
               <Button variant="outline" size="sm" disabled>
                 <BanIcon className="size-3.5 mr-1.5" />

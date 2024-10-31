@@ -14,26 +14,27 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/query/requester/client";
-import { ItemStatus } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCheckIcon, CheckIcon, Loader2Icon, XIcon } from "lucide-react";
-import { useParams } from "next/navigation";
 
-export function MarkAsSoldButton() {
-  const { id: itemId } = useParams<{ id: string }>();
+type Props = {
+  transactionId: string;
+};
 
+export function MarkAsSoldButton({ transactionId }: Props) {
   const queryClient = useQueryClient();
 
   const { toast } = useToast();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await clientRequester.put(`/items/${itemId}/status`, {
-        status: ItemStatus.Sold,
+      return await clientRequester.patch(`/transactions/${transactionId}`, {
+        action: "complete",
       });
     },
-    onSuccess: (item) => {
-      queryClient.setQueryData(["items", itemId], item);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
     onError: (error) => {
       toast({ variant: "destructive", description: error.message });
