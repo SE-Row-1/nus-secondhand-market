@@ -76,7 +76,27 @@ jobs:
       - name: Build
         run: bun run build
 
-  test:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/item
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test **/*.unit.test.ts --coverage
+
+  integration-test:
     runs-on: ubuntu-latest
 
     defaults:
@@ -90,5 +110,5 @@ jobs:
       - name: Start containers
         run: docker compose -f docker-compose.test.yaml up -d
 
-      - name: Test with coverage
-        run: docker exec nshm-item-test-api-1 bun test --coverage
+      - name: Run tests
+        run: docker exec nshm-item-test-api-1 bun test **/*.integration.test.ts --coverage
