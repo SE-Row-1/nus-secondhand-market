@@ -2,7 +2,7 @@ import { ItemStatus, ItemType, type Item } from "@/types";
 import type { CamelToSnake } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { describe, expect, it } from "bun:test";
-import { me } from "../test-utils/data";
+import { seller1 } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
 type ExpectedResponse = CamelToSnake<{
@@ -16,7 +16,7 @@ describe("Default behavior", () => {
     const body = (await res.json()) as ExpectedResponse;
 
     expect(res.status).toEqual(200);
-    expect(body.items).toBeArrayOfSize(8);
+    expect(body.items).toBeArrayOfSize(10);
     expect(body.items[0]).not.toContainKey("_id");
     expect(body.next_cursor).toMatch(/^[0-9a-z]{24}$/);
   });
@@ -31,7 +31,7 @@ describe("Default behavior", () => {
       description: "test",
       price: 100,
       photoUrls: [],
-      seller: me.simplifiedAccount,
+      seller: seller1,
       status: ItemStatus.ForSale,
       createdAt: new Date(),
       deletedAt: new Date(),

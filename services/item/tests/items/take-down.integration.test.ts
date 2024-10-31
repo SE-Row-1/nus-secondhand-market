@@ -1,15 +1,21 @@
-import { publishItemDeletedEvent } from "@/events/publish-item-deleted-event";
+import * as publish from "@/events/publish";
 import { ItemStatus, ItemType } from "@/types";
 import { itemsCollection } from "@/utils/db";
-import { expect, it, mock } from "bun:test";
-import { me, someone } from "../test-utils/data";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
+import { jwt1, seller1, seller2 } from "../test-utils/data";
 import { DELETE } from "../test-utils/request";
 
-it("takes down an item", async () => {
-  mock.module("@/events/publish-item-deleted-event", () => ({
-    publishItemDeletedEvent: mock(),
-  }));
+const mockPublishEvent = spyOn(publish, "publishEvent");
 
+afterEach(() => {
+  mockPublishEvent.mockClear();
+});
+
+afterAll(() => {
+  mock.restore();
+});
+
+it("takes down an item", async () => {
   const insertedId = crypto.randomUUID();
 
   await itemsCollection.insertOne({
@@ -19,7 +25,7 @@ it("takes down an item", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: me.simplifiedAccount,
+    seller: seller1,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -27,14 +33,14 @@ it("takes down an item", async () => {
 
   const res = await DELETE(`/items/${insertedId}`, {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = await res.text();
 
   expect(res.status).toEqual(204);
   expect(body).toBeEmpty();
-  expect(publishItemDeletedEvent).toHaveBeenCalledTimes(1);
+  expect(mockPublishEvent).toHaveBeenCalledTimes(1);
 
   const item = await itemsCollection.findOne({ id: insertedId });
   expect(item?.deletedAt).toBeDate();
@@ -45,7 +51,7 @@ it("takes down an item", async () => {
 it("returns 400 if ID is not a UUID", async () => {
   const res = await DELETE("/items/invalid", {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = await res.json();
@@ -84,7 +90,7 @@ it("returns 403 if user is not the seller", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: someone.simplifiedAccount,
+    seller: seller2,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
@@ -92,7 +98,7 @@ it("returns 403 if user is not the seller", async () => {
 
   const res = await DELETE(`/items/${insertedId}`, {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = await res.json();
@@ -106,7 +112,7 @@ it("returns 403 if user is not the seller", async () => {
 it("returns 404 if item is not found", async () => {
   const res = await DELETE("/items/00000000-0000-0000-0000-000000000000", {
     headers: {
-      Cookie: `access_token=${me.jwt}`,
+      Cookie: `access_token=${jwt1}`,
     },
   });
   const body = await res.json();

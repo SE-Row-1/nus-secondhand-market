@@ -1,11 +1,12 @@
 import { ItemStatus, ItemType } from "@/types";
+import { snakeToCamel } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
 import { afterAll, beforeAll, expect, it, mock } from "bun:test";
-import { me } from "../test-utils/data";
+import { account1, seller1 } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
 const mockFetch = mock().mockImplementation(
-  async () => new Response(JSON.stringify(me.detailedAccount), { status: 200 }),
+  async () => new Response(JSON.stringify(account1), { status: 200 }),
 );
 
 beforeAll(() => {
@@ -26,19 +27,21 @@ it("returns the item with the given ID", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: me.simplifiedAccount,
+    seller: seller1,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
   });
 
   const res = await GET(`/items/${insertedId}`);
-  const body = await res.json();
+  const body = snakeToCamel(await res.json());
 
   expect(res.status).toEqual(200);
   expect(body).toMatchObject({
     id: insertedId,
-    seller: me.detailed_account,
+    seller: {
+      id: seller1.id,
+    },
   });
   expect(body).not.toContainKey("_id");
 
@@ -55,7 +58,7 @@ it("ignores deleted items", async () => {
     description: "test",
     price: 100,
     photoUrls: [],
-    seller: me.simplifiedAccount,
+    seller: seller1,
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: new Date(),
