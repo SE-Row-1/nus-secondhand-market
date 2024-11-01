@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, XIcon } from "lucide-react";
 
 type Props = {
-  transactionId: string;
+  transactionId: string | undefined;
   onSuccess: () => void;
 };
 
@@ -18,6 +18,10 @@ export function MarkAsForSaleButton({ transactionId, onSuccess }: Props) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
+      if (!transactionId) {
+        throw new Error("You are too fast! Please wait a second...");
+      }
+
       return await clientRequester.patch(`/transactions/${transactionId}`, {
         action: "cancel",
       });
