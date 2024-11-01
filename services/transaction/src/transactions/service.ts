@@ -64,7 +64,11 @@ export async function create(dto: CreateDto) {
   const pendingTransaction =
     await transactionsRepository.selectLatestOneByItemId(dto.itemId);
 
-  if (pendingTransaction) {
+  if (
+    pendingTransaction &&
+    !pendingTransaction.completedAt &&
+    !pendingTransaction.cancelledAt
+  ) {
     throw new HTTPException(409, {
       message: "There is already a pending transaction for this item",
     });
