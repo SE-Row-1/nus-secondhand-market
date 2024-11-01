@@ -121,6 +121,9 @@ services:
       - 8084:8084
     env_file:
       - services/transaction/.env
+    volumes:
+      - ./services/transaction:/app
+      - /app/node_modules
     networks:
       - bridge
     depends_on:
