@@ -116,7 +116,7 @@ services:
   transaction:
     build:
       context: services/transaction
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 8084:8084
     env_file:
