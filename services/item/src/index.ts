@@ -1,14 +1,15 @@
+import "@/events/consume";
 import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { getConnInfo } from "hono/bun";
 import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
+import { itemPacksController } from "./item-packs/controller";
 import { itemsController } from "./items/controller";
 import { globalErrorHandler } from "./middleware/global-error-handler";
 import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
-import { itemPacksController } from "./item-packs/controller";
 
 // Entry point of the application.
 const app = new Hono();
