@@ -28,9 +28,9 @@ export function MarkAsSoldButton({ transactionId }: Props) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await clientRequester.patch(`/transactions/${transactionId}`, {
-        action: "complete",
-      });
+      return await clientRequester.post(
+        `/transactions/${transactionId}/complete`,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });

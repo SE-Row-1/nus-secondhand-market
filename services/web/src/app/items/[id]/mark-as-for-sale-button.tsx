@@ -22,9 +22,9 @@ export function MarkAsForSaleButton({ transactionId, onSuccess }: Props) {
         throw new Error("You are too fast! Please wait a second...");
       }
 
-      return await clientRequester.patch(`/transactions/${transactionId}`, {
-        action: "cancel",
-      });
+      return await clientRequester.post(
+        `/transactions/${transactionId}/cancel`,
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["items"] });
