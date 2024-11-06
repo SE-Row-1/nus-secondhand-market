@@ -14,8 +14,8 @@ afterAll(() => {
 
 it("concatenates endpoint with correct base URL", async () => {
   mockFetch
-    .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }))
-    .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }));
+    .mockResolvedValueOnce(Response.json({}, { status: 200 }))
+    .mockResolvedValueOnce(Response.json({}, { status: 200 }));
 
   await createRequester("account")("/accounts/1");
 
@@ -34,9 +34,7 @@ it("concatenates endpoint with correct base URL", async () => {
 
 it("returns camelCase JSON response", async () => {
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ foo_foo: [{ bar_bar: 0 }] }), {
-      status: 200,
-    }),
+    Response.json({ foo_foo: [{ bar_bar: 0 }] }, { status: 200 }),
   );
 
   const res = await createRequester("account")("/");
@@ -54,7 +52,7 @@ it("returns undefined if status is 204", async () => {
 
 it("returns HTTPException with upstream status code if not ok", async () => {
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ error: "test" }), { status: 400 }),
+    Response.json({ error: "test" }, { status: 400 }),
   );
 
   const res = await createRequester("account")("/");
