@@ -61,14 +61,15 @@ export async function create(dto: CreateDto) {
     throw new HTTPException(409, { message: "Item is currently not for sale" });
   }
 
-  const pendingTransaction =
+  const latestTransaction =
     await transactionsRepository.selectLatestOneByItemId(dto.itemId);
 
-  if (
-    pendingTransaction &&
-    !pendingTransaction.completedAt &&
-    !pendingTransaction.cancelledAt
-  ) {
+  const isPending =
+    latestTransaction &&
+    !latestTransaction.completedAt &&
+    !latestTransaction.cancelledAt;
+
+  if (isPending) {
     throw new HTTPException(409, {
       message: "There is already a pending transaction for this item",
     });
