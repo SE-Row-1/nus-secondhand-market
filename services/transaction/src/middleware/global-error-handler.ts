@@ -3,10 +3,10 @@ import { HTTPException } from "hono/http-exception";
 import { isValiError } from "valibot";
 
 /**
- * Centralized error handling for the entire application.
+ * Centralized error handling logic.
  *
- * In anywhere else, errors should not be directly returned as a response.
- * Rather, they should be thrown and then be caught and handled here.
+ * For anywhere else, errors must not be returned as a response.
+ * Rather, they should be thrown and end up being caught and handled here.
  */
 export function globalErrorHandler(error: unknown, c: Context) {
   if (isValiError(error)) {
@@ -14,8 +14,8 @@ export function globalErrorHandler(error: unknown, c: Context) {
   }
 
   if (error instanceof HTTPException) {
-    if (error.status >= 500 && error.cause) {
-      console.error(error.cause);
+    if (error.status >= 500) {
+      console.error(error);
     }
 
     return c.json({ error: error.message }, error.status);
