@@ -94,7 +94,7 @@ jobs:
         run: bun install
 
       - name: Run tests
-        run: bun test **/*.unit.test.ts --coverage
+        run: bun test unit.test.ts --coverage
 
   integration-test:
     runs-on: ubuntu-latest
@@ -111,4 +111,4 @@ jobs:
         run: docker compose -f docker-compose.test.yaml up -d
 
       - name: Run tests
-        run: docker exec nshm-item-test-api-1 bun test **/*.integration.test.ts --coverage
+        run: docker exec nshm-item-test-api-1 bun test integration.test.ts --coverage
