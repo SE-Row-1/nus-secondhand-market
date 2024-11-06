@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: account
+  namespace: nshm
+spec:
+  replicas: {{ .Values.account.replicas }}
+  selector:
+    matchLabels:
+      app: account
+  template:
+    metadata:
+      labels:
+        app: account
+    spec:
+      initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command: ["git", "clone", "https://github.com/SE-Row-1/nus-secondhand-market.git", "/scripts"]
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      - name: init-db
+        image: postgres:13
+        envFrom:
+          - secretRef:
+              name: account-secret
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            export PGPASSWORD=$POSTGRES_PASSWORD && \
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/account/database/1-schema.sql && \
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/account/database/2-seed.sql
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      containers:
+      - name: account
+        image: {{ .Values.account.image.repository }}:{{ .Values.account.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.account.resources.requests.memory }}
+            cpu: {{ .Values.account.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.account.resources.limits.memory }}
+            cpu: {{ .Values.account.resources.limits.cpu }}
+        envFrom:
+          - secretRef:
+              name: account-secret
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8081
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+      volumes:
+        - name: init-script
+          emptyDir: {}

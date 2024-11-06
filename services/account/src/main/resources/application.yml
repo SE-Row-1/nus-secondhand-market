@@ -35,6 +35,18 @@ logging:
     org.springframework.jdbc.core: DEBUG
     org.hibernate.SQL: DEBUG
 
+management:
+  health:
+    probes:
+      enablced: true
+    group:
+      liveness:
+        include: livenessState
+      readiness:
+        include: readinessState
+  endpoint:
+    health:
+      show-details: always
 app:
   queue:
     name: account_queue

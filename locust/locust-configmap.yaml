@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: locust-config
+  namespace: locust
+data:
+  locust.py: |
+    from locust import HttpUser, task, between
+
+    class NshmUser(HttpUser):
+        wait_time = between(1, 5)
+
+        @task
+        def web_service(self):
+            self.client.get("/")
+
+        @task
+        def account_service(self):
+            self.client.get("/api/accounts/1")
+
+        @task
+        def item_service(self):
+            self.client.get("/api/items")

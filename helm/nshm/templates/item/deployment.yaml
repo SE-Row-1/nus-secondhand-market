@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: item
+  namespace: nshm
+spec:
+  replicas: {{ .Values.item.replicas }}
+  selector:
+    matchLabels:
+      app: item
+  template:
+    metadata:
+      labels:
+        app: item
+    spec:
+      containers:
+      - name: item
+        image: {{ .Values.item.image.repository }}:{{ .Values.item.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.item.resources.requests.memory }}
+            cpu: {{ .Values.item.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.item.resources.limits.memory }}
+            cpu: {{ .Values.item.resources.limits.cpu }}
+        envFrom:
+          - secretRef:
+              name: item-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3

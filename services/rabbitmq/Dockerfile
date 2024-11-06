@@ -1,4 +1,4 @@
-FROM rabbitmq
+FROM rabbitmq:4-management
 
 WORKDIR /
 

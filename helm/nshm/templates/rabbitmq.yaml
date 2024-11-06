@@ -1,0 +1,24 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+  namespace: nshm
+spec:
+  image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+  rabbitmq:
+    additionalPlugins:
+      - rabbitmq_delayed_message_exchange
+  secretBackend:
+    externalSecret:
+      name: "rabbitmq-secret"
+  replicas: 3
+  resources:
+    requests:
+      cpu: 500m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  persistence:
+    storageClassName: gp3
+    storage: 10Gi
