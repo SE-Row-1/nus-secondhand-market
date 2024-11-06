@@ -44,7 +44,7 @@ services:
     env_file:
       - envs/account-postgres.env
     volumes:
-      - ./services/account/database:/docker-entrypoint-initdb.d
+      - ./services/account/database/dev:/docker-entrypoint-initdb.d
       - account-postgres-data:/var/lib/postgresql/data
     networks:
       - bridge
