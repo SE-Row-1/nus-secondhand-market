@@ -7,19 +7,19 @@ import { globalNotFoundHandler } from "./middleware/global-not-found-handler";
 import { transformCase } from "./middleware/transform-case";
 import { transactionsController } from "./transactions/controller";
 
-// Entry point of the application.
+// Entry point.
 const app = new Hono();
 
-// These middleware are applied to all routes.
+// Global middleware.
 app.use(logger(), secureHeaders(), transformCase());
 
-// Health check endpoint.
+// Probes.
 app.get("/healthz", (c) => c.text("ok"));
 
-// Register controllers.
+// Controllers.
 app.route("/transactions", transactionsController);
 
-// Register global handlers.
+// Global handlers.
 app.onError(globalErrorHandler);
 app.notFound(globalNotFoundHandler);
 
