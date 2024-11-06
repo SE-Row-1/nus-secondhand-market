@@ -29,16 +29,10 @@ export const createJsonSchema = v.object({
   ),
 });
 
-export const updateParamSchema = v.object({
+export const transitionParamSchema = v.object({
   id: v.pipe(v.string("id should be a string"), v.uuid("id should be a UUID")),
-});
-
-export const updateJsonSchema = v.object({
-  action: v.pipe(
-    v.string("action should be a string"),
-    v.union(
-      [v.literal("complete"), v.literal("cancel")],
-      'action should be either "complete" or "cancel"',
-    ),
+  action: v.union(
+    [v.literal("complete"), v.literal("cancel")],
+    'action should be either "complete" or "cancel"',
   ),
 });

@@ -3,23 +3,20 @@ import type { Participant, Transaction } from "@/types";
 import { HTTPException } from "hono/http-exception";
 import * as transactionsRepository from "./repository";
 
-type Stragety = (transaction: Transaction, actor: Participant) => Promise<void>;
-
-export const chooseStrategy = (action: "complete" | "cancel"): Stragety => {
-  if (action === "complete") {
-    return complete;
+export function chooseStategy(action: string) {
+  switch (action) {
+    case "complete":
+      return complete;
+    case "cancel":
+      return cancel;
+    default:
+      throw new HTTPException(500, {
+        message: `Unsupported action "${action}"`,
+      });
   }
+}
 
-  return cancel;
-};
-
-const complete: Stragety = async (transaction, user) => {
-  if (user.id !== transaction.buyer.id) {
-    throw new HTTPException(403, {
-      message: "Only buyer can complete transaction",
-    });
-  }
-
+async function complete(transaction: Transaction, actor: Participant) {
   if (transaction.completedAt) {
     throw new HTTPException(409, {
       message: "Transaction is already completed",
@@ -29,6 +26,12 @@ const complete: Stragety = async (transaction, user) => {
   if (transaction.cancelledAt) {
     throw new HTTPException(409, {
       message: "Transaction is already cancelled",
+    });
+  }
+
+  if (actor.id !== transaction.buyer.id) {
+    throw new HTTPException(403, {
+      message: "Only buyer can complete transaction",
     });
   }
 
@@ -37,15 +40,9 @@ const complete: Stragety = async (transaction, user) => {
   );
 
   publishEvent("transaction", "transaction.completed", newTransaction);
-};
+}
 
-const cancel: Stragety = async (transaction, user) => {
-  if (user.id !== transaction.seller.id) {
-    throw new HTTPException(403, {
-      message: "Only seller can cancel transaction",
-    });
-  }
-
+async function cancel(transaction: Transaction, actor: Participant) {
   if (transaction.completedAt) {
     throw new HTTPException(409, {
       message: "Transaction is already completed",
@@ -58,9 +55,15 @@ const cancel: Stragety = async (transaction, user) => {
     });
   }
 
+  if (actor.id !== transaction.seller.id) {
+    throw new HTTPException(403, {
+      message: "Only seller can cancel transaction",
+    });
+  }
+
   const newTransaction = await transactionsRepository.cancelOneById(
     transaction.id,
   );
 
   publishEvent("transaction", "transaction.cancelled", newTransaction);
-};
+}

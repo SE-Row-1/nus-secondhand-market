@@ -1,6 +1,6 @@
 import * as transactionsRepository from "@/transactions/repository";
-import { update } from "@/transactions/service";
-import * as strategies from "@/transactions/update-status-strategies";
+import { transition } from "@/transactions/service";
+import * as transitionModule from "@/transactions/transition";
 import type { Transaction } from "@/types";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
@@ -9,8 +9,8 @@ import { participant1 } from "../../test-utils/data";
 const mockSelectOneById = spyOn(transactionsRepository, "selectOneById");
 const mockStrategy = mock();
 const mockChooseStrategy = spyOn(
-  strategies,
-  "chooseStrategy",
+  transitionModule,
+  "chooseStategy",
 ).mockImplementation(() => mockStrategy);
 
 afterEach(() => {
@@ -23,35 +23,24 @@ afterAll(() => {
   mock.restore();
 });
 
-it("executes complete strategy", async () => {
+it("executes strategy", async () => {
   const id = crypto.randomUUID();
   mockSelectOneById.mockResolvedValueOnce({} as Transaction);
 
-  await update({ id, action: "complete", user: participant1 });
+  await transition({ id, user: participant1, action: "complete" });
 
   expect(mockSelectOneById).toHaveBeenLastCalledWith(id);
   expect(mockChooseStrategy).toHaveBeenLastCalledWith("complete");
   expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
 });
 
-it("executes cancel strategy", async () => {
-  const id = crypto.randomUUID();
-  mockSelectOneById.mockResolvedValueOnce({} as Transaction);
-
-  await update({ id, action: "cancel", user: participant1 });
-
-  expect(mockSelectOneById).toHaveBeenLastCalledWith(id);
-  expect(mockChooseStrategy).toHaveBeenLastCalledWith("cancel");
-  expect(mockStrategy).toHaveBeenLastCalledWith({}, participant1);
-});
-
 it("throws HTTPException 404 if transaction is not found", async () => {
   mockSelectOneById.mockResolvedValueOnce(undefined);
 
-  const promise = update({
+  const promise = transition({
     id: crypto.randomUUID(),
-    action: "complete",
     user: participant1,
+    action: "cancel",
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);

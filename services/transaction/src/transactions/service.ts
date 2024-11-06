@@ -8,7 +8,7 @@ import {
 import { createRequester } from "@/utils/requester";
 import { HTTPException } from "hono/http-exception";
 import * as transactionsRepository from "./repository";
-import { chooseStrategy } from "./update-status-strategies";
+import { chooseStategy } from "./transition";
 
 type GetAllDto = {
   itemId?: string;
@@ -98,19 +98,19 @@ export async function create(dto: CreateDto) {
   return transaction;
 }
 
-type UpdateDto = {
+type TransitionDto = {
   id: string;
-  action: "complete" | "cancel";
   user: Participant;
+  action: "complete" | "cancel";
 };
 
-export async function update(dto: UpdateDto) {
+export async function transition(dto: TransitionDto) {
   const transaction = await transactionsRepository.selectOneById(dto.id);
 
   if (!transaction) {
     throw new HTTPException(404, { message: "Transaction not found" });
   }
 
-  const updateStrategy = chooseStrategy(dto.action);
-  await updateStrategy(transaction, dto.user);
+  const strategy = chooseStategy(dto.action);
+  await strategy(transaction, dto.user);
 }

@@ -4,8 +4,7 @@ import { Hono } from "hono";
 import {
   createJsonSchema,
   getAllQuerySchema,
-  updateJsonSchema,
-  updateParamSchema,
+  transitionParamSchema,
 } from "./schemas";
 import * as transactionsService from "./service";
 
@@ -39,17 +38,15 @@ transactionsController.post(
   },
 );
 
-transactionsController.patch(
-  "/:id",
+transactionsController.post(
+  "/:id/:action",
   auth(true),
-  validator("param", updateParamSchema),
-  validator("json", updateJsonSchema),
+  validator("param", transitionParamSchema),
   async (c) => {
     const param = c.req.valid("param");
-    const json = c.req.valid("json");
     const user = c.var.user;
 
-    await transactionsService.update({ ...param, ...json, user });
+    await transactionsService.transition({ ...param, user });
 
     return c.body(null, 204);
   },
