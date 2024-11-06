@@ -85,5 +85,5 @@ export async function consumeEvent(
     }
   });
 
-  console.log(`Started to consume [Queue ${queue}]...`);
+  console.log(`Started to consume [Queue ${queue}]`);
 }
