@@ -19,7 +19,7 @@ export async function selectMany(dto: SelectManyDto) {
       from transaction
       where case when $1::uuid is null then true else item_id = $1 end
         and (buyer_id = $2 or seller_id = $2)
-        and ($3 = false or cancelled_at is null)
+        and case when $3 = true then cancelled_at is null else true end
       order by created_at desc
     `,
     [dto.itemId, dto.participantId, dto.excludeCancelled],
