@@ -59,20 +59,21 @@ public class AuthController {
     //Updating Account
     @PutMapping("/me/password")
     public ResponseEntity<Object> updateAccountPsw(@Valid @RequestBody UpdPswReq req, BindingResult bindingResult, @CookieValue(value = "access_token", required = false) String token){
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
+        }
+
         if (token == null || token.isEmpty()){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorMsg(ErrorMsgEnum.NOT_LOGGED_IN.ErrorMsg));
         }
+
         if (!JwtTokenManager.validateToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.UNAUTHORIZED_ACCESS.ErrorMsg));
         }
 
         int userId = JwtTokenManager.decodeAccessToken(token).getId();
-        if (accountDao.getAccountById(userId).equals(null)){
+        if (accountDao.getAccountById(userId) == (null)){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).header("Set-Cookie", cookieManager.deleteCookie().toString()).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
-        }
-
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_DATA_FORMAT.ErrorMsg));
         }
         return accountService.updatePasswordService(req, JwtTokenManager.decodeAccessToken(token).getId());
     }
