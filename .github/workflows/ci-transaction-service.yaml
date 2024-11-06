@@ -90,6 +90,13 @@ jobs:
       - name: Start containers
         run: docker compose -f docker-compose.test.yaml up -d --build
 
+      - name: Debug
+        run: |
+          docker exec nshm-transaction-test-api-1 ls -al
+          docker exec nshm-transaction-test-api-1 bun --version
+          docker exec nshm-transaction-test-api-1 bun --print Bun.env
+          docker exec nshm-transaction-test-api-1 ping -c 3 postgres
+
       - name: Run unit tests
         run: docker exec nshm-transaction-test-api-1 bun test unit.test.ts --coverage
 
