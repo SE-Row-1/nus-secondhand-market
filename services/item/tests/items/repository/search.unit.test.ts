@@ -21,10 +21,7 @@ it("searches items", async () => {
   ] as WithId<Item & { score: number }>[];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const items: Item[] = withIdItems.map(({ _id, score, ...rest }) => rest);
-  mockAggregate.mockReturnValueOnce(
-    // @ts-expect-error works
-    () => ({ toArray: () => withIdItems }) as never,
-  );
+  mockAggregate.mockReturnValueOnce({ toArray: () => withIdItems } as never);
 
   const result = await search({
     q: "test",
@@ -43,10 +40,7 @@ it("accepts filter", async () => {
   ] as WithId<Item & { score: number }>[];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const items: Item[] = withIdItems.map(({ _id, score, ...rest }) => rest);
-  mockAggregate.mockReturnValueOnce(
-    // @ts-expect-error works
-    () => ({ toArray: () => withIdItems }) as never,
-  );
+  mockAggregate.mockReturnValueOnce({ toArray: () => withIdItems } as never);
 
   const result = await search({
     q: "test",
@@ -65,10 +59,7 @@ it("returns non-null cursor if there are more items", async () => {
   ] as WithId<Item & { score: number }>[];
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const items: Item[] = withIdItems.map(({ _id, score, ...rest }) => rest);
-  mockAggregate.mockReturnValueOnce(
-    // @ts-expect-error works
-    () => ({ toArray: () => withIdItems }) as never,
-  );
+  mockAggregate.mockReturnValueOnce({ toArray: () => withIdItems } as never);
 
   const result = await search({
     q: "test",

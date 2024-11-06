@@ -17,11 +17,22 @@ afterAll(() => {
 // There is some weird mock issue here; ignore this logic for now.
 it("updates item and returns it", async () => {
   const id = crypto.randomUUID();
-  // @ts-expect-error works
-  mockFindOneAndUpdate.mockReturnValue(() => ({}));
+  mockFindOneAndUpdate.mockResolvedValueOnce({} as WithId<Item>);
 
   const result = await updateOneById(id, { name: "test" });
 
   expect(result).toEqual({} as WithId<Item>);
-  expect(mockFindOneAndUpdate).toHaveBeenLastCalledWith();
+  expect(mockFindOneAndUpdate).toHaveBeenLastCalledWith(
+    {
+      id,
+      deletedAt: null,
+    },
+    {
+      $set: { name: "test" },
+    },
+    {
+      projection: { _id: 0 },
+      returnDocument: "after",
+    },
+  );
 });

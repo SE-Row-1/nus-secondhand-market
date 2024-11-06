@@ -15,6 +15,7 @@ afterAll(() => {
 it("saves and removes photo", async () => {
   const gateway = new S3PhotoStorageGateway();
   const photo = new File(["test"], "test.png") as unknown as File;
+  mockSend.mockImplementationOnce(async () => {});
 
   const photoUrl = await gateway.save(photo);
 
@@ -34,6 +35,8 @@ it("saves and removes photo", async () => {
       },
     }),
   );
+
+  mockSend.mockImplementationOnce(async () => {});
 
   await gateway.remove(photoUrl);
 
