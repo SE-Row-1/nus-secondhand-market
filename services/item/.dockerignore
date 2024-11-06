@@ -1,6 +1,6 @@
 *
-!/src
-!/tests
+!src
+!tests
 !bun.lockb
 !bunfig.toml
 !package.json
