@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: locust-ingress
+  namespace: locust
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: locust.nshm.store
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: locust-master
+                port:
+                  number: 8089

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification
+  namespace: nshm
+spec:
+  replicas: {{ .Values.notification.replicas }}
+  selector:
+    matchLabels:
+      app: notification
+  template:
+    metadata:
+      labels:
+        app: notification
+    spec:
+      containers:
+      - name: notification
+        image: {{ .Values.notification.image.repository }}:{{ .Values.notification.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.notification.resources.requests.memory }}
+            cpu: {{ .Values.notification.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.notification.resources.limits.memory }}
+            cpu: {{ .Values.notification.resources.limits.cpu }}
+        envFrom:
+          - secretRef:
+              name: notification-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8085
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3

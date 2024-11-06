@@ -1,0 +1,74 @@
+# Account service values
+account:
+  image:
+    repository: z1yoon/nshm-account
+    tag: 7181d51094cb1e60c1f5a669cb6ecaa18e32c810
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Item service values
+item:
+  image:
+    repository: z1yoon/nshm-item
+    tag: 971c9cdd19b81b219280418931f2b929eb2aac84
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Wishlist service values
+wishlist:
+  image:
+    repository: z1yoon/nshm-wishlist
+    tag: 3e801d81d1e977a8bac5a826d98d08087d4a5c00
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Web service values
+web:
+  image:
+    repository: z1yoon/nshm-web
+    tag: e4c2d79d7e2c4ba2cc12a51d0ca5feeb38852d7f
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+# Notification service values
+notification:
+  image:
+    repository: z1yoon/nshm-notification
+    tag: 4c30ac7579d0665d79a487840815d654b1f619d3
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+# Rabbitmq service values
+rabbitmq:
+  image:
+    repository: z1yoon/nshm-rabbitmq
+    tag: 02f7561840c2b6d431b269b363290c5bbf89757e

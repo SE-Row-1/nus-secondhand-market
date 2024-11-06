@@ -4,8 +4,12 @@ import { accountExchange, channel } from "./init";
 
 export async function consumeAccountUpdatedEvent() {
   const { queue } = await channel.assertQueue("item.account.updated");
+  console.log(`Asserted queue "${queue}"`);
 
   await channel.bindQueue(queue, accountExchange, "account.updated.*");
+  console.log(
+    `Bound queue "${queue}" to exchange "${accountExchange}" on topic "account.updated.*"`,
+  );
 
   channel.consume(queue, async (message) => {
     if (!message) {

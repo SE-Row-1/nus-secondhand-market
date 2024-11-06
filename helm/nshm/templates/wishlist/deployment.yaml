@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishlist
+  namespace: nshm
+spec:
+  replicas: {{ .Values.wishlist.replicas }}
+  selector:
+    matchLabels:
+      app: wishlist
+  template:
+    metadata:
+      labels:
+        app: wishlist
+    spec:
+      containers:
+      - name: wishlist
+        image: {{ .Values.wishlist.image.repository }}:{{ .Values.wishlist.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.wishlist.resources.requests.memory }}
+            cpu: {{ .Values.wishlist.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.wishlist.resources.limits.memory }}
+            cpu: {{ .Values.wishlist.resources.limits.cpu }}
+        envFrom:
+          - secretRef:
+              name: wishlist-secret
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8083
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3

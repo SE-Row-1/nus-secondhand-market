@@ -1,2 +1,3 @@
 .terraform/
 *.tfstate*
+modules/ec2/setup/*

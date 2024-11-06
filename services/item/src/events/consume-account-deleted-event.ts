@@ -3,8 +3,12 @@ import { accountExchange, channel } from "./init";
 
 export async function consumeAccountDeletedEvent() {
   const { queue } = await channel.assertQueue("item.account.deleted");
+  console.log(`Asserted queue "${queue}"`);
 
   await channel.bindQueue(queue, accountExchange, "account.deleted.*");
+  console.log(
+    `Bound queue "${queue}" to exchange "${accountExchange}" on topic "account.deleted.*"`,
+  );
 
   channel.consume(queue, async (message) => {
     if (!message) {

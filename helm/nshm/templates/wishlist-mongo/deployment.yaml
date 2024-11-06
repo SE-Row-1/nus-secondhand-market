@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishlist-mongo
+  namespace: nshm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wishlist-mongo
+  template:
+    metadata:
+      labels:
+        app: wishlist-mongo
+    spec:
+      initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command: ["git", "clone", "https://github.com/SE-Row-1/nus-secondhand-market.git", "/scripts"]
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      containers:
+        - name: wishlist-mongo
+          image: bitnami/mongodb:latest
+          ports:
+            - containerPort: 27017
+          envFrom:
+            - secretRef:
+                name: wishlist-mongo-secret
+          livenessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 27017
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d
+              subPath: services/wishlist/database/production
+
+      volumes:
+        - name: init-script
+          emptyDir: {}

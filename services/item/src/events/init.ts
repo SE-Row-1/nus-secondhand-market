@@ -8,11 +8,13 @@ export const { exchange: accountExchange } = await channel.assertExchange(
   "account",
   "topic",
 );
+console.log(`Asserted exchange "${accountExchange}"`);
 
 export const { exchange: itemExchange } = await channel.assertExchange(
   "item",
   "topic",
 );
+console.log(`Asserted exchange "${itemExchange}"`);
 
 export const { exchange: delayedExchange } = await channel.assertExchange(
   "delayed",
@@ -23,3 +25,4 @@ export const { exchange: delayedExchange } = await channel.assertExchange(
     },
   },
 );
+console.log(`Asserted exchange "${delayedExchange}"`);

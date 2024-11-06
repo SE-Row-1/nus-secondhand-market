@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	log.Print("Declared exchange \"notification\"")
 
 	err = startQueue[processors.EmailPayload](channel, "email")
 	if err != nil {
@@ -53,11 +54,13 @@ func startQueue[Payload interface{ Process() error }](ch *amqp.Channel, topic st
 	if err != nil {
 		return fmt.Errorf("failed to declare queue '%s'", queue.Name)
 	}
+	log.Printf("Declared queue \"%s\"", queue.Name)
 
 	err = ch.QueueBind(queue.Name, topic, "notification", false, nil)
 	if err != nil {
 		return fmt.Errorf("failed to bind queue '%s'", queue.Name)
 	}
+	log.Printf("Bound queue \"%s\" to exchange \"notification\" on topic \"%s\"", queue.Name, topic)
 
 	deliveries, err := ch.Consume(queue.Name, "", false, false, false, false, nil)
 	if err != nil {

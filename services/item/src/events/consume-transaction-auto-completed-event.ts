@@ -6,8 +6,12 @@ export async function consumeTransactionAutoCompletedEvent() {
   const { queue } = await channel.assertQueue(
     "transaction.transaction.auto-completed",
   );
+  console.log(`Asserted queue "${queue}"`);
 
   await channel.bindQueue(queue, delayedExchange, "transaction.auto-completed");
+  console.log(
+    `Bound queue "${queue}" to exchange "${delayedExchange}" on topic "transaction.auto-completed"`,
+  );
 
   channel.consume(queue, async (message) => {
     if (!message) {
