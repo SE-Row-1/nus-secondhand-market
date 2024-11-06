@@ -102,7 +102,11 @@ export async function completeOneById(id: string) {
     [id],
   );
 
-  return convertToTransaction(rows[0]!);
+  if (!rows[0]) {
+    return undefined;
+  }
+
+  return convertToTransaction(rows[0]);
 }
 
 export async function cancelOneById(id: string) {
@@ -118,7 +122,11 @@ export async function cancelOneById(id: string) {
     [id],
   );
 
-  return convertToTransaction(rows[0]!);
+  if (!rows[0]) {
+    return undefined;
+  }
+
+  return convertToTransaction(rows[0]);
 }
 
 export async function updateParticipant(partipant: Participant) {
