@@ -24,8 +24,8 @@ export const createJsonSchema = v.object({
   buyerId: v.pipe(
     v.unknown(),
     v.transform(Number),
-    v.integer("buyer.id should be an integer"),
-    v.minValue(1, "buyer.id should be at least 1"),
+    v.integer("buyer_id should be an integer"),
+    v.minValue(1, "buyer_id should be at least 1"),
   ),
 });
 
