@@ -32,7 +32,7 @@ it("concatenates endpoint with correct base URL", async () => {
   );
 });
 
-it("returns camel-case JSON response", async () => {
+it("returns camelCase JSON response", async () => {
   mockFetch.mockResolvedValueOnce(
     new Response(JSON.stringify({ foo_foo: [{ bar_bar: 0 }] }), {
       status: 200,
