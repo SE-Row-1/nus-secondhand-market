@@ -1,8 +1,5 @@
 import "@/events/consume";
 import { Hono } from "hono";
-import { rateLimiter } from "hono-rate-limiter";
-import { getConnInfo } from "hono/bun";
-import { getCookie } from "hono/cookie";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { globalErrorHandler } from "./middleware/global-error-handler";
@@ -14,19 +11,7 @@ import { transactionsController } from "./transactions/controller";
 const app = new Hono();
 
 // These middleware are applied to all routes.
-app.use(
-  logger(),
-  rateLimiter({
-    windowMs: 1000 * 60,
-    limit: Bun.env.NODE_ENV === "test" ? 10000 : 100,
-    keyGenerator: (c) =>
-      getConnInfo(c).remote.address ??
-      getCookie(c, "access_token") ??
-      "anonymous",
-  }),
-  secureHeaders(),
-  transformCase(),
-);
+app.use(logger(), secureHeaders(), transformCase());
 
 // Health check endpoint.
 app.get("/healthz", (c) => c.text("ok"));

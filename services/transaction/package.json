@@ -9,7 +9,6 @@
   "dependencies": {
     "amqplib": "^0.10.4",
     "hono": "^4.6.7",
-    "hono-rate-limiter": "^0.4.0",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.13.1",
     "valibot": "^0.42.1"
