@@ -12,7 +12,7 @@ import { chooseStategy } from "./transition";
 
 type GetAllDto = {
   itemId?: string;
-  excludeCancelled: boolean;
+  isCancelled?: boolean | undefined;
   user: Participant;
 };
 
@@ -20,7 +20,7 @@ export async function getAll(dto: GetAllDto) {
   return transactionsRepository.selectMany({
     itemId: dto.itemId,
     participantId: dto.user.id,
-    excludeCancelled: dto.excludeCancelled,
+    isCancelled: dto.isCancelled,
   });
 }
 
@@ -54,15 +54,13 @@ export async function create(dto: CreateDto) {
     });
   }
 
-  const latestTransaction =
-    await transactionsRepository.selectLatestOneByItemId(dto.itemId);
+  const pendingTransactions = await transactionsRepository.selectMany({
+    itemId: dto.itemId,
+    isCompleted: false,
+    isCancelled: false,
+  });
 
-  const isPending =
-    latestTransaction &&
-    !latestTransaction.completedAt &&
-    !latestTransaction.cancelledAt;
-
-  if (isPending) {
+  if (pendingTransactions.length > 0) {
     throw new HTTPException(409, {
       message: "There is already a pending transaction for this item",
     });

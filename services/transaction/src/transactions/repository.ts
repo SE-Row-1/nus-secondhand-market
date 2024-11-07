@@ -7,9 +7,10 @@ import type {
 import { db } from "@/utils/db";
 
 type SelectManyDto = {
-  itemId: string | undefined;
-  participantId: number;
-  excludeCancelled: boolean;
+  itemId?: string | undefined;
+  participantId?: number | undefined;
+  isCompleted?: boolean | undefined;
+  isCancelled?: boolean | undefined;
 };
 
 export async function selectMany(dto: SelectManyDto) {
@@ -18,11 +19,16 @@ export async function selectMany(dto: SelectManyDto) {
       select *
       from transaction
       where case when $1::uuid is null then true else item_id = $1 end
-        and (buyer_id = $2 or seller_id = $2)
-        and case when $3 = true then cancelled_at is null else true end
+        and case when $2::integer is null then true else (buyer_id = $2 or seller_id = $2) end
+        and case when $3::boolean is null then true else (
+          case when $3::boolean = true then completed_at is not null else completed_at is null end
+        ) end
+        and case when $4::boolean = null then true else (
+          case when $4::boolean = true then cancelled_at is not null else cancelled_at is null end
+        ) end
       order by created_at desc
     `,
-    [dto.itemId, dto.participantId, dto.excludeCancelled],
+    [dto.itemId, dto.participantId, dto.isCompleted, dto.isCancelled],
   );
 
   return rows.map(rowToTransaction);
@@ -36,25 +42,6 @@ export async function selectOneById(id: string) {
       where id = $1
     `,
     [id],
-  );
-
-  if (!rows[0]) {
-    return undefined;
-  }
-
-  return rowToTransaction(rows[0]);
-}
-
-export async function selectLatestOneByItemId(itemId: string) {
-  const { rows } = await db.query<DbTransaction>(
-    `
-      select *
-      from transaction
-      where item_id = $1
-      order by created_at desc
-      limit 1
-    `,
-    [itemId],
   );
 
   if (!rows[0]) {

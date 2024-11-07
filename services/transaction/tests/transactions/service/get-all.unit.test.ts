@@ -16,12 +16,13 @@ afterAll(() => {
 it("returns transactions", async () => {
   mockSelectMany.mockResolvedValueOnce([]);
 
-  const result = await getAll({ excludeCancelled: true, user: participant1 });
+  const result = await getAll({ user: participant1 });
 
   expect(result).toEqual([]);
   expect(mockSelectMany).toHaveBeenLastCalledWith({
     itemId: undefined,
-    excludeCancelled: true,
+    isCompleted: undefined,
+    isCancelled: undefined,
     participantId: participant1.id,
   });
 });

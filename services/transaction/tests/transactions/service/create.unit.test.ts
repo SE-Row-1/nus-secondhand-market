@@ -8,10 +8,7 @@ import { HTTPException } from "hono/http-exception";
 import { account2, participant1, participant2 } from "../../test-utils/data";
 
 const mockInsertOne = spyOn(transactionsRepository, "insertOne");
-const mockSelectLatestOneByItemId = spyOn(
-  transactionsRepository,
-  "selectLatestOneByItemId",
-);
+const mockSelectMany = spyOn(transactionsRepository, "selectMany");
 const mockAccountRequester = mock();
 const mockItemRequester = mock();
 const mockRequester = spyOn(requester, "createRequester").mockImplementation(
@@ -26,7 +23,7 @@ const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
   mockInsertOne.mockClear();
-  mockSelectLatestOneByItemId.mockClear();
+  mockSelectMany.mockClear();
   mockAccountRequester.mockClear();
   mockItemRequester.mockClear();
   mockRequester.mockClear();
@@ -43,7 +40,7 @@ it("creates transaction", async () => {
     name: "test",
     price: 100,
   };
-  mockSelectLatestOneByItemId.mockResolvedValueOnce(undefined);
+  mockSelectMany.mockResolvedValueOnce([]);
   mockInsertOne.mockResolvedValueOnce({
     id: crypto.randomUUID(),
     item,
@@ -77,7 +74,11 @@ it("creates transaction", async () => {
   });
   expect(mockAccountRequester).toHaveBeenLastCalledWith("/accounts/2");
   expect(mockItemRequester).toHaveBeenLastCalledWith(`/items/${item.id}`);
-  expect(mockSelectLatestOneByItemId).toHaveBeenLastCalledWith(item.id);
+  expect(mockSelectMany).toHaveBeenLastCalledWith({
+    itemId: item.id,
+    isCompleted: false,
+    isCancelled: false,
+  });
   expect(mockInsertOne).toHaveBeenLastCalledWith({
     item,
     seller: participant1,
@@ -208,15 +209,17 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
     seller: participant1,
     status: ItemStatus.ForSale,
   });
-  mockSelectLatestOneByItemId.mockResolvedValueOnce({
-    id: crypto.randomUUID(),
-    item,
-    seller: participant1,
-    buyer: participant2,
-    createdAt: new Date().toISOString(),
-    completedAt: null,
-    cancelledAt: null,
-  });
+  mockSelectMany.mockResolvedValueOnce([
+    {
+      id: crypto.randomUUID(),
+      item,
+      seller: participant1,
+      buyer: participant2,
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+      cancelledAt: null,
+    },
+  ]);
 
   const promise = create({
     itemId: item.id,

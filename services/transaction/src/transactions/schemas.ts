@@ -7,12 +7,21 @@ export const getAllQuerySchema = v.object({
       v.uuid("item_id should be a UUID"),
     ),
   ),
-  excludeCancelled: v.optional(
+  isCancelled: v.optional(
     v.pipe(
       v.unknown(),
-      v.transform((value) => value === "true"),
+      v.transform((value) => {
+        if (value === "true") {
+          return true;
+        }
+
+        if (value === "false") {
+          return false;
+        }
+
+        return undefined;
+      }),
     ),
-    false,
   ),
 });
 

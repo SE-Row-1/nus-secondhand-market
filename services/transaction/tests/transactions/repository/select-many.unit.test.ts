@@ -39,11 +39,7 @@ it("returns transactions", async () => {
     ],
   } as never);
 
-  const result = await selectMany({
-    itemId: undefined,
-    participantId: 1,
-    excludeCancelled: true,
-  });
+  const result = await selectMany({});
 
   expect(result).toHaveLength(1);
   expect(result[0]).toEqual({
@@ -57,7 +53,8 @@ it("returns transactions", async () => {
   });
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [
     undefined,
-    1,
-    true,
+    undefined,
+    undefined,
+    undefined,
   ]);
 });
