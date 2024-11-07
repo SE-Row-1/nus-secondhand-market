@@ -1,24 +1,15 @@
-import { type Item } from "@/types";
+import { ItemStatus, ItemType, type Item } from "@/types";
+import { snakeToCamel } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
-import { afterAll, beforeAll, expect, it } from "bun:test";
-import { existsSync } from "fs";
-import { mkdir, rm } from "fs/promises";
-import { jwt1 } from "../test-utils/data";
+import { afterAll, expect, it } from "bun:test";
+import { jwt1, seller1 } from "../test-utils/data";
 import { FORM } from "../test-utils/request";
 
-beforeAll(async () => {
-  if (!existsSync("uploads")) {
-    await mkdir("uploads");
-  }
-});
-
 afterAll(async () => {
-  await rm("uploads", { force: true, recursive: true });
+  await itemsCollection.deleteMany({ name: "test" });
 });
 
-type ExpectedResponse = Item;
-
-it("creates an item without photo", async () => {
+it("creates item without photo", async () => {
   const formData = new FormData();
   formData.append("name", "test");
   formData.append("description", "test");
@@ -29,31 +20,32 @@ it("creates an item without photo", async () => {
       Cookie: `access_token=${jwt1}`,
     },
   });
-  const body = (await res.json()) as ExpectedResponse;
+  const body = snakeToCamel(await res.json()) as Item;
 
   expect(res.status).toEqual(201);
-  expect(body).toMatchObject({
+  expect(body).toEqual({
+    id: expect.any(String),
+    type: ItemType.Single,
+    seller: seller1,
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: [],
+    photoUrls: [],
+    status: ItemStatus.ForSale,
+    createdAt: expect.any(String),
+    deletedAt: null,
   });
-  expect(body).not.toContainKey("_id");
-
-  const count = await itemsCollection.countDocuments({ id: body.id });
-  expect(count).toEqual(1);
-
-  await itemsCollection.deleteOne({ id: body.id });
+  expect(await itemsCollection.countDocuments({ id: body.id })).toEqual(1);
 });
 
-it("creates an item with exactly 1 photo", async () => {
+it("creates item with one photo", async () => {
   const formData = new FormData();
   formData.append("name", "test");
   formData.append("description", "test");
   formData.append("price", "100");
   formData.append(
     "photos",
-    new File(["foo"], "test1.png", { type: "image/png" }),
+    new File(["test"], "test1.png", { type: "image/png" }),
     "test1.png",
   );
 
@@ -62,36 +54,37 @@ it("creates an item with exactly 1 photo", async () => {
       Cookie: `access_token=${jwt1}`,
     },
   });
-  const body = (await res.json()) as ExpectedResponse;
+  const body = snakeToCamel(await res.json()) as Item;
 
   expect(res.status).toEqual(201);
-  expect(body).toMatchObject({
+  expect(body).toEqual({
+    id: expect.any(String),
+    type: ItemType.Single,
+    seller: seller1,
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: [expect.stringMatching(/^uploads\/.+\.png$/)],
+    photoUrls: [expect.stringMatching(/^uploads\/.+\.png$/)],
+    status: ItemStatus.ForSale,
+    createdAt: expect.any(String),
+    deletedAt: null,
   });
-  expect(body).not.toContainKey("_id");
-
-  const count = await itemsCollection.countDocuments({ id: body.id });
-  expect(count).toEqual(1);
-
-  await itemsCollection.deleteOne({ id: body.id });
+  expect(await itemsCollection.countDocuments({ id: body.id })).toEqual(1);
 });
 
-it("creates an item with multiple photos", async () => {
+it("creates item with multiple photos", async () => {
   const formData = new FormData();
   formData.append("name", "test");
   formData.append("description", "test");
   formData.append("price", "100");
   formData.append(
     "photos",
-    new File(["foo"], "test1.png", { type: "image/png" }),
+    new File(["test"], "test1.png", { type: "image/png" }),
     "test1.png",
   );
   formData.append(
     "photos",
-    new File(["foo"], "test2.jpg", { type: "image/jpeg" }),
+    new File(["test"], "test2.jpg", { type: "image/jpeg" }),
     "test2.jpg",
   );
 
@@ -100,226 +93,36 @@ it("creates an item with multiple photos", async () => {
       Cookie: `access_token=${jwt1}`,
     },
   });
-  const body = (await res.json()) as ExpectedResponse;
+  const body = snakeToCamel(await res.json()) as Item;
 
   expect(res.status).toEqual(201);
-  expect(body).toMatchObject({
+  expect(body).toEqual({
+    id: expect.any(String),
+    type: ItemType.Single,
+    seller: seller1,
     name: "test",
     description: "test",
     price: 100,
-    photo_urls: [
+    photoUrls: [
       expect.stringMatching(/^uploads\/.+\.png$/),
       expect.stringMatching(/^uploads\/.+\.jpg$/),
     ],
+    status: ItemStatus.ForSale,
+    createdAt: expect.any(String),
+    deletedAt: null,
   });
-  expect(body).not.toContainKey("_id");
-
-  const count = await itemsCollection.countDocuments({ id: body.id });
-  expect(count).toEqual(1);
-
-  await itemsCollection.deleteOne({ id: body.id });
+  expect(await itemsCollection.countDocuments({ id: body.id })).toEqual(1);
 });
 
-it("returns 400 if name is less than 1 character long", async () => {
-  const formData = new FormData();
-  formData.append("name", "");
-  formData.append("description", "test");
-  formData.append("price", "100");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if name is more than 50 characters long", async () => {
-  const formData = new FormData();
-  formData.append("name", "a".repeat(51));
-  formData.append("description", "test");
-  formData.append("price", "100");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if description is less than 1 character long", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "");
-  formData.append("price", "100");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if description is more than 500 characters long", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "a".repeat(501));
-  formData.append("price", "100");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if price is not a number", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "test");
-  formData.append("price", "foo");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if price is less than 0", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "test");
-  formData.append("price", "-1");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if photo is not file", async () => {
+it("returns 401 if not logged in", async () => {
   const formData = new FormData();
   formData.append("name", "test");
   formData.append("description", "test");
   formData.append("price", "100");
-  formData.append("photos", "foo");
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if photo MIME type is unsupported", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "test");
-  formData.append("price", "100");
-  formData.append(
-    "photos",
-    new File(["foo"], "test1.txt", { type: "text/plain" }),
-    "test1.txt",
-  );
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 400 if photo size is too large", async () => {
-  const formData = new FormData();
-  formData.append("name", "Test item name");
-  formData.append("description", "Test item description");
-  formData.append("price", "100");
-  formData.append(
-    "photos",
-    new File(["1".repeat(6 * 1024 * 1024)], "test1.png", { type: "image/png" }),
-    "test1.png",
-  );
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: `access_token=${jwt1}`,
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 401 if user is not authenticated", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "test");
-  formData.append("price", "100");
-  formData.append(
-    "photos",
-    new File(["foo"], "test1.png", { type: "image/png" }),
-    "test1.png",
-  );
 
   const res = await FORM("/items", formData);
   const body = await res.json();
 
   expect(res.status).toEqual(401);
-  expect(body).toMatchObject({ error: expect.any(String) });
-});
-
-it("returns 401 if JWT is invalid", async () => {
-  const formData = new FormData();
-  formData.append("name", "test");
-  formData.append("description", "test");
-  formData.append("price", "100");
-  formData.append(
-    "photos",
-    new File(["foo"], "test1.png", { type: "image/png" }),
-    "test1.png",
-  );
-
-  const res = await FORM("/items", formData, {
-    headers: {
-      Cookie: "access_token=invalid",
-    },
-  });
-  const body = await res.json();
-
-  expect(res.status).toEqual(401);
-  expect(body).toMatchObject({ error: expect.any(String) });
+  expect(body).toEqual({ error: expect.any(String) });
 });

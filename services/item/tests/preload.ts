@@ -1,4 +1,6 @@
-import { mock } from "bun:test";
+import { afterAll, beforeAll, mock } from "bun:test";
+import { existsSync } from "fs";
+import { mkdir, rm } from "fs/promises";
 import { ObjectId } from "mongodb";
 
 mock.module("amqplib", () => ({
@@ -36,3 +38,15 @@ if (!Bun.env.INTEGRATION_TEST) {
     ObjectId,
   }));
 }
+
+beforeAll(async () => {
+  if (!existsSync("uploads")) {
+    await mkdir("uploads", { recursive: true });
+  }
+});
+
+afterAll(async () => {
+  if (existsSync("uploads")) {
+    await rm("uploads", { force: true, recursive: true });
+  }
+});

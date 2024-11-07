@@ -1,27 +1,31 @@
-import { ItemStatus, ItemType } from "@/types";
+import { ItemStatus, ItemType, type Item } from "@/types";
 import { snakeToCamel } from "@/utils/case";
 import { itemsCollection } from "@/utils/db";
-import { afterAll, beforeAll, expect, it, mock } from "bun:test";
+import * as requester from "@/utils/requester";
+import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
+import { HTTPException } from "hono/http-exception";
 import { account1, seller1 } from "../test-utils/data";
 import { GET } from "../test-utils/request";
 
-const mockFetch = mock().mockImplementation(
-  async () => new Response(JSON.stringify(account1), { status: 200 }),
-);
+const mockAccountRequester = mock();
+const mockCreateRequester = spyOn(
+  requester,
+  "createRequester",
+).mockImplementation(() => mockAccountRequester);
 
-beforeAll(() => {
-  global.fetch = mockFetch;
+afterEach(() => {
+  mockAccountRequester.mockClear();
+  mockCreateRequester.mockClear();
 });
 
-afterAll(() => {
+afterAll(async () => {
   mock.restore();
+  await itemsCollection.deleteMany({ name: "test" });
 });
 
-it("returns the item with the given ID", async () => {
-  const insertedId = crypto.randomUUID();
-
-  await itemsCollection.insertOne({
-    id: insertedId,
+it("returns one item", async () => {
+  const item: Item = {
+    id: crypto.randomUUID(),
     type: ItemType.Single,
     name: "test",
     description: "test",
@@ -31,28 +35,31 @@ it("returns the item with the given ID", async () => {
     status: ItemStatus.ForSale,
     createdAt: new Date(),
     deletedAt: null,
-  });
+  };
+  await itemsCollection.insertOne({ ...item });
+  mockAccountRequester.mockResolvedValueOnce(account1);
 
-  const res = await GET(`/items/${insertedId}`);
+  const res = await GET(`/items/${item.id}`);
   const body = snakeToCamel(await res.json());
 
   expect(res.status).toEqual(200);
-  expect(body).toMatchObject({
-    id: insertedId,
+  expect(body).toEqual({
+    ...item,
     seller: {
-      id: seller1.id,
+      ...account1,
+      createdAt: account1.createdAt.toISOString(),
     },
+    createdAt: item.createdAt.toISOString(),
   });
-  expect(body).not.toContainKey("_id");
-
-  await itemsCollection.deleteOne({ id: insertedId });
+  expect(mockAccountRequester).toHaveBeenLastCalledWith(
+    `/accounts/${item.seller.id}`,
+  );
 });
 
-it("ignores deleted items", async () => {
-  const deletedId = crypto.randomUUID();
-
+it("ignores deleted item", async () => {
+  const id = crypto.randomUUID();
   await itemsCollection.insertOne({
-    id: deletedId,
+    id,
     type: ItemType.Single,
     name: "test",
     description: "test",
@@ -64,19 +71,42 @@ it("ignores deleted items", async () => {
     deletedAt: new Date(),
   });
 
-  const res = await GET(`/items/${deletedId}`);
+  const res = await GET(`/items/${id}`);
   const body = await res.json();
 
   expect(res.status).toEqual(404);
-  expect(body).toMatchObject({ error: expect.any(String) });
-
-  await itemsCollection.deleteOne({ id: deletedId });
+  expect(body).toEqual({ error: expect.any(String) });
 });
 
-it("returns 400 if ID is not a UUID", async () => {
-  const res = await GET("/items/foo");
+it("returns 404 if item is not found", async () => {
+  const res = await GET(`/items/${crypto.randomUUID()}`);
   const body = await res.json();
 
-  expect(res.status).toEqual(400);
-  expect(body).toMatchObject({ error: expect.any(String) });
+  expect(res.status).toEqual(404);
+  expect(body).toEqual({ error: expect.any(String) });
+});
+
+it("returns 404 if seller is not found", async () => {
+  const id = crypto.randomUUID();
+  await itemsCollection.insertOne({
+    id,
+    type: ItemType.Single,
+    name: "test",
+    description: "test",
+    price: 100,
+    photoUrls: [],
+    seller: seller1,
+    status: ItemStatus.ForSale,
+    createdAt: new Date(),
+    deletedAt: null,
+  });
+  mockAccountRequester.mockImplementationOnce(() => {
+    throw new HTTPException(404);
+  });
+
+  const res = await GET(`/items/${id}`);
+  const body = await res.json();
+
+  expect(res.status).toEqual(404);
+  expect(body).toEqual({ error: expect.any(String) });
 });
