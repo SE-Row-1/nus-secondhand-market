@@ -74,7 +74,9 @@ it("creates transaction", async () => {
     [body.id],
   );
   expect(rowCount).toEqual(1);
-  expect(mockAccountRequester).toHaveBeenLastCalledWith("/accounts/2");
+  expect(mockAccountRequester).toHaveBeenLastCalledWith(
+    `/accounts/${participant2.id}`,
+  );
   expect(mockItemRequester).toHaveBeenLastCalledWith(`/items/${item.id}`);
   expect(mockPublishEvent).toHaveBeenNthCalledWith(
     1,
@@ -216,6 +218,51 @@ it("returns 409 if item is not for sale", async () => {
     seller: participant1,
     status: ItemStatus.Sold,
   });
+
+  const res = await POST(
+    "/transactions",
+    {
+      item_id: item.id,
+      buyer_id: participant2.id,
+    },
+    {
+      headers: {
+        Cookie: `access_token=${jwt1}`,
+      },
+    },
+  );
+  const body = await res.json();
+
+  expect(res.status).toEqual(409);
+  expect(body).toEqual({ error: expect.any(String) });
+});
+
+it("returns 409 if there is already a completed transaction", async () => {
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce(account2);
+  mockItemRequester.mockResolvedValueOnce({
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
+  });
+  await db.query(
+    "insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, completed_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, now())",
+    [
+      item.id,
+      item.name,
+      item.price,
+      participant1.id,
+      participant1.nickname,
+      participant1.avatarUrl,
+      participant2.id,
+      participant2.nickname,
+      participant2.avatarUrl,
+    ],
+  );
 
   const res = await POST(
     "/transactions",

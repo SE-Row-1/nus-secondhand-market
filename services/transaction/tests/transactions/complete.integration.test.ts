@@ -69,14 +69,14 @@ it("completes transaction", async () => {
     "transaction.completed",
     {
       ...transaction,
-      createdAt: expect.any(Date),
+      createdAt: new Date(transaction.createdAt),
       completedAt: expect.any(Date),
     },
   );
 });
 
 it("returns 401 if not logged in", async () => {
-  const res = await POST(`/transactions/${crypto.randomUUID()}/complete`, {});
+  const res = await POST(`/transactions/${crypto.randomUUID()}/complete`);
   const body = await res.json();
 
   expect(res.status).toEqual(401);

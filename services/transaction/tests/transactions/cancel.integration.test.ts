@@ -69,14 +69,14 @@ it("cancels transaction", async () => {
     "transaction.cancelled",
     {
       ...transaction,
-      createdAt: expect.any(Date),
+      createdAt: new Date(transaction.createdAt),
       cancelledAt: expect.any(Date),
     },
   );
 });
 
 it("returns 401 if not logged in", async () => {
-  const res = await POST(`/transactions/${crypto.randomUUID()}/complete`, {});
+  const res = await POST(`/transactions/${crypto.randomUUID()}/complete`);
   const body = await res.json();
 
   expect(res.status).toEqual(401);
@@ -89,7 +89,7 @@ it("returns 404 if transaction is not found", async () => {
     {},
     {
       headers: {
-        Cookie: `access_token=${jwt2}`,
+        Cookie: `access_token=${jwt1}`,
       },
     },
   );
