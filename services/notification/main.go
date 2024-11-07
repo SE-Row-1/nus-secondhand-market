@@ -9,7 +9,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	amqp "github.com/rabbitmq/amqp091-go"
-	"nshm.shop/notification/processors"
+	"nshm.store/notification/processors"
 )
 
 func main() {

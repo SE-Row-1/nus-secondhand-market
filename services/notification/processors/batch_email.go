@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/resend/resend-go/v2"
-	"nshm.shop/notification/utils"
+	"nshm.store/notification/utils"
 )
 
 type BatchEmailPayload struct {

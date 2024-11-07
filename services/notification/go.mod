@@ -1,4 +1,4 @@
-module nshm.shop/notification
+module nshm.store/notification
 
 go 1.23.2
 
