@@ -5,7 +5,7 @@ import "github.com/go-playground/validator/v10"
 var singleton *validator.Validate
 
 func init() {
-	singleton = validator.New()
+	singleton = validator.New(validator.WithRequiredStructEnabled())
 }
 
 func Validate(payload interface{}) error {
