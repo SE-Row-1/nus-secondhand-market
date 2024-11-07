@@ -14,12 +14,13 @@ afterAll(() => {
 
 it("saves and removes photo", async () => {
   const gateway = new SmmsPhotoStorageGateway();
-  const photo = new File(["test"], "test.png") as unknown as File;
+  const photo = new File(["test"], "test.png") as File;
   mockFetch.mockResolvedValueOnce(
-    new Response(
-      JSON.stringify({
+    Response.json(
+      {
+        message: "",
         data: { hash: "abc", url: "https://s2.loli.net/test.png" },
-      }),
+      },
       { status: 200 },
     ),
   );
@@ -36,7 +37,7 @@ it("saves and removes photo", async () => {
   });
 
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({}), { status: 200 }),
+    Response.json({ message: "" }, { status: 200 }),
   );
 
   await gateway.remove(photoUrl);
@@ -54,9 +55,9 @@ it("saves and removes photo", async () => {
 
 it("throws HTTPException with upstream status code if upload fails", async () => {
   const gateway = new SmmsPhotoStorageGateway();
-  const photo = new File(["test"], "test.png") as unknown as File;
+  const photo = new File(["test"], "test.png") as File;
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({}), { status: 400 }),
+    Response.json({ message: "" }, { status: 400 }),
   );
 
   const promise = gateway.save(photo);
@@ -67,18 +68,19 @@ it("throws HTTPException with upstream status code if upload fails", async () =>
 
 it("throws HTTPException with upstream status code if deletion fails", async () => {
   const gateway = new SmmsPhotoStorageGateway();
-  const photo = new File(["test"], "test.png") as unknown as File;
+  const photo = new File(["test"], "test.png") as File;
   mockFetch.mockResolvedValueOnce(
-    new Response(
-      JSON.stringify({
+    Response.json(
+      {
+        message: "",
         data: { hash: "abc", url: "https://s2.loli.net/test.png" },
-      }),
+      },
       { status: 200 },
     ),
   );
   const photoUrl = await gateway.save(photo);
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({}), { status: 400 }),
+    Response.json({ message: "" }, { status: 400 }),
   );
 
   const promise = gateway.remove(photoUrl);

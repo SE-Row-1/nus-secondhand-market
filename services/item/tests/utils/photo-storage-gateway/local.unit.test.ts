@@ -13,7 +13,7 @@ afterAll(async () => {
 
 it("saves and removes photo", async () => {
   const gateway = new LocalPhotoStorageGateway();
-  const photo = new File(["test"], "test.png") as unknown as File;
+  const photo = new File(["test"], "test.png") as File;
 
   const photoUrl = await gateway.save(photo);
 

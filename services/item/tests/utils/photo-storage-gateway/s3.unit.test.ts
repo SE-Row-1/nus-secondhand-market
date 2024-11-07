@@ -2,7 +2,9 @@ import { S3PhotoStorageGateway } from "@/utils/photo-storage-gateway/s3";
 import { S3Client } from "@aws-sdk/client-s3";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 
-const mockSend = spyOn(S3Client.prototype, "send");
+const mockSend = spyOn(S3Client.prototype, "send").mockImplementation(
+  async () => {},
+);
 
 afterEach(() => {
   mockSend.mockClear();
@@ -14,8 +16,7 @@ afterAll(() => {
 
 it("saves and removes photo", async () => {
   const gateway = new S3PhotoStorageGateway();
-  const photo = new File(["test"], "test.png") as unknown as File;
-  mockSend.mockImplementationOnce(async () => {});
+  const photo = new File(["test"], "test.png") as File;
 
   const photoUrl = await gateway.save(photo);
 
@@ -35,8 +36,6 @@ it("saves and removes photo", async () => {
       },
     }),
   );
-
-  mockSend.mockImplementationOnce(async () => {});
 
   await gateway.remove(photoUrl);
 

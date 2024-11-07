@@ -22,7 +22,7 @@ export async function GET(endpoint: string, init: RequestInit = {}) {
 
 export async function POST(
   endpoint: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> = {},
   init: RequestInit = {},
 ) {
   return await app.request(
@@ -42,7 +42,7 @@ export async function POST(
 
 export async function PUT(
   endpoint: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> = {},
   init: RequestInit = {},
 ) {
   return await app.request(
@@ -62,7 +62,7 @@ export async function PUT(
 
 export async function PATCH(
   endpoint: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> = {},
   init: RequestInit = {},
 ) {
   return await app.request(
