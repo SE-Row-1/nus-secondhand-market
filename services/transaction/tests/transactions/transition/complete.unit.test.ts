@@ -38,7 +38,7 @@ it("completes transaction", async () => {
     ...transaction,
     completedAt: new Date().toISOString(),
   };
-  mockCompleteOneById.mockResolvedValue(newTransaction);
+  mockCompleteOneById.mockResolvedValueOnce(newTransaction);
 
   await complete(transaction, participant2);
 

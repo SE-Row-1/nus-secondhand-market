@@ -38,7 +38,7 @@ it("cancels transaction", async () => {
     ...transaction,
     cancelledAt: new Date().toISOString(),
   };
-  mockCancelOneById.mockResolvedValue(newTransaction);
+  mockCancelOneById.mockResolvedValueOnce(newTransaction);
 
   await cancel(transaction, participant1);
 
