@@ -32,7 +32,9 @@ type CreateDto = {
 
 export async function create(dto: CreateDto) {
   if (dto.user.id === dto.buyerId) {
-    throw new HTTPException(403, { message: "You cannot buy your own item" });
+    throw new HTTPException(403, {
+      message: "You cannot specify yourself as buyer",
+    });
   }
 
   const [
