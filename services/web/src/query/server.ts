@@ -138,16 +138,13 @@ class Prefetcher {
   }
 
   public async prefetchLastTransaction(itemId: string) {
-    const queryKey = [
-      "transactions",
-      { item_id: itemId, exclude_cancelled: true },
-    ];
+    const queryKey = ["transactions", { item_id: itemId, is_cancelled: false }];
 
     await this.queryClient.prefetchQuery({
       queryKey,
       queryFn: async () => {
         const transactions = await serverRequester.get<Transaction[]>(
-          `/transactions?item_id=${itemId}&exclude_cancelled=true`,
+          `/transactions?item_id=${itemId}&is_cancelled=false`,
         );
         return transactions[0] ?? null;
       },
