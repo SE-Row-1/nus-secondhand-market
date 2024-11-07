@@ -53,17 +53,11 @@ it("creates transaction", async () => {
     completedAt: null,
     cancelledAt: null,
   });
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
 
   const result = await create({
@@ -120,17 +114,11 @@ it("throws HTTPException 404 if buyer is not found", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: null,
-    error: new HTTPException(404),
-  });
+  mockAccountRequester.mockRejectedValueOnce(new HTTPException(404));
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
 
   const promise = create({
@@ -149,14 +137,8 @@ it("throws HTTPException 404 if item is not found", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
-  mockItemRequester.mockResolvedValueOnce({
-    data: null,
-    error: new HTTPException(404),
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
+  mockItemRequester.mockRejectedValueOnce(new HTTPException(404));
 
   const promise = create({
     itemId: item.id,
@@ -174,17 +156,11 @@ it("throws HTTPException 403 if user is not seller", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant2,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant2,
+    status: ItemStatus.ForSale,
   });
 
   const promise = create({
@@ -203,17 +179,11 @@ it("throws HTTPException 409 if item is not for sale", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.Sold,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.Sold,
   });
 
   const promise = create({
@@ -232,17 +202,11 @@ it("throws HTTPException 409 if there is already a pending transaction", async (
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
   mockSelectLatestOneByItemId.mockResolvedValueOnce({
     id: crypto.randomUUID(),

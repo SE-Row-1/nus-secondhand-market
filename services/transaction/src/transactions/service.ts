@@ -37,21 +37,10 @@ export async function create(dto: CreateDto) {
     });
   }
 
-  const [
-    { data: buyerAccount, error: buyerAccountError },
-    { data: detailedItem, error: detailedItemError },
-  ] = await Promise.all([
+  const [buyerAccount, detailedItem] = await Promise.all([
     createRequester("account")<Account>(`/accounts/${dto.buyerId}`),
     createRequester("item")<DetailedItem>(`/items/${dto.itemId}`),
   ]);
-
-  if (!buyerAccount || buyerAccountError) {
-    throw new HTTPException(404, { message: "Buyer not found" });
-  }
-
-  if (!detailedItem || detailedItemError) {
-    throw new HTTPException(404, { message: "Item not found" });
-  }
 
   if (dto.user.id !== detailedItem.seller.id) {
     throw new HTTPException(403, {

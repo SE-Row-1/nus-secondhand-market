@@ -39,7 +39,7 @@ it("returns camelCase JSON response", async () => {
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ data: { fooFoo: [{ barBar: 0 }] }, error: null });
+  expect(res).toEqual({ fooFoo: [{ barBar: 0 }] });
 });
 
 it("returns undefined if status is 204", async () => {
@@ -47,18 +47,19 @@ it("returns undefined if status is 204", async () => {
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ data: undefined, error: null });
+  expect(res).toEqual(undefined);
 });
 
-it("returns HTTPException with upstream status code if not ok", async () => {
+it("throws HTTPException with upstream information if not ok", async () => {
   mockFetch.mockResolvedValueOnce(
     Response.json({ error: "test" }, { status: 400 }),
   );
 
-  const res = await createRequester("account")("/");
+  const promise = createRequester("account")("/");
 
-  expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
-  expect(res.error?.status).toEqual(400);
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toHaveProperty("status", 400);
+  expect(promise).rejects.toHaveProperty("message", "test");
 });
 
 it("throws Error if fetch fails", async () => {

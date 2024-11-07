@@ -21,20 +21,17 @@ export function createRequester(service: keyof typeof serviceRegistry) {
     const res = await fetch(baseUrl + endpoint, init);
 
     if (res.status === 204) {
-      return { data: undefined as T, error: null };
+      return undefined as T;
     }
 
     const json = await res.json();
 
     if (!res.ok) {
-      return {
-        data: null,
-        error: new HTTPException(res.status as StatusCode, {
-          message: (json as { error: string }).error,
-        }),
-      };
+      throw new HTTPException(res.status as StatusCode, {
+        message: (json as { error: string }).error,
+      });
     }
 
-    return { data: snakeToCamel(json) as T, error: null };
+    return snakeToCamel(json) as T;
   };
 }
