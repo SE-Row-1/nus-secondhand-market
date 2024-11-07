@@ -25,7 +25,7 @@ export async function selectMany(dto: SelectManyDto) {
     [dto.itemId, dto.participantId, dto.excludeCancelled],
   );
 
-  return rows.map(convertToTransaction);
+  return rows.map(rowToTransaction);
 }
 
 export async function selectOneById(id: string) {
@@ -42,7 +42,7 @@ export async function selectOneById(id: string) {
     return undefined;
   }
 
-  return convertToTransaction(rows[0]);
+  return rowToTransaction(rows[0]);
 }
 
 export async function selectLatestOneByItemId(itemId: string) {
@@ -61,7 +61,7 @@ export async function selectLatestOneByItemId(itemId: string) {
     return undefined;
   }
 
-  return convertToTransaction(rows[0]);
+  return rowToTransaction(rows[0]);
 }
 
 type InsertDto = Pick<Transaction, "item" | "seller" | "buyer">;
@@ -86,7 +86,7 @@ export async function insertOne(dto: InsertDto) {
     ],
   );
 
-  return convertToTransaction(rows[0]!);
+  return rowToTransaction(rows[0]!);
 }
 
 export async function completeOneById(id: string) {
@@ -106,7 +106,7 @@ export async function completeOneById(id: string) {
     return undefined;
   }
 
-  return convertToTransaction(rows[0]);
+  return rowToTransaction(rows[0]);
 }
 
 export async function cancelOneById(id: string) {
@@ -126,7 +126,7 @@ export async function cancelOneById(id: string) {
     return undefined;
   }
 
-  return convertToTransaction(rows[0]);
+  return rowToTransaction(rows[0]);
 }
 
 export async function updateParticipant(partipant: Participant) {
@@ -194,7 +194,7 @@ export async function cancelManyByItemId(itemId: string) {
   return rowCount!;
 }
 
-function convertToTransaction(row: DbTransaction) {
+function rowToTransaction(row: DbTransaction) {
   return {
     id: row.id,
     item: {
