@@ -18,6 +18,6 @@ describe("decodeJwt", () => {
     const promise = decodeJwt(jwt);
 
     expect(promise).rejects.toBeInstanceOf(HTTPException);
-    expect(promise).rejects.toEqual(expect.objectContaining({ status: 401 }));
+    expect(promise).rejects.toHaveProperty("status", 401);
   });
 });

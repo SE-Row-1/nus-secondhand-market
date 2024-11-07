@@ -13,28 +13,24 @@ afterAll(() => {
 });
 
 it("concatenates endpoint with correct base URL", async () => {
-  mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({}), { status: 200 }),
-  );
+  mockFetch.mockResolvedValueOnce(Response.json({}, { status: 200 }));
 
-  await createRequester("account")("/");
+  await createRequester("account")("/accounts/1");
 
   expect(mockFetch).toHaveBeenLastCalledWith(
-    Bun.env.ACCOUNT_SERVICE_BASE_URL + "/",
+    Bun.env.ACCOUNT_SERVICE_BASE_URL + "/accounts/1",
     {},
   );
 });
 
-it("returns JSON response in camel case", async () => {
+it("returns camelCase JSON response", async () => {
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ foo_foo: [{ bar_bar: 0 }] }), {
-      status: 200,
-    }),
+    Response.json({ foo_foo: [{ bar_bar: 0 }] }, { status: 200 }),
   );
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ data: { fooFoo: [{ barBar: 0 }] }, error: null });
+  expect(res).toEqual({ fooFoo: [{ barBar: 0 }] });
 });
 
 it("returns undefined if status is 204", async () => {
@@ -42,25 +38,26 @@ it("returns undefined if status is 204", async () => {
 
   const res = await createRequester("account")("/");
 
-  expect(res).toEqual({ data: undefined, error: null });
+  expect(res).toEqual(undefined);
 });
 
-it("returns HTTPException with upstream status code if not ok", async () => {
+it("throws HTTPException with upstream information if not ok", async () => {
   mockFetch.mockResolvedValueOnce(
-    new Response(JSON.stringify({ error: "test" }), { status: 400 }),
+    Response.json({ error: "test" }, { status: 400 }),
   );
 
-  const res = await createRequester("account")("/");
+  const promise = createRequester("account")("/");
 
-  expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
-  expect(res.error?.status).toEqual(400);
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toHaveProperty("status", 400);
+  expect(promise).rejects.toHaveProperty("message", "test");
 });
 
-it("returns HTTPException 502 if fetch fails", async () => {
+it("throws Error if fetch fails", async () => {
   mockFetch.mockRejectedValueOnce(new Error("test"));
 
-  const res = await createRequester("account")("/");
+  const promise = createRequester("account")("/");
 
-  expect(res).toEqual({ data: null, error: expect.any(HTTPException) });
-  expect(res.error?.status).toEqual(502);
+  expect(promise).rejects.toBeInstanceOf(Error);
+  expect(promise).rejects.toHaveProperty("message", "test");
 });

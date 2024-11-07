@@ -40,13 +40,9 @@ export async function getOne(dto: GetOneDto) {
     throw new HTTPException(404, { message: "Item not found" });
   }
 
-  const { data: account, error } = await createRequester("account")<Account>(
+  const account = await createRequester("account")<Account>(
     `/accounts/${item.seller.id}`,
   );
-
-  if (!account || error) {
-    throw new HTTPException(404, { message: "Seller not found" });
-  }
 
   return { ...item, seller: account };
 }

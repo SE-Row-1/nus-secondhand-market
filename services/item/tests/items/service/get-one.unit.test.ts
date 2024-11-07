@@ -38,7 +38,7 @@ it("gets item", async () => {
     deletedAt: null,
   };
   mockFindOneById.mockResolvedValueOnce(item as WithId<Item>);
-  mockAccountRequester.mockResolvedValueOnce({ data: account1, error: null });
+  mockAccountRequester.mockResolvedValueOnce(account1);
 
   const result = await getOne({ id: item.id });
 
@@ -72,10 +72,9 @@ it("throws HTTPException 404 if seller not found", async () => {
     deletedAt: null,
   };
   mockFindOneById.mockResolvedValueOnce(item as WithId<Item>);
-  mockAccountRequester.mockResolvedValueOnce({
-    data: null,
-    error: new HTTPException(404, { message: "test" }),
-  });
+  mockAccountRequester.mockRejectedValueOnce(
+    new HTTPException(404, { message: "test" }),
+  );
 
   const promise = getOne({ id: item.id });
 
