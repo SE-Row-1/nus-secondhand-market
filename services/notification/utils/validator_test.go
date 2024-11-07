@@ -1,25 +1,39 @@
 package utils
 
-import "testing"
+import (
+	"testing"
+)
 
-type testStruct struct {
+type payload struct {
 	Name string `validate:"required"`
 }
 
-// TestValidatorSucceed tests Validate with a valid struct.
-// It should not return an error.
-func TestValidatorSucceed(t *testing.T) {
-	err := Validate(testStruct{Name: "test"})
-	if err != nil {
-		t.Errorf("expected no error, got %v", err)
-	}
-}
+func TestValidate(t *testing.T) {
+	t.Parallel()
 
-// TestValidatorFail tests Validate with an invalid struct.
-// It should return an error.
-func TestValidatorFail(t *testing.T) {
-	err := Validate(testStruct{})
-	if err == nil {
-		t.Errorf("expected error, got nil")
+	cases := map[string]struct {
+		in   payload
+		want bool
+	}{
+		"pass": {
+			in:   payload{Name: "test"},
+			want: true,
+		},
+		"fail": {
+			in:   payload{Name: ""},
+			want: false,
+		},
+	}
+
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			got := Validate(c.in) == nil
+
+			if got != c.want {
+				t.Errorf("got %v, want %v", got, c.want)
+			}
+		})
 	}
 }
