@@ -62,7 +62,7 @@ it("returns 404 if item is not found", async () => {
   const body = await res.json();
 
   expect(res.status).toEqual(404);
-  expect(body).toMatchObject({ error: expect.any(String) });
+  expect(body).toEqual({ error: expect.any(String) });
 });
 
 it("returns 422 if item type is not single", async () => {
