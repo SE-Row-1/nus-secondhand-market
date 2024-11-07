@@ -11,7 +11,8 @@ create table transaction (
   buyer_avatar_url text,
   created_at timestamptz default now() not null,
   completed_at timestamptz default null,
-  cancelled_at timestamptz default null
+  cancelled_at timestamptz default null,
+  check (completed_at is null or cancelled_at is null)
 );
 
 insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, completed_at, cancelled_at) values
