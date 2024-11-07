@@ -1,15 +1,6 @@
 import { LocalPhotoStorageGateway } from "@/utils/photo-storage-gateway/local";
-import { afterAll, beforeAll, expect, it } from "bun:test";
+import { expect, it } from "bun:test";
 import { existsSync } from "fs";
-import { rm } from "fs/promises";
-
-beforeAll(async () => {
-  await rm("uploads", { force: true, recursive: true });
-});
-
-afterAll(async () => {
-  await rm("uploads", { force: true, recursive: true });
-});
 
 it("saves and removes photo", async () => {
   const gateway = new LocalPhotoStorageGateway();

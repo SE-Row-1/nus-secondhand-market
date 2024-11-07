@@ -2,15 +2,10 @@ import { createPhotoStorageGateway } from "@/utils/photo-storage-gateway";
 import { LocalPhotoStorageGateway } from "@/utils/photo-storage-gateway/local";
 import { S3PhotoStorageGateway } from "@/utils/photo-storage-gateway/s3";
 import { SmmsPhotoStorageGateway } from "@/utils/photo-storage-gateway/smms";
-import { afterAll, afterEach, expect, it } from "bun:test";
-import { rm } from "fs/promises";
+import { afterEach, expect, it } from "bun:test";
 
 afterEach(() => {
   Bun.env.NODE_ENV = "test";
-});
-
-afterAll(async () => {
-  await rm("uploads", { force: true, recursive: true });
 });
 
 it("returns local photo storage gateway in test environment", async () => {
