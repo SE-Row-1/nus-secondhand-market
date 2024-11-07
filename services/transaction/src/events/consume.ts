@@ -5,14 +5,18 @@ import { publishEvent } from "./publish";
 
 await consumeEvent("account", "account.updated.*", async (data) => {
   const account = data as Account;
+
   const count = await transactionsRepository.updateParticipant(account);
+
   console.log(`Updated [Participant ${account.id}] in ${count} transactions`);
 });
 
 await consumeEvent("account", "account.deleted.*", async (data) => {
   const accountId = Number(data);
+
   const count =
     await transactionsRepository.cancelManyByParticipantId(accountId);
+
   console.log(
     `Cancelled [Participant ${accountId}]'s ${count} pending transactions`,
   );
@@ -20,18 +24,23 @@ await consumeEvent("account", "account.deleted.*", async (data) => {
 
 await consumeEvent("item", "item.updated", async (data) => {
   const detailedItem = data as DetailedItem;
+
   const count = await transactionsRepository.updateItem(detailedItem);
+
   console.log(`Updated [Item ${detailedItem.id}] in ${count} transactions`);
 });
 
 await consumeEvent("item", "item.deleted", async (data) => {
   const itemId = data as string;
+
   const count = await transactionsRepository.cancelManyByItemId(itemId);
+
   console.log(`Cancelled [Item ${itemId}]'s ${count} pending transactions`);
 });
 
 await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   const transaction = data as Transaction;
+
   const newTransaction = await transactionsRepository.completeOneById(
     transaction.id,
   );
@@ -41,6 +50,7 @@ await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   }
 
   console.log(`Auto completed [Transaction ${transaction.id}]`);
+
   publishEvent("transaction", "transaction.completed", newTransaction);
 });
 
