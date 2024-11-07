@@ -38,17 +38,11 @@ it("creates transaction", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
 
   const res = await POST(
@@ -132,17 +126,11 @@ it("returns 404 if buyer is not found", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: null,
-    error: new HTTPException(404),
-  });
+  mockAccountRequester.mockRejectedValueOnce(new HTTPException(404));
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
 
   const res = await POST(
@@ -164,14 +152,8 @@ it("returns 404 if buyer is not found", async () => {
 });
 
 it("returns 404 if item is not found", async () => {
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
-  mockItemRequester.mockResolvedValueOnce({
-    data: null,
-    error: new HTTPException(404),
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
+  mockItemRequester.mockRejectedValueOnce(new HTTPException(404));
 
   const res = await POST(
     "/transactions",
@@ -197,17 +179,11 @@ it("returns 403 if user is not seller", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant2,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant2,
+    status: ItemStatus.ForSale,
   });
 
   const res = await POST(
@@ -234,17 +210,11 @@ it("returns 409 if item is not for sale", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.Sold,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.Sold,
   });
 
   const res = await POST(
@@ -271,17 +241,11 @@ it("returns 409 if there is already a pending transaction", async () => {
     name: "test",
     price: 100,
   };
-  mockAccountRequester.mockResolvedValueOnce({
-    data: account2,
-    error: null,
-  });
+  mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    data: {
-      ...item,
-      seller: participant1,
-      status: ItemStatus.ForSale,
-    },
-    error: null,
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
   });
   await db.query(
     "insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)",

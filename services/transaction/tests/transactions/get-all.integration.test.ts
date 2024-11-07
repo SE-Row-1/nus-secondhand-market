@@ -72,8 +72,8 @@ it("filters transactions if item_id is given", async () => {
   }
 });
 
-it("filters transactions if exclude_cancelled is given", async () => {
-  const res = await GET("/transactions?exclude_cancelled=true", {
+it("filters transactions if is_cancelled is given", async () => {
+  const res = await GET("/transactions?is_cancelled=false", {
     headers: {
       Cookie: `access_token=${jwt1}`,
     },
