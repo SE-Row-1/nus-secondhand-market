@@ -15,8 +15,8 @@ const mockChooseStrategy = spyOn(
 
 afterEach(() => {
   mockSelectOneById.mockClear();
-  mockChooseStrategy.mockClear();
   mockStrategy.mockClear();
+  mockChooseStrategy.mockClear();
 });
 
 afterAll(() => {
@@ -40,7 +40,7 @@ it("throws HTTPException 404 if transaction is not found", async () => {
   const promise = transition({
     id: crypto.randomUUID(),
     user: participant1,
-    action: "cancel",
+    action: "complete",
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);

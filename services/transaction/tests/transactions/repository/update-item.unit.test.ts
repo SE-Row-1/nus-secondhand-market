@@ -12,7 +12,7 @@ afterAll(() => {
   mock.restore();
 });
 
-it("returns row count", async () => {
+it("returns count of updated transactions", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "item",

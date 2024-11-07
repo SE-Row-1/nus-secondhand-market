@@ -1,32 +1,33 @@
 import * as publish from "@/events/publish";
 import * as transactionsRepository from "@/transactions/repository";
 import { create } from "@/transactions/service";
-import { ItemStatus } from "@/types";
+import { ItemStatus, type Transaction } from "@/types";
 import * as requester from "@/utils/requester";
 import { afterAll, afterEach, expect, it, mock, spyOn } from "bun:test";
 import { HTTPException } from "hono/http-exception";
 import { account2, participant1, participant2 } from "../../test-utils/data";
 
-const mockInsertOne = spyOn(transactionsRepository, "insertOne");
-const mockSelectMany = spyOn(transactionsRepository, "selectMany");
 const mockAccountRequester = mock();
 const mockItemRequester = mock();
-const mockRequester = spyOn(requester, "createRequester").mockImplementation(
-  (service: string) => {
-    if (service === "account") {
-      return mockAccountRequester;
-    }
-    return mockItemRequester;
-  },
-);
+const mockCreateRequester = spyOn(
+  requester,
+  "createRequester",
+).mockImplementation((service: string) => {
+  if (service === "account") {
+    return mockAccountRequester;
+  }
+  return mockItemRequester;
+});
+const mockSelectMany = spyOn(transactionsRepository, "selectMany");
+const mockInsertOne = spyOn(transactionsRepository, "insertOne");
 const mockPublishEvent = spyOn(publish, "publishEvent");
 
 afterEach(() => {
-  mockInsertOne.mockClear();
-  mockSelectMany.mockClear();
   mockAccountRequester.mockClear();
   mockItemRequester.mockClear();
-  mockRequester.mockClear();
+  mockCreateRequester.mockClear();
+  mockSelectMany.mockClear();
+  mockInsertOne.mockClear();
   mockPublishEvent.mockClear();
 });
 
@@ -35,52 +36,47 @@ afterAll(() => {
 });
 
 it("creates transaction", async () => {
-  const item = {
+  const transaction: Transaction = {
     id: crypto.randomUUID(),
-    name: "test",
-    price: 100,
-  };
-  mockSelectMany.mockResolvedValueOnce([]);
-  mockInsertOne.mockResolvedValueOnce({
-    id: crypto.randomUUID(),
-    item,
+    item: {
+      id: crypto.randomUUID(),
+      name: "test",
+      price: 100,
+    },
     seller: participant1,
     buyer: participant2,
     createdAt: new Date().toISOString(),
     completedAt: null,
     cancelledAt: null,
-  });
+  };
   mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
-    ...item,
+    ...transaction.item,
     seller: participant1,
     status: ItemStatus.ForSale,
   });
+  mockSelectMany.mockResolvedValueOnce([]);
+  mockInsertOne.mockResolvedValueOnce(transaction);
 
   const result = await create({
-    itemId: item.id,
+    itemId: transaction.item.id,
     buyerId: participant2.id,
     user: participant1,
   });
 
-  expect(result).toEqual({
-    id: expect.any(String),
-    item,
-    seller: participant1,
-    buyer: participant2,
-    createdAt: expect.any(String),
-    completedAt: null,
-    cancelledAt: null,
-  });
-  expect(mockAccountRequester).toHaveBeenLastCalledWith("/accounts/2");
-  expect(mockItemRequester).toHaveBeenLastCalledWith(`/items/${item.id}`);
+  expect(result).toEqual(transaction);
+  expect(mockAccountRequester).toHaveBeenLastCalledWith(
+    `/accounts/${participant2.id}`,
+  );
+  expect(mockItemRequester).toHaveBeenLastCalledWith(
+    `/items/${transaction.item.id}`,
+  );
   expect(mockSelectMany).toHaveBeenLastCalledWith({
-    itemId: item.id,
-    isCompleted: false,
+    itemId: transaction.item.id,
     isCancelled: false,
   });
   expect(mockInsertOne).toHaveBeenLastCalledWith({
-    item,
+    item: transaction.item,
     seller: participant1,
     buyer: participant2,
   });
@@ -160,14 +156,14 @@ it("throws HTTPException 403 if user is not seller", async () => {
   mockAccountRequester.mockResolvedValueOnce(account2);
   mockItemRequester.mockResolvedValueOnce({
     ...item,
-    seller: participant2,
+    seller: participant1,
     status: ItemStatus.ForSale,
   });
 
   const promise = create({
     itemId: item.id,
-    buyerId: participant2.id,
-    user: participant1,
+    buyerId: participant1.id,
+    user: participant2,
   });
 
   expect(promise).rejects.toBeInstanceOf(HTTPException);
@@ -186,6 +182,40 @@ it("throws HTTPException 409 if item is not for sale", async () => {
     seller: participant1,
     status: ItemStatus.Sold,
   });
+
+  const promise = create({
+    itemId: item.id,
+    buyerId: participant2.id,
+    user: participant1,
+  });
+
+  expect(promise).rejects.toBeInstanceOf(HTTPException);
+  expect(promise).rejects.toHaveProperty("status", 409);
+});
+
+it("throws HTTPException 409 if there is already a completed transaction", async () => {
+  const item = {
+    id: crypto.randomUUID(),
+    name: "test",
+    price: 100,
+  };
+  mockAccountRequester.mockResolvedValueOnce(account2);
+  mockItemRequester.mockResolvedValueOnce({
+    ...item,
+    seller: participant1,
+    status: ItemStatus.ForSale,
+  });
+  mockSelectMany.mockResolvedValueOnce([
+    {
+      id: crypto.randomUUID(),
+      item,
+      seller: participant1,
+      buyer: participant2,
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      cancelledAt: null,
+    },
+  ]);
 
   const promise = create({
     itemId: item.id,

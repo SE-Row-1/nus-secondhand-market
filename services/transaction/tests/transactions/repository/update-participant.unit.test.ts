@@ -13,7 +13,7 @@ afterAll(() => {
   mock.restore();
 });
 
-it("returns row count", async () => {
+it("returns count of updated transactions", async () => {
   mockQuery
     .mockResolvedValueOnce({ rowCount: 2 } as never)
     .mockResolvedValueOnce({ rowCount: 3 } as never);
@@ -21,7 +21,12 @@ it("returns row count", async () => {
   const result = await updateParticipant(participant1);
 
   expect(result).toEqual(5);
-  expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [
+  expect(mockQuery).toHaveBeenNthCalledWith(1, expect.any(String), [
+    participant1.id,
+    participant1.nickname,
+    participant1.avatarUrl,
+  ]);
+  expect(mockQuery).toHaveBeenNthCalledWith(2, expect.any(String), [
     participant1.id,
     participant1.nickname,
     participant1.avatarUrl,

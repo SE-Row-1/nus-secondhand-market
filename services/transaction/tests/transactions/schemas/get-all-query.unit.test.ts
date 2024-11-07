@@ -3,51 +3,54 @@ import { expect, it } from "bun:test";
 import * as v from "valibot";
 
 it("passes if no field is given", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {});
+  const { success, output } = await v.safeParseAsync(getAllQuerySchema, {});
 
-  expect(result).toEqual({});
+  expect(success).toBeTrue();
+  expect(output).toEqual({});
 });
 
 it("passes if itemId is valid", async () => {
   const itemId = crypto.randomUUID();
 
-  const result = await v.parseAsync(getAllQuerySchema, { itemId });
+  const { success, output } = await v.safeParseAsync(getAllQuerySchema, {
+    itemId,
+  });
 
-  expect(result).toEqual({ itemId });
+  expect(success).toBeTrue();
+  expect(output).toEqual({ itemId });
 });
 
-it("throws ValiError if itemId is not UUID", async () => {
-  const promise = v.parseAsync(getAllQuerySchema, { itemId: "invalid" });
+it("fails if itemId is not UUID", async () => {
+  const { success } = await v.safeParseAsync(getAllQuerySchema, {
+    itemId: "invalid",
+  });
 
-  expect(promise).rejects.toBeInstanceOf(v.ValiError);
-});
-
-it("passes if isCancelled is not given", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {});
-
-  expect(result).toEqual({});
+  expect(success).toBeFalse();
 });
 
 it("passes if isCancelled is true", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {
+  const { success, output } = await v.safeParseAsync(getAllQuerySchema, {
     isCancelled: "true",
   });
 
-  expect(result).toEqual({ isCancelled: true });
+  expect(success).toBeTrue();
+  expect(output).toEqual({ isCancelled: true });
 });
 
 it("passes if isCancelled is false", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {
+  const { success, output } = await v.safeParseAsync(getAllQuerySchema, {
     isCancelled: "false",
   });
 
-  expect(result).toEqual({ isCancelled: false });
+  expect(success).toBeTrue();
+  expect(output).toEqual({ isCancelled: false });
 });
 
-it("passes if isCancelled is anything", async () => {
-  const result = await v.parseAsync(getAllQuerySchema, {
-    isCancelled: 1,
+it("passes if isCancelled is anything else", async () => {
+  const { success, output } = await v.safeParseAsync(getAllQuerySchema, {
+    isCancelled: "anything",
   });
 
-  expect(result).toEqual({ isCancelled: undefined });
+  expect(success).toBeTrue();
+  expect(output).toEqual({ isCancelled: undefined });
 });

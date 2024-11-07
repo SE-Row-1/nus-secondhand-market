@@ -3,16 +3,12 @@ import type { Participant, Transaction } from "@/types";
 import { HTTPException } from "hono/http-exception";
 import * as transactionsRepository from "./repository";
 
-export function chooseStategy(action: string) {
+export function chooseStategy(action: "complete" | "cancel") {
   switch (action) {
     case "complete":
       return complete;
     case "cancel":
       return cancel;
-    default:
-      throw new HTTPException(500, {
-        message: `Unsupported action "${action}"`,
-      });
   }
 }
 

@@ -14,7 +14,7 @@ afterAll(() => {
   mock.restore();
 });
 
-it("returns row count", async () => {
+it("returns cancelled transaction", async () => {
   const transaction: Transaction = {
     id: crypto.randomUUID(),
     item: {
@@ -54,4 +54,14 @@ it("returns row count", async () => {
   expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [
     transaction.id,
   ]);
+});
+
+it("returns undefined if transaction is not found or not eligible", async () => {
+  const id = crypto.randomUUID();
+  mockQuery.mockResolvedValueOnce({ rows: [] } as never);
+
+  const result = await cancelOneById(id);
+
+  expect(result).toBeUndefined();
+  expect(mockQuery).toHaveBeenLastCalledWith(expect.any(String), [id]);
 });

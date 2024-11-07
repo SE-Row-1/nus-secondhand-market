@@ -12,7 +12,7 @@ afterAll(() => {
   mock.restore();
 });
 
-it("returns row count", async () => {
+it("returns count of cancelled transactions", async () => {
   const participantId = 1;
   mockQuery.mockResolvedValueOnce({ rowCount: 1 } as never);
 

@@ -13,7 +13,7 @@ afterAll(() => {
   mock.restore();
 });
 
-it("returns the inserted transaction", async () => {
+it("returns inserted transaction", async () => {
   const item = {
     id: crypto.randomUUID(),
     name: "test",
@@ -41,15 +41,15 @@ it("returns the inserted transaction", async () => {
 
   const result = await insertOne({
     item,
-    buyer: participant2,
     seller: participant1,
+    buyer: participant2,
   });
 
   expect(result).toEqual({
     id: expect.any(String),
     item,
-    buyer: participant2,
     seller: participant1,
+    buyer: participant2,
     createdAt: expect.any(String),
     completedAt: null,
     cancelledAt: null,

@@ -14,15 +14,20 @@ afterAll(() => {
 });
 
 it("returns transactions", async () => {
+  const itemId = crypto.randomUUID();
   mockSelectMany.mockResolvedValueOnce([]);
 
-  const result = await getAll({ user: participant1 });
+  const result = await getAll({
+    itemId: itemId,
+    isCancelled: false,
+    user: participant1,
+  });
 
   expect(result).toEqual([]);
   expect(mockSelectMany).toHaveBeenLastCalledWith({
-    itemId: undefined,
+    itemId,
     isCompleted: undefined,
-    isCancelled: undefined,
+    isCancelled: false,
     participantId: participant1.id,
   });
 });
