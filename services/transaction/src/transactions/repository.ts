@@ -23,7 +23,7 @@ export async function selectMany(dto: SelectManyDto) {
         and case when $3::boolean is null then true else (
           case when $3::boolean = true then completed_at is not null else completed_at is null end
         ) end
-        and case when $4::boolean = null then true else (
+        and case when $4::boolean is null then true else (
           case when $4::boolean = true then cancelled_at is not null else cancelled_at is null end
         ) end
       order by created_at desc
