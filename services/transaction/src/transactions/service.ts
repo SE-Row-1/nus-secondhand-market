@@ -50,17 +50,23 @@ export async function create(dto: CreateDto) {
 
   if (detailedItem.status !== ItemStatus.ForSale) {
     throw new HTTPException(409, {
-      message: "There is already a pending transaction for this item",
+      message: "This item is not for sale at the moment",
     });
   }
 
-  const pendingTransactions = await transactionsRepository.selectMany({
+  const acknowledgedTransactions = await transactionsRepository.selectMany({
     itemId: dto.itemId,
-    isCompleted: false,
     isCancelled: false,
   });
+  const acknowledgedTransaction = acknowledgedTransactions[0];
 
-  if (pendingTransactions.length > 0) {
+  if (acknowledgedTransaction && acknowledgedTransaction.completedAt) {
+    throw new HTTPException(409, {
+      message: "This item has already been sold",
+    });
+  }
+
+  if (acknowledgedTransaction) {
     throw new HTTPException(409, {
       message: "There is already a pending transaction for this item",
     });
