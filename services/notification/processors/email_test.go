@@ -1,9 +1,14 @@
 package processors
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestProcessEmailValidate(t *testing.T) {
 	t.Parallel()
+	assert := assert.New(t)
 
 	cases := map[string]struct {
 		in   EmailPayload
@@ -57,9 +62,7 @@ func TestProcessEmailValidate(t *testing.T) {
 
 			got := c.in.Process() == nil
 
-			if got != c.want {
-				t.Errorf("got %v, want %v", got, c.want)
-			}
+			assert.Equal(c.want, got, "got %v, want %v", got, c.want)
 		})
 	}
 }

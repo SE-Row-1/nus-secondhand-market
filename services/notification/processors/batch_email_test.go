@@ -1,116 +1,99 @@
 package processors
 
-import "testing"
+import (
+	"testing"
 
-// TestProcessBatchEmailValidPayload tests Process with a valid email payload.
-// It should not return an error.
-func TestProcessBatchEmailValidPayload(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{
-			{
-				To:      "test1@example.com",
-				Title:   "test1",
-				Content: "test1",
+	"github.com/stretchr/testify/assert"
+)
+
+func TestProcessBatchEmailValidate(t *testing.T) {
+	t.Parallel()
+	assert := assert.New(t)
+
+	cases := map[string]struct {
+		in   BatchEmailPayload
+		want bool
+	}{
+		"pass": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{
+					{
+						To:      "test1@example.com",
+						Title:   "test1",
+						Content: "test1",
+					},
+					{
+						To:      "test2@example.com",
+						Title:   "test2",
+						Content: "test2",
+					},
+				},
 			},
-			{
-				To:      "test2@example.com",
-				Title:   "test2",
-				Content: "test2",
+			want: true,
+		},
+		"fail if emails is empty": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{},
 			},
+			want: false,
+		},
+		"fail if to is empty": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{
+					{
+						To:      "",
+						Title:   "test",
+						Content: "test",
+					},
+				},
+			},
+			want: false,
+		},
+		"fail if to is not email": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{
+					{
+						To:      "test",
+						Title:   "test",
+						Content: "test",
+					},
+				},
+			},
+			want: false,
+		},
+		"fail if title is empty": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{
+					{
+						To:      "test@example.com",
+						Title:   "",
+						Content: "test",
+					},
+				},
+			},
+			want: false,
+		},
+		"fail if content is empty": {
+			in: BatchEmailPayload{
+				Emails: []EmailPayload{
+					{
+						To:      "test@example.com",
+						Title:   "test",
+						Content: "",
+					},
+				},
+			},
+			want: false,
 		},
 	}
 
-	err := payload.Process()
-	if err != nil {
-		t.Errorf("expected no error, got %v", err)
-	}
-}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-// TestProcessBatchEmailEmptyList tests Process with an empty 'Emails' field.
-// It should return an error.
-func TestProcessBatchEmailEmptyList(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{},
-	}
+			got := c.in.Process() == nil
 
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessBatchEmailEmptyTo tests Process with an empty 'To' field.
-// It should return an error.
-func TestProcessBatchEmailEmptyTo(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{
-			{
-				To:      "",
-				Title:   "test",
-				Content: "test",
-			},
-		},
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessBatchEmailInvalidTo tests Process with an invalid 'To' field.
-// It should return an error.
-func TestProcessBatchEmailInvalidTo(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{
-			{
-				To:      "test",
-				Title:   "test",
-				Content: "test",
-			},
-		},
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessBatchEmailEmptyTitle tests Process with an empty 'Title' field.
-// It should return an error.
-func TestProcessBatchEmailEmptyTitle(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{
-			{
-				To:      "test@example.com",
-				Title:   "",
-				Content: "test",
-			},
-		},
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessBatchEmailEmptyContent tests Process with an empty 'Content' field.
-// It should return an error.
-func TestProcessBatchEmailEmptyContent(t *testing.T) {
-	payload := BatchEmailPayload{
-		Emails: []EmailPayload{
-			{
-				To:      "test@example.com",
-				Title:   "test",
-				Content: "",
-			},
-		},
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
+			assert.Equal(c.want, got, "got %v, want %v", got, c.want)
+		})
 	}
 }
