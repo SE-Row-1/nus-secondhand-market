@@ -1,4 +1,4 @@
-package processors
+package notification
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/resend/resend-go/v2"
-	"nshm.shop/notification/utils"
 )
 
 type BatchEmailPayload struct {
@@ -15,18 +14,10 @@ type BatchEmailPayload struct {
 }
 
 func (payload BatchEmailPayload) Process() error {
-	err := utils.Validate(payload)
-	if err != nil {
-		return err
-	}
-
-	emails := payload.Emails
-
 	if os.Getenv("GO_ENV") != "production" {
-		for _, email := range emails {
-			log.Printf("sent emails:\n[to]\n%s\n[title]\n%s\n[content]\n%s\n", email.To, email.Title, email.Content)
+		for _, email := range payload.Emails {
+			log.Printf("sent email:\n[to]\n%s\n[title]\n%s\n[content]\n%s\n", email.To, email.Title, email.Content)
 		}
-
 		return nil
 	}
 
@@ -35,14 +26,14 @@ func (payload BatchEmailPayload) Process() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	sendEmailRequests := make([]*resend.SendEmailRequest, 0)
-	for _, email := range emails {
-		sendEmailRequests = append(sendEmailRequests, &resend.SendEmailRequest{
+	sendEmailRequests := make([]*resend.SendEmailRequest, len(payload.Emails))
+	for index, email := range payload.Emails {
+		sendEmailRequests[index] = &resend.SendEmailRequest{
 			From:    "NUS Second-Hand Market <notifications@nshm.store>",
 			To:      []string{email.To},
 			Subject: email.Title,
 			Html:    email.Content,
-		})
+		}
 	}
 
 	sent, err := client.Batch.SendWithContext(ctx, sendEmailRequests)
