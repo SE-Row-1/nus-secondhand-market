@@ -2,75 +2,64 @@ package processors
 
 import "testing"
 
-// TestProcessEmailValidPayload tests Process with a valid email payload.
-// It should not return an error.
-func TestProcessEmailValidPayload(t *testing.T) {
-	payload := EmailPayload{
-		To:      "test@example.com",
-		Title:   "test",
-		Content: "test",
+func TestProcessEmailValidate(t *testing.T) {
+	t.Parallel()
+
+	cases := map[string]struct {
+		in   EmailPayload
+		want bool
+	}{
+		"pass": {
+			in: EmailPayload{
+				To:      "test@example.com",
+				Title:   "test",
+				Content: "test",
+			},
+			want: true,
+		},
+		"fail if to is empty": {
+			in: EmailPayload{
+				To:      "",
+				Title:   "test",
+				Content: "test",
+			},
+			want: false,
+		},
+		"fail if to is not email": {
+			in: EmailPayload{
+				To:      "test",
+				Title:   "test",
+				Content: "test",
+			},
+			want: false,
+		},
+		"fail if title is empty": {
+			in: EmailPayload{
+				To:      "test@example.com",
+				Title:   "",
+				Content: "test",
+			},
+			want: false,
+		},
+		"fail if content is empty": {
+			in: EmailPayload{
+				To:      "test@example.com",
+				Title:   "test",
+				Content: "",
+			},
+			want: false,
+		},
 	}
 
-	err := payload.Process()
-	if err != nil {
-		t.Errorf("expected no error, got %v", err)
-	}
-}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 
-// TestProcessEmailEmptyTo tests Process with an empty 'To' field.
-// It should return an error.
-func TestProcessEmailEmptyTo(t *testing.T) {
-	payload := EmailPayload{
-		To:      "",
-		Title:   "test",
-		Content: "test",
-	}
+			got := c.in.Process() == nil
 
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-func TestProcessEmailInvalidTo(t *testing.T) {
-	payload := EmailPayload{
-		To:      "test",
-		Title:   "test",
-		Content: "test",
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessEmailEmptyTitle tests Process with an empty 'Title' field.
-// It should return an error.
-func TestProcessEmailEmptyTitle(t *testing.T) {
-	payload := EmailPayload{
-		To:      "test@example.com",
-		Title:   "",
-		Content: "test",
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
-	}
-}
-
-// TestProcessEmailEmptyContent tests Process with an empty 'Content' field.
-// It should return an error.
-func TestProcessEmailEmptyContent(t *testing.T) {
-	payload := EmailPayload{
-		To:      "test@example.com",
-		Title:   "test",
-		Content: "",
-	}
-
-	err := payload.Process()
-	if err == nil {
-		t.Errorf("expected error, got nil")
+			if got != c.want {
+				t.Errorf("got %v, want %v", got, c.want)
+			}
+		})
 	}
 }

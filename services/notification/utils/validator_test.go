@@ -2,6 +2,8 @@ package utils
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type payload struct {
@@ -10,6 +12,7 @@ type payload struct {
 
 func TestValidate(t *testing.T) {
 	t.Parallel()
+	assert := assert.New(t)
 
 	cases := map[string]struct {
 		in   payload
@@ -31,9 +34,7 @@ func TestValidate(t *testing.T) {
 
 			got := Validate(c.in) == nil
 
-			if got != c.want {
-				t.Errorf("got %v, want %v", got, c.want)
-			}
+			assert.Equal(c.want, got, "got %v, want %v", got, c.want)
 		})
 	}
 }
