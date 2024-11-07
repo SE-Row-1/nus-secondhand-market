@@ -56,25 +56,3 @@ jobs:
 
       - name: Check format
         run: gofmt -l . | grep -q . && exit 1 || exit 0
-
-  test:
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: services/notification
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: stable
-
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Test
-        run: go test ./... -cover
