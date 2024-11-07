@@ -1,6 +1,5 @@
 *
-!processors
-!utils
+!notification
 !go.mod
 !go.sum
 !main.go

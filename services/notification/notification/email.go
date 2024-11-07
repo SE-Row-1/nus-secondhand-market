@@ -1,4 +1,4 @@
-package processors
+package notification
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/resend/resend-go/v2"
-	"nshm.store/notification/utils"
 )
 
 type EmailPayload struct {
@@ -17,11 +16,6 @@ type EmailPayload struct {
 }
 
 func (payload EmailPayload) Process() error {
-	err := utils.Validate(payload)
-	if err != nil {
-		return err
-	}
-
 	if os.Getenv("GO_ENV") != "production" {
 		log.Printf("sent email:\n[to]\n%s\n[title]\n%s\n[content]\n%s\n", payload.To, payload.Title, payload.Content)
 		return nil
