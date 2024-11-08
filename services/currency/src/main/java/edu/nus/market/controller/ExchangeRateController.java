@@ -1,9 +1,9 @@
-package edu.nus.market.controller.excahngeRate;
+package edu.nus.market.controller;
 
 import edu.nus.market.pojo.ErrorMsg;
 import edu.nus.market.pojo.ErrorMsgEnum;
-import edu.nus.market.pojo.exchangeRate.UpdExgRatReq;
-import edu.nus.market.service.exchangeRate.ExchangeRateService;
+import edu.nus.market.pojo.UpdExgRatReq;
+import edu.nus.market.service.ExchangeRateService;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

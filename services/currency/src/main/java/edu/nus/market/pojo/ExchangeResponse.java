@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.exchangeRate;
+package edu.nus.market.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

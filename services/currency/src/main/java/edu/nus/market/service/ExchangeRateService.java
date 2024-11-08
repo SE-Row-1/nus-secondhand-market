@@ -1,6 +1,6 @@
-package edu.nus.market.service.exchangeRate;
+package edu.nus.market.service;
 
-import edu.nus.market.pojo.exchangeRate.UpdExgRatReq;
+import edu.nus.market.pojo.UpdExgRatReq;
 import org.springframework.http.ResponseEntity;
 
 public interface ExchangeRateService {

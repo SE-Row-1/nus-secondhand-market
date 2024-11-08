@@ -1,15 +1,20 @@
 package edu.nus.market.service;
 
-import edu.nus.market.pojo.exchangeRate.ExchangeResponse;
-import edu.nus.market.pojo.exchangeRate.UpdExgRatReq;
+import edu.nus.market.pojo.ExchangeResponse;
+import edu.nus.market.pojo.UpdExgRatReq;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
+
 @Service
-public class ExchangeRateServiceImpl implements edu.nus.market.service.exchangeRate.ExchangeRateService {
+public class ExchangeRateServiceImpl implements ExchangeRateService {
 
     //extract parameters from application.yml
     @Value("${currencyLayer.api.url}")
@@ -20,6 +25,9 @@ public class ExchangeRateServiceImpl implements edu.nus.market.service.exchangeR
 
     @Value("${currencyLayer.api.format}")
     String FORMAT;
+
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
 
     @Override
@@ -33,6 +41,11 @@ public class ExchangeRateServiceImpl implements edu.nus.market.service.exchangeR
             URL, KEY, String.join(", ", req.getTargetCurrencies()), req.getSourceCurrency(), FORMAT);
         //get feedback from CurrencyLayer
         ExchangeResponse exchangeResponse = restTemplate.getForObject(url, ExchangeResponse.class);
+
+        for (Map.Entry<String, Double> vo : exchangeResponse.getQuotes().entrySet()){
+            redisTemplate.opsForValue().append(vo.getKey(), String.valueOf(vo.getValue()));
+        }
+
 
         return ResponseEntity.status(HttpStatus.OK).body(exchangeResponse);
     }

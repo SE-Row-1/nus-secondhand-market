@@ -1,4 +1,4 @@
-package edu.nus.market.pojo.exchangeRate;
+package edu.nus.market.pojo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,4 @@ public class UpdExgRatReq {
     List<String> targetCurrencies;
     @NotBlank
     String sourceCurrency;
-
-
 }

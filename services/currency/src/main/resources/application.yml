@@ -9,6 +9,12 @@ spring:
     username: se-row-1
     password: XlLOamPV43SkvjuNJUJY4A
 
+  redis:
+    host: localhost
+    port: 6379
+    # 如果有密码则添加下面这一行
+    # password: your_password
+
 
   jackson:
     property-naming-strategy: SNAKE_CASE
