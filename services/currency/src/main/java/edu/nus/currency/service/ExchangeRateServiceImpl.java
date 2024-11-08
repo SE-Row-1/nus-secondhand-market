@@ -31,7 +31,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
 
     @Override
-    public ResponseEntity<Object> updateExchangeRate(UpdExgRatReq req) {
+    public ResponseEntity<Object> updateCurrenciesService(UpdExgRatReq req) {
 
         System.out.println(req);
         RestTemplate restTemplate = new RestTemplate();
@@ -47,6 +47,11 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(exchangeResponse);
+    }
+
+    @Override
+    public ResponseEntity<Object> getPreferredCurrencyService(String preferredCurrency) {
+        return null;
     }
 
 
