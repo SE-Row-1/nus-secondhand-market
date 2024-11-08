@@ -173,6 +173,10 @@ public class AccountServiceImpl implements AccountService{
         ResAccount resAccount = new ResAccount(accountDao.updateProfile(account, id));
 
         mqService.sendUpdateMessage(new UpdateMessage(account));
+
+        if (updateProfileReq.getPreferredCurrency() != null)
+            mqService.sendCurrencyMessage(account.getPreferredCurrency());
+
         return ResponseEntity.status(HttpStatus.OK).body(resAccount);
 
     }
