@@ -1,11 +1,10 @@
 package edu.nus.currency.service;
 
-import edu.nus.currency.pojo.ExchangeResponse;
-import edu.nus.currency.pojo.UpdExgRatReq;
+import edu.nus.currency.pojo.ResEntity.ExchangeResponse;
+import edu.nus.currency.pojo.ReqEntity.UpdExgRatReq;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

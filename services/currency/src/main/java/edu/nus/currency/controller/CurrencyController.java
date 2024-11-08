@@ -3,7 +3,7 @@ package edu.nus.currency.controller;
 import edu.nus.currency.pojo.ErrorMsg;
 import edu.nus.currency.pojo.ErrorMsgEnum;
 import edu.nus.currency.pojo.ResEntity.JWTPayload;
-import edu.nus.currency.pojo.UpdExgRatReq;
+import edu.nus.currency.pojo.ReqEntity.UpdExgRatReq;
 import edu.nus.currency.security.JwtTokenManager;
 import edu.nus.currency.service.ExchangeRateService;
 import jakarta.annotation.Resource;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/exchange")
-public class ExchangeRateController {
+public class CurrencyController {
     @Resource
     ExchangeRateService exchangeRateService;
 

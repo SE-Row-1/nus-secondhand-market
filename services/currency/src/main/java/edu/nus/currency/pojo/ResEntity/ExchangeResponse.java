@@ -1,4 +1,4 @@
-package edu.nus.currency.pojo;
+package edu.nus.currency.pojo.ResEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
