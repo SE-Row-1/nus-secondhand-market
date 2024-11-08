@@ -34,4 +34,10 @@ public class RabbitMQConfig {
     public TopicExchange AccountExchange() {
         return new TopicExchange("account");
     }
+
+    // define account Topic exchange: currency
+    @Bean
+    public TopicExchange CurrencyExchange() {
+        return new TopicExchange("currency");
+    }
 }
