@@ -9,7 +9,7 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>edu.nus</groupId>
-  <artifactId>market</artifactId>
+  <artifactId>currencyBackup</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>market</name>
   <description>market</description>

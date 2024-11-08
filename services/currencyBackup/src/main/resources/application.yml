@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: market
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://mrcaidev-3157.j77.aws-ap-southeast-1.cockroachlabs.cloud:26257/nshm?sslmode=verify-full
+    username: se-row-1
+    password: XlLOamPV43SkvjuNJUJY4A
+
+  redis:
+    host: localhost
+    port: 6379
+    # 如果有密码则添加下面这一行
+    # password: your_password
+
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+currencyLayer:
+  api:
+    url: "http://apilayer.net/api/live"
+    access-key: "9b354492600878f1b709bd865e72ce95"
+    format: "1"
