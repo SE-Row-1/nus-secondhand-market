@@ -17,20 +17,22 @@ it("returns transactions", async () => {
     expect.arrayContaining([
       {
         id: expect.any(String),
-        buyer: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
-        seller: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
         item: {
           id: expect.any(String),
           name: expect.any(String),
           price: expect.any(Number),
+        },
+        seller: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
+        },
+        buyer: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
         },
         createdAt: expect.any(String),
         completedAt: expect.not.stringContaining("x"),
@@ -65,20 +67,22 @@ it("filters transactions if item_id is given", async () => {
     expect.arrayContaining([
       {
         id: expect.any(String),
-        buyer: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
-        seller: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
         item: {
           id: itemId,
           name: expect.any(String),
           price: expect.any(Number),
+        },
+        seller: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
+        },
+        buyer: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
         },
         createdAt: expect.any(String),
         completedAt: expect.not.stringContaining("x"),
@@ -101,20 +105,22 @@ it("filters transactions if is_cancelled is given", async () => {
     expect.arrayContaining([
       {
         id: expect.any(String),
-        buyer: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
-        seller: {
-          id: expect.any(Number),
-          nickname: expect.any(String),
-          avatarUrl: expect.any(String),
-        },
         item: {
           id: expect.any(String),
           name: expect.any(String),
           price: expect.any(Number),
+        },
+        seller: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
+        },
+        buyer: {
+          id: expect.any(Number),
+          email: expect.any(String),
+          nickname: expect.any(String),
+          avatarUrl: expect.any(String),
         },
         createdAt: expect.any(String),
         completedAt: expect.not.stringContaining("x"),

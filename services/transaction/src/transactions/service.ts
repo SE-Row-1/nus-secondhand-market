@@ -79,12 +79,14 @@ export async function create(dto: CreateDto) {
       price: detailedItem.price,
     },
     seller: {
-      id: detailedItem.seller.id,
-      nickname: detailedItem.seller.nickname,
-      avatarUrl: detailedItem.seller.avatarUrl,
+      id: dto.user.id,
+      email: dto.user.email,
+      nickname: dto.user.nickname,
+      avatarUrl: dto.user.avatarUrl,
     },
     buyer: {
       id: buyerAccount.id,
+      email: buyerAccount.email,
       nickname: buyerAccount.nickname,
       avatarUrl: buyerAccount.avatarUrl,
     },
@@ -92,6 +94,20 @@ export async function create(dto: CreateDto) {
 
   publishEvent("transaction", "transaction.created", transaction);
   publishEvent("transaction", "transaction.auto-completed", transaction);
+  publishEvent("notification", "batch-email", {
+    emails: [
+      {
+        to: dto.user.email,
+        title: "You have made a deal on NUS Second-Hand Market",
+        content: `Dear ${dto.user.nickname ?? dto.user.email},\n\nThis is to confirm that you have made a deal for your second-hand item on NUS Second-Hand Market.\n\nTransaction Details:\nItem: ${detailedItem.name}\nPrice: ${detailedItem.price}\nBuyer: ${buyerAccount.nickname ?? buyerAccount.email}\n\nPlease proceed to contact the buyer to arrange for the transaction offline.\nYou could also view your <a href="https://www.nshm.store/transactions">transaction history</a> online at any time.\n\nBest Regards,\nNUS Second-Hand Market`,
+      },
+      {
+        to: buyerAccount.email,
+        title: "You have secured a deal on NUS Second-Hand Market",
+        content: `Dear ${buyerAccount.nickname ?? buyerAccount.email},\n\nThis is to confirm that you have secured a deal for a second-hand item you have listed as wanted on NUS Second-Hand Market.\n\nTransaction Details:\nItem: ${detailedItem.name}\nPrice: ${detailedItem.price}\nSeller: ${dto.user.nickname ?? dto.user.email}\n\nPlease proceed to contact the seller to arrange for the transaction offline.\nYou could also view your <a href="https://www.nshm.store/transactions">transaction history</a> online at any time.\n\nBest Regards,\nNUS Second-Hand Market`,
+      },
+    ],
+  });
 
   return transaction;
 }

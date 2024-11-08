@@ -7,6 +7,7 @@ import * as v from "valibot";
 
 const payloadSchema = v.object({
   id: v.number("jwt.id should be a number"),
+  email: v.string("jwt.email should be a string"),
   nickname: v.optional(
     v.nullable(v.string("jwt.nickname should be a string")),
     null,

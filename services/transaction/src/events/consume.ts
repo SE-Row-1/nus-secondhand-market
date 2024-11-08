@@ -52,6 +52,20 @@ await consumeEvent("delayed", "transaction.auto-completed", async (data) => {
   console.log(`Auto completed [Transaction ${transaction.id}]`);
 
   publishEvent("transaction", "transaction.completed", newTransaction);
+  publishEvent("notification", "batch-email", {
+    emails: [
+      {
+        to: transaction.seller.email,
+        title: "Your deal has been automatically marked as completed",
+        content: `Dear ${transaction.seller.nickname ?? transaction.seller.email},\n\nThis is to confirm that your deal, after 14 days of inactivity, has been automatically marked as completed on NUS Second-Hand Market.\n\nTransaction Details:\nItem: ${transaction.item.name}\nPrice: ${transaction.item.price}\nBuyer: ${transaction.buyer.nickname ?? transaction.buyer.email}\n\nYou could view your <a href="https://www.nshm.store/transactions">transaction history</a> online at any time.\n\nBest Regards,\nNUS Second-Hand Market`,
+      },
+      {
+        to: transaction.buyer.email,
+        title: "Your deal has been automatically marked as completed",
+        content: `Dear ${transaction.buyer.nickname ?? transaction.buyer.email},\n\nThis is to confirm that your deal, after 14 days of inactivity, has been automatically marked as completed on NUS Second-Hand Market.\n\nTransaction Details:\nItem: ${transaction.item.name}\nPrice: ${transaction.item.price}\nSeller: ${transaction.seller.nickname ?? transaction.seller.email}\n\nYou could view your <a href="https://www.nshm.store/transactions">transaction history</a> online at any time.\n\nBest Regards,\nNUS Second-Hand Market`,
+      },
+    ],
+  });
 });
 
 export async function consumeEvent(

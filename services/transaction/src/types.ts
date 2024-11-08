@@ -1,11 +1,11 @@
 export type Participant = {
   id: number;
+  email: string;
   nickname: string | null;
   avatarUrl: string | null;
 };
 
 export type Account = Participant & {
-  email: string;
   department: {
     id: number;
     acronym: string;
@@ -40,12 +40,14 @@ export type DbTransaction = {
   item_id: string;
   item_name: string;
   item_price: number;
-  buyer_id: number;
-  buyer_nickname: string | null;
-  buyer_avatar_url: string | null;
   seller_id: number;
+  seller_email: string;
   seller_nickname: string | null;
   seller_avatar_url: string | null;
+  buyer_id: number;
+  buyer_email: string;
+  buyer_nickname: string | null;
+  buyer_avatar_url: string | null;
   created_at: string;
   completed_at: string | null;
   cancelled_at: string | null;

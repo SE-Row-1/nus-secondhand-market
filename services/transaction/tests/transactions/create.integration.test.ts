@@ -90,6 +90,29 @@ it("creates transaction", async () => {
     "transaction.auto-completed",
     { ...body, createdAt: new Date(body.createdAt) },
   );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    3,
+    "notification",
+    "batch-email",
+    {
+      emails: [
+        {
+          to: participant1.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            participant1.nickname ?? participant1.email,
+          ),
+        },
+        {
+          to: participant2.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            participant2.nickname ?? participant2.email,
+          ),
+        },
+      ],
+    },
+  );
 });
 
 it("returns 401 if not logged in", async () => {
@@ -250,15 +273,17 @@ it("returns 409 if there is already a completed transaction", async () => {
     status: ItemStatus.ForSale,
   });
   await db.query(
-    "insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, completed_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, now())",
+    "insert into transaction (item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url, completed_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, now())",
     [
       item.id,
       item.name,
       item.price,
       participant1.id,
+      participant1.email,
       participant1.nickname,
       participant1.avatarUrl,
       participant2.id,
+      participant2.email,
       participant2.nickname,
       participant2.avatarUrl,
     ],
@@ -295,15 +320,17 @@ it("returns 409 if there is already a pending transaction", async () => {
     status: ItemStatus.ForSale,
   });
   await db.query(
-    "insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url) values ($1, $2, $3, $4, $5, $6, $7, $8, $9)",
+    "insert into transaction (item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
     [
       item.id,
       item.name,
       item.price,
       participant1.id,
+      participant1.email,
       participant1.nickname,
       participant1.avatarUrl,
       participant2.id,
+      participant2.email,
       participant2.nickname,
       participant2.avatarUrl,
     ],

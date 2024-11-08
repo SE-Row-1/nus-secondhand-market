@@ -92,6 +92,29 @@ it("creates transaction", async () => {
     "transaction.auto-completed",
     result,
   );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    3,
+    "notification",
+    "batch-email",
+    {
+      emails: [
+        {
+          to: participant1.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            participant1.nickname ?? participant1.email,
+          ),
+        },
+        {
+          to: participant2.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            participant2.nickname ?? participant2.email,
+          ),
+        },
+      ],
+    },
+  );
 });
 
 it("throws HTTPException 403 if user is buyer", async () => {

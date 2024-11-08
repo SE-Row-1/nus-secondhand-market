@@ -31,16 +31,18 @@ it("completes transaction", async () => {
     cancelledAt: null,
   };
   await db.query(
-    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
     [
       transaction.id,
       transaction.item.id,
       transaction.item.name,
       transaction.item.price,
       transaction.seller.id,
+      transaction.seller.email,
       transaction.seller.nickname,
       transaction.seller.avatarUrl,
       transaction.buyer.id,
+      transaction.buyer.email,
       transaction.buyer.nickname,
       transaction.buyer.avatarUrl,
       transaction.createdAt,
@@ -64,13 +66,37 @@ it("completes transaction", async () => {
     [transaction.id],
   );
   expect(rowCount).toEqual(1);
-  expect(mockPublishEvent).toHaveBeenLastCalledWith(
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    1,
     "transaction",
     "transaction.completed",
     {
       ...transaction,
       createdAt: new Date(transaction.createdAt),
       completedAt: expect.any(Date),
+    },
+  );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    2,
+    "notification",
+    "batch-email",
+    {
+      emails: [
+        {
+          to: transaction.seller.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            transaction.seller.nickname ?? transaction.seller.email,
+          ),
+        },
+        {
+          to: transaction.buyer.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            transaction.buyer.nickname ?? transaction.buyer.email,
+          ),
+        },
+      ],
     },
   );
 });
@@ -114,16 +140,18 @@ it("returns 403 if someone other than buyer tries to complete", async () => {
     cancelledAt: null,
   };
   await db.query(
-    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)",
+    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url, created_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)",
     [
       transaction.id,
       transaction.item.id,
       transaction.item.name,
       transaction.item.price,
       transaction.seller.id,
+      transaction.seller.email,
       transaction.seller.nickname,
       transaction.seller.avatarUrl,
       transaction.buyer.id,
+      transaction.buyer.email,
       transaction.buyer.nickname,
       transaction.buyer.avatarUrl,
       transaction.createdAt,
@@ -160,16 +188,18 @@ it("returns 409 if transaction is already completed", async () => {
     cancelledAt: null,
   };
   await db.query(
-    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, created_at, completed_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url, created_at, completed_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)",
     [
       transaction.id,
       transaction.item.id,
       transaction.item.name,
       transaction.item.price,
       transaction.seller.id,
+      transaction.seller.email,
       transaction.seller.nickname,
       transaction.seller.avatarUrl,
       transaction.buyer.id,
+      transaction.buyer.email,
       transaction.buyer.nickname,
       transaction.buyer.avatarUrl,
       transaction.createdAt,
@@ -207,16 +237,18 @@ it("returns 409 if transaction is already cancelled", async () => {
     cancelledAt: new Date().toISOString(),
   };
   await db.query(
-    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url, created_at, cancelled_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
+    "insert into transaction (id, item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url, created_at, cancelled_at) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)",
     [
       transaction.id,
       transaction.item.id,
       transaction.item.name,
       transaction.item.price,
       transaction.seller.id,
+      transaction.seller.email,
       transaction.seller.nickname,
       transaction.seller.avatarUrl,
       transaction.buyer.id,
+      transaction.buyer.email,
       transaction.buyer.nickname,
       transaction.buyer.avatarUrl,
       transaction.createdAt,

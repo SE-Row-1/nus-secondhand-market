@@ -23,11 +23,13 @@ it("returns count of updated transactions", async () => {
   expect(result).toEqual(5);
   expect(mockQuery).toHaveBeenNthCalledWith(1, expect.any(String), [
     participant1.id,
+    participant1.email,
     participant1.nickname,
     participant1.avatarUrl,
   ]);
   expect(mockQuery).toHaveBeenNthCalledWith(2, expect.any(String), [
     participant1.id,
+    participant1.email,
     participant1.nickname,
     participant1.avatarUrl,
   ]);

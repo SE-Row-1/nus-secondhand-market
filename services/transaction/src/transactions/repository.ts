@@ -56,8 +56,8 @@ type InsertDto = Pick<Transaction, "item" | "seller" | "buyer">;
 export async function insertOne(dto: InsertDto) {
   const { rows } = await db.query<DbTransaction>(
     `
-      insert into transaction (item_id, item_name, item_price, seller_id, seller_nickname, seller_avatar_url, buyer_id, buyer_nickname, buyer_avatar_url)
-      values ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      insert into transaction (item_id, item_name, item_price, seller_id, seller_email, seller_nickname, seller_avatar_url, buyer_id, buyer_email, buyer_nickname, buyer_avatar_url)
+      values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       returning *
     `,
     [
@@ -65,9 +65,11 @@ export async function insertOne(dto: InsertDto) {
       dto.item.name,
       dto.item.price,
       dto.seller.id,
+      dto.seller.email,
       dto.seller.nickname,
       dto.seller.avatarUrl,
       dto.buyer.id,
+      dto.buyer.email,
       dto.buyer.nickname,
       dto.buyer.avatarUrl,
     ],
@@ -120,19 +122,19 @@ export async function updateParticipant(partipant: Participant) {
   const { rowCount: rowCount1 } = await db.query(
     `
       update transaction
-      set seller_nickname = $2, seller_avatar_url = $3
+      set seller_email = $2, seller_nickname = $3, seller_avatar_url = $4
       where seller_id = $1
     `,
-    [partipant.id, partipant.nickname, partipant.avatarUrl],
+    [partipant.id, partipant.email, partipant.nickname, partipant.avatarUrl],
   );
 
   const { rowCount: rowCount2 } = await db.query(
     `
       update transaction
-      set buyer_nickname = $2, buyer_avatar_url = $3
+      set buyer_email = $2, buyer_nickname = $3, buyer_avatar_url = $4
       where buyer_id = $1
     `,
-    [partipant.id, partipant.nickname, partipant.avatarUrl],
+    [partipant.id, partipant.email, partipant.nickname, partipant.avatarUrl],
   );
 
   return rowCount1! + rowCount2!;
@@ -181,7 +183,7 @@ export async function cancelManyByItemId(itemId: string) {
   return rowCount!;
 }
 
-function rowToTransaction(row: DbTransaction) {
+function rowToTransaction(row: DbTransaction): Transaction {
   return {
     id: row.id,
     item: {
@@ -189,18 +191,20 @@ function rowToTransaction(row: DbTransaction) {
       name: row.item_name,
       price: row.item_price,
     },
-    buyer: {
-      id: row.buyer_id,
-      nickname: row.buyer_nickname,
-      avatarUrl: row.buyer_avatar_url,
-    },
     seller: {
       id: row.seller_id,
+      email: row.seller_email,
       nickname: row.seller_nickname,
       avatarUrl: row.seller_avatar_url,
+    },
+    buyer: {
+      id: row.buyer_id,
+      email: row.buyer_email,
+      nickname: row.buyer_nickname,
+      avatarUrl: row.buyer_avatar_url,
     },
     createdAt: row.created_at,
     completedAt: row.completed_at,
     cancelledAt: row.cancelled_at,
-  } as Transaction;
+  };
 }

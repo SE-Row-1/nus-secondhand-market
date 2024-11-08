@@ -43,10 +43,34 @@ it("completes transaction", async () => {
   await complete(transaction, participant2);
 
   expect(mockCompleteOneById).toHaveBeenLastCalledWith(transaction.id);
-  expect(mockPublishEvent).toHaveBeenLastCalledWith(
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    1,
     "transaction",
     "transaction.completed",
     newTransaction,
+  );
+  expect(mockPublishEvent).toHaveBeenNthCalledWith(
+    2,
+    "notification",
+    "batch-email",
+    {
+      emails: [
+        {
+          to: transaction.seller.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            transaction.seller.nickname ?? transaction.seller.email,
+          ),
+        },
+        {
+          to: transaction.buyer.email,
+          title: expect.any(String),
+          content: expect.stringContaining(
+            transaction.buyer.nickname ?? transaction.buyer.email,
+          ),
+        },
+      ],
+    },
   );
 });
 
