@@ -1,43 +1,73 @@
 package edu.nus.currency.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-//import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
+import edu.nus.currency.pojo.ResEntity.ExchangeResponse;
+import edu.nus.currency.pojo.ReqEntity.UpdExgRatReq;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    //extract parameters from application.yml
+    @Value("${currencyLayer.api.url}")
+    String URL;
 
-    private static Logger logger = LoggerFactory.getLogger(CurrencyServiceImpl.class);
+    @Value("${currencyLayer.api.access-key}")
+    String KEY;
 
-    public CurrencyServiceImpl(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    @Value("${currencyLayer.api.format}")
+    String FORMAT;
+
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
+
+    @Override
+    public ResponseEntity<Object> updateCurrenciesService(UpdExgRatReq req) {
+
+        System.out.println(req);
+        RestTemplate restTemplate = new RestTemplate();
+
+        // construct url
+        String url = String.format("%s?access_key=%s&currencies=%s&source=%s&format=%s",
+            URL, KEY, String.join(", ", req.getTargetCurrencies()), req.getSourceCurrency(), FORMAT);
+        //get feedback from CurrencyLayer
+        ExchangeResponse exchangeResponse = restTemplate.getForObject(url, ExchangeResponse.class);
+
+        for (Map.Entry<String, Double> vo : exchangeResponse.getQuotes().entrySet()){
+//            TODO: set expire time when U really gonna use it
+            redisTemplate.opsForValue().set(vo.getKey(), String.valueOf(vo.getValue()));
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(exchangeResponse);
     }
 
-//    @RabbitListener(queues = "currency")
-    // Method to update subscription data and persist it
-    public void addSubscription(String currency) {
-
-//        logger.info("Received currency message: " + currency);
-//
-//        String key = "subscription";
-//        redisTemplate.opsForHash().increment(key, currency, 1); // Increment the subscriber count by 1.increment(key, 1); // Track how many times a user subscribed
-//        redisTemplate.persist(key); // Persist the subscription hash to disk
+    @Override
+    public ResponseEntity<Object> getPreferredCurrencyService(String preferredCurrency) {
+        return null;
     }
 
-    // Schedule persistence for subscription table every min
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0/10 * * * ?")    // every hour sec min hour day
     public void persistSubscriptionData() {
-//        String pattern = "subscription";
-//        redisTemplate.keys(pattern).forEach(redisTemplate::persist);
-    }
-}
+        Map<Object, Object> hashTable = redisTemplate.opsForHash().entries("subscription");
 
+//        TODO: add time to Redis
+        redisTemplate.opsForValue().set("updatedTime", new Date().toString());
+
+        String pattern = "subscription";
+        redisTemplate.keys(pattern).forEach(redisTemplate::persist);
+    }
+
+
+
+
+}
