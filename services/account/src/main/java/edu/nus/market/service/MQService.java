@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 
+import edu.nus.market.pojo.ResEntity.UpdateCurrencyMessage;
 import edu.nus.market.pojo.ResEntity.UpdateMessage;
 import edu.nus.market.pojo.ResEntity.EmailMessage;
 
@@ -10,5 +11,5 @@ public interface MQService {
 
     public void sendDeleteMessage(String message);
 
-    public void sendCurrencyMessage(String message);
+    public void sendCurrencyMessage(UpdateCurrencyMessage updateCurrencyMessage);
 }

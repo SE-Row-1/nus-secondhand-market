@@ -1,6 +1,7 @@
 package edu.nus.market.service;
 
 import edu.nus.market.pojo.ResEntity.EmailMessage;
+import edu.nus.market.pojo.ResEntity.UpdateCurrencyMessage;
 import edu.nus.market.pojo.ResEntity.UpdateMessage;
 import org.apache.ibatis.annotations.Update;
 import org.slf4j.Logger;
@@ -35,8 +36,8 @@ public class MQServiceImpl implements MQService{
         logger.info("Sent delete message: " + message);
     }
 
-    public void sendCurrencyMessage(String message) {
-        rabbitTemplate.convertAndSend("currency", "currency.updated.success", message);
-        logger.info("Sent currency message: " + message);
+    public void sendCurrencyMessage(UpdateCurrencyMessage updateCurrencyMessage) {
+        rabbitTemplate.convertAndSend("currency", "currency.updated.success", updateCurrencyMessage);
+        logger.info("Sent currency message: " + updateCurrencyMessage);
     }
 }

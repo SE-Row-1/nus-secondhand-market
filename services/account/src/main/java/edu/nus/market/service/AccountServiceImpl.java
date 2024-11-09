@@ -3,6 +3,7 @@ import edu.nus.market.dao.EmailTransactionDao;
 import edu.nus.market.pojo.ReqEntity.*;
 import edu.nus.market.pojo.ResEntity.JWTPayload;
 import edu.nus.market.pojo.ResEntity.ResAccount;
+import edu.nus.market.pojo.ResEntity.UpdateCurrencyMessage;
 import edu.nus.market.pojo.ResEntity.UpdateMessage;
 import edu.nus.market.pojo.data.Account;
 import edu.nus.market.pojo.data.EmailTransaction;
@@ -148,10 +149,13 @@ public class AccountServiceImpl implements AccountService{
         // Use repository or DAO to interact with the database.
         Account account = accountDao.getAccountById(id);
         EmailTransaction emailTransaction = new EmailTransaction();
+
+        // check if the account exists
         if (account == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorMsg(ErrorMsgEnum.ACCOUNT_NOT_FOUND.ErrorMsg));
         }
 
+        // check if the user wants to change email
         if (updateProfileReq.getId() != null){
             emailTransaction = emailTransactionDao.getEmailTransactionById(updateProfileReq.getId());
             if(emailTransaction == null || emailTransaction.getVerifiedAt() == null)
@@ -166,6 +170,14 @@ public class AccountServiceImpl implements AccountService{
                 accountDao.hardDeleteAccount(checkAccount.getId());
             }
         }
+
+        // check if the user wants to change currency
+        UpdateCurrencyMessage updateCurrencyMessage = null;
+        if (updateProfileReq.getPreferredCurrency() != null){
+            updateCurrencyMessage.setOldCurrency(account.getPreferredCurrency());
+            updateCurrencyMessage.setNewCurrency(updateProfileReq.getPreferredCurrency());
+        }
+
         account = new Account(updateProfileReq);
         if (emailTransaction != null)
             account.setEmail(emailTransaction.getEmail());
@@ -175,7 +187,7 @@ public class AccountServiceImpl implements AccountService{
         mqService.sendUpdateMessage(new UpdateMessage(account));
 
         if (updateProfileReq.getPreferredCurrency() != null)
-            mqService.sendCurrencyMessage(account.getPreferredCurrency());
+            mqService.sendCurrencyMessage(updateCurrencyMessage);
 
         return ResponseEntity.status(HttpStatus.OK).body(resAccount);
 
