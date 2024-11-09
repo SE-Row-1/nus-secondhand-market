@@ -136,8 +136,14 @@ public class WishlistServiceImpl implements WishlistService {
             List<Like> updatedLikes = wishlistDao.findByItemId(itemId);
             mongoTemplate.updateMulti(query, update, Like.class);
 
-            boolean changePrice = updatedLikeInfo.getPrice() != updatedLikes.get(0).getPrice();
-            String title = changePrice ? "Price Of Your Wanted Product Updated!" : "Your Wanted Product Updated!";
+            boolean changePrice = false;
+            String title = "Your Wanted Product Updated!";
+            if (!updatedLikes.isEmpty()) {
+                changePrice = updatedLikeInfo.getPrice() != updatedLikes.get(0).getPrice();
+                title = changePrice ? "Price Of Your Wanted Product Updated!" : "Your Wanted Product Updated!";
+            } else {
+                logger.warn("No likes found for itemId: {} when updating item", itemId);
+            }
             List<Map<String, String>> emailBatch = new ArrayList<>();
 
             for (Like updatedLike : updatedLikes) {
