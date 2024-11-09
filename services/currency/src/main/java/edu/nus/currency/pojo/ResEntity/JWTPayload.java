@@ -1,6 +1,6 @@
-package edu.nus.market.pojo.ResEntity;
+package edu.nus.currency.pojo.ResEntity;
 
-import edu.nus.market.pojo.data.Account;
+import edu.nus.currency.pojo.Account;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +25,7 @@ public class JWTPayload {
         this.nickname = account.getNickname();
         this.avatarUrl = account.getAvatarUrl();
         this.email = account.getEmail();
-        this.preferredCurrency = account.getPreferredCurrency();
     }
+
+
 }

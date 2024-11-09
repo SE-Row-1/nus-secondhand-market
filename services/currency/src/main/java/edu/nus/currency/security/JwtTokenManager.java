@@ -1,6 +1,6 @@
-package edu.nus.market.security;
+package edu.nus.currency.security;
 
-import edu.nus.market.pojo.ResEntity.JWTPayload;
+import edu.nus.currency.pojo.ResEntity.JWTPayload;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

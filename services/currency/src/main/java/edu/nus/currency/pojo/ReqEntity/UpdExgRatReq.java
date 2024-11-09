@@ -1,4 +1,4 @@
-package edu.nus.currency.pojo;
+package edu.nus.currency.pojo.ReqEntity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;

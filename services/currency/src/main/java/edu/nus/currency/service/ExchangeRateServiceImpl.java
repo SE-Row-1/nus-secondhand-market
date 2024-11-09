@@ -1,11 +1,10 @@
 package edu.nus.currency.service;
 
-import edu.nus.currency.pojo.ExchangeResponse;
-import edu.nus.currency.pojo.UpdExgRatReq;
+import edu.nus.currency.pojo.ResEntity.ExchangeResponse;
+import edu.nus.currency.pojo.ReqEntity.UpdExgRatReq;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
 
 
     @Override
-    public ResponseEntity<Object> updateExchangeRate(UpdExgRatReq req) {
+    public ResponseEntity<Object> updateCurrenciesService(UpdExgRatReq req) {
 
         System.out.println(req);
         RestTemplate restTemplate = new RestTemplate();
@@ -49,6 +48,11 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(exchangeResponse);
+    }
+
+    @Override
+    public ResponseEntity<Object> getPreferredCurrencyService(String preferredCurrency) {
+        return null;
     }
 
 

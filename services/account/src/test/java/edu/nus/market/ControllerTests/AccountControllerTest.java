@@ -61,7 +61,7 @@ public class AccountControllerTest {
             "https://example.com/avatar.jpg", 1, "65",
             "1234567890", "SGD", "2023-05-01", null);
 
-        jwtPayload = new JWTPayload(1, "test", "https://example.com/avatar.jpg", "test@u.nus.edu");
+        jwtPayload = new JWTPayload(1, "test", "https://example.com/avatar.jpg", "test@u.nus.edu", "SGD");
 
         account = new Account(1, "test@u.nus.edu", "test", "passwordHash", "passwordSalt", "https://example.com/avatar.jpg", 1, "65", "1234567890", "SGD", "2023-05-01", null);
 
