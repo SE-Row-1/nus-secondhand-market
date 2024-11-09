@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ExchangeRateServiceImpl implements ExchangeRateService {
@@ -43,7 +44,8 @@ public class ExchangeRateServiceImpl implements ExchangeRateService {
         ExchangeResponse exchangeResponse = restTemplate.getForObject(url, ExchangeResponse.class);
 
         for (Map.Entry<String, Double> vo : exchangeResponse.getQuotes().entrySet()){
-            redisTemplate.opsForValue().append(vo.getKey(), String.valueOf(vo.getValue()));
+//            TODO: set expire time when U really gonna use it
+            redisTemplate.opsForValue().set(vo.getKey(), String.valueOf(vo.getValue()), 30, TimeUnit.SECONDS);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(exchangeResponse);
