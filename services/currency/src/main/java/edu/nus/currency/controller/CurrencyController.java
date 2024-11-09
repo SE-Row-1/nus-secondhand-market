@@ -48,6 +48,10 @@ public class CurrencyController {
         String key = "subscription";
         redisTemplate.opsForHash().increment(key, updateCurrencyMessage.getNewCurrency(), 1); // Increment the subscriber count by 1.increment(key, 1); // Track how many times a user subscribed
         if (updateCurrencyMessage.getOldCurrency() != null && updateCurrencyMessage.getOldCurrency() != ""){
+            Integer oldCount = Integer.parseInt(redisTemplate.opsForHash().get(key, updateCurrencyMessage.getOldCurrency()).toString());
+            if (oldCount == null || oldCount <= 0)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorMsg(ErrorMsgEnum.INVALID_INPUT.ErrorMsg));
+
             redisTemplate.opsForHash().increment(key, updateCurrencyMessage.getOldCurrency(), -1);
             if (Integer.parseInt(redisTemplate.opsForHash().get(key, updateCurrencyMessage.getOldCurrency()).toString()) == 0){
                 redisTemplate.opsForHash().delete(key, updateCurrencyMessage.getOldCurrency());
