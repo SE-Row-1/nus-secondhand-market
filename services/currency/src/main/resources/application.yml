@@ -22,7 +22,8 @@ spring:
   rabbitmq:
     enabled: false
 
-
+jwt:
+  secretKey: ${JWT_SECRET_KEY}
 
 
 currencyLayer:
