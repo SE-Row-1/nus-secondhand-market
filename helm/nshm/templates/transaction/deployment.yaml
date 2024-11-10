@@ -30,15 +30,15 @@ spec:
         args:
           - |
             export PGPASSWORD=$POSTGRES_PASSWORD && \
-            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d postgres -c "CREATE DATABASE \"nshm-account\""
-            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d "nshm-account" -f /scripts/services/transaction/database/production/init.sql
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d postgres -c "CREATE DATABASE \"nshm-transaction\""
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d "nshm-transaction" -f /scripts/services/transaction/database/production/init.sql
         volumeMounts:
           - name: init-script
             mountPath: /scripts
 
       containers:
       - name: transaction
-        image: {{ .Values.transaction.image.repository }}:{{ .Values.account.image.tag }}
+        image: {{ .Values.transaction.image.repository }}:{{ .Values.transaction.image.tag }}
         resources:
           requests:
             memory: {{ .Values.transaction.resources.requests.memory }}
