@@ -27,7 +27,7 @@ spec:
 
       containers:
         - name: item-mongo
-          image: bitnami/mongodb:latest
+          image: mongo
           ports:
             - containerPort: 27017
           envFrom:
