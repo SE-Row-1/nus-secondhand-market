@@ -11,12 +11,8 @@ data:
         wait_time = between(1, 5)
 
         @task
-        def web_service(self):
-            self.client.get("/")
-
-        @task
         def account_service(self):
-            self.client.get("/api/accounts/1")
+            self.client.get("/api/accounts/2")
 
         @task
         def item_service(self):
