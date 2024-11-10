@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
-    targetRevision: NSHM-134-Add-logs-to-wishlist
+    targetRevision: NSHM-9-Set-up-environment
     path: locust
   destination:
     server: 'https://kubernetes.default.svc'
