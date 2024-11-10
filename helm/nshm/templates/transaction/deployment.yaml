@@ -29,9 +29,9 @@ spec:
         command: ["/bin/sh", "-c"]
         args:
           - |
-            export PGPASSWORD=$POSTGRES_PASSWORD && \
-            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d postgres -c "CREATE DATABASE \"nshm-transaction\""
-            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d "nshm-transaction" -f /scripts/services/transaction/database/production/init.sql
+            export PGPASSWORD=$PGPASSWORD && \
+            psql -h $PGHOST -U $PGUSER -d postgres -c "CREATE DATABASE \"nshm_transaction\""
+            psql -h $PGHOST -U $PGUSER -d "nshm_transaction" -f /scripts/services/transaction/database/production/init.sql
         volumeMounts:
           - name: init-script
             mountPath: /scripts
