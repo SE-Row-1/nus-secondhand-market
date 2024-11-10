@@ -1,54 +1,21 @@
 import { snakeToCamel } from "@/utils/case";
+import { decodeJwt } from "@/utils/jwt";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import { verify } from "jsonwebtoken";
 import * as v from "valibot";
 
-// The JWT payload contains the requesting user's partial account information.
-//
-// As long as the JWT signature is verified,
-// it is safe to trust the information carried within a JWT,
-// so here we only do some basic validation on data types.
 const payloadSchema = v.object({
-  id: v.number("ID should be a number"),
+  id: v.number("jwt.id should be a number"),
   nickname: v.optional(
-    v.nullable(v.string("Nickname should be a string")),
+    v.nullable(v.string("jwt.nickname should be a string")),
     null,
   ),
   avatarUrl: v.optional(
-    v.nullable(v.string("Avatar URL should be a string")),
+    v.nullable(v.string("jwt.avatar_url should be a string")),
     null,
   ),
 });
-
-const decodedSecretKey = Buffer.from(Bun.env.JWT_SECRET_KEY, "base64");
-
-/**
- * Verify and decode a JWT.
- */
-async function decodeJwt(token: string) {
-  return await new Promise((resolve, reject) => {
-    verify(token, decodedSecretKey, (error, payload) => {
-      if (!error) {
-        resolve(payload);
-      }
-
-      if (error instanceof Error) {
-        reject(
-          new HTTPException(401, { message: error.message, cause: error }),
-        );
-      }
-
-      reject(
-        new HTTPException(500, {
-          message: "Unknown error during identity verification",
-          cause: error,
-        }),
-      );
-    });
-  });
-}
 
 /**
  * Authenticate user.

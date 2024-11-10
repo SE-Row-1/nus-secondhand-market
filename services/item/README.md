@@ -1,46 +1,42 @@
 # Item Service
 
-Item service is responsible for item-related operations, such as regular CRUD, keyword search, state transition, etc.
+This microservice handles all item-related operations, including CRUD, text search, etc.
 
 ## Events
 
-### Exchange
+### Item Updated
 
-- Name: item
-- Type: topic
-- Durable: true
+An item has been updated.
 
-### Topic: item.updated
-
-- Description: An item has been updated with new information.
-- Message format: JSON-serialized item.
+- Exchange: `item`
+- Topic: `item.updated`
 
 ```json
 {
-  {
-    "id": "eafd6cff-9e60-481c-af83-9eea3d7f9555",
-    "type": "single",
-    "name": "update",
-    "description": "update",
-    "price": 200,
-    "photoUrls": [ "uploads/after-update.png" ],
-    "seller": {
-      "id": 1,
-      "nickname": "me",
-      "avatarUrl": "https://example.com/me.jpg",
-    },
-    "status": 0,
-    "createdAt": "2024-10-16T05:19:16.165Z",
-    "deletedAt": null,
-  }
+  "id": "eafd6cff-9e60-481c-af83-9eea3d7f9555",
+  "type": "single",
+  "name": "item",
+  "description": "description",
+  "price": 100,
+  "photoUrls": ["https://example.com/item.jpg"],
+  "seller": {
+    "id": 1,
+    "nickname": "seller",
+    "avatarUrl": "https://example.com/avatar.jpg"
+  },
+  "status": 0,
+  "createdAt": "2024-10-16T05:19:16.165Z",
+  "deletedAt": null
 }
 ```
 
-### Topic: item.deleted
+### Item Deleted
 
-- Description: An item has been soft-deleted.
-- Message format: Item ID.
+An item has been deleted.
 
-```
-eafd6cff-9e60-481c-af83-9eea3d7f9555
+- Exchange: `item`
+- Topic: `item.deleted`
+
+```json
+"eafd6cff-9e60-481c-af83-9eea3d7f9555"
 ```
