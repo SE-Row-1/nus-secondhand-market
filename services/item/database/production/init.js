@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+db = db.getSiblingDB('nshm_item');
 
 db.createCollection("items");
 

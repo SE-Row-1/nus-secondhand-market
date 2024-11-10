@@ -1,3 +1,4 @@
+db = db.getSiblingDB('nshm_wishlist');
 // Create 'wishlist' collection (if it doesn't exist yet)
 db.createCollection("wishlist");
 
