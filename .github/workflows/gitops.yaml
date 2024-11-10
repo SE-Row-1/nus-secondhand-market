@@ -93,6 +93,7 @@ jobs:
       - name: Commit the changes
         run: |
           git fetch origin
+          git pull origin
           git config --global user.email "nshm@u.nus.edu"
           git config --global user.name "nshm"
           git commit -am "chore: updated image tags for services: ${{ matrix.service }}"
