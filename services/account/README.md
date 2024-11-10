@@ -19,15 +19,8 @@ Account service is responsible for account-related operations, such as registrat
 {
   {
     "id": 1,
-    "email": "e1351826@u.nus.edu",
     "nickname": "mrcaidev",
-    "avatar_url": "https://avatars.githubusercontent.com/u/78269445?v=4",
-    "department_id": 1,
-    "phone_code": "65",
-    "phone_number": "80843976",
-    "preferred_currency": "CNY",
-    "created_at": "2024-09-23 12:19:10.415264+00",
-    "deleted_at": null
+    "avatar_url": "https://avatars.githubusercontent.com/u/78269445?v=4"
   }
 }
 ```

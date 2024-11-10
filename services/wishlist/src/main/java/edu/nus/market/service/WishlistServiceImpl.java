@@ -11,6 +11,7 @@ import edu.nus.market.pojo.ResEntity.ResWishlist;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -205,6 +206,49 @@ public class WishlistServiceImpl implements WishlistService {
             logger.info("Deleted all wishlist entries for userId: {}", userId);
         } catch (Exception e) {
             logger.error("Error in deleteAccountService for userId: {}", userId, e);
+        }
+    }
+
+    @Override
+    public void updateAccountService(Account updatedAccount) {
+        logger.info("Starting updateAccountService for Account ID: {}", updatedAccount.getId());
+
+        try {
+            // 查询条件1：匹配 userId
+            Query userQuery = new Query(Criteria.where("userId").is(updatedAccount.getId()));
+            Update userUpdate = new Update()
+                .set("nickname", updatedAccount.getNickname())
+                .set("avatarUrl", updatedAccount.getAvatarUrl());
+
+            // 打印 userId 匹配的查询结果
+            List<Like> userRecords = mongoTemplate.find(userQuery, Like.class);
+            logger.info("User Records Matching userId [{}]: {}", updatedAccount.getId(), userRecords);
+
+            // 执行 userId 匹配的更新
+            mongoTemplate.updateMulti(userQuery, userUpdate, Like.class);
+            logger.info("Updated User Records for userId [{}]", updatedAccount.getId());
+
+            // 查询条件2：匹配 seller.sellerId
+            Query sellerQuery = new Query(Criteria.where("seller.sellerId").is(updatedAccount.getId()));
+            Update sellerUpdate = new Update()
+                .set("seller.nickname", updatedAccount.getNickname())
+                .set("seller.avatarUrl", updatedAccount.getAvatarUrl());
+
+            // 打印 seller.sellerId 匹配的查询结果
+            List<Like> sellerRecords = mongoTemplate.find(sellerQuery, Like.class);
+            logger.info("Seller Records Matching sellerId [{}]: {}", updatedAccount.getId(), sellerRecords);
+
+            // 执行 seller.sellerId 匹配的更新
+            mongoTemplate.updateMulti(sellerQuery, sellerUpdate, Like.class);
+            logger.info("Updated Seller Records for sellerId [{}]", updatedAccount.getId());
+
+            logger.info("Completed updateAccountService for Account ID: {}", updatedAccount.getId());
+        } catch (DataAccessException e) {
+            logger.error("Database error while updating Account ID: {}: {}", updatedAccount.getId(), e.getMessage());
+        } catch (NullPointerException e) {
+            logger.error("NullPointerException - Likely caused by null values in Account ID {}: {}", updatedAccount.getId(), e.getMessage());
+        } catch (Exception e) {
+            logger.error("Unexpected error while updating Account ID: {}: {}", updatedAccount.getId(), e.getMessage());
         }
     }
 

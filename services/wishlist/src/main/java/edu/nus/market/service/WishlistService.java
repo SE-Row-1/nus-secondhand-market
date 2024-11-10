@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 
+import edu.nus.market.pojo.Account;
 import edu.nus.market.pojo.Like;
 import edu.nus.market.pojo.ReqEntity.AddLikeReq;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ public interface WishlistService {
     void updateItemService(Like updatedLike);
 
     void deleteItemService(String itemId);
+
+    void updateAccountService(Account updatedAccount);
 
     void deleteAccountService(int userId);
 

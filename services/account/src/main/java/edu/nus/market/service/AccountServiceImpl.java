@@ -166,11 +166,15 @@ public class AccountServiceImpl implements AccountService{
                 accountDao.hardDeleteAccount(checkAccount.getId());
             }
         }
+
         account = new Account(updateProfileReq);
+
         if (emailTransaction != null)
             account.setEmail(emailTransaction.getEmail());
 
         ResAccount resAccount = new ResAccount(accountDao.updateProfile(account, id));
+
+        account = accountDao.getAccountById(id);
 
         mqService.sendUpdateMessage(new UpdateMessage(account));
         return ResponseEntity.status(HttpStatus.OK).body(resAccount);
