@@ -58,9 +58,9 @@ spec:
             pathType: ImplementationSpecific
             backend:
               service:
-                name: item
+                name: transaction
                 port:
-                  number: 8082
+                  number: 8084
           - path: /(.*)
             pathType: ImplementationSpecific
             backend:
