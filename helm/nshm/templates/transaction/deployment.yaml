@@ -30,7 +30,8 @@ spec:
         args:
           - |
             export PGPASSWORD=$POSTGRES_PASSWORD && \
-            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/transaction/database/init.sql
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d postgres -c "SELECT 'CREATE DATABASE \"nshm-account\"' WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'nshm-account')" | psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d postgres && \
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d "nshm-account" -f /scripts/services/transaction/database/init.sql
         volumeMounts:
           - name: init-script
             mountPath: /scripts
