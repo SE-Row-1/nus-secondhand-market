@@ -24,7 +24,7 @@ public class ItemEventListenerImpl implements ItemEventListener {
 
     // 监听 item.updated 队列，处理更新的商品
     @Override
-    @RabbitListener(queues = "item.updated")
+    @RabbitListener(queues = "wishlist.item.updated")
     public void handleItemUpdated(AddLikeReq updatedLikeReq) {
         try {
             logger.info("Received item.updated message: {}", updatedLikeReq.getItemId());
@@ -36,7 +36,7 @@ public class ItemEventListenerImpl implements ItemEventListener {
 
     // 监听 item.deleted 队列，处理被删除的商品
     @Override
-    @RabbitListener(queues = "item.deleted")
+    @RabbitListener(queues = "wishlist.item.deleted")
     public void handleItemDeleted(String itemId) {
         try {
             logger.info("Received item.deleted message: {}", itemId);

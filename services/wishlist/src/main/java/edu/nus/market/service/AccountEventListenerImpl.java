@@ -1,6 +1,5 @@
 package edu.nus.market.service;
 
-import edu.nus.market.pojo.ResEntity.ResAccount;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,7 +21,7 @@ public class AccountEventListenerImpl implements AccountEventListener {
     }
 
     @Override
-    @RabbitListener(queues = "account.deleted")
+    @RabbitListener(queues = "wishlist.account.deleted")
     public void handleAccountDeleted(String userId) {
         try {
             logger.info("Received account.deleted message: {}", userId);

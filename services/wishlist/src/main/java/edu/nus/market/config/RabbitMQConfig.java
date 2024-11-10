@@ -43,13 +43,13 @@ public class RabbitMQConfig {
     // 定义 Topic 类型的队列
     @Bean
     public Queue deletedAccount() {
-        return new Queue("account.deleted", true);
+        return new Queue("wishlist.account.deleted", true);
     }
 
     // bind deleteQueue to topic exchange with routing key "delete.#"
     @Bean
     public Binding deleteAccountBinding(Queue deletedAccount, TopicExchange topicAccount) {
-        return BindingBuilder.bind(deletedAccount).to(topicAccount).with("account.deleted.#");
+        return BindingBuilder.bind(deletedAccount).to(topicAccount).with("account.deleted");
     }
 
     //item updated and deleted
@@ -60,23 +60,23 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue deletedItem() {
-        return new Queue("item.deleted", true);
+        return new Queue("wishlist.item.deleted", true);
     }
 
     // bind deleteQueue to topic exchange with routing key "delete.#"
     @Bean
     public Binding deleteItemBinding(Queue deletedItem, TopicExchange topicItem) {
-        return BindingBuilder.bind(deletedItem).to(topicItem).with("item.deleted.#");
+        return BindingBuilder.bind(deletedItem).to(topicItem).with("item.deleted");
     }
     @Bean
     public Queue updatedItem() {
-        return new Queue("item.updated", true);
+        return new Queue("wishlist.item.updated", true);
     }
 
     // bind updateQueue to topic exchange with routing key "item.updated.#"
     @Bean
     public Binding updateItemBinding(Queue updatedItem, TopicExchange topicItem) {
-        return BindingBuilder.bind(updatedItem).to(topicItem).with("item.updated.#");
+        return BindingBuilder.bind(updatedItem).to(topicItem).with("item.updated");
     }
 
 
