@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - hot-fix-image-test
     paths:
       - services/**
 
