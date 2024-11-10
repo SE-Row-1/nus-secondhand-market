@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - NSHM-134-Add-logs-to-wishlist
   workflow_dispatch:
     inputs:
       destroy:

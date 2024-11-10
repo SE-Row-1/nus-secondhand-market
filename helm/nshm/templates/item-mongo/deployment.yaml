@@ -20,7 +20,7 @@ spec:
           - "sh"
           - "-c"
           - |
-            git clone --branch NSHM-134-Add-logs-to-wishlist https://github.com/SE-Row-1/nus-secondhand-market.git /scripts
+            git clone --branch main https://github.com/SE-Row-1/nus-secondhand-market.git /scripts
         volumeMounts:
           - name: init-script
             mountPath: /scripts
