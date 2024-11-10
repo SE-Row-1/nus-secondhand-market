@@ -1,6 +1,5 @@
-package edu.nus.currency.pojo;
+package edu.nus.currency.pojo.ReqEntity;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateCurrencyMessage {
+public class UpdateSingleSubscriptionReq {
     String oldCurrency;
 
 
@@ -18,7 +17,7 @@ public class UpdateCurrencyMessage {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("UpdateCurrencyMessage{")
+        sb.append("UpdateSingleSubscriptionReq{")
             .append("oldCurrency='").append(oldCurrency).append('\'')
             .append(", newCurrency='").append(newCurrency).append('\'')
             .append('}');

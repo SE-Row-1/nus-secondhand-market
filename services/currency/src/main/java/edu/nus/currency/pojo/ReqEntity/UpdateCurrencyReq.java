@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdExgRatReq {
+public class UpdateCurrencyReq {
     @NotEmpty
     List<String> targetCurrencies;
     @NotBlank

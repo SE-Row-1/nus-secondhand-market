@@ -5,7 +5,8 @@ public enum ErrorMsgEnum {
     REGISTERED_EMAIL("This email is already registered."),
     WRONG_PASSWORD("Wrong password. Please try again."),
     ACCOUNT_NOT_FOUND("This account does not exist."),
-    INVALID_INPUT("The input value is invalid")
+    INVALID_INPUT("The input value is invalid"),
+    THIRD_PARTY_API_ERROR("Third party service not available")
     ;
     public String ErrorMsg;
 
