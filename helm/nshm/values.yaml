@@ -2,7 +2,7 @@
 account:
   image:
     repository: z1yoon/nshm-account
-    tag: account-891700702b679d32bd7104e732f23e90e824b6fe
+    tag: account-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
@@ -16,7 +16,7 @@ account:
 item:
   image:
     repository: z1yoon/nshm-item
-    tag: 0de84f2f60244162dbd48f58aabc2072dc247687
+    tag: item-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
@@ -30,7 +30,7 @@ item:
 wishlist:
   image:
     repository: z1yoon/nshm-wishlist
-    tag: b08938b837bc2fb554f3f07bf1e3493f15ff20c8
+    tag: wishlist-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
@@ -44,7 +44,7 @@ wishlist:
 web:
   image:
     repository: z1yoon/nshm-web
-    tag: web-8b921d8c8a9ebcbd8025e725ea2189491dbf101c
+    tag: web-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
@@ -58,7 +58,7 @@ web:
 notification:
   image:
     repository: z1yoon/nshm-notification
-    tag: notification-cee04717310f5f4f00fb01ed12da2d070ed22992
+    tag: notification-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
@@ -72,7 +72,7 @@ notification:
 transaction:
   image:
     repository: z1yoon/nshm-transaction
-    tag: 9c572f8aaef30bbad3b2410725be6b0883a12666
+    tag: transaction-5850506a1c5311245c29e24869892996b5b07c85
   replicas: 1
   resources:
     limits:
