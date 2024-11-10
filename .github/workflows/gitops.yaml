@@ -37,6 +37,8 @@ jobs:
               - 'services/wishlist/**'
             notification:
               - 'services/notification/**'
+            transaction:
+              - 'services/transaction/**'
             rabbitmq:
               - 'services/rabbitmq/**'
 
