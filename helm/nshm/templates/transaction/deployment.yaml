@@ -32,6 +32,7 @@ spec:
             export PGPASSWORD=$PGPASSWORD && \
             psql -h $PGHOST -U $PGUSER -d postgres -c "CREATE DATABASE \"nshm_transaction\""
             psql -h $PGHOST -U $PGUSER -d "nshm_transaction" -f /scripts/services/transaction/database/production/init.sql
+            psql -h $PGHOST -U $PGUSER -d "nshm_transaction" -c "GRANT ALL PRIVILEGES ON DATABASE \"nshm_transaction\" TO nshmadmin;"
         volumeMounts:
           - name: init-script
             mountPath: /scripts
