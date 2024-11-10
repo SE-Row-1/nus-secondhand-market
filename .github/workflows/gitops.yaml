@@ -38,6 +38,8 @@ jobs:
               - 'services/transaction/**'
             notification:
               - 'services/notification/**'
+            transaction:
+              - 'services/transaction/**'
             rabbitmq:
               - 'services/rabbitmq/**'
 
