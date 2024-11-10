@@ -58,7 +58,7 @@ web:
 notification:
   image:
     repository: z1yoon/nshm-notification
-    tag: 4c30ac7579d0665d79a487840815d654b1f619d3
+    tag: notification-94309d442fa6a293b6bb664ef4f5cce70ef2012c
   replicas: 1
   resources:
     limits:
