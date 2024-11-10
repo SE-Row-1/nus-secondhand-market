@@ -34,6 +34,8 @@ jobs:
               - 'services/item/**'
             wishlist:
               - 'services/wishlist/**'
+            transaction:
+              - 'services/transaction/**'
             notification:
               - 'services/notification/**'
             transaction:
