@@ -30,7 +30,7 @@ item:
 wishlist:
   image:
     repository: z1yoon/nshm-wishlist
-    tag: f617eba726b60b6351b305e5b5b92b8633e85682
+    tag: b08938b837bc2fb554f3f07bf1e3493f15ff20c8
   replicas: 1
   resources:
     limits:
