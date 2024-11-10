@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { clientRequester } from "@/query/requester/client";
-import { ItemStatus, type SimplifiedAccount } from "@/types";
+import { type SimplifiedAccount, type Transaction } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckIcon, Loader2Icon } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -22,13 +22,14 @@ export function MarkAsDealtButton({ buyer, onDealt }: Props) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await clientRequester.put(`/items/${itemId}/status`, {
-        status: ItemStatus.Dealt,
-        buyer,
+      return await clientRequester.post<Transaction>("/transactions", {
+        item_id: itemId,
+        buyer_id: buyer.id,
       });
     },
-    onSuccess: (item) => {
-      queryClient.setQueryData(["items", itemId], item);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       onDealt();
     },
     onError: (error) => {

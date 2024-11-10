@@ -9,16 +9,16 @@ import {
   takeDownParamSchema,
   updateFormSchema,
   updateParamSchema,
-  updateStatusJsonSchema,
-  updateStatusParamSchema,
-} from "./schema";
+} from "./schemas";
 import * as itemsService from "./service";
 
 export const itemsController = new Hono();
 
 itemsController.get("/", validator("query", getAllQuerySchema), async (c) => {
   const query = c.req.valid("query");
+
   const result = await itemsService.getAll(query);
+
   return c.json(result, 200);
 });
 
@@ -27,7 +27,9 @@ itemsController.get(
   validator("query", searchQuerySchema),
   async (c) => {
     const query = c.req.valid("query");
+
     const result = await itemsService.search(query);
+
     return c.json(result, 200);
   },
 );
@@ -37,7 +39,9 @@ itemsController.get(
   validator("param", getOneParamSchema),
   async (c) => {
     const param = c.req.valid("param");
+
     const result = await itemsService.getOne(param);
+
     return c.json(result, 200);
   },
 );
@@ -48,7 +52,10 @@ itemsController.post(
   validator("form", publishFormSchema),
   async (c) => {
     const form = c.req.valid("form");
-    const result = await itemsService.publish({ ...form, user: c.var.user });
+    const user = c.var.user;
+
+    const result = await itemsService.publish({ ...form, user });
+
     return c.json(result, 201);
   },
 );
@@ -61,28 +68,10 @@ itemsController.patch(
   async (c) => {
     const param = c.req.valid("param");
     const form = c.req.valid("form");
-    const result = await itemsService.update({
-      ...param,
-      ...form,
-      user: c.var.user,
-    });
-    return c.json(result, 200);
-  },
-);
+    const user = c.var.user;
 
-itemsController.put(
-  "/:id/status",
-  auth(true),
-  validator("param", updateStatusParamSchema),
-  validator("json", updateStatusJsonSchema),
-  async (c) => {
-    const param = c.req.valid("param");
-    const json = c.req.valid("json");
-    const result = await itemsService.updateStatus({
-      ...param,
-      ...json,
-      user: c.var.user,
-    });
+    const result = await itemsService.update({ ...param, ...form, user });
+
     return c.json(result, 200);
   },
 );
@@ -93,7 +82,10 @@ itemsController.delete(
   validator("param", takeDownParamSchema),
   async (c) => {
     const param = c.req.valid("param");
-    await itemsService.takeDown({ ...param, user: c.var.user });
+    const user = c.var.user;
+
+    await itemsService.takeDown({ ...param, user });
+
     return c.body(null, 204);
   },
 );

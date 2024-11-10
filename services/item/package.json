@@ -7,27 +7,25 @@
     "build": "bun build --outdir dist --target bun --minify src/index.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.676.0",
+    "@aws-sdk/client-s3": "^3.686.0",
     "amqplib": "^0.10.4",
-    "bun-compression": "^0.0.4",
-    "hono": "^4.6.6",
-    "hono-rate-limiter": "^0.4.0",
+    "hono": "^4.6.9",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
-    "valibot": "^0.42.1"
+    "valibot": "^1.0.0-beta.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.13.0",
+    "@eslint/js": "^9.14.0",
     "@types/amqplib": "^0.10.5",
-    "@types/bun": "^1.1.11",
+    "@types/bun": "^1.1.13",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/eslint__js": "^8.42.3",
     "@types/jsonwebtoken": "^9.0.7",
-    "eslint": "^9.13.0",
+    "eslint": "^9.14.0",
     "eslint-config-prettier": "^9.1.0",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.11.0"
+    "typescript-eslint": "^8.13.0"
   }
 }

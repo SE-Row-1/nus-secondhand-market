@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Account not found" }, { status: 404 });
   }
 
-  const { item_id, exclude_cancelled } = Object.fromEntries(
+  const { item_id, is_cancelled } = Object.fromEntries(
     req.nextUrl.searchParams,
   );
 
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
         return false;
       }
 
-      if (exclude_cancelled === "true" && transaction.cancelled_at !== null) {
+      if (is_cancelled === "true" && transaction.cancelled_at !== null) {
         return false;
       }
 
