@@ -134,10 +134,10 @@ export function useTransactions() {
 
 export function useLastTransaction(itemId: string) {
   return useQuery({
-    queryKey: ["transactions", { item_id: itemId, exclude_cancelled: true }],
+    queryKey: ["transactions", { item_id: itemId, is_cancelled: false }],
     queryFn: async () => {
       const transactions = await clientRequester.get<Transaction[]>(
-        `/transactions?item_id=${itemId}&exclude_cancelled=true`,
+        `/transactions?item_id=${itemId}&is_cancelled=false`,
       );
       return transactions[0] ?? null;
     },

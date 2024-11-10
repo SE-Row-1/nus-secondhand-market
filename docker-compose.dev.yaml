@@ -77,7 +77,7 @@ services:
     env_file:
       - envs/item-mongo.env
     volumes:
-      - ./services/item/database/dev:/docker-entrypoint-initdb.d
+      - ./services/item/database/development:/docker-entrypoint-initdb.d
       - item-mongo-data:/data/db
     networks:
       - bridge
@@ -109,6 +109,39 @@ services:
     volumes:
       - ./services/wishlist/database/dev:/docker-entrypoint-initdb.d
       - wishlist-mongo-data:/data/db
+    networks:
+      - bridge
+    restart: always
+
+  transaction:
+    build:
+      context: services/transaction
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8084:8084
+    env_file:
+      - services/transaction/.env
+    volumes:
+      - ./services/transaction:/app
+      - /app/node_modules
+    networks:
+      - bridge
+    depends_on:
+      transaction-postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: always
+
+  transaction-postgres:
+    image: postgres
+    ports:
+      - 5433:5432
+    env_file:
+      - envs/transaction-postgres.env
+    volumes:
+      - ./services/transaction/database/development:/docker-entrypoint-initdb.d
+      - transaction-postgres-data:/var/lib/postgresql/data
     networks:
       - bridge
     restart: always
@@ -163,6 +196,7 @@ volumes:
   account-postgres-data:
   item-mongo-data:
   wishlist-mongo-data:
+  transaction-postgres-data:
   rabbitmq-data:
 
 

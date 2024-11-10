@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: transaction
+  namespace: nshm
+spec:
+  replicas: {{ .Values.transaction.replicas }}
+  selector:
+    matchLabels:
+      app: transaction
+  template:
+    metadata:
+      labels:
+        app: transaction
+    spec:
+      initContainers:
+      - name: git-sync
+        image: alpine/git:latest
+        command: ["git", "clone", "https://github.com/SE-Row-1/nus-secondhand-market.git", "/scripts"]
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      - name: init-db
+        image: postgres:13
+        envFrom:
+          - secretRef:
+              name: transaction-secret
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            export PGPASSWORD=$POSTGRES_PASSWORD && \
+            psql -h $DB_ENDPOINT -U $POSTGRES_USERNAME -d $DB_NAME -f /scripts/services/transaction/database/init.sql
+        volumeMounts:
+          - name: init-script
+            mountPath: /scripts
+
+      containers:
+      - name: transaction
+        image: {{ .Values.transaction.image.repository }}:{{ .Values.account.image.tag }}
+        resources:
+          requests:
+            memory: {{ .Values.transaction.resources.requests.memory }}
+            cpu: {{ .Values.transaction.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.transaction.resources.limits.memory }}
+            cpu: {{ .Values.transaction.resources.limits.cpu }}
+        envFrom:
+          - secretRef:
+              name: transaction-secret
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8084
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8084
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+
+      volumes:
+        - name: init-script
+          emptyDir: {}

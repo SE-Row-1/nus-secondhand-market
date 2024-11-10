@@ -1,5 +1,6 @@
 import { HTTPException } from "hono/http-exception";
 import type { StatusCode } from "hono/utils/http-status";
+import { snakeToCamel } from "./case";
 
 /**
  * Register every microservice's base URL here.
@@ -30,6 +31,6 @@ export function createRequester(service: keyof typeof serviceRegistry) {
       });
     }
 
-    return json as T;
+    return snakeToCamel(json) as T;
   };
 }

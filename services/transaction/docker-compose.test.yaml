@@ -1,0 +1,32 @@
+name: nshm-transaction-test
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGDATABASE=test
+      - PGUSER=test
+      - PGPASSWORD=test
+      - JWT_SECRET_KEY=test
+    networks:
+      - bridge
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD=test
+    volumes:
+      - ./database/test:/docker-entrypoint-initdb.d
+    networks:
+      - bridge
+
+networks:
+  bridge:

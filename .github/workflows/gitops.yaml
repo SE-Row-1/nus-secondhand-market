@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - NSHM-9-Set-up-environment
     paths:
       - services/**
 
@@ -35,6 +34,8 @@ jobs:
               - 'services/item/**'
             wishlist:
               - 'services/wishlist/**'
+            transaction:
+              - 'services/transaction/**'
             notification:
               - 'services/notification/**'
             rabbitmq:

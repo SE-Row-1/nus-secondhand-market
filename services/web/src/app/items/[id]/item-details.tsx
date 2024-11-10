@@ -79,7 +79,7 @@ export function ItemDetails() {
         {isBuyer && item.status === ItemStatus.Dealt && (
           <>
             <ContactSellerButton />
-            <MarkAsSoldButton />
+            <MarkAsSoldButton transactionId={transaction.id} />
           </>
         )}
         {isBuyer && item.status === ItemStatus.Sold && (

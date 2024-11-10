@@ -6,8 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
+      - INTEGRATION_TEST=1
       - MONGO_URL=mongodb://mongo:27017
-      - MONGO_DB_NAME=nshm
+      - MONGO_DB_NAME=test
       - AWS_ACCESS_KEY_ID=test
       - AWS_SECRET_ACCESS_KEY=test
       - AWS_REGION=test
@@ -18,25 +19,16 @@ services:
     networks:
       - bridge
     depends_on:
-      mongo:
-        condition: service_healthy
-    restart: always
+      - mongo
 
   mongo:
     image: mongo
     environment:
-      - MONGO_INITDB_DATABASE=nshm
+      - MONGO_INITDB_DATABASE=test
     volumes:
       - ./database/test:/docker-entrypoint-initdb.d
     networks:
       - bridge
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://localhost:27017/nshm --quiet
-      interval: 30s
-      timeout: 10s
-      start_period: 30s
-      retries: 5
-    restart: always
 
 networks:
   bridge:
