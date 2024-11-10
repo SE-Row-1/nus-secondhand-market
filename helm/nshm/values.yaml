@@ -72,7 +72,7 @@ notification:
 transaction:
   image:
     repository: z1yoon/nshm-transaction
-    tag: 32458c0dfc2c3059ec22d610d55482611530183a
+    tag: 9c572f8aaef30bbad3b2410725be6b0883a12666
   replicas: 1
   resources:
     limits:
