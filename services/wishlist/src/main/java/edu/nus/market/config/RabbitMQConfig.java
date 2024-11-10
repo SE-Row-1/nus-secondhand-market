@@ -34,7 +34,7 @@ public class RabbitMQConfig {
         return rabbitTemplate;
     }
 
-    //account deleted
+    //account update and deleted
     @Bean
     public TopicExchange topicAccount() {
         return new TopicExchange("account");
@@ -49,7 +49,18 @@ public class RabbitMQConfig {
     // bind deleteQueue to topic exchange with routing key "delete.#"
     @Bean
     public Binding deleteAccountBinding(Queue deletedAccount, TopicExchange topicAccount) {
-        return BindingBuilder.bind(deletedAccount).to(topicAccount).with("account.deleted");
+        return BindingBuilder.bind(deletedAccount).to(topicAccount).with("account.deleted.#");
+    }
+    // 定义 Topic 类型的队列
+    @Bean
+    public Queue updatedAccount() {
+        return new Queue("wishlist.account.updated", true);
+    }
+
+    // bind deleteQueue to topic exchange with routing key "update"
+    @Bean
+    public Binding updateAccountBinding(Queue updatedAccount, TopicExchange topicAccount) {
+        return BindingBuilder.bind(updatedAccount).to(topicAccount).with("account.updated.#");
     }
 
     //item updated and deleted

@@ -1,5 +1,6 @@
 package edu.nus.market.service;
 
+import edu.nus.market.pojo.Account;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -34,6 +35,14 @@ public class AccountEventListenerImpl implements AccountEventListener {
         } catch (Exception e) {
             logger.error("Error processing account.deleted message for userId: {}", userId, e);
         }
+    }
+
+    @Override
+    @RabbitListener(queues = "wishlist.account.updated")
+    public void handleAccountUpdated(Account updatedAccount) {
+        logger.info("Received account.updated message: {}", updatedAccount);
+        wishlistService.updateAccountService(updatedAccount);
+
     }
 
 
