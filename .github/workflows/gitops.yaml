@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - hot-fix-build-image
     paths:
       - services/**
 
@@ -91,18 +92,8 @@ jobs:
 
       - name: Commit the changes
         run: |
-           # Configure Git user details
-           git config --global user.email "nshm@u.nus.edu"
-           git config --global user.name "nshm"
-
-           # Check out the branch that triggered the workflow
-           git fetch origin
-           git checkout $GITHUB_REF_NAME
-
-           # Pull the latest changes from the remote branch, allowing rebasing to keep history clean
-           git pull origin $GITHUB_REF_NAME --rebase || true
-
-           # Commit any changes (including uncommitted changes) and push
-           git add -A
-           git commit -m "chore: auto-commit and updated image tags for services: ${{ matrix.service }}" || echo "No changes to commit"
-           git push origin $GITHUB_REF_NAME || echo "Nothing to push"
+          git fetch origin
+          git config --global user.email "nshm@u.nus.edu"
+          git config --global user.name "nshm"
+          git commit -am "chore: updated image tags for services: ${{ matrix.service }}"
+          git push origin $GITHUB_REF_NAME --force
