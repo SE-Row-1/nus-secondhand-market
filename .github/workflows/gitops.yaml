@@ -96,4 +96,5 @@ jobs:
           git config --global user.email "nshm@u.nus.edu"
           git config --global user.name "nshm"
           git commit -am "chore: updated image tags for services: ${{ matrix.service }}"
-          git push origin $GITHUB_REF_NAME:main --force
+          git push
+        continue-on-error: true
