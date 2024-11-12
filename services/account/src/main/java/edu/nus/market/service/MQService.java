@@ -9,7 +9,7 @@ public interface MQService {
 
     public void sendUpdateMessage(UpdateMessage message);
 
-    public void sendDeleteMessage(String message);
+    public void sendDeleteMessage(String message, String currency);
 
     public void sendCurrencyMessage(UpdateCurrencyMessage updateCurrencyMessage);
 }

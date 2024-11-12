@@ -31,9 +31,14 @@ public class MQServiceImpl implements MQService{
     }
 
     // send deleted message, `account.deleted.success`
-    public void sendDeleteMessage(String message) {
+    public void sendDeleteMessage(String message, String currency) {
         rabbitTemplate.convertAndSend("account", "account.deleted.success", message);
         logger.info("Sent delete message: " + message);
+
+        if (currency != null){
+            rabbitTemplate.convertAndSend("currency", "currency.account.currencyDeleted.success", message);
+            logger.info("Sent currency delete message: " + message);
+        }
     }
 
     public void sendCurrencyMessage(UpdateCurrencyMessage updateCurrencyMessage) {

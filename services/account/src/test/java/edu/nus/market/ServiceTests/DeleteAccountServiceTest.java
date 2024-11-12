@@ -59,7 +59,7 @@ public class DeleteAccountServiceTest {
     @Test
     void deleteSuccessTest() {
         // 模拟 MQ 消息不发送实际消息
-        doNothing().when(mqService).sendDeleteMessage(anyString());
+        doNothing().when(mqService).sendDeleteMessage(anyString(), anyString());
 
         // 模拟账号存在
         when(accountDao.getAccountById(ID)).thenReturn(account);

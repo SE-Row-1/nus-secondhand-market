@@ -15,6 +15,9 @@ public class UpdateMessage {
 
     String avatarUrl;
 
+    public UpdateMessage(String testAccount, String accountUpdatedSuccessfully) {
+    }
+
 
     @Override
     public String toString() {
