@@ -113,6 +113,36 @@ services:
       - bridge
     restart: always
 
+  currency:
+    build:
+      context: services/currency
+      dockerfile: Dockerfile
+    ports:
+      - 8085:8085
+    env_file:
+      - services/currency/.env
+    networks:
+      - bridge
+    depends_on:
+      currency-redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    restart: always
+
+  currency-redis:
+    image: redis
+    ports:
+      - 6379:6379
+    env_file:
+      - envs/currency-redis.env
+    volumes:
+      - ./services/currency/database/dev:/docker-entrypoint-initdb.d
+      - currency-redis-data:/data
+    networks:
+      - bridge
+    restart: always
+
   transaction:
     build:
       context: services/transaction
@@ -198,6 +228,7 @@ volumes:
   wishlist-mongo-data:
   transaction-postgres-data:
   rabbitmq-data:
+  currency-redis-data:
 
 
 networks:
