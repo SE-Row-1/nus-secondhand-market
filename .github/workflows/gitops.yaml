@@ -73,7 +73,7 @@ jobs:
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
   update-and-sync:
-    name: Update Helm Manifests
+    name: Update image tag value
     runs-on: ubuntu-latest
     container:
       image: argoproj/argocd
