@@ -106,7 +106,6 @@ jobs:
             --values helm/nshm/$GITHUB_REF_NAME-values.yaml \
             --repo https://github.com/SE-Row-1/nus-secondhand-market.git \
             --revision $GITHUB_REF_NAME \
-            --async
 
       - name: Sync ArgoCD Application
         if: github.ref == 'refs/heads/staging' || (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch')
