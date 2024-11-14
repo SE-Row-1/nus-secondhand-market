@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nshm-main
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
+    targetRevision: main
+    path: helm/nshm
+    helm:
+      valueFiles:
+        - main-values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: nshm-main
+  syncPolicy:
+    retry:
+      limit: 3

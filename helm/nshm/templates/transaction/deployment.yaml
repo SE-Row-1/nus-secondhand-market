@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: transaction
-  namespace: nshm
 spec:
   replicas: {{ .Values.transaction.replicas }}
   selector:

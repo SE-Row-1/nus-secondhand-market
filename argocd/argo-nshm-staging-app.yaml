@@ -1,17 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nshm
+  name: nshm-staging
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: 'https://github.com/SE-Row-1/nus-secondhand-market.git'
-    targetRevision: main
+    targetRevision: staging
     path: helm/nshm
+    helm:
+      valueFiles:
+        - staging-values.yaml
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: nshm
+    namespace: nshm-staging
   syncPolicy:
     automated:
       prune: true

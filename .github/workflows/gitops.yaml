@@ -4,9 +4,10 @@ on:
   push:
     branches:
       - main
-      - hot-fix-build-image
+      - staging
     paths:
       - services/**
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -66,14 +67,17 @@ jobs:
           context: ./services/${{ matrix.service }}
           push: true
           tags: |
-            z1yoon/nshm-${{ matrix.service }}:${{ matrix.service }}-${{ github.sha }}
-            z1yoon/nshm-${{ matrix.service }}:latest
+            z1yoon/nshm-${{ matrix.service }}:${{ github.ref_name }}-${{ matrix.service }}-${{ github.sha }}
+            z1yoon/nshm-${{ matrix.service }}:${{ github.ref_name }}
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
-  update:
+  update-and-sync:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
+    container:
+      image: argoproj/argocd
+      options: --user root
     needs: changes
     strategy:
       matrix:
@@ -85,16 +89,18 @@ jobs:
 
       - name: Update Image Tag Values
         run: |
-          chart_dir="helm/nshm"
           new_image_tag=${{ matrix.service }}-${{ github.sha }}
-          sed -i "/z1yoon\/nshm-${{ matrix.service }}/{n;s/tag: .*/tag: $new_image_tag/;}" $chart_dir/values.yaml
-          cat $chart_dir/values.yaml
+          echo "new_image_tag=$new_image_tag" >> $GITHUB_ENV
 
-      - name: Commit the changes
+      - name: Login to ArgoCD
         run: |
-          git pull origin $GITHUB_REF_NAME
-          git config --global user.email "nshm@u.nus.edu"
-          git config --global user.name "nshm"
-          git commit -am "chore: updated image tags for services: ${{ matrix.service }}"
-          git push origin $GITHUB_REF_NAME
-        continue-on-error: false
+          argocd login argocd.nshm.store \
+            --username admin \
+            --password ${{ secrets.ARGOCD_PASSWORD }} \
+            --insecure
+
+      - name: Apply Changes with ArgoCD CLI
+        run: |
+          argocd app set nshm-$GITHUB_REF_NAME \
+            --helm-set ${{ matrix.service }}.image.tag=${{ env.new_image_tag }}
+          argocd app get nshm-$GITHUB_REF_NAME -o yaml
