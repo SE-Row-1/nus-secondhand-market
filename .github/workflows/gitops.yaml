@@ -90,8 +90,6 @@ jobs:
       - name: Update Image Tag Values
         run: |
           new_image_tag=${{ matrix.service }}-${{ github.sha }}
-          sed -i "/z1yoon\/nshm-${{ matrix.service }}/{n;s/tag: .*/tag: $new_image_tag/;}" helm/nshm/$GITHUB_REF_NAME-values.yaml
-          cat helm/nshm/$GITHUB_REF_NAME-values.yaml
 
       - name: Login to ArgoCD
         run: |
@@ -103,11 +101,5 @@ jobs:
       - name: Apply Changes with ArgoCD CLI
         run: |
           argocd app set nshm-$GITHUB_REF_NAME \
-            --values $GITHUB_REF_NAME-values.yaml \
-            --repo https://github.com/SE-Row-1/nus-secondhand-market.git \
-            --revision $GITHUB_REF_NAME \
-
-      - name: Sync ArgoCD Application
-        if: github.ref == 'refs/heads/staging' || (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch')
-        run: |
-          argocd app sync nshm-${{ github.ref_name }}
+            --helm-set ${{ matrix.service }}.image.tag=$new_image_tag
+          argocd app get nshm-$GITHUB_REF_NAME -o yaml
