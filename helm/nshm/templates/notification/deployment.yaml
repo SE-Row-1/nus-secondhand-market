@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: notification
-  namespace: nshm
 spec:
   replicas: {{ .Values.notification.replicas }}
   selector:
