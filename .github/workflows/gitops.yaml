@@ -67,12 +67,12 @@ jobs:
           context: ./services/${{ matrix.service }}
           push: true
           tags: |
-            z1yoon/nshm-${{ matrix.service }}:$GITHUB_REF_NAME-${{ matrix.service }}-${{ github.sha }}
-            z1yoon/nshm-${{ matrix.service }}:$GITHUB_REF_NAME
+            z1yoon/nshm-${{ matrix.service }}:{{ github.ref_name }}-${{ matrix.service }}-${{ github.sha }}
+            z1yoon/nshm-${{ matrix.service }}:{{ github.ref_name }}
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
-  update:
+  update-and-sync:
     name: Update Helm Manifests
     runs-on: ubuntu-latest
     container:
@@ -94,6 +94,13 @@ jobs:
           sed -i "/z1yoon\/nshm-${{ matrix.service }}/{n;s/tag: .*/tag: $new_image_tag/;}" $chart_dir/$GITHUB_REF_NAME-values.yaml
           cat $chart_dir/$GITHUB_REF_NAME-values.yaml
 
+      - name: Login to ArgoCD
+        run: |
+          argocd login argocd.nshm.store \
+            --username admin \
+            --password ${{ secrets.ARGOCD_PASSWORD }} \
+            --insecure
+
       - name: Apply Changes with ArgoCD CLI
         run: |
           argocd app set nshm-$GITHUB_REF_NAME \
@@ -101,21 +108,8 @@ jobs:
             --repo https://github.com/SE-Row-1/nus-secondhand-market.git \
             --revision $GITHUB_REF_NAME \
             --async
-        env:
-          ARGOCD_SERVER: argocd.nshm.store
-          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
 
-  sync:
-    name: Sync ArgoCD Application
-    runs-on: ubuntu-latest
-    container:
-      image: argoproj/argocd
-    needs: update
-    steps:
       - name: Sync ArgoCD Application
         if: github.ref == 'refs/heads/staging' || (github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch')
         run: |
           argocd app sync nshm-${{ github.ref_name }}
-        env:
-          ARGOCD_SERVER: argocd.nshm.store
-          ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
