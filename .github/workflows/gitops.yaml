@@ -103,7 +103,7 @@ jobs:
       - name: Apply Changes with ArgoCD CLI
         run: |
           argocd app set nshm-$GITHUB_REF_NAME \
-            --values helm/nshm/$GITHUB_REF_NAME-values.yaml \
+            --values $GITHUB_REF_NAME-values.yaml \
             --repo https://github.com/SE-Row-1/nus-secondhand-market.git \
             --revision $GITHUB_REF_NAME \
 
