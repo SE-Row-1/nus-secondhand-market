@@ -67,8 +67,8 @@ jobs:
           context: ./services/${{ matrix.service }}
           push: true
           tags: |
-            z1yoon/nshm-${{ matrix.service }}:{{ github.ref_name }}-${{ matrix.service }}-${{ github.sha }}
-            z1yoon/nshm-${{ matrix.service }}:{{ github.ref_name }}
+            z1yoon/nshm-${{ matrix.service }}:${{ github.ref_name }}-${{ matrix.service }}-${{ github.sha }}
+            z1yoon/nshm-${{ matrix.service }}:${{ github.ref_name }}
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
@@ -77,6 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: argoproj/argocd
+      options: --user root
     needs: changes
     strategy:
       matrix:
