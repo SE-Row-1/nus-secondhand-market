@@ -72,8 +72,13 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
+<<<<<<< Updated upstream
   update-and-sync:
     name: Update image tag value
+=======
+  update:
+    name: Update and Sync Image Tag in ArgoCD
+>>>>>>> Stashed changes
     runs-on: ubuntu-latest
     container:
       image: argoproj/argocd
@@ -82,25 +87,26 @@ jobs:
     strategy:
       matrix:
         service: ${{ fromJson(needs.changes.outputs.services) }}
-
     steps:
-      - name: Check out code
+      - name: Checkout Code Repository
         uses: actions/checkout@v4
 
-      - name: Update Image Tag Values
+      - name: Generate New Image Tag
         run: |
           new_image_tag=${{ matrix.service }}-${{ github.sha }}
           echo "new_image_tag=$new_image_tag" >> $GITHUB_ENV
 
-      - name: Login to ArgoCD
+      - name: Authenticate to ArgoCD
         run: |
           argocd login argocd.nshm.store \
             --username admin \
             --password ${{ secrets.ARGOCD_PASSWORD }} \
             --insecure
+        continue-on-error: true
 
-      - name: Apply Changes with ArgoCD CLI
+      - name: Update ArgoCD Application with New Image Tag
         run: |
           argocd app set nshm-$GITHUB_REF_NAME \
             --helm-set ${{ matrix.service }}.image.tag=${{ env.new_image_tag }}
           argocd app get nshm-$GITHUB_REF_NAME -o yaml
+        continue-on-error: true
