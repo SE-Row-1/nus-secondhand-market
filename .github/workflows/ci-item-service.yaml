@@ -1,14 +1,9 @@
-name: CI for item service
+name: CI for Item Service
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/item/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/item/**
 

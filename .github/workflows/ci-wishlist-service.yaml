@@ -1,14 +1,9 @@
 name: CI for Wishlist Service
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/wishlist/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/wishlist/**
 
