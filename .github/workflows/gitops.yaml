@@ -72,13 +72,8 @@ jobs:
           build-args: |
             NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}
 
-<<<<<<< Updated upstream
-  update-and-sync:
-    name: Update image tag value
-=======
   update:
     name: Update and Sync Image Tag in ArgoCD
->>>>>>> Stashed changes
     runs-on: ubuntu-latest
     container:
       image: argoproj/argocd
