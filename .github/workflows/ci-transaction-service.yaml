@@ -1,14 +1,9 @@
-name: CI for transaction service
+name: CI for Transaction Service
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/transaction/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/transaction/**
 

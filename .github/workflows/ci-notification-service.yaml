@@ -1,14 +1,9 @@
-name: CI for notification service
+name: CI for Notification Service
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/notification/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/notification/**
 

@@ -1,14 +1,9 @@
-name: CI for web service
+name: CI for Web Service
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - services/web/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/web/**
 
