@@ -1,15 +1,9 @@
 name: CI for Account Service
 
 on:
-  push:
-    branches:
-      - main
-      - NSHM-126-CI-for-account
-    paths:
-      - services/account/**
   pull_request:
     branches:
-      - main
+      - staging
     paths:
       - services/account/**
 
